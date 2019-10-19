@@ -16,3 +16,13 @@ Identical life forms can spawn on the death ring (self propagation)
 When two death rings intersect, there is a change to spawn a new, different life form
 
 When three death rings intersect there is a change to spawn a higher life forms
+
+What is still to be decided:
+What is the objective of the game?
+The objective could just be to create the highest level/tier life form possible, and we could 'resource' limit the player such that they could only place so many new life forms, to create and sustain higher tier ones. Like the idle phone game, 2048.
+
+We could make it a music based idle game, where you feed the game a song, it analyzes it, and then the games mechanics (speed? chance of new life forms being created? Level of life forms created?) are somehow affected by the song.
+
+Or we could try to make it some kind of multiplyer versus game.
+
+Or other ideas. Please propose any thoughts you have.
