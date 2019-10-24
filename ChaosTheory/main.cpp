@@ -1,5 +1,8 @@
+#include "Game.h"
+
 int main()
 {
+	ChaosTheory::Game m_game;
 
-	return;
+	m_game.Initialize();
 }
