@@ -5,48 +5,61 @@
 
 namespace ChaosTheory
 {
-	/*
-	/	The Game class object represents the state manager for the basic DancingPlutonium game.
-	/	The initial state is initialized and we go through the various states:
-	/	Run -> Introduction -> Menu -> Play
-	*/
+	// Chaos Theory 
+	// The Game class object represents the state
+	// manager for the Chaos Theory game.
+	// The initial state is initialized and we go
+	// through the various states.
+	//////////////////////////////////////////////////
 	class Game
 	{
 	public:
-		#pragma region Ctor/Dtors
 
-		/* Default game constructor*/
+		// Default game constructor
+		//////////////////////////////////////////////////
 		Game() {}
-		/* Game copy constructor */
+
+		// Game copy constructor 
+		//////////////////////////////////////////////////
 		Game(const Game& _ref) {}
-		/* Game destructor*/
+ 
+		// Game destructor
+		//////////////////////////////////////////////////
 		~Game() {}
-
-		#pragma endregion
-		#pragma region Initialize
-
-		/* Run the initialize logic for this game, includes setting screen resolution */
+				
+		// Runs the initialize logic for this game, 
+		// includes setting screen resolution.
+		//////////////////////////////////////////////////
 		static void Initialize();
 
-		#pragma endregion
 	private:
-		#pragma region State Methods
-
-		/* Runs the state logic for Dancing Plutonium */
+		
+		// Runs the state logic for ChaosTheory
+		//////////////////////////////////////////////////
 		static void Run();
-		/* Runs the Introduction state for Dancing Plutonium */
+
+		/// TODO: (create issue for feature)
+		// Runs the Introduction state for ChaosTheory
+		//////////////////////////////////////////////////
 		static void Introduction();
-		/* Runs the Menu state for Dancing Plutonium */
+
+		/// TODO: (create issue for feature)
+		// Runs the Menu state for ChaosTheory
+		//////////////////////////////////////////////////
 		static void Menu();
-		/* Runs the Play state for Dancing Plutonium */
+				
+		// Runs the Play state for ChaosTheory
+		//////////////////////////////////////////////////
 		static void Play();
-		/* Runs the Quitting state for Dancing Plutonium */
+				
+		// Returns whether or not the CurrentState = s_quit
+		// True if we should quit, False otherwise.
+		//////////////////////////////////////////////////
 		static bool Quitting();
-
-		#pragma endregion
-		#pragma region CurrentState Enum
-
-		/* CurrentState enum holds the types of states that Dancing Plutonium may be in */
+				
+		// CurrentState enum holds the types of states that
+		// ChaosTheory may be in.
+		//////////////////////////////////////////////////
 		enum CurrentState
 		{
 			s_uninitialized,
@@ -56,12 +69,14 @@ namespace ChaosTheory
 			s_quit
 		};
 
-		#pragma endregion
-		#pragma region Static State Members
+		// Static variable which maintains the SFML game window
+		// from which you see the game rendered on.
+		//////////////////////////////////////////////////
+		static sf::RenderWindow m_window;
 
-		static sf::RenderWindow m_window;	/* Static variable which maintains the SFML game window from which you see the game rendered on */
-		static CurrentState m_state;		/* Static variable which maintains the state for this Game objects CurrentState enum */
-
-		#pragma endregion
-	};
-}
+		// Static variable which maintains the state for
+		// this Game objects CurrentState enum.
+		//////////////////////////////////////////////////
+		static CurrentState m_state;
+	}; // Game
+} // ChaosTheory

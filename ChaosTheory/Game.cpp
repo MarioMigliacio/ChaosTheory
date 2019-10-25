@@ -54,10 +54,12 @@ void ChaosTheory::Game::Run()
 	}
 }
 
+/// TODO: 
 void ChaosTheory::Game::Introduction()
 {
 }
 
+/// TODO:
 void ChaosTheory::Game::Menu()
 {
 }
@@ -65,18 +67,26 @@ void ChaosTheory::Game::Menu()
 void ChaosTheory::Game::Play()
 {
 	m_window.setTitle("Playing");
-	//Playing playGame;
+	sf::CircleShape shape(100.f);
+	shape.setFillColor(sf::Color::Green);
 
-	//playGame.Show(m_window);
-
-	/*if(playGame.getPlayState() == Playing::PlayState::s_gameover)
+	while(m_window.isOpen())
 	{
-		m_state = CurrentState::s_gameover;
+		sf::Event event;
+
+		while(m_window.pollEvent(event))
+		{
+			if(event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				m_state = CurrentState::s_quit;
+				return;
+			}
+		}
+
+		m_window.clear();
+		m_window.draw(shape);
+		m_window.display();
 	}
-	else
-	{
-		m_state = CurrentState::s_quit;
-	}*/
 }
 
 bool ChaosTheory::Game::Quitting()
