@@ -76,7 +76,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./Header;./Header/LifeForms;./Header/DeathForms;./Header/Utility;../External Libraries/SFML/include</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>../External Libraries/SFML/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-main-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -84,7 +89,12 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>./Header;./Header/LifeForms;./Header/DeathForms;./Header/Utility;../External Libraries/SFML/include</AdditionalIncludeDirectories>
     </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>../External Libraries/SFML/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-main-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -94,10 +104,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../External Libraries/SFML/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../External Libraries/SFML/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>winmm.lib;opengl32.lib;freetype.lib;sfml-main.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;sfml-network-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -108,44 +122,20 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>../External Libraries/SFML/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>../External Libraries/SFML/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>winmm.lib;opengl32.lib;freetype.lib;sfml-main.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;sfml-network-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\sfml-system.redist.2.4.2.0\build\native\sfml-system.redist.targets" Condition="Exists('..\packages\sfml-system.redist.2.4.2.0\build\native\sfml-system.redist.targets')" />
-    <Import Project="..\packages\sfml-system.2.4.2.0\build\native\sfml-system.targets" Condition="Exists('..\packages\sfml-system.2.4.2.0\build\native\sfml-system.targets')" />
-    <Import Project="..\packages\sfml-window.redist.2.4.2.0\build\native\sfml-window.redist.targets" Condition="Exists('..\packages\sfml-window.redist.2.4.2.0\build\native\sfml-window.redist.targets')" />
-    <Import Project="..\packages\sfml-window.2.4.2.0\build\native\sfml-window.targets" Condition="Exists('..\packages\sfml-window.2.4.2.0\build\native\sfml-window.targets')" />
-    <Import Project="..\packages\sfml-graphics.redist.2.4.2.0\build\native\sfml-graphics.redist.targets" Condition="Exists('..\packages\sfml-graphics.redist.2.4.2.0\build\native\sfml-graphics.redist.targets')" />
-    <Import Project="..\packages\sfml-graphics.2.4.2.0\build\native\sfml-graphics.targets" Condition="Exists('..\packages\sfml-graphics.2.4.2.0\build\native\sfml-graphics.targets')" />
-    <Import Project="..\packages\sfml-audio.redist.2.4.2.0\build\native\sfml-audio.redist.targets" Condition="Exists('..\packages\sfml-audio.redist.2.4.2.0\build\native\sfml-audio.redist.targets')" />
-    <Import Project="..\packages\sfml-audio.2.4.2.0\build\native\sfml-audio.targets" Condition="Exists('..\packages\sfml-audio.2.4.2.0\build\native\sfml-audio.targets')" />
-    <Import Project="..\packages\sfml-network.redist.2.4.2.0\build\native\sfml-network.redist.targets" Condition="Exists('..\packages\sfml-network.redist.2.4.2.0\build\native\sfml-network.redist.targets')" />
-    <Import Project="..\packages\sfml-network.2.4.2.0\build\native\sfml-network.targets" Condition="Exists('..\packages\sfml-network.2.4.2.0\build\native\sfml-network.targets')" />
   </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\sfml-system.redist.2.4.2.0\build\native\sfml-system.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-system.redist.2.4.2.0\build\native\sfml-system.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-system.2.4.2.0\build\native\sfml-system.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-system.2.4.2.0\build\native\sfml-system.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-window.redist.2.4.2.0\build\native\sfml-window.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-window.redist.2.4.2.0\build\native\sfml-window.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-window.2.4.2.0\build\native\sfml-window.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-window.2.4.2.0\build\native\sfml-window.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-graphics.redist.2.4.2.0\build\native\sfml-graphics.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-graphics.redist.2.4.2.0\build\native\sfml-graphics.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-graphics.2.4.2.0\build\native\sfml-graphics.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-graphics.2.4.2.0\build\native\sfml-graphics.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-audio.redist.2.4.2.0\build\native\sfml-audio.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-audio.redist.2.4.2.0\build\native\sfml-audio.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-audio.2.4.2.0\build\native\sfml-audio.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-audio.2.4.2.0\build\native\sfml-audio.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-network.redist.2.4.2.0\build\native\sfml-network.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-network.redist.2.4.2.0\build\native\sfml-network.redist.targets'))" />
-    <Error Condition="!Exists('..\packages\sfml-network.2.4.2.0\build\native\sfml-network.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\sfml-network.2.4.2.0\build\native\sfml-network.targets'))" />
-  </Target>
 </Project>

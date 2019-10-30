@@ -1,25 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="Header">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
+    <Filter Include="Header\LifeForms">
+      <UniqueIdentifier>{1c3982cc-300e-43f1-ad92-e8ef83c94f9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\DeathForms">
+      <UniqueIdentifier>{d1bf89ce-ad38-4d33-bcfa-9c132d86b7c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header\Utility">
+      <UniqueIdentifier>{0c4a16cf-ddb2-4b31-835a-8ddb5e65b863}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Source\LifeForms">
+      <UniqueIdentifier>{3b15425d-eaad-4d92-9b26-6698806b6e5b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\DeathForms">
+      <UniqueIdentifier>{ea2c1f7f-ba8a-4e8a-a296-a56efca53be4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Utility">
+      <UniqueIdentifier>{4ed60edc-4dcb-481a-bcd4-6f5b92970cdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Content">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
 </Project>
