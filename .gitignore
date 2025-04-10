@@ -1,0 +1,14 @@
+/build/
+/install/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+.vscode/
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.log
+*.sln
+*.vcxproj*
