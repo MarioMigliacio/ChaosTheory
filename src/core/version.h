@@ -1,19 +1,18 @@
 // ============================================================================
-//  File        : main_test.cpp
+//  File        : version.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
-//  Description : Main entry point for the Chaos Theory Project test
-//                executable
+//  Description : Application version tracability file
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include <gtest/gtest.h>
+#pragma once
 
-int main(int argc, char **argv)
-{
-    ::testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
+#define CT_VERSION_MAJOR 1
+#define CT_VERSION_MINOR 0
+#define CT_VERSION_PATCH 0
+
+#define CT_VERSION_STRING "1.0.0"

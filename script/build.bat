@@ -1,3 +1,15 @@
+::=============================================================================
+:: File        : Build.bat
+:: Project     : ChaosTheory (CT)
+:: Author      : Mario Migliacio
+:: Created     : 2025-04-11
+:: Description : window batch file to build everything.
+:: Note        : Run init.bat prior to this file. Clean prior to build for 
+::               consistant results.
+:: License     : N/A Open source
+::               Copyright (c) 2025 Mario Migliacio
+:: ============================================================================
+
 @echo off
 setlocal
 
