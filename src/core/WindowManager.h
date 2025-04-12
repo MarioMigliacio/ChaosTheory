@@ -1,29 +1,42 @@
+// ============================================================================
+//  File        : WindowManager.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : Window Manager is the CT library wrapper for the SFML
+//                window object, with configurable settings
+//  
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "Settings.h"
 
 class WindowManager {
 public:
     static WindowManager& Instance();
 
-    void Init(const sf::Vector2u& resolution, bool fullscreen, unsigned int framerate = 60);
+    void Init(const Settings& settings);
     void Shutdown();
-    bool IsOpen() const;
+
+    void Update();
     void BeginDraw();
     void EndDraw();
-    void Update();
-    sf::RenderWindow& GetWindow();
-    sf::Vector2u GetSize() const;
 
-    WindowManager(const WindowManager&) = delete;
-    WindowManager& operator=(const WindowManager&) = delete;
-    WindowManager(WindowManager&&) = delete;
-    WindowManager& operator=(WindowManager&&) = delete;
+    bool IsOpen() const;
+    sf::RenderWindow& GetWindow();
 
 private:
     WindowManager() = default;
     ~WindowManager() = default;
 
+    WindowManager(const WindowManager&) = delete;
+    WindowManager& operator=(const WindowManager&) = delete;
+
+private:
     sf::RenderWindow window;
-    sf::View view;
+    const Settings* settings = nullptr;
 };

@@ -1,25 +1,50 @@
+// ============================================================================
+//  File        : WindowManager.cpp
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : Window Manager is the CT library wrapper for the SFML
+//                window object, with configurable settings
+//  
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #include "WindowManager.h"
+#include "LogManager.h"
 
 WindowManager& WindowManager::Instance() {
     static WindowManager instance;
     return instance;
 }
 
-void WindowManager::Init(const sf::Vector2u& resolution, bool fullscreen, unsigned int framerate) {
-    sf::Uint32 style = fullscreen ? sf::Style::Fullscreen : sf::Style::Close | sf::Style::Resize;
-    window.create(sf::VideoMode(resolution.x, resolution.y), "ChaosTheory", style);
-    window.setFramerateLimit(framerate);
-    view.setSize(static_cast<float>(resolution.x), static_cast<float>(resolution.y));
-    view.setCenter(view.getSize() / 2.f);
-    window.setView(view);
+void WindowManager::Init(const Settings& settingsRef) {
+    settings = &settingsRef;
+
+    sf::VideoMode mode(settings->screenWidth, settings->screenHeight);
+    sf::Uint32 style = settings->fullscreen ? sf::Style::Fullscreen : sf::Style::Default;
+
+    window.create(mode, "Chaos Theory", style);
+    window.setFramerateLimit(settings->framerateLimit);
+
+    CT_LOG_INFO("WindowManager initialized.");
 }
 
 void WindowManager::Shutdown() {
-    window.close();
+    if (window.isOpen()) {
+        window.close();
+    }
+
+    CT_LOG_INFO("WindowManager shutdown.");
+    settings = nullptr;
 }
 
-bool WindowManager::IsOpen() const {
-    return window.isOpen();
+void WindowManager::Update() {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+            window.close();
+    }
 }
 
 void WindowManager::BeginDraw() {
@@ -30,23 +55,10 @@ void WindowManager::EndDraw() {
     window.display();
 }
 
-void WindowManager::Update() {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
-            window.close();
-        else if (event.type == sf::Event::Resized) {
-            view.setSize(static_cast<float>(event.size.width), static_cast<float>(event.size.height));
-            view.setCenter(view.getSize() / 2.f);
-            window.setView(view);
-        }
-    }
+bool WindowManager::IsOpen() const {
+    return window.isOpen();
 }
 
 sf::RenderWindow& WindowManager::GetWindow() {
     return window;
-}
-
-sf::Vector2u WindowManager::GetSize() const {
-    return window.getSize();
 }

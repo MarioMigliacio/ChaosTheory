@@ -1,8 +1,21 @@
+// ============================================================================
+//  File        : application.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : Application is the entire library entry point of logic
+//  
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
+
+#include "Settings.h"
 
 class Application {
 public:
-    Application() = default;
+    Application(Settings& sharedSettings);
     ~Application() = default;
 
     Application(const Application&) = delete;
@@ -17,5 +30,6 @@ private:
     void Update(float dt);
     void Render();
 
-    bool isRunning = true;
+    bool isRunning = false;
+    Settings& settings;
 };

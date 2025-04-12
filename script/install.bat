@@ -1,3 +1,14 @@
+:: ============================================================================
+:: File        : install.bat
+:: Project     : ChaosTheory (CT)
+:: Author      : Mario Migliacio
+:: Created     : 2025-04-11
+:: Description : Window batch file to Dump executable into clean folder
+:: Note        : Useful for rapid sharability of project.
+:: License     : N/A Open source
+::               Copyright (c) 2025 Mario Migliacio
+:: ============================================================================
+
 @echo off
 setlocal
 
