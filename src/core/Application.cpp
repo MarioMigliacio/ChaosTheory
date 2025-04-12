@@ -15,6 +15,7 @@
 #include "LogManager.h"
 #include "Settings.h"
 #include "WindowManager.h"
+#include "version.h"
 
 #include <chrono>
 
@@ -40,6 +41,7 @@ void Application::Init()
     AssetManager::Instance().Init(settings);
 
     CT_LOG_INFO("Application initialized.");
+    CT_LOG_INFO("ChaosTheory v{}", CT_VERSION_STRING);
 }
 
 void Application::Run()

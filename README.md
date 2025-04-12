@@ -11,7 +11,7 @@ It provides a clean foundation for building interactive and audio-enabled games 
 -   Uses [SFML](https://www.sfml-dev.org/) for graphics, input, and audio
 -   Unit tested with [GoogleTest](https://github.com/google/googletest)
 -   Logging with [spdlog](https://github.com/gabime/spdlog)
--   Batch scripts for build, test, run, and install
+-   Batch scripts for init, build, clean, test, run, and install
 -   Full [VS Code](https://code.visualstudio.com/) integration
 
 ---
@@ -32,26 +32,58 @@ It provides a clean foundation for building interactive and audio-enabled games 
 ```bash
 git clone --recurse-submodules https://github.com/MarioMigliacio/chaostheory.git
 cd chaostheory
-script\init.bat
+
+*Support included for agnostic script execution location*
+.\script\init.bat
+
+or
+
+cd script
+.\init.bat
 ```
 
 ### Build the project
 
 ```
-script\build.bat           :: builds Debug
-script\build.bat release   :: builds Release
+*Support included for agnostic script execution location*
+
+.\script\build.bat           :: builds Debug
+.\script\build.bat release   :: builds Release
+
+or
+
+cd script
+.\build.bat                  :: builds Debug
+.\build.bat release          :: builds Release
+
+[CLEAN] options included:
+.\script\clean.bat           :: removes build, log, and install artifacts
 ```
 
 ### Run tests
 
 ```
+*Support included for agnostic script execution location*
+
 script\test.bat
+
+or
+
+cd script
+.\test.bat
 ```
 
 ### Run the game
 
 ```
+*Support included for agnostic script execution location*
+
 script\run.bat
+
+or
+
+cd script
+.\run.bat
 ```
 
 ### Project Structure
@@ -59,15 +91,15 @@ script\run.bat
 ```
 CT/
 ├── .vscode/          → launch and task configs for VS Code
-├── build/            → build output (CMake-generated)
+├── build/            → *[optional]* build output (CMake-generated)
 ├── external/         → git submodules (SFML, spdlog, googletest)
-|                      [SFML and spdlog are hard copy dlls]
-├── include/          → project headers
-├── install/          → final game bundle output
-├── script/           → build/test/run/install batch files
+|                       [SFML and spdlog are hard copy dlls]
+├── install/          → *[optional]* final game bundle output
+├── log/              → *[optional]* upon execution, default log file trace output
+├── script/           → build/clean/init/install/run/test batch files
 ├── src/              → main game logic
+├────core/            → CT essential library core functionality
 ├── test/             → unit tests
-├── CMakeLists.txt
 └── README.md
 ```
 
