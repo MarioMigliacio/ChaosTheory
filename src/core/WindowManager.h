@@ -5,21 +5,22 @@
 //  Created     : 2025-04-11
 //  Description : Window Manager is the CT library wrapper for the SFML
 //                window object, with configurable settings
-//  
+//
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "Settings.h"
+#include <SFML/Graphics.hpp>
 
-class WindowManager {
-public:
-    static WindowManager& Instance();
+class WindowManager
+{
+  public:
+    static WindowManager &Instance();
 
-    void Init(const Settings& settings);
+    void Init(const Settings &settings);
     void Shutdown();
 
     void Update();
@@ -27,16 +28,16 @@ public:
     void EndDraw();
 
     bool IsOpen() const;
-    sf::RenderWindow& GetWindow();
+    sf::RenderWindow &GetWindow();
 
-private:
+  private:
     WindowManager() = default;
     ~WindowManager() = default;
 
-    WindowManager(const WindowManager&) = delete;
-    WindowManager& operator=(const WindowManager&) = delete;
+    WindowManager(const WindowManager &) = delete;
+    WindowManager &operator=(const WindowManager &) = delete;
 
-private:
+  private:
     sf::RenderWindow window;
-    const Settings* settings = nullptr;
+    const Settings *settings = nullptr;
 };

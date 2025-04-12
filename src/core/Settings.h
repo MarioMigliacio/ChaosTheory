@@ -5,7 +5,7 @@
 //  Created     : 2025-04-11
 //  Description : Settings object is designed for global optional
 //                configurations set and passed through the application
-//  
+//
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
@@ -15,13 +15,14 @@
 #include <spdlog/common.h>
 #include <string>
 
-class Settings {
-public:
+class Settings
+{
+  public:
     Settings() = default;
     ~Settings() = default;
 
-    Settings(const Settings&) = default;
-    Settings& operator=(const Settings&) = default;
+    Settings(const Settings &) = default;
+    Settings &operator=(const Settings &) = default;
 
     unsigned int screenWidth = 1280;
     unsigned int screenHeight = 720;

@@ -5,14 +5,15 @@
 //  Created     : 2025-04-11
 //  Description : Main entry point for the Chaos Theory Project test
 //                executable
-//  
+//
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include <gtest/gtest.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

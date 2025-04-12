@@ -4,7 +4,7 @@
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
 //  Description : Application is the entire library entry point of logic
-//  
+//
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
@@ -13,17 +13,18 @@
 
 #include "Settings.h"
 
-class Application {
-public:
-    Application(Settings& sharedSettings);
+class Application
+{
+  public:
+    Application(Settings &sharedSettings);
     ~Application() = default;
 
-    Application(const Application&) = delete;
-    Application& operator=(const Application&) = delete;
+    Application(const Application &) = delete;
+    Application &operator=(const Application &) = delete;
 
     void Run();
 
-private:
+  private:
     void Init();
     void Shutdown();
     void ProcessEvents();
@@ -31,5 +32,5 @@ private:
     void Render();
 
     bool isRunning = false;
-    Settings& settings;
+    Settings &settings;
 };
