@@ -11,11 +11,25 @@
 
 #include "Settings.h"
 #include "core/Application.h"
+#include "core/AudioManager.h"
+#include <memory>
+
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif
 
 int main()
 {
-    Settings settings;
+    auto settings = std::make_shared<Settings>();
+
     Application app(settings);
+    app.Init();
+
+    // Testing purposes for audio development
+    AudioManager::Instance().PlayMusic(settings->m_audioDirectory +
+                                       "RootMenu_clean.wav");
+
     app.Run();
 
     return 0;

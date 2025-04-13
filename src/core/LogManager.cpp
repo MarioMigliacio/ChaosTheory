@@ -11,7 +11,6 @@
 // ============================================================================
 
 #include "LogManager.h"
-#include "Settings.h"
 
 #include <filesystem>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -25,7 +24,7 @@ LogManager &LogManager::Instance()
     return instance;
 }
 
-void LogManager::Init(const Settings &settings)
+void LogManager::Init()
 {
     std::filesystem::create_directories("log");
 
@@ -45,7 +44,7 @@ void LogManager::Init(const Settings &settings)
     spdlog::set_pattern("[%T] [%^%l%$] %v");
 
     spdlog::set_level(
-        static_cast<spdlog::level::level_enum>(settings.logLevel));
+        static_cast<spdlog::level::level_enum>(spdlog::level::debug));
     CT_LOG_INFO("Logger initialized.");
 }
 

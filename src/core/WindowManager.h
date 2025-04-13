@@ -12,15 +12,18 @@
 
 #pragma once
 
-#include "Settings.h"
 #include <SFML/Graphics.hpp>
+#include <memory>
+
+struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class WindowManager
 {
   public:
     static WindowManager &Instance();
 
-    void Init(const Settings &settings);
+    void Init(std::shared_ptr<const Settings>
+                  settings); // const - May not adjust settings
     void Shutdown();
 
     void Update();
@@ -38,6 +41,7 @@ class WindowManager
     WindowManager &operator=(const WindowManager &) = delete;
 
   private:
-    sf::RenderWindow window;
-    const Settings *settings = nullptr;
+    sf::RenderWindow m_window;
+    std::shared_ptr<const Settings>
+        m_settings; // const - May not adjust settings
 };

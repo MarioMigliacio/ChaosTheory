@@ -14,21 +14,31 @@
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <string>
 #include <unordered_map>
 
-#include "Settings.h"
+struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class AssetManager
 {
   public:
     static AssetManager &Instance();
 
-    void Init(const Settings &settings);
+    void Init(std::shared_ptr<const Settings>
+                  settings); // const - May not adjust settings
     void Shutdown();
 
-    sf::Texture &GetTexture(const std::string &filename);
-    sf::SoundBuffer &GetSound(const std::string &filename);
-    sf::Font &GetFont(const std::string &filename);
+    // Font
+    bool LoadFont(const std::string &name, const std::string &filepath);
+    sf::Font &GetFont(const std::string &name);
+
+    // Texture
+    bool LoadTexture(const std::string &name, const std::string &filepath);
+    sf::Texture &GetTexture(const std::string &name);
+
+    // Sound
+    bool LoadSound(const std::string &name, const std::string &filepath);
+    sf::SoundBuffer &GetSound(const std::string &name);
 
   private:
     AssetManager() = default;
@@ -37,10 +47,10 @@ class AssetManager
     AssetManager(const AssetManager &) = delete;
     AssetManager &operator=(const AssetManager &) = delete;
 
-    std::unordered_map<std::string, sf::Texture> textures;
-    std::unordered_map<std::string, sf::SoundBuffer> sounds;
-    std::unordered_map<std::string, sf::Font> fonts;
+    std::unordered_map<std::string, sf::Texture> m_textures;
+    std::unordered_map<std::string, sf::SoundBuffer> m_sounds;
+    std::unordered_map<std::string, sf::Font> m_fonts;
 
-    const Settings *settings = nullptr;
-    sf::Font fallbackFont;
+    std::shared_ptr<const Settings>
+        m_settings; // const - May not adjust settings
 };

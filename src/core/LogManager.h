@@ -23,14 +23,12 @@
 #define CT_LOG_CRITICAL(...)                                                   \
     LogManager::Instance().GetLogger()->critical(__VA_ARGS__)
 
-class Settings;
-
 class LogManager
 {
   public:
     static LogManager &Instance();
 
-    void Init(const Settings &settings);
+    void Init();
     void Shutdown();
 
     std::shared_ptr<spdlog::logger> GetLogger();

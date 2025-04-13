@@ -12,14 +12,17 @@
 
 #pragma once
 
-#include "Settings.h"
+#include <memory>
+
+struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class InputManager
 {
   public:
     static InputManager &Instance();
 
-    void Init(const Settings &settings);
+    void Init(std::shared_ptr<const Settings>
+                  settings); // const - May not adjust settings
     void Shutdown();
     void Update();
 
@@ -33,5 +36,6 @@ class InputManager
     InputManager &operator=(const InputManager &) = delete;
 
   private:
-    const Settings *settings = nullptr;
+    std::shared_ptr<const Settings>
+        m_settings; // const - May not adjust settings
 };

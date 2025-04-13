@@ -12,23 +12,20 @@
 
 #pragma once
 
-#include <spdlog/common.h>
 #include <string>
 
-class Settings
+struct Settings
 {
-  public:
-    Settings() = default;
-    ~Settings() = default;
+    std::string m_windowTitle = "Chaos Theory";
+    unsigned int m_windowWidth = 1280;
+    unsigned int m_windowHeight = 720;
+    unsigned int m_framerateLimit = 60;
+    bool m_fullscreen = false;
 
-    Settings(const Settings &) = default;
-    Settings &operator=(const Settings &) = default;
+    float m_masterVolume = 100.0f;
+    bool m_audioMuted = false;
 
-    unsigned int screenWidth = 1280;
-    unsigned int screenHeight = 720;
-    bool fullscreen = false;
-    unsigned int framerateLimit = 60;
-
-    spdlog::level::level_enum logLevel = spdlog::level::debug;
-    std::string defaultFontPath = "assets/fonts/default.ttf";
+    std::string m_audioDirectory = "assets/audio/";
+    std::string m_fontDirectory = "assets/fonts/";
+    std::string m_spriteDirectory = "assets/sprites/";
 };

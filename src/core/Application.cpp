@@ -11,20 +11,15 @@
 
 #include "Application.h"
 #include "AssetManager.h"
+#include "AudioManager.h"
 #include "InputManager.h"
 #include "LogManager.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "version.h"
 
-#include <chrono>
-
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#endif
-
-Application::Application(Settings &sharedSettings) : settings(sharedSettings)
+Application::Application(std::shared_ptr<Settings> sharedSettings)
+    : m_settings(std::move(sharedSettings))
 {
 }
 
@@ -34,11 +29,19 @@ void Application::Init()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    isRunning = true;
-    LogManager::Instance().Init(settings);
-    WindowManager::Instance().Init(settings);
-    InputManager::Instance().Init(settings);
-    AssetManager::Instance().Init(settings);
+    LogManager::Instance().Init();
+    WindowManager::Instance().Init(m_settings);
+    InputManager::Instance().Init(m_settings);
+    AssetManager::Instance().Init(m_settings);
+    AudioManager::Instance().Init(m_settings);
+
+    if (!WindowManager::Instance().IsOpen())
+    {
+        CT_LOG_ERROR("App::Init() - Window failed to open. Aborting.");
+        return;
+    }
+
+    m_isRunning = true;
 
     CT_LOG_INFO("Application initialized.");
     CT_LOG_INFO("ChaosTheory v{}", CT_VERSION_STRING);
@@ -46,24 +49,11 @@ void Application::Init()
 
 void Application::Run()
 {
-    Init();
+    sf::Clock clock;
 
-    std::chrono::high_resolution_clock::time_point lastTime =
-        std::chrono::high_resolution_clock::now();
-
-    if (!WindowManager::Instance().IsOpen())
+    while (m_isRunning && WindowManager::Instance().IsOpen())
     {
-        CT_LOG_ERROR("Window failed to open. Aborting.");
-        return;
-    }
-
-    while (isRunning && WindowManager::Instance().IsOpen())
-    {
-        std::chrono::high_resolution_clock::time_point currentTime =
-            std::chrono::high_resolution_clock::now();
-        float dt = std::chrono::duration<float>(currentTime - lastTime).count();
-        lastTime = currentTime;
-
+        float dt = clock.restart().asSeconds();
         ProcessEvents();
         Update(dt);
         Render();
@@ -77,19 +67,28 @@ void Application::Shutdown()
     WindowManager::Instance().Shutdown();
     InputManager::Instance().Shutdown();
     AssetManager::Instance().Shutdown();
+    AudioManager::Instance().Shutdown();
 
     CT_LOG_INFO("Application shutting down.");
     LogManager::Instance().Shutdown();
+
+    m_settings.reset();
 }
 
 void Application::ProcessEvents()
 {
     InputManager::Instance().Update();
-    WindowManager::Instance().Update();
+
+    if (InputManager::Instance().IsKeyPressed(sf::Keyboard::Escape))
+    {
+        m_isRunning = false;
+    }
 }
 
 void Application::Update(float dt)
 {
+    WindowManager::Instance().Update();
+    // Game logic here
 }
 
 void Application::Render()

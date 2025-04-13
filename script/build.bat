@@ -1,14 +1,11 @@
 ::=============================================================================
-:: File        : Build.bat
+:: File        : build.bat
 :: Project     : ChaosTheory (CT)
 :: Author      : Mario Migliacio
 :: Created     : 2025-04-11
-:: Description : window batch file to build everything.
-:: Note        : Run init.bat prior to this file. Clean prior to build for 
-::               consistant results.
-:: License     : N/A Open source
-::               Copyright (c) 2025 Mario Migliacio
-:: ============================================================================
+:: Description : Batch script to configure and build CT with asset handling
+:: License     : Open Source (c) 2025 Mario Migliacio
+::=============================================================================
 
 @echo off
 setlocal
@@ -21,28 +18,33 @@ if /I "%1"=="release" (
     set CONFIG=Release
 )
 
+echo [INFO] Configuration set to %CONFIG%
+
+:: Create build directory if needed
 if not exist build (
+    echo [INFO] Creating build directory...
     mkdir build
 )
 
+:: CMake configure and build
 cd build
 cmake -DCMAKE_BUILD_TYPE=%CONFIG% ..
 cmake --build . --config %CONFIG%
 cd ..
 
-REM ==== Copy SFML DLLs into build output folder ====
+:: Set target output and SFML binary locations
 set TARGET_DIR=%ROOT%\build\%CONFIG%
 set SFML_BIN=%ROOT%\external\sfml\bin
 
-echo Copying SFML DLLs to %TARGET_DIR%...
-copy "%SFML_BIN%\sfml-graphics-2.dll" "%TARGET_DIR%" >nul
-copy "%SFML_BIN%\sfml-window-2.dll" "%TARGET_DIR%" >nul
-copy "%SFML_BIN%\sfml-system-2.dll" "%TARGET_DIR%" >nul
-copy "%SFML_BIN%\sfml-audio-2.dll" "%TARGET_DIR%" >nul
-copy "%SFML_BIN%\freetype.dll" "%TARGET_DIR%" >nul
-copy "%SFML_BIN%\openal32.dll" "%TARGET_DIR%" >nul
+:: Copy ALL SFML DLLs to build output
+echo [INFO] Copying SFML DLLs to %TARGET_DIR%...
+xcopy /Y /E /I "%SFML_BIN%\*.dll" "%TARGET_DIR%\" >nul
 
+:: === Copy all asset folders (audio, fonts, sprites, etc.) ===
+echo [INFO] Copying all assets to %TARGET_DIR%\assets...
+powershell -NoProfile -Command "Get-ChildItem -Path '%ROOT%\assets' -Directory | ForEach-Object { $src = $_.FullName; $dest = Join-Path '%TARGET_DIR%\assets' $_.Name; Copy-Item -Path $src -Destination $dest -Recurse -Force; Get-ChildItem -Path $dest -Recurse | Unblock-File }"
 
-echo Build complete. Run your app from %TARGET_DIR%\CT.exe
+echo [SUCCESS] Build complete. Run your app from:
+echo           %TARGET_DIR%\CT.exe
 
 endlocal

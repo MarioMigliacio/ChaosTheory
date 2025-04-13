@@ -12,7 +12,7 @@
 #pragma once
 
 #define CT_VERSION_MAJOR 1
-#define CT_VERSION_MINOR 0
+#define CT_VERSION_MINOR 1
 #define CT_VERSION_PATCH 0
 
-#define CT_VERSION_STRING "1.0.0"
+#define CT_VERSION_STRING "1.1.0-dev"

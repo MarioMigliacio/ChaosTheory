@@ -20,9 +20,9 @@ InputManager &InputManager::Instance()
     return instance;
 }
 
-void InputManager::Init(const Settings &settingsRef)
+void InputManager::Init(std::shared_ptr<const Settings> settings)
 {
-    settings = &settingsRef;
+    m_settings = std::move(settings);
 
     CT_LOG_INFO("InputManager initialized.");
 }
@@ -30,7 +30,6 @@ void InputManager::Init(const Settings &settingsRef)
 void InputManager::Shutdown()
 {
     CT_LOG_INFO("InputManager shutdown.");
-    settings = nullptr;
 }
 
 void InputManager::Update()

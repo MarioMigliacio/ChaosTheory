@@ -24,10 +24,7 @@ TEST(LogManagerTest, SingletonInstanceIsConsistent)
 
 TEST(LogManagerTest, InitializationAndLogging)
 {
-    Settings testSettings;
-    testSettings.logLevel = spdlog::level::debug;
-
-    LogManager::Instance().Init(testSettings);
+    LogManager::Instance().Init();
 
     spdlog::info("This is a test log message from LogManagerTest.");
 

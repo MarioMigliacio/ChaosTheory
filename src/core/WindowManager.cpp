@@ -12,6 +12,7 @@
 
 #include "WindowManager.h"
 #include "LogManager.h"
+#include "Settings.h"
 
 WindowManager &WindowManager::Instance()
 {
@@ -19,57 +20,56 @@ WindowManager &WindowManager::Instance()
     return instance;
 }
 
-void WindowManager::Init(const Settings &settingsRef)
+void WindowManager::Init(std::shared_ptr<const Settings> settings)
 {
-    settings = &settingsRef;
+    m_settings = std::move(settings);
 
-    sf::VideoMode mode(settings->screenWidth, settings->screenHeight);
+    sf::VideoMode mode(m_settings->m_windowWidth, m_settings->m_windowHeight);
     sf::Uint32 style =
-        settings->fullscreen ? sf::Style::Fullscreen : sf::Style::Default;
+        m_settings->m_fullscreen ? sf::Style::Fullscreen : sf::Style::Default;
 
-    window.create(mode, "Chaos Theory", style);
-    window.setFramerateLimit(settings->framerateLimit);
+    m_window.create(mode, "Chaos Theory", style);
+    m_window.setFramerateLimit(m_settings->m_framerateLimit);
 
     CT_LOG_INFO("WindowManager initialized.");
 }
 
 void WindowManager::Shutdown()
 {
-    if (window.isOpen())
+    if (m_window.isOpen())
     {
-        window.close();
+        m_window.close();
     }
 
     CT_LOG_INFO("WindowManager shutdown.");
-    settings = nullptr;
 }
 
 void WindowManager::Update()
 {
     sf::Event event;
-    while (window.pollEvent(event))
+    while (m_window.pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
-            window.close();
+            m_window.close();
     }
 }
 
 void WindowManager::BeginDraw()
 {
-    window.clear();
+    m_window.clear();
 }
 
 void WindowManager::EndDraw()
 {
-    window.display();
+    m_window.display();
 }
 
 bool WindowManager::IsOpen() const
 {
-    return window.isOpen();
+    return m_window.isOpen();
 }
 
 sf::RenderWindow &WindowManager::GetWindow()
 {
-    return window;
+    return m_window;
 }

@@ -11,26 +11,28 @@
 
 #pragma once
 
-#include "Settings.h"
+#include <memory>
+
+struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class Application
 {
   public:
-    Application(Settings &sharedSettings);
+    Application(std::shared_ptr<Settings> sharedSettings);
     ~Application() = default;
 
     Application(const Application &) = delete;
     Application &operator=(const Application &) = delete;
 
+    void Init();
     void Run();
 
   private:
-    void Init();
     void Shutdown();
     void ProcessEvents();
     void Update(float dt);
     void Render();
 
-    bool isRunning = false;
-    Settings &settings;
+    bool m_isRunning = false;
+    std::shared_ptr<Settings> m_settings;
 };
