@@ -31,20 +31,17 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
 
     if (!fs::exists(m_settings->m_fontDirectory))
     {
-        CT_LOG_WARN("Font directory not found: {}",
-                    m_settings->m_fontDirectory);
+        CT_LOG_WARN("Font directory not found: {}", m_settings->m_fontDirectory);
     }
 
     if (!fs::exists(m_settings->m_audioDirectory))
     {
-        CT_LOG_WARN("Audio directory not found: {}",
-                    m_settings->m_audioDirectory);
+        CT_LOG_WARN("Audio directory not found: {}", m_settings->m_audioDirectory);
     }
 
     if (!fs::exists(m_settings->m_spriteDirectory))
     {
-        CT_LOG_WARN("Sprite directory not found: {}",
-                    m_settings->m_spriteDirectory);
+        CT_LOG_WARN("Sprite directory not found: {}", m_settings->m_spriteDirectory);
     }
 
     // Load fallback font
@@ -55,15 +52,14 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
     }
 
     // Load fallback texture
-    std::string fallbackTexture =
-        m_settings->m_spriteDirectory + "playerShip.png";
+    std::string fallbackTexture = m_settings->m_spriteDirectory + "Fallback.png";
     if (!LoadTexture("default", fallbackTexture))
     {
         CT_LOG_WARN("Failed to load fallback texture: {}", fallbackTexture);
     }
 
     // Load fallback sound
-    std::string fallbackSound = m_settings->m_audioDirectory + "fallback.wav";
+    std::string fallbackSound = m_settings->m_audioDirectory + "Fallback.wav";
     if (!LoadSound("default", fallbackSound))
     {
         CT_LOG_WARN("Failed to load fallback sound: {}", fallbackSound);
@@ -82,8 +78,7 @@ void AssetManager::Shutdown()
     CT_LOG_INFO("AssetManager shutdown.");
 }
 
-bool AssetManager::LoadFont(const std::string &name,
-                            const std::string &filepath)
+bool AssetManager::LoadFont(const std::string &name, const std::string &filepath)
 {
     sf::Font font;
     if (!font.loadFromFile(filepath))
@@ -106,8 +101,7 @@ sf::Font &AssetManager::GetFont(const std::string &name)
     return m_fonts[name];
 }
 
-bool AssetManager::LoadTexture(const std::string &name,
-                               const std::string &filepath)
+bool AssetManager::LoadTexture(const std::string &name, const std::string &filepath)
 {
     sf::Texture texture;
     if (!texture.loadFromFile(filepath))
@@ -130,8 +124,7 @@ sf::Texture &AssetManager::GetTexture(const std::string &name)
     return m_textures[name];
 }
 
-bool AssetManager::LoadSound(const std::string &name,
-                             const std::string &filepath)
+bool AssetManager::LoadSound(const std::string &name, const std::string &filepath)
 {
     sf::SoundBuffer buffer;
     if (!buffer.loadFromFile(filepath))

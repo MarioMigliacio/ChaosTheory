@@ -22,13 +22,15 @@ InputManager &InputManager::Instance()
 
 void InputManager::Init(std::shared_ptr<const Settings> settings)
 {
-    m_settings = std::move(settings);
+    m_settings = settings;
 
     CT_LOG_INFO("InputManager initialized.");
 }
 
 void InputManager::Shutdown()
 {
+    m_settings.reset();
+
     CT_LOG_INFO("InputManager shutdown.");
 }
 

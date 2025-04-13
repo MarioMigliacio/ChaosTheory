@@ -12,20 +12,18 @@
 
 #pragma once
 
+#include "Settings.h"
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <unordered_map>
-
-struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class AssetManager
 {
   public:
     static AssetManager &Instance();
 
-    void Init(std::shared_ptr<const Settings>
-                  settings); // const - May not adjust settings
+    void Init(std::shared_ptr<const Settings> settings); // const - May not adjust settings
     void Shutdown();
 
     // Font
@@ -51,6 +49,5 @@ class AssetManager
     std::unordered_map<std::string, sf::SoundBuffer> m_sounds;
     std::unordered_map<std::string, sf::Font> m_fonts;
 
-    std::shared_ptr<const Settings>
-        m_settings; // const - May not adjust settings
+    std::shared_ptr<const Settings> m_settings; // const - May not adjust settings
 };

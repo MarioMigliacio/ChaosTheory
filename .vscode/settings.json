@@ -6,7 +6,7 @@
     },
 
     // Style: LLVM base, 4-space indent, Allman braces (open on new line)
-    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, IndentWidth: 4, BreakBeforeBraces: Allman, AllowShortFunctionsOnASingleLine: None, AllowShortIfStatementsOnASingleLine: false }",
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, IndentWidth: 4, BreakBeforeBraces: Allman, AllowShortFunctionsOnASingleLine: None, AllowShortIfStatementsOnASingleLine: false, ColumnLimit: 120 }",
 
     // Optional: treat .h files like C++
     "[c]": {
@@ -16,5 +16,8 @@
     "[h]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnSave": true
+    },
+    "files.associations": {
+        "fstream": "cpp"
     }
 }

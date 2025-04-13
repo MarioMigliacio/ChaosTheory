@@ -12,18 +12,16 @@
 
 #pragma once
 
+#include "Settings.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
-
-struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class WindowManager
 {
   public:
     static WindowManager &Instance();
 
-    void Init(std::shared_ptr<const Settings>
-                  settings); // const - May not adjust settings
+    void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
 
     void Update();
@@ -31,6 +29,9 @@ class WindowManager
     void EndDraw();
 
     bool IsOpen() const;
+    void ToggleFullscreen();
+    void ApplySettings();
+
     sf::RenderWindow &GetWindow();
 
   private:
@@ -41,7 +42,7 @@ class WindowManager
     WindowManager &operator=(const WindowManager &) = delete;
 
   private:
-    sf::RenderWindow m_window;
-    std::shared_ptr<const Settings>
-        m_settings; // const - May not adjust settings
+    std::unique_ptr<sf::RenderWindow> m_window;
+    std::shared_ptr<Settings> m_settings;
+    bool m_isFullscreen = false;
 };

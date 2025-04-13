@@ -11,9 +11,8 @@
 
 #pragma once
 
+#include "Settings.h"
 #include <memory>
-
-struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class Application
 {

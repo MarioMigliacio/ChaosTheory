@@ -12,19 +12,17 @@
 
 #pragma once
 
+#include "Settings.h"
 #include <SFML/Audio.hpp>
 #include <memory>
 #include <string>
-
-struct Settings; // Forward Declaration vs #include "Settings.h"
 
 class AudioManager
 {
   public:
     static AudioManager &Instance();
 
-    void
-    Init(std::shared_ptr<Settings> settings); // non-const - May adjust settings
+    void Init(std::shared_ptr<Settings> settings); // non-const - May adjust settings
     void Shutdown();
 
     void PlayMusic(const std::string &filename, bool loop = true);
@@ -48,11 +46,11 @@ class AudioManager
     AudioManager(const AudioManager &) = delete;
     AudioManager &operator=(const AudioManager &) = delete;
 
-    sf::Music m_music;
     std::string m_currentTrack;
 
     float m_volume = 100.0f;
     bool m_muted = false;
 
+    std::unique_ptr<sf::Music> m_music;
     std::shared_ptr<Settings> m_settings; // non-const - May adjust settings
 };
