@@ -17,7 +17,6 @@ target_link_directories(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib
 
 # Select debug/release SFML libs
 set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
-message(STATUS "IN TEST/CMAKELIST: Linking SFML libs with suffix '${SFML_LIB_SUFFIX}'")
 
 target_link_libraries(CT_tests
     PRIVATE
