@@ -29,6 +29,7 @@ void GameScene::Init()
     // Load assets, music, and scene-specific setup
     AudioManager::Instance().SetVolume(50.f);
     AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Gametrack.wav", true);
+    InputManager::Instance().BindKey("MenuSelectBack", m_settings->m_keyBindings["MenuSelectBack"]);
 
     m_isInitialized = true;
     CT_LOG_INFO("GameScene initialized.");
@@ -36,6 +37,14 @@ void GameScene::Init()
 
 void GameScene::Update(float dt)
 {
+    if (InputManager::Instance().IsJustReleased("MenuSelectBack"))
+    {
+        AudioManager::Instance().StopMusic(true, 1.0f);
+        m_shouldExit = true;
+
+        CT_LOG_INFO("GameScene Transition triggered.");
+    }
+
     if (m_shouldExit)
     {
         if (!AudioManager::Instance().IsFading())
@@ -48,23 +57,14 @@ void GameScene::Update(float dt)
                 CT_LOG_INFO("SceneChangeCallback 2/2 invoked from GameScene - and callback .");
             }
         }
-
-        return;
     }
+
+    return;
 }
 
 void GameScene::HandleEvent(const sf::Event &event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == sf::Keyboard::Space)
-        {
-            AudioManager::Instance().StopMusic(true, 1.0f);
-            m_shouldExit = true;
-
-            CT_LOG_INFO("GameScene Transition triggered.");
-        }
-    }
+    // Only if you want to catch window resize, close, etc.
 }
 
 void GameScene::Render()
@@ -86,6 +86,7 @@ void GameScene::Render()
 void GameScene::OnExit()
 {
     AudioManager::Instance().StopMusic();
+    InputManager::Instance().UnbindKey("MenuSelectBack");
 
     CT_LOG_INFO("GameScene OnExit.");
 }

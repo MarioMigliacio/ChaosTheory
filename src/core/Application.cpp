@@ -88,9 +88,9 @@ void Application::Run()
         float dt = clock.restart().asSeconds();
 
         ProcessEvents();
-        InputManager::Instance().Update();
         AudioManager::Instance().Update(dt);
         m_sceneManager->Update(dt);
+        InputManager::Instance().PostUpdate();
         Render();
     }
 
@@ -123,14 +123,15 @@ void Application::ProcessEvents()
 
     while (WindowManager::Instance().PollEvent(event))
     {
-        m_sceneManager->HandleEvent(event); // <-- propagate to scene
-
         if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
         {
             m_isRunning = false;
 
             CT_LOG_INFO("Application closing from escape or close event.");
         }
+
+        InputManager::Instance().Update(event);
+        m_sceneManager->HandleEvent(event);
     }
 }
 

@@ -25,7 +25,6 @@ class Scene
 
     virtual void Init() = 0;
     virtual void Update(float dt) = 0;
-    virtual void HandleEvent(const sf::Event &event) = 0;
     virtual void Render() = 0;
     virtual void OnExit() = 0;
     virtual void Shutdown() = 0;
@@ -38,6 +37,9 @@ class Scene
     virtual bool IsInitialized() const
     {
         return m_isInitialized;
+    }
+    virtual void HandleEvent(const sf::Event &event)
+    {
     }
 
   protected:

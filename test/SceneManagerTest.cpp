@@ -24,6 +24,12 @@ class SceneManagerTest : public ::testing::Test
     void SetUp() override
     {
         m_settings = CreateTestSettings();
+
+        if (!LogManager::Instance().IsInitialized())
+        {
+            LogManager::Instance().Init();
+        }
+
         m_manager = std::make_unique<SceneManager>(m_settings);
         m_manager->Init();
     }

@@ -13,6 +13,7 @@
 #include "AssetManager.h"
 #include "AudioManager.h"
 #include "GameScene.h"
+#include "InputManager.h"
 #include "Macros.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
@@ -27,6 +28,7 @@ void MainMenuScene::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu_clean.wav", true);
+    InputManager::Instance().BindKey("MenuSelectNext", m_settings->m_keyBindings["MenuSelectNext"]);
 
     m_isInitialized = true;
 
@@ -35,6 +37,14 @@ void MainMenuScene::Init()
 
 void MainMenuScene::Update(float dt)
 {
+    if (InputManager::Instance().IsJustReleased("MenuSelectNext"))
+    {
+        m_shouldExit = true;
+        AudioManager::Instance().StopMusic(true, 1.0f);
+
+        CT_LOG_INFO("MainMenuScene Transition triggered.");
+    }
+
     if (m_shouldExit)
     {
         if (!AudioManager::Instance().IsFading())
@@ -47,23 +57,14 @@ void MainMenuScene::Update(float dt)
                 CT_LOG_INFO("SceneChangeCallback 2/2 invoked from MainMenuScene - and callback .");
             }
         }
-
-        return;
     }
+
+    return;
 }
 
 void MainMenuScene::HandleEvent(const sf::Event &event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == sf::Keyboard::Enter)
-        {
-            AudioManager::Instance().StopMusic(true, 1.0f);
-            m_shouldExit = true;
-
-            CT_LOG_INFO("MainMenuScene Transition triggered.");
-        }
-    }
+    // Only if you want to catch window resize, close, etc.
 }
 
 void MainMenuScene::Render()
@@ -85,6 +86,7 @@ void MainMenuScene::Render()
 void MainMenuScene::OnExit()
 {
     AudioManager::Instance().StopMusic();
+    InputManager::Instance().UnbindKey("MenuSelectNext");
 
     CT_LOG_INFO("MainMenuScene OnExit.");
 }

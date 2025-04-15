@@ -12,7 +12,9 @@
 
 #pragma once
 
+#include <SFML/Window/Keyboard.hpp>
 #include <string>
+#include <unordered_map>
 
 struct Settings
 {
@@ -28,4 +30,11 @@ struct Settings
     std::string m_audioDirectory = "assets/audio/";
     std::string m_fontDirectory = "assets/fonts/";
     std::string m_spriteDirectory = "assets/sprites/";
+
+    std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings = {{"MoveLeft", sf::Keyboard::A},
+                                                                        {"MoveRight", sf::Keyboard::D},
+                                                                        {"MoveUp", sf::Keyboard::W},
+                                                                        {"MoveDown", sf::Keyboard::S},
+                                                                        {"MenuSelectNext", sf::Keyboard::Enter},
+                                                                        {"MenuSelectBack", sf::Keyboard::Space}};
 };

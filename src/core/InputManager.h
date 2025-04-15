@@ -13,18 +13,29 @@
 #pragma once
 
 #include "Settings.h"
+#include <SFML/Window/Event.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <memory>
+#include <unordered_map>
 
 class InputManager
 {
   public:
     static InputManager &Instance();
 
-    void Init(std::shared_ptr<const Settings> settings); // const - May not adjust settings
+    void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
-    void Update();
 
-    bool IsKeyPressed(int key) const;
+    void Update(const sf::Event &event);
+    void PostUpdate();
+
+    bool IsKeyPressed(const std::string &action) const;
+    bool IsJustPressed(const std::string &action) const;
+    bool IsJustReleased(const std::string &action) const;
+
+    void BindKey(const std::string &action, sf::Keyboard::Key key);
+    void UnbindKey(const std::string &action);
+    sf::Keyboard::Key GetBoundKey(const std::string &action) const;
 
   private:
     InputManager() = default;
@@ -33,9 +44,15 @@ class InputManager
     InputManager(const InputManager &) = delete;
     InputManager &operator=(const InputManager &) = delete;
 
-  private:
-    std::shared_ptr<const Settings> m_settings; // const - May not adjust settings
+    std::shared_ptr<Settings> m_settings;
     bool m_isInitialized = false;
+
+    std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings;
+    std::unordered_map<sf::Keyboard::Key, bool> m_currentState;
+    std::unordered_map<sf::Keyboard::Key, bool> m_previousState;
+
+    void LoadBindings();
+    bool GetKeyState(const std::unordered_map<sf::Keyboard::Key, bool> &stateMap, sf::Keyboard::Key key) const;
 
   public:
     bool IsInitialized() const

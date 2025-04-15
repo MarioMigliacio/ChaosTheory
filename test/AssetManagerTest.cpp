@@ -22,6 +22,12 @@ class AssetManagerTest : public ::testing::Test
     void SetUp() override
     {
         m_settings = CreateTestSettings();
+
+        if (!LogManager::Instance().IsInitialized())
+        {
+            LogManager::Instance().Init();
+        }
+
         AssetManager::Instance().Init(m_settings);
     }
 
