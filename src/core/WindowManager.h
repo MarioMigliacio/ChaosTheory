@@ -24,13 +24,13 @@ class WindowManager
     void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
 
-    void Update();
     void BeginDraw();
     void EndDraw();
 
     bool IsOpen() const;
     void ToggleFullscreen();
     void ApplySettings();
+    bool PollEvent(sf::Event &event);
 
     sf::RenderWindow &GetWindow();
 
@@ -45,4 +45,5 @@ class WindowManager
     std::unique_ptr<sf::RenderWindow> m_window;
     std::shared_ptr<Settings> m_settings;
     bool m_isFullscreen = false;
+    bool m_isInitialized = false;
 };

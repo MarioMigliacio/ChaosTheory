@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : version.h
+//  File        : Version.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
@@ -13,6 +13,6 @@
 
 #define CT_VERSION_MAJOR 1
 #define CT_VERSION_MINOR 1
-#define CT_VERSION_PATCH 0
+#define CT_VERSION_PATCH 1
 
-#define CT_VERSION_STRING "1.1.0-dev"
+#define CT_VERSION_STRING "1.1.1-dev"

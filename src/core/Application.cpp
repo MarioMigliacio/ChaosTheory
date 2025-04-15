@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : application.cpp
+//  File        : Application.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
@@ -12,14 +12,17 @@
 #include "Application.h"
 #include "AssetManager.h"
 #include "AudioManager.h"
+#include "GameScene.h"
 #include "InputManager.h"
-#include "LogManager.h"
+#include "Macros.h"
+#include "MainMenuScene.h"
+#include "SceneFactory.h"
+#include "SceneManager.h"
 #include "Settings.h"
 #include "WindowManager.h"
 #include "version.h"
 
-Application::Application(std::shared_ptr<Settings> sharedSettings)
-    : m_settings(std::move(sharedSettings))
+Application::Application(std::shared_ptr<Settings> sharedSettings) : m_settings(std::move(sharedSettings))
 {
 }
 
@@ -29,11 +32,39 @@ void Application::Init()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
+    CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
+
     LogManager::Instance().Init();
     WindowManager::Instance().Init(m_settings);
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
+
+    m_sceneManager = std::make_unique<SceneManager>(m_settings);
+    m_sceneManager->Init();
+
+    // Register scenes with factory, syntax looks a bit gnarly because of the lambda expression and function callback
+    SceneFactory::Instance().Register("MainMenu",
+                                      [this]()
+                                      {
+                                          auto scene = std::make_unique<MainMenuScene>(m_settings);
+                                          scene->SetSceneChangeCallback(
+                                              [this](std::unique_ptr<Scene> next)
+                                              { m_sceneManager->PushScene(std::move(next)); });
+                                          return scene;
+                                      });
+
+    SceneFactory::Instance().Register("Game",
+                                      [this]()
+                                      {
+                                          auto scene = std::make_unique<GameScene>(m_settings);
+                                          scene->SetSceneChangeCallback(
+                                              [this](std::unique_ptr<Scene> next)
+                                              { m_sceneManager->PushScene(std::move(next)); });
+                                          return scene;
+                                      });
+    m_sceneManager->PushScene(SceneFactory::Instance().Create("MainMenu"));
+    // m_sceneManager->PushScene(SceneFactory::Instance().Create("Game"));
 
     if (!WindowManager::Instance().IsOpen())
     {
@@ -42,6 +73,7 @@ void Application::Init()
     }
 
     m_isRunning = true;
+    m_isInitialized = true;
 
     CT_LOG_INFO("Application initialized.");
     CT_LOG_INFO("ChaosTheory v{}", CT_VERSION_STRING);
@@ -54,8 +86,11 @@ void Application::Run()
     while (m_isRunning && WindowManager::Instance().IsOpen())
     {
         float dt = clock.restart().asSeconds();
+
         ProcessEvents();
-        Update(dt);
+        InputManager::Instance().Update();
+        AudioManager::Instance().Update(dt);
+        m_sceneManager->Update(dt);
         Render();
     }
 
@@ -64,6 +99,12 @@ void Application::Run()
 
 void Application::Shutdown()
 {
+    if (m_sceneManager)
+    {
+        m_sceneManager->Shutdown();
+        m_sceneManager.reset();
+    }
+
     WindowManager::Instance().Shutdown();
     InputManager::Instance().Shutdown();
     AssetManager::Instance().Shutdown();
@@ -73,27 +114,29 @@ void Application::Shutdown()
     LogManager::Instance().Shutdown();
 
     m_settings.reset();
+    m_isInitialized = false;
 }
 
 void Application::ProcessEvents()
 {
-    InputManager::Instance().Update();
+    sf::Event event;
 
-    if (InputManager::Instance().IsKeyPressed(sf::Keyboard::Escape))
+    while (WindowManager::Instance().PollEvent(event))
     {
-        m_isRunning = false;
-    }
-}
+        m_sceneManager->HandleEvent(event); // <-- propagate to scene
 
-void Application::Update(float dt)
-{
-    WindowManager::Instance().Update();
-    // Game logic here
+        if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
+        {
+            m_isRunning = false;
+
+            CT_LOG_INFO("Application closing from escape or close event.");
+        }
+    }
 }
 
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();
-    // TODO: draw game here
+    m_sceneManager->Render();
     WindowManager::Instance().EndDraw();
 }

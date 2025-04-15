@@ -12,6 +12,7 @@
 #include "Settings.h"
 #include "core/Application.h"
 #include "core/AudioManager.h"
+#include <iostream>
 #include <memory>
 
 #if defined(_MSC_VER) && defined(_DEBUG)
@@ -25,12 +26,8 @@ int main()
 
     Application app(settings);
     app.Init();
-
-    // Testing purposes for audio development
-    AudioManager::Instance().PlayMusic(settings->m_audioDirectory +
-                                       "RootMenu_clean.wav");
-
     app.Run();
 
+    std::cout << "CT application successfully concluded." << std::endl;
     return 0;
 }

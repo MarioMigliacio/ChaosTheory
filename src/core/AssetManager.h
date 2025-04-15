@@ -50,4 +50,6 @@ class AssetManager
     std::unordered_map<std::string, sf::Font> m_fonts;
 
     std::shared_ptr<const Settings> m_settings; // const - May not adjust settings
+
+    bool m_isInitialized = false;
 };

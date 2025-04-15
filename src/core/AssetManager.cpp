@@ -11,10 +11,19 @@
 // ============================================================================
 
 #include "AssetManager.h"
-#include "LogManager.h"
+#include "Macros.h"
 #include "Settings.h"
 
 #include <filesystem>
+
+// These static references to certain sf objects are used for short circuit logic where the AssetManager might not yet
+// be initialized, so doing routine logic would be dangerous
+namespace
+{
+static sf::SoundBuffer dummySoundBuffer;
+static sf::Texture dummyTexture;
+static sf::Font dummyFont;
+} // namespace
 
 AssetManager &AssetManager::Instance()
 {
@@ -24,6 +33,8 @@ AssetManager &AssetManager::Instance()
 
 void AssetManager::Init(std::shared_ptr<const Settings> settings)
 {
+    CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
+
     m_settings = std::move(settings);
     namespace fs = std::filesystem;
 
@@ -32,17 +43,22 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
     if (!fs::exists(m_settings->m_fontDirectory))
     {
         CT_LOG_WARN("Font directory not found: {}", m_settings->m_fontDirectory);
+        return;
     }
 
     if (!fs::exists(m_settings->m_audioDirectory))
     {
         CT_LOG_WARN("Audio directory not found: {}", m_settings->m_audioDirectory);
+        return;
     }
 
     if (!fs::exists(m_settings->m_spriteDirectory))
     {
         CT_LOG_WARN("Sprite directory not found: {}", m_settings->m_spriteDirectory);
+        return;
     }
+
+    m_isInitialized = true;
 
     // Load fallback font
     std::string fallbackFont = m_settings->m_fontDirectory + "DefaultFont.ttf";
@@ -70,16 +86,22 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
 
 void AssetManager::Shutdown()
 {
+    CT_WARN_IF_UNINITIALIZED("AssetManager", "Shutdown");
+
     CT_LOG_INFO("Clearing asset cache...");
+
     m_textures.clear();
     m_sounds.clear();
     m_fonts.clear();
+    m_isInitialized = false;
 
     CT_LOG_INFO("AssetManager shutdown.");
 }
 
 bool AssetManager::LoadFont(const std::string &name, const std::string &filepath)
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadFont", false);
+
     sf::Font font;
     if (!font.loadFromFile(filepath))
     {
@@ -93,6 +115,8 @@ bool AssetManager::LoadFont(const std::string &name, const std::string &filepath
 
 sf::Font &AssetManager::GetFont(const std::string &name)
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetFont", dummyFont);
+
     if (m_fonts.find(name) == m_fonts.end())
     {
         CT_LOG_WARN("Font '{}' not found. Using fallback.", name);
@@ -103,6 +127,8 @@ sf::Font &AssetManager::GetFont(const std::string &name)
 
 bool AssetManager::LoadTexture(const std::string &name, const std::string &filepath)
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetTexture", false);
+
     sf::Texture texture;
     if (!texture.loadFromFile(filepath))
     {
@@ -116,6 +142,8 @@ bool AssetManager::LoadTexture(const std::string &name, const std::string &filep
 
 sf::Texture &AssetManager::GetTexture(const std::string &name)
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetTexture", dummyTexture);
+
     if (m_textures.find(name) == m_textures.end())
     {
         CT_LOG_WARN("Texture '{}' not found. Using fallback.", name);
@@ -126,6 +154,8 @@ sf::Texture &AssetManager::GetTexture(const std::string &name)
 
 bool AssetManager::LoadSound(const std::string &name, const std::string &filepath)
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadSound", false);
+
     sf::SoundBuffer buffer;
     if (!buffer.loadFromFile(filepath))
     {
@@ -139,6 +169,8 @@ bool AssetManager::LoadSound(const std::string &name, const std::string &filepat
 
 sf::SoundBuffer &AssetManager::GetSound(const std::string &name)
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetSound", dummySoundBuffer);
+
     if (m_sounds.find(name) == m_sounds.end())
     {
         CT_LOG_WARN("Sound '{}' not found. Using fallback.", name);

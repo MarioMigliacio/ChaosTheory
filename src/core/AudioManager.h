@@ -24,15 +24,20 @@ class AudioManager
 
     void Init(std::shared_ptr<Settings> settings); // non-const - May adjust settings
     void Shutdown();
+    void Update(float dt);
 
-    void PlayMusic(const std::string &filename, bool loop = true);
+    void PlayMusic(const std::string &filename, bool loop = true, bool fadeIn = false, float fadeDuration = 1.0f);
+    void StopMusic(bool fadeOut = false, float fadeDuration = 2.0f);
+
     void PauseMusic();
     void ResumeMusic();
-    void StopMusic();
+
     bool IsMusicPlaying() const;
+    bool IsFading() const;
 
     void SetVolume(float volume);
     float GetVolume() const;
+
     void Mute();
     void Unmute();
     bool IsMuted() const;
@@ -46,11 +51,23 @@ class AudioManager
     AudioManager(const AudioManager &) = delete;
     AudioManager &operator=(const AudioManager &) = delete;
 
+    std::unique_ptr<sf::Music> m_music;
+    std::shared_ptr<Settings> m_settings;
+
     std::string m_currentTrack;
 
-    float m_volume = 100.0f;
-    bool m_muted = false;
+    float m_masterVolume = 100.0f;
+    float m_musicVolume = 100.0f;
 
-    std::unique_ptr<sf::Music> m_music;
-    std::shared_ptr<Settings> m_settings; // non-const - May adjust settings
+    bool m_isMuted = false;
+
+    bool m_isFadingOut = false;
+    float m_fadeOutTimer = 0.0f;
+    float m_fadeOutDuration = 0.0f;
+
+    bool m_isFadingIn = false;
+    float m_fadeInTimer = 0.0f;
+    float m_fadeInDuration = 0.0f;
+
+    bool m_isInitialized = false;
 };

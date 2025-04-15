@@ -1,5 +1,4 @@
 set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
-message(STATUS "IN SRC/CMAKELIST: Linking SFML libs with suffix '${SFML_LIB_SUFFIX}'")
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS *.cpp)
 
@@ -10,6 +9,8 @@ target_link_directories(CT PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
 target_include_directories(CT PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/core
+    ${PROJECT_SOURCE_DIR}/src/core/scenes
+    ${PROJECT_SOURCE_DIR}/src/core/common
     ${PROJECT_SOURCE_DIR}/external/spdlog/include
     ${PROJECT_SOURCE_DIR}/external/sfml/include
 )
