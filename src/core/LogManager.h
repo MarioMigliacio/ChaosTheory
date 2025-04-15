@@ -35,4 +35,10 @@ class LogManager
   private:
     std::shared_ptr<spdlog::logger> m_logger;
     bool m_isInitialized = false;
+
+  public:
+    bool IsInitialized() const
+    {
+        return m_isInitialized;
+    }
 };

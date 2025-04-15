@@ -20,6 +20,7 @@
 class SceneManager
 {
   public:
+    SceneManager() = default;
     explicit SceneManager(std::shared_ptr<Settings> settings);
     ~SceneManager() = default;
 
@@ -35,9 +36,12 @@ class SceneManager
 
     void PushScene(std::unique_ptr<Scene> scene);
     void PopScene();
+    void ClearScenes();
 
     [[nodiscard]] bool IsEmpty() const;
     [[nodiscard]] std::size_t GetSceneCount() const;
+    [[nodiscard]] Scene *GetActiveScene() const;
+    [[nodiscard]] bool IsInitialized() const;
 
   private:
     std::stack<std::unique_ptr<Scene>> m_scenes;

@@ -58,6 +58,8 @@ void SceneManager::Update(float dt)
 
 void SceneManager::HandleEvent(const sf::Event &event)
 {
+    CT_WARN_IF_UNINITIALIZED("SceneManager", "HandleEvent");
+
     if (!m_scenes.empty())
     {
         m_scenes.top()->HandleEvent(event);
@@ -99,10 +101,45 @@ void SceneManager::PopScene()
 
 bool SceneManager::IsEmpty() const
 {
+    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "IsEmpty", false);
+
     return m_scenes.empty();
 }
 
 std::size_t SceneManager::GetSceneCount() const
 {
+    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "GetSceneCount", 1);
+
     return m_scenes.size();
+}
+
+Scene *SceneManager::GetActiveScene() const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "GetActiveScene", nullptr);
+
+    if (m_scenes.empty())
+    {
+        return nullptr;
+    }
+
+    return m_scenes.top().get();
+}
+
+bool SceneManager::IsInitialized() const
+{
+    return m_isInitialized;
+}
+
+void SceneManager::ClearScenes()
+{
+    CT_WARN_IF_UNINITIALIZED("SceneManager", "ClearScenes");
+
+    while (!m_scenes.empty())
+    {
+        m_scenes.top()->OnExit();
+        m_scenes.top().reset();
+        m_scenes.pop();
+    }
+
+    CT_LOG_INFO("All scenes cleared.");
 }

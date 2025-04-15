@@ -39,5 +39,4 @@ class GameScene final : public Scene
   private:
     std::shared_ptr<Settings> m_settings;
     SceneChangeCallback m_sceneChangeCallback;
-    bool m_isInitialized = false;
 };

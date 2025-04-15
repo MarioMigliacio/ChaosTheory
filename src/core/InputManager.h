@@ -36,4 +36,10 @@ class InputManager
   private:
     std::shared_ptr<const Settings> m_settings; // const - May not adjust settings
     bool m_isInitialized = false;
+
+  public:
+    bool IsInitialized() const
+    {
+        return m_isInitialized;
+    }
 };

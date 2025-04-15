@@ -93,6 +93,7 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "stack": "cpp",
-        "xstring": "cpp"
+        "xstring": "cpp",
+        "xmemory": "cpp"
     }
 }

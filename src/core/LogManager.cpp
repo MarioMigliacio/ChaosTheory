@@ -12,6 +12,7 @@
 
 #include "Macros.h"
 
+#include "LogManager.h"
 #include <filesystem>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/dist_sink.h>

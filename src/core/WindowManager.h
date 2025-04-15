@@ -46,4 +46,10 @@ class WindowManager
     std::shared_ptr<Settings> m_settings;
     bool m_isFullscreen = false;
     bool m_isInitialized = false;
+
+  public:
+    bool IsInitialized() const
+    {
+        return m_isInitialized;
+    }
 };

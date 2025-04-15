@@ -35,7 +35,12 @@ class Scene
     {
         return m_shouldExit;
     }
+    virtual bool IsInitialized() const
+    {
+        return m_isInitialized;
+    }
 
   protected:
     bool m_shouldExit = false;
+    bool m_isInitialized = false;
 };

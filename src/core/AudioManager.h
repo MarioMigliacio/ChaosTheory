@@ -70,4 +70,10 @@ class AudioManager
     float m_fadeInDuration = 0.0f;
 
     bool m_isInitialized = false;
+
+  public:
+    bool IsInitialized() const
+    {
+        return m_isInitialized;
+    }
 };
