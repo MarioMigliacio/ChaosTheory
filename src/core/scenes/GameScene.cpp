@@ -28,7 +28,7 @@ void GameScene::Init()
 
     // Load assets, music, and scene-specific setup
     AudioManager::Instance().SetVolume(50.f);
-    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Gametrack.wav", true, true);
+    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Gametrack.wav", true);
 
     m_isInitialized = true;
     CT_LOG_INFO("GameScene initialized.");

@@ -1,8 +1,11 @@
 enable_testing()
 
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS *.cpp)
+file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 
 add_executable(CT_tests ${TEST_SOURCES})
+
+# Select debug/release SFML libs
+set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
 
 target_include_directories(CT_tests PRIVATE
     ${PROJECT_SOURCE_DIR}/src
@@ -15,18 +18,15 @@ target_include_directories(CT_tests PRIVATE
 # Link directories for SFML
 target_link_directories(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
 
-# Select debug/release SFML libs
-set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
-
 target_link_libraries(CT_tests
     PRIVATE
     core
     gtest
     gtest_main
-    sfml-graphics-d
-    sfml-window-d
-    sfml-system-d
-    sfml-audio-d
+    sfml-graphics${SFML_LIB_SUFFIX}
+    sfml-window${SFML_LIB_SUFFIX}
+    sfml-system${SFML_LIB_SUFFIX}
+    sfml-audio${SFML_LIB_SUFFIX}
     opengl32
     freetype
     winmm
@@ -35,5 +35,4 @@ target_link_libraries(CT_tests
     advapi32
 )
 
-include(GoogleTest)
 add_test(NAME RunAllTests COMMAND CT_tests)
