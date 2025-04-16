@@ -1,3 +1,5 @@
+# src/CMakeLists.txt
+
 set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
 
 file(GLOB_RECURSE SRC_FILES CONFIGURE_DEPENDS *.cpp)

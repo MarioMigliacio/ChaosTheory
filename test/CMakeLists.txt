@@ -1,3 +1,5 @@
+# test/CMakeLists.txt
+
 enable_testing()
 
 # More explicit instead of file glob
