@@ -18,6 +18,7 @@
 #include <memory>
 #include <unordered_map>
 
+// Singleton class that manages the user Inputs.
 class InputManager
 {
   public:
@@ -25,6 +26,8 @@ class InputManager
 
     void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
+
+    bool IsInitialized() const;
 
     void Update(const sf::Event &event);
     void PostUpdate();
@@ -44,19 +47,14 @@ class InputManager
     InputManager(const InputManager &) = delete;
     InputManager &operator=(const InputManager &) = delete;
 
-    std::shared_ptr<Settings> m_settings;
-    bool m_isInitialized = false;
+    void LoadBindings();
+    bool GetKeyState(const std::unordered_map<sf::Keyboard::Key, bool> &stateMap, sf::Keyboard::Key key) const;
 
+  private:
     std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings;
     std::unordered_map<sf::Keyboard::Key, bool> m_currentState;
     std::unordered_map<sf::Keyboard::Key, bool> m_previousState;
 
-    void LoadBindings();
-    bool GetKeyState(const std::unordered_map<sf::Keyboard::Key, bool> &stateMap, sf::Keyboard::Key key) const;
-
-  public:
-    bool IsInitialized() const
-    {
-        return m_isInitialized;
-    }
+    std::shared_ptr<Settings> m_settings;
+    bool m_isInitialized = false;
 };
