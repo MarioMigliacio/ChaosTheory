@@ -15,6 +15,7 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
+// Singleton class that manages the spdlog logger.
 class LogManager
 {
   public:
@@ -22,6 +23,8 @@ class LogManager
 
     void Init();
     void Shutdown();
+
+    bool IsInitialized() const;
 
     std::shared_ptr<spdlog::logger> GetLogger();
 
@@ -35,10 +38,4 @@ class LogManager
   private:
     std::shared_ptr<spdlog::logger> m_logger;
     bool m_isInitialized = false;
-
-  public:
-    bool IsInitialized() const
-    {
-        return m_isInitialized;
-    }
 };

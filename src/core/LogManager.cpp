@@ -10,9 +10,8 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "Macros.h"
-
 #include "LogManager.h"
+#include "Macros.h"
 #include <filesystem>
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/dist_sink.h>
@@ -25,6 +24,7 @@ LogManager &LogManager::Instance()
     return instance;
 }
 
+// Initializes the spdlog logger and applies sinks for msvc, console, and file logging.
 void LogManager::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -51,6 +51,7 @@ void LogManager::Init()
     CT_LOG_INFO("Logger initialized.");
 }
 
+// Shuts down the Log manager and resets internal state.
 void LogManager::Shutdown()
 {
     CT_LOG_INFO("Logger shutdown.");
@@ -60,6 +61,13 @@ void LogManager::Shutdown()
     m_isInitialized = false;
 }
 
+// Returns whether the Log manager has been initialized.
+bool LogManager::IsInitialized() const
+{
+    return m_isInitialized;
+}
+
+// Returns a reference to the spd logger.
 std::shared_ptr<spdlog::logger> LogManager::GetLogger()
 {
     return m_logger;

@@ -16,6 +16,7 @@
 #include <string>
 #include <unordered_map>
 
+// Settings structure to hold internal game configurable data points.
 struct Settings
 {
     std::string m_windowTitle = "Chaos Theory";
