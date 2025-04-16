@@ -17,27 +17,27 @@
 #include <memory>
 #include <string>
 
+// Singleton class that manages the SFML Audio.
 class AudioManager
 {
   public:
     static AudioManager &Instance();
 
-    void Init(std::shared_ptr<Settings> settings); // non-const - May adjust settings
+    void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
+
+    bool IsInitialized() const;
     void Update(float dt);
 
     void PlayMusic(const std::string &filename, bool loop = true, bool fadeIn = false, float fadeDuration = 1.0f);
     void StopMusic(bool fadeOut = false, float fadeDuration = 2.0f);
-
     void PauseMusic();
     void ResumeMusic();
-
     bool IsMusicPlaying() const;
-    bool IsFading() const;
+    bool IsFadingOut() const;
 
     void SetVolume(float volume);
     float GetVolume() const;
-
     void Mute();
     void Unmute();
     bool IsMuted() const;
@@ -51,9 +51,9 @@ class AudioManager
     AudioManager(const AudioManager &) = delete;
     AudioManager &operator=(const AudioManager &) = delete;
 
+  private:
     std::unique_ptr<sf::Music> m_music;
     std::shared_ptr<Settings> m_settings;
-
     std::string m_currentTrack;
 
     float m_masterVolume = 100.0f;
@@ -70,10 +70,4 @@ class AudioManager
     float m_fadeInDuration = 0.0f;
 
     bool m_isInitialized = false;
-
-  public:
-    bool IsInitialized() const
-    {
-        return m_isInitialized;
-    }
 };

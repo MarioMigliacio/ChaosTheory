@@ -20,6 +20,7 @@ AudioManager &AudioManager::Instance()
     return instance;
 }
 
+// Initializes the SFML audio entities using the provided settings.
 void AudioManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -33,6 +34,7 @@ void AudioManager::Init(std::shared_ptr<Settings> settings)
     CT_LOG_INFO("AudioManager initialized. Volume: {}, Muted: {}", m_masterVolume, m_isMuted ? "Yes" : "No");
 }
 
+// Shuts down the audio manager and resets internal state.
 void AudioManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Shutdown");
@@ -49,6 +51,13 @@ void AudioManager::Shutdown()
     CT_LOG_INFO("AudioManager shutdown complete.");
 }
 
+// Returns whether or not the Audio manager has been initialized.
+bool AudioManager::IsInitialized() const
+{
+    return m_isInitialized;
+}
+
+// Completes state management during a game frame.
 void AudioManager::Update(float dt)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Update");
@@ -88,6 +97,7 @@ void AudioManager::Update(float dt)
     }
 }
 
+// Request to begin playing a music file, with optional loop and fade features.
 void AudioManager::PlayMusic(const std::string &filename, bool loop, bool fadeIn, float fadeDuration)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "PlayMusic");
@@ -125,28 +135,7 @@ void AudioManager::PlayMusic(const std::string &filename, bool loop, bool fadeIn
     CT_LOG_INFO("Now playing: {}", filename);
 }
 
-void AudioManager::PauseMusic()
-{
-    CT_WARN_IF_UNINITIALIZED("AudioManager", "PauseMusic");
-
-    if (m_music->getStatus() == sf::Music::Playing)
-    {
-        m_music->pause();
-        CT_LOG_INFO("Music paused");
-    }
-}
-
-void AudioManager::ResumeMusic()
-{
-    CT_WARN_IF_UNINITIALIZED("AudioManager", "ResumeMusic");
-
-    if (m_music->getStatus() == sf::Music::Paused)
-    {
-        m_music->play();
-        CT_LOG_INFO("Music resumed");
-    }
-}
-
+// Request to halt any playing music file, with optional fade feature.
 void AudioManager::StopMusic(bool fadeOut, float fadeDuration)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "StopMusic");
@@ -168,6 +157,31 @@ void AudioManager::StopMusic(bool fadeOut, float fadeDuration)
     }
 }
 
+// Request to pause any playing music file.
+void AudioManager::PauseMusic()
+{
+    CT_WARN_IF_UNINITIALIZED("AudioManager", "PauseMusic");
+
+    if (m_music->getStatus() == sf::Music::Playing)
+    {
+        m_music->pause();
+        CT_LOG_INFO("Music paused");
+    }
+}
+
+// Request to continue playing any paused music file.
+void AudioManager::ResumeMusic()
+{
+    CT_WARN_IF_UNINITIALIZED("AudioManager", "ResumeMusic");
+
+    if (m_music->getStatus() == sf::Music::Paused)
+    {
+        m_music->play();
+        CT_LOG_INFO("Music resumed");
+    }
+}
+
+// Return the state of whether any music is currently playing.
 bool AudioManager::IsMusicPlaying() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsMusicPlaying", false);
@@ -175,13 +189,15 @@ bool AudioManager::IsMusicPlaying() const
     return m_music->getStatus() == sf::Music::Playing;
 }
 
-bool AudioManager::IsFading() const
+// Return the state of whether any music file is currently in the process of fading out.
+bool AudioManager::IsFadingOut() const
 {
-    CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsFading", false);
+    CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsFadingOut", false);
 
     return m_isFadingOut;
 }
 
+// Applies synchronization between the manager settings of the volume and the Settings object.
 void AudioManager::SetVolume(float volume)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "SetVolume");
@@ -197,6 +213,7 @@ void AudioManager::SetVolume(float volume)
     CT_LOG_INFO("Volume set to {}", m_masterVolume);
 }
 
+// Returns the internally set volume.
 float AudioManager::GetVolume() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetVolume", 0.0f);
@@ -204,6 +221,7 @@ float AudioManager::GetVolume() const
     return m_masterVolume;
 }
 
+// Sets the current volume to zero (mute), synchronizes the Settings object.
 void AudioManager::Mute()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Mute");
@@ -219,6 +237,7 @@ void AudioManager::Mute()
     CT_LOG_INFO("AudioManager muted");
 }
 
+// Sets the current volume to the masterVolume previously set before mute. Synchronizes the Settings object.
 void AudioManager::Unmute()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Unmute");
@@ -234,6 +253,7 @@ void AudioManager::Unmute()
     CT_LOG_INFO("AudioManager unmuted");
 }
 
+// Returns the state of whether or not the audio manager is muted.
 bool AudioManager::IsMuted() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsMuted", false);
@@ -241,6 +261,7 @@ bool AudioManager::IsMuted() const
     return m_isMuted;
 }
 
+// Adjusts the currently playing sound track to the requested file with optional loop feature.
 void AudioManager::SwitchTrack(const std::string &filename, bool loop)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "SwitchTrack");

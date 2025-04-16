@@ -47,7 +47,7 @@ void GameScene::Update(float dt)
 
     if (m_shouldExit)
     {
-        if (!AudioManager::Instance().IsFading())
+        if (!AudioManager::Instance().IsFadingOut())
         {
             CT_LOG_INFO("SceneChangeCallback 1/2 invoked from GameScene.");
             if (m_sceneChangeCallback)
