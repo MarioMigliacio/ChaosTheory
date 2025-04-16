@@ -1,3 +1,14 @@
+// ============================================================================
+//  File        : TestHelpers.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : A Settings object used for internal testing
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
 #include "Settings.h"

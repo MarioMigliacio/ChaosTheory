@@ -27,6 +27,7 @@ WindowManager &WindowManager::Instance()
     return instance;
 }
 
+// Initializes the SFML window using the provided settings.
 void WindowManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -40,18 +41,7 @@ void WindowManager::Init(std::shared_ptr<Settings> settings)
     CT_LOG_INFO("WindowManager initialized.");
 }
 
-void WindowManager::ApplySettings()
-{
-    CT_WARN_IF_UNINITIALIZED("WindowManager", "ApplySettings");
-
-    sf::VideoMode mode(m_settings->m_windowWidth, m_settings->m_windowHeight);
-    sf::Uint32 style = m_settings->m_isFullscreen ? sf::Style::Fullscreen : sf::Style::Default;
-
-    m_window = std::make_unique<sf::RenderWindow>(mode, m_settings->m_windowTitle, style);
-
-    m_window->setFramerateLimit(m_settings->m_targetFramerate);
-}
-
+// Shuts down the window and resets internal state.
 void WindowManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("WindowManager", "Shutdown");
@@ -68,6 +58,50 @@ void WindowManager::Shutdown()
     CT_LOG_INFO("WindowManager shutdown.");
 }
 
+// Returns whether the window manager has been initialized.
+bool WindowManager::IsInitialized() const
+{
+    return m_isInitialized;
+}
+
+// Returns whether the SFML window is currently open.
+bool WindowManager::IsOpen() const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("WindowManager", "IsOpen", false);
+
+    return m_window && m_window->isOpen();
+}
+
+// Prepares for a new frame.
+void WindowManager::BeginDraw()
+{
+    CT_WARN_IF_UNINITIALIZED("WindowManager", "BeginDraw");
+
+    m_window->clear();
+}
+
+// Completes rendering for the current frame.
+void WindowManager::EndDraw()
+{
+    CT_WARN_IF_UNINITIALIZED("WindowManager", "EndDraw");
+
+    m_window->display();
+}
+
+// Applies synchronization between the manager settings of the SFML window and the Settings object.
+void WindowManager::ApplySettings()
+{
+    CT_WARN_IF_UNINITIALIZED("WindowManager", "ApplySettings");
+
+    sf::VideoMode mode(m_settings->m_windowWidth, m_settings->m_windowHeight);
+    sf::Uint32 style = m_settings->m_isFullscreen ? sf::Style::Fullscreen : sf::Style::Default;
+
+    m_window = std::make_unique<sf::RenderWindow>(mode, m_settings->m_windowTitle, style);
+
+    m_window->setFramerateLimit(m_settings->m_targetFramerate);
+}
+
+// Changes the internal window state for full screen on/off.
 void WindowManager::ToggleFullscreen()
 {
     CT_WARN_IF_UNINITIALIZED("WindowManager", "ToggleFullscreen");
@@ -78,27 +112,7 @@ void WindowManager::ToggleFullscreen()
     ApplySettings();
 }
 
-void WindowManager::BeginDraw()
-{
-    CT_WARN_IF_UNINITIALIZED("WindowManager", "BeginDraw");
-
-    m_window->clear();
-}
-
-void WindowManager::EndDraw()
-{
-    CT_WARN_IF_UNINITIALIZED("WindowManager", "EndDraw");
-
-    m_window->display();
-}
-
-bool WindowManager::IsOpen() const
-{
-    CT_WARN_IF_UNINITIALIZED_RET("WindowManager", "IsOpen", false);
-
-    return m_window && m_window->isOpen();
-}
-
+// Polls all pending window events.
 bool WindowManager::PollEvent(sf::Event &event)
 {
     CT_WARN_IF_UNINITIALIZED_RET("WindowManager", "PollEvent", false);
@@ -106,6 +120,7 @@ bool WindowManager::PollEvent(sf::Event &event)
     return m_window && m_window->pollEvent(event);
 }
 
+// Returns a reference to the Window managers internal SFML window.
 sf::RenderWindow &WindowManager::GetWindow()
 {
     CT_WARN_IF_UNINITIALIZED_RET("WindowManager", "GetWindow", dummyWindow);

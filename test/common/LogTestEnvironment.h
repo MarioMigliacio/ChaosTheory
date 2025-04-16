@@ -1,3 +1,15 @@
+// ============================================================================
+//  File        : LogTestEnvironment.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : Extends the main entry point gtest environment
+//                Is useful in automatic base case for SetUp and TearDown
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
 #include "LogManager.h"

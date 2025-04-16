@@ -1,3 +1,14 @@
+// ============================================================================
+//  File        : DummyScene.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : File used in the Scene Management tests
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
 #include "Scene.h"

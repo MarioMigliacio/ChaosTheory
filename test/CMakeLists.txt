@@ -2,7 +2,7 @@ enable_testing()
 
 # More explicit instead of file glob
 add_executable(CT_tests
-    ${CMAKE_CURRENT_SOURCE_DIR}/main_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
