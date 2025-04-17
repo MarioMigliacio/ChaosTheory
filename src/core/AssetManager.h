@@ -18,7 +18,15 @@
 #include <string>
 #include <unordered_map>
 
-// Singleton class that manages the SFML assets.
+// ============================================================================
+//  Class       : AssetManager
+//  Purpose     : Singleton class that manages the SFML assets.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns fonts, textures, and sounds in cache
+//
+// ============================================================================
 class AssetManager
 {
   public:

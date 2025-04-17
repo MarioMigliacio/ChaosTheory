@@ -15,7 +15,15 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
-// Singleton class that manages the spdlog logger.
+// ============================================================================
+//  Class       : LogManager
+//  Purpose     : Singleton class that manages the Log handing.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Prints Trace, Debug, Info, Warn, Error, and Critical statements.
+//
+// ============================================================================
 class LogManager
 {
   public:

@@ -16,7 +16,16 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-// Singleton class that manages the application window.
+// ============================================================================
+//  Class       : WindowManager
+//  Purpose     : Singleton class that manages the application window.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns SFML Render window, handles PollEvents,
+//                size adjustments, and rendering, and fullsize.
+//
+// ============================================================================
 class WindowManager
 {
   public:

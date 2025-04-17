@@ -17,7 +17,15 @@
 #include <memory>
 #include <string>
 
-// Singleton class that manages the SFML Audio.
+// ============================================================================
+//  Class       : AudioManager
+//  Purpose     : Singleton class that manages the SFML Audio.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns Music, volumes, and mute states. More in the future
+//
+// ============================================================================
 class AudioManager
 {
   public:

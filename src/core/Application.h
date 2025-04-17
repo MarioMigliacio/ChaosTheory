@@ -15,6 +15,18 @@
 #include "Settings.h"
 #include <memory>
 
+// ============================================================================
+//  Class       : Application
+//  Purpose     : Orchestrates the initialization, main loop, and shutdown
+//                of the ChaosTheory game engine. Acts as the entry point
+//                for runtime execution.
+//  Responsibilities:
+//      - Initializes and shuts down all core managers
+//      - Processes window events
+//      - Updates active scenes and managers
+//      - Handles the render loop and time delta
+//
+// ============================================================================
 class Application
 {
   public:

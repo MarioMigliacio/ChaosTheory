@@ -18,7 +18,15 @@
 #include <memory>
 #include <unordered_map>
 
-// Singleton class that manages the user Inputs.
+// ============================================================================
+//  Class       : InputManager
+//  Purpose     : Singleton class that manages the input events.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns Key Press, Key Held, Key Release: TODO: Mouse inputs.
+//
+// ============================================================================
 class InputManager
 {
   public:
