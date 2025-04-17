@@ -10,7 +10,6 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "LogManager.h"
 #include "Macros.h"
 #include <filesystem>
 #include <spdlog/sinks/basic_file_sink.h>
