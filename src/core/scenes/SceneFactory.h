@@ -17,6 +17,17 @@
 #include <string>
 #include <unordered_map>
 
+// ============================================================================
+//  Class       : SceneFactory
+//  Purpose     : Singleton class that manages the generation of Scenes.
+//
+//  Responsibilities:
+//      - Register callback functions to a scene index by string
+//      - Create a unique pointer to a Scene based on id string
+//      - TODO: handle factory logic of scenes and transition logic updates
+//              here instead of in the application layer
+//
+// ============================================================================
 class SceneFactory
 {
   public:

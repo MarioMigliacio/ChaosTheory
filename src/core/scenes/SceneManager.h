@@ -40,6 +40,8 @@ class SceneManager
     void Init();
     void Shutdown();
 
+    bool IsInitialized() const;
+
     void Update(float dt);
     void HandleEvent(const sf::Event &event);
     void Render();
@@ -51,7 +53,6 @@ class SceneManager
     bool IsEmpty() const;
     std::size_t GetSceneCount() const;
     Scene *GetActiveScene() const;
-    bool IsInitialized() const;
 
   private:
     std::stack<std::unique_ptr<Scene>> m_scenes;

@@ -17,11 +17,13 @@ SceneFactory &SceneFactory::Instance()
     return instance;
 }
 
+// Load into SceneFactory memory the callback function associated with the id string.
 void SceneFactory::Register(const std::string &sceneId, CreatorFn creator)
 {
     m_creators[sceneId] = std::move(creator);
 }
 
+// Generate a new Scene object using unique_ptr based on the requested id string.
 std::unique_ptr<Scene> SceneFactory::Create(const std::string &sceneId)
 {
     if (auto it = m_creators.find(sceneId); it != m_creators.end())
