@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-14
-//  Description : Hosts the definition for scene architecture and logic
+//  Description : Generation factory pattern for scenes
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
