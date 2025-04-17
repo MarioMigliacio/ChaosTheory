@@ -29,16 +29,24 @@ class DummyScene : public Scene
     {
         m_isInitialized = false;
     }
+    void OnExit() override
+    {
+    }
+    bool IsInitialized() override
+    {
+        return m_isInitialized;
+    }
     void Update(float /*dt*/) override
+    {
+    }
+    void HandleEvent(const sf::Event & /*event*/) override
     {
     }
     void Render() override
     {
     }
-    void OnExit() override
+    bool ShouldExit() override
     {
-    }
-    void HandleEvent(const sf::Event & /*event*/) override
-    {
+        return m_shouldExit;
     }
 };

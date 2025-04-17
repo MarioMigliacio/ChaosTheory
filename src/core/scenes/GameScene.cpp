@@ -22,6 +22,7 @@ GameScene::GameScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
 }
 
+// Initializes the GameScene.
 void GameScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -35,6 +36,33 @@ void GameScene::Init()
     CT_LOG_INFO("GameScene initialized.");
 }
 
+// Shuts down this scene and resets internal state.
+void GameScene::Shutdown()
+{
+    CT_WARN_IF_UNINITIALIZED("GameScene", "Shutdown");
+
+    m_settings.reset();
+    m_isInitialized = false;
+
+    CT_LOG_INFO("GameScene shutdown.");
+}
+
+// Handles the exit criteria for this scene.
+void GameScene::OnExit()
+{
+    AudioManager::Instance().StopMusic();
+    InputManager::Instance().UnbindKey("MenuSelectBack");
+
+    CT_LOG_INFO("GameScene OnExit.");
+}
+
+// Returns whether or not this scene has been initialized.
+bool GameScene::IsInitialized()
+{
+    return m_isInitialized;
+}
+
+// Performs internal state management during a single frame.
 void GameScene::Update(float dt)
 {
     if (InputManager::Instance().IsJustReleased("MenuSelectBack"))
@@ -62,11 +90,13 @@ void GameScene::Update(float dt)
     return;
 }
 
+// Handle any internal logic that should be done relevant to this scene.
 void GameScene::HandleEvent(const sf::Event &event)
 {
     // Only if you want to catch window resize, close, etc.
 }
 
+// While this scene is active, render the necessary components to the Game Scene.
 void GameScene::Render()
 {
     CT_WARN_IF_UNINITIALIZED("GameScene", "Render");
@@ -83,25 +113,14 @@ void GameScene::Render()
     window.draw(text);
 }
 
-void GameScene::OnExit()
-{
-    AudioManager::Instance().StopMusic();
-    InputManager::Instance().UnbindKey("MenuSelectBack");
-
-    CT_LOG_INFO("GameScene OnExit.");
-}
-
-void GameScene::Shutdown()
-{
-    CT_WARN_IF_UNINITIALIZED("GameScene", "Shutdown");
-
-    m_settings.reset();
-    m_isInitialized = false;
-
-    CT_LOG_INFO("GameScene shutdown.");
-}
-
+// Callback to determine logic for the next action scene to take place.
 void GameScene::SetSceneChangeCallback(SceneChangeCallback callback)
 {
     m_sceneChangeCallback = std::move(callback);
+}
+
+// Returns whether or not the GameScene should exit.
+bool GameScene::ShouldExit()
+{
+    return m_shouldExit;
 }

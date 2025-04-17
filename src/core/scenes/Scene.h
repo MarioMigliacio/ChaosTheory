@@ -14,6 +14,17 @@
 #include <SFML/Window/Event.hpp>
 #include <functional>
 
+// ============================================================================
+//  Class       : Scene
+//  Purpose     : Abstract base class with the interface to define a Scene.
+//                Scene implies a level in a game world, menu, or art screen.
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - OnExit to call scene specific logic attributes
+//      - Init to accept input and event logic
+//      - Handles the render loop and time delta
+//
+// ============================================================================
 class Scene
 {
   public:
@@ -24,23 +35,17 @@ class Scene
     Scene &operator=(const Scene &) = delete;
 
     virtual void Init() = 0;
-    virtual void Update(float dt) = 0;
-    virtual void Render() = 0;
-    virtual void OnExit() = 0;
     virtual void Shutdown() = 0;
+    virtual void OnExit() = 0;
 
-  public:
-    virtual bool ShouldExit() const
-    {
-        return m_shouldExit;
-    }
-    virtual bool IsInitialized() const
-    {
-        return m_isInitialized;
-    }
-    virtual void HandleEvent(const sf::Event &event)
-    {
-    }
+    virtual bool IsInitialized() = 0;
+
+    virtual void Update(float dt) = 0;
+    virtual void HandleEvent(const sf::Event &event) = 0;
+    virtual void Render() = 0;
+
+  protected:
+    virtual bool ShouldExit() = 0;
 
   protected:
     bool m_shouldExit = false;

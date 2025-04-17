@@ -15,7 +15,17 @@
 #include "Settings.h"
 #include <memory>
 
-// Signals that the class is a leaf class
+// ============================================================================
+//  Class       : MainMenuScene
+//  Purpose     : Leaf node class inheriting interface to define a Scene.
+//                Main menu logic upheld.
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - OnExit to call scene specific logic attributes
+//      - Init to accept input and event logic
+//      - Handles the render loop and time delta
+//
+// ============================================================================
 class MainMenuScene final : public Scene
 {
   public:
@@ -28,13 +38,18 @@ class MainMenuScene final : public Scene
     MainMenuScene &operator=(const MainMenuScene &) = delete;
 
     void Init() override;
+    void Shutdown() override;
+    void OnExit() override;
+
+    bool IsInitialized() override;
+
     void Update(float dt) override;
     void HandleEvent(const sf::Event &event) override;
     void Render() override;
-    void OnExit() override;
-    void Shutdown() override;
 
     void SetSceneChangeCallback(SceneChangeCallback callback);
+
+    bool ShouldExit() override;
 
   private:
     std::shared_ptr<Settings> m_settings;

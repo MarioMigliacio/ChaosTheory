@@ -17,6 +17,8 @@ SceneManager::SceneManager(std::shared_ptr<Settings> settings) : m_settings(sett
 {
 }
 
+// TODO: MARIO - The organization of the scenemanager h and cpp functions is correct, just need to add comments for
+// each, and do same for scenefactory. then 1.1.1_scene-manager will be ready for readme updates and final touch.s
 void SceneManager::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -99,6 +101,20 @@ void SceneManager::PopScene()
     }
 }
 
+void SceneManager::ClearScenes()
+{
+    CT_WARN_IF_UNINITIALIZED("SceneManager", "ClearScenes");
+
+    while (!m_scenes.empty())
+    {
+        m_scenes.top()->OnExit();
+        m_scenes.top().reset();
+        m_scenes.pop();
+    }
+
+    CT_LOG_INFO("All scenes cleared.");
+}
+
 bool SceneManager::IsEmpty() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "IsEmpty", false);
@@ -128,18 +144,4 @@ Scene *SceneManager::GetActiveScene() const
 bool SceneManager::IsInitialized() const
 {
     return m_isInitialized;
-}
-
-void SceneManager::ClearScenes()
-{
-    CT_WARN_IF_UNINITIALIZED("SceneManager", "ClearScenes");
-
-    while (!m_scenes.empty())
-    {
-        m_scenes.top()->OnExit();
-        m_scenes.top().reset();
-        m_scenes.pop();
-    }
-
-    CT_LOG_INFO("All scenes cleared.");
 }

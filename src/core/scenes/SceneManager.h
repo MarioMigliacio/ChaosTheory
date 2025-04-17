@@ -17,6 +17,16 @@
 #include <memory>
 #include <stack>
 
+// ============================================================================
+//  Class       : SceneManager
+//  Purpose     : Singleton class that manages the Scene Abstract base class.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Stores Scene transition logic, and update management
+//      - TODO: handle factory logic of scenes and transition logic updates
+//
+// ============================================================================
 class SceneManager
 {
   public:
@@ -38,10 +48,10 @@ class SceneManager
     void PopScene();
     void ClearScenes();
 
-    [[nodiscard]] bool IsEmpty() const;
-    [[nodiscard]] std::size_t GetSceneCount() const;
-    [[nodiscard]] Scene *GetActiveScene() const;
-    [[nodiscard]] bool IsInitialized() const;
+    bool IsEmpty() const;
+    std::size_t GetSceneCount() const;
+    Scene *GetActiveScene() const;
+    bool IsInitialized() const;
 
   private:
     std::stack<std::unique_ptr<Scene>> m_scenes;

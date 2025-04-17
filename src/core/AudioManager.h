@@ -23,7 +23,8 @@
 //
 //  Responsibilities:
 //      - Initializes and shuts down
-//      - Returns Music, volumes, and mute states. More in the future
+//      - Returns Music, volumes, and mute states.
+//      - TODO: Add sfx channel, buffers, more with settings in the future
 //
 // ============================================================================
 class AudioManager

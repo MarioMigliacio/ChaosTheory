@@ -23,6 +23,7 @@ MainMenuScene::MainMenuScene(std::shared_ptr<Settings> settings) : m_settings(se
 {
 }
 
+// Initializes the MainMenuScene.
 void MainMenuScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -35,6 +36,33 @@ void MainMenuScene::Init()
     CT_LOG_INFO("MainMenuScene initialized.");
 }
 
+// Shuts down this scene and resets internal state.
+void MainMenuScene::Shutdown()
+{
+    CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Shutdown");
+
+    m_settings.reset();
+    m_isInitialized = false;
+
+    CT_LOG_INFO("MainMenuScene shutdown.");
+}
+
+// Handles the exit criteria for this scene.
+void MainMenuScene::OnExit()
+{
+    AudioManager::Instance().StopMusic();
+    InputManager::Instance().UnbindKey("MenuSelectNext");
+
+    CT_LOG_INFO("MainMenuScene OnExit.");
+}
+
+// Returns whether or not this scene has been initialized.
+bool MainMenuScene::IsInitialized()
+{
+    return m_isInitialized;
+}
+
+// Performs internal state management during a single frame.
 void MainMenuScene::Update(float dt)
 {
     if (InputManager::Instance().IsJustReleased("MenuSelectNext"))
@@ -62,11 +90,13 @@ void MainMenuScene::Update(float dt)
     return;
 }
 
+// Handle any internal logic that should be done relevant to this scene.
 void MainMenuScene::HandleEvent(const sf::Event &event)
 {
     // Only if you want to catch window resize, close, etc.
 }
 
+// While this scene is active, render the necessary components to the Main Menu Scene.
 void MainMenuScene::Render()
 {
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Render");
@@ -83,25 +113,14 @@ void MainMenuScene::Render()
     window.draw(title);
 }
 
-void MainMenuScene::OnExit()
-{
-    AudioManager::Instance().StopMusic();
-    InputManager::Instance().UnbindKey("MenuSelectNext");
-
-    CT_LOG_INFO("MainMenuScene OnExit.");
-}
-
-void MainMenuScene::Shutdown()
-{
-    CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Shutdown");
-
-    m_settings.reset();
-    m_isInitialized = false;
-
-    CT_LOG_INFO("MainMenuScene shutdown.");
-}
-
+// Callback to determine logic for the next action scene to take place.
 void MainMenuScene::SetSceneChangeCallback(SceneChangeCallback callback)
 {
     m_sceneChangeCallback = std::move(callback);
+}
+
+// Returns whether or not the MainMenuScene should exit.
+bool MainMenuScene::ShouldExit()
+{
+    return m_shouldExit;
 }
