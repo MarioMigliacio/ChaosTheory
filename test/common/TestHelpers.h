@@ -1,33 +1,27 @@
 // ============================================================================
-//  File        : main.cpp
+//  File        : TestHelpers.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
-//  Description : Main entry point for the Chaos Theory Project executable
+//  Description : A Settings object used for internal testing
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
+#pragma once
+
 #include "Settings.h"
-#include "core/Application.h"
-#include "core/AudioManager.h"
-#include <iostream>
 #include <memory>
 
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#endif
-
-int main()
+inline std::shared_ptr<Settings> CreateTestSettings()
 {
     auto settings = std::make_shared<Settings>();
-
-    Application app(settings);
-    app.Init();
-    app.Run();
-
-    std::cout << "CT application successfully concluded." << std::endl;
-    return 0;
+    settings->m_windowWidth = 800;
+    settings->m_windowHeight = 600;
+    settings->m_windowTitle = "Test Window";
+    settings->m_audioDirectory = "assets/audio/";
+    settings->m_masterVolume = 50.0f;
+    settings->m_audioMuted = false;
+    return settings;
 }

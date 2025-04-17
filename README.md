@@ -58,6 +58,15 @@ cd script
 
 [CLEAN] options included:
 .\script\clean.bat           :: removes build, log, and install artifacts
+
+The new preferred build option is to use .\build_advanced.bat
+with optional flags like:
+        /ct      - build main CT application only
+        /test    - build test suite only
+        /all     - build both CT and test suite
+        /clean   - clean build directory
+    ex: .\build_advanced.bat /clean /all
+- clears any build artifacts, then builds target for debug(default) Test AND CT executable.
 ```
 
 ### Run tests
@@ -86,6 +95,12 @@ cd script
 .\run.bat
 ```
 
+### Debugging the application
+
+```
+In the .vscode folder is a launch.json file that is configured by default to allow for F5 running in vs code. I have configured the preLaunchTask to be the appropriate building action for the launch. Just change the target under 'Run and Debug' tab on the left side of vs code, and either click the run manually or hit F5! Sprinkle in breakpoints in desired code.
+```
+
 ### Project Structure
 
 ```
@@ -99,6 +114,8 @@ CT/
 ├── script/           → build/clean/init/install/run/test batch files
 ├── src/              → main game logic
 ├────core/            → CT essential library core functionality
+├──────common/        → CT common utility
+├──────scenes/        → CT scene logic handling
 ├── test/             → unit tests
 └── README.md
 ```

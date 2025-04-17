@@ -18,23 +18,32 @@
 #include <string>
 #include <unordered_map>
 
+// ============================================================================
+//  Class       : AssetManager
+//  Purpose     : Singleton class that manages the SFML assets.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns fonts, textures, and sounds in cache
+//      - TODO: Consider a loader which crawls recursively in a asset folder
+//
+// ============================================================================
 class AssetManager
 {
   public:
     static AssetManager &Instance();
 
-    void Init(std::shared_ptr<const Settings> settings); // const - May not adjust settings
+    void Init(std::shared_ptr<const Settings> settings);
     void Shutdown();
 
-    // Font
+    bool IsInitialized() const;
+
     bool LoadFont(const std::string &name, const std::string &filepath);
     sf::Font &GetFont(const std::string &name);
 
-    // Texture
     bool LoadTexture(const std::string &name, const std::string &filepath);
     sf::Texture &GetTexture(const std::string &name);
 
-    // Sound
     bool LoadSound(const std::string &name, const std::string &filepath);
     sf::SoundBuffer &GetSound(const std::string &name);
 
@@ -45,9 +54,12 @@ class AssetManager
     AssetManager(const AssetManager &) = delete;
     AssetManager &operator=(const AssetManager &) = delete;
 
+  private:
     std::unordered_map<std::string, sf::Texture> m_textures;
     std::unordered_map<std::string, sf::SoundBuffer> m_sounds;
     std::unordered_map<std::string, sf::Font> m_fonts;
 
-    std::shared_ptr<const Settings> m_settings; // const - May not adjust settings
+    std::shared_ptr<const Settings> m_settings;
+
+    bool m_isInitialized = false;
 };

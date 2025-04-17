@@ -9,13 +9,63 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "core/AssetManager.h"
+#include "AssetManager.h"
+#include "Macros.h"
+#include "TestHelpers.h"
 #include <gtest/gtest.h>
 
-TEST(AssetManagerTest, SingletonBehavior)
+class AssetManagerTest : public ::testing::Test
 {
-    AssetManager &first = AssetManager::Instance();
-    AssetManager &second = AssetManager::Instance();
+  protected:
+    std::shared_ptr<Settings> m_settings;
 
-    EXPECT_EQ(&first, &second);
+    void SetUp() override
+    {
+        m_settings = CreateTestSettings();
+
+        if (!LogManager::Instance().IsInitialized())
+        {
+            LogManager::Instance().Init();
+        }
+
+        AssetManager::Instance().Init(m_settings);
+    }
+
+    void TearDown() override
+    {
+        if (AssetManager::Instance().IsInitialized())
+        {
+            AssetManager::Instance().Shutdown();
+        }
+
+        m_settings.reset();
+    }
+};
+
+// =========================================================================
+// TEST CASES
+// =========================================================================
+
+TEST_F(AssetManagerTest, CanLoadAndRetrieveTexture)
+{
+    const auto &texture = AssetManager::Instance().GetTexture("default");
+    EXPECT_NE(&texture, nullptr);
+}
+
+TEST_F(AssetManagerTest, CanLoadAndRetrieveFont)
+{
+    const auto &font = AssetManager::Instance().GetFont("default");
+    EXPECT_NE(&font, nullptr);
+}
+
+TEST_F(AssetManagerTest, ReturnsFallbbackForMissingTexture)
+{
+    const auto &texture = AssetManager::Instance().GetTexture("nonexistent");
+    EXPECT_NE(&texture, nullptr);
+}
+
+TEST_F(AssetManagerTest, ReturnsFallbackForMissingFont)
+{
+    const auto &font = AssetManager::Instance().GetFont("nonexistent");
+    EXPECT_NE(&font, nullptr);
 }

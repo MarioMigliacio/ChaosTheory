@@ -1,12 +1,26 @@
+# test/CMakeLists.txt
+
 enable_testing()
 
-file(GLOB_RECURSE TEST_SOURCES CONFIGURE_DEPENDS *.cpp)
+# More explicit instead of file glob
+add_executable(CT_tests
+    ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SceneManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/WindowManagerTest.cpp
+    # add others here if needed
+)
 
-add_executable(CT_tests ${TEST_SOURCES})
+# Select debug/release SFML libs
+set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
 
 target_include_directories(CT_tests PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/core
+    ${PROJECT_SOURCE_DIR}/test
+    ${PROJECT_SOURCE_DIR}/test/common
     ${PROJECT_SOURCE_DIR}/external/spdlog/include
     ${PROJECT_SOURCE_DIR}/external/sfml/include
     ${PROJECT_SOURCE_DIR}/external/googletest/googletest/include
@@ -15,19 +29,14 @@ target_include_directories(CT_tests PRIVATE
 # Link directories for SFML
 target_link_directories(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
 
-# Select debug/release SFML libs
-set(SFML_LIB_SUFFIX $<$<CONFIG:Debug>:-d>)
-message(STATUS "IN TEST/CMAKELIST: Linking SFML libs with suffix '${SFML_LIB_SUFFIX}'")
-
 target_link_libraries(CT_tests
     PRIVATE
     core
     gtest
-    gtest_main
-    sfml-graphics-d
-    sfml-window-d
-    sfml-system-d
-    sfml-audio-d
+    sfml-graphics${SFML_LIB_SUFFIX}
+    sfml-window${SFML_LIB_SUFFIX}
+    sfml-system${SFML_LIB_SUFFIX}
+    sfml-audio${SFML_LIB_SUFFIX}
     opengl32
     freetype
     winmm
@@ -36,5 +45,4 @@ target_link_libraries(CT_tests
     advapi32
 )
 
-include(GoogleTest)
 add_test(NAME RunAllTests COMMAND CT_tests)

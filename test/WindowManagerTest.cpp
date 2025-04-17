@@ -9,13 +9,63 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "core/WindowManager.h"
+#include "WindowManager.h"
+#include "Macros.h"
+#include "TestHelpers.h"
 #include <gtest/gtest.h>
 
-TEST(WindowManagerTest, SingletonBehavior)
+class WindowManagerTest : public ::testing::Test
 {
-    WindowManager &first = WindowManager::Instance();
-    WindowManager &second = WindowManager::Instance();
+  protected:
+    std::shared_ptr<Settings> m_settings;
 
-    EXPECT_EQ(&first, &second);
+    void SetUp() override
+    {
+        m_settings = CreateTestSettings();
+
+        if (!LogManager::Instance().IsInitialized())
+        {
+            LogManager::Instance().Init();
+        }
+
+        WindowManager::Instance().Init(m_settings);
+    }
+
+    void TearDown() override
+    {
+        if (WindowManager::Instance().IsInitialized())
+        {
+            WindowManager::Instance().Shutdown();
+        }
+
+        m_settings.reset();
+    }
+};
+
+// =========================================================================
+// TEST CASES
+// =========================================================================
+
+TEST_F(WindowManagerTest, CanInitializeWindow)
+{
+    EXPECT_TRUE(WindowManager::Instance().IsInitialized());
+}
+
+TEST_F(WindowManagerTest, CanAccessRenderWindow)
+{
+    sf::RenderWindow &window = WindowManager::Instance().GetWindow();
+    EXPECT_TRUE(window.isOpen());
+}
+
+TEST_F(WindowManagerTest, ShutdownClosesWindow)
+{
+    WindowManager::Instance().Shutdown();
+    EXPECT_FALSE(WindowManager::Instance().IsInitialized());
+}
+
+TEST_F(WindowManagerTest, GetWindowSizeReturnsCorrectDimensions)
+{
+    auto size = WindowManager::Instance().GetWindow().getSize();
+    EXPECT_EQ(size.x, m_settings->m_windowWidth);
+    EXPECT_EQ(size.y, m_settings->m_windowHeight);
 }

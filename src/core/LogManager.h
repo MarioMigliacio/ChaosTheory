@@ -15,14 +15,15 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
-#define CT_LOG_TRACE(...) LogManager::Instance().GetLogger()->trace(__VA_ARGS__)
-#define CT_LOG_DEBUG(...) LogManager::Instance().GetLogger()->debug(__VA_ARGS__)
-#define CT_LOG_INFO(...) LogManager::Instance().GetLogger()->info(__VA_ARGS__)
-#define CT_LOG_WARN(...) LogManager::Instance().GetLogger()->warn(__VA_ARGS__)
-#define CT_LOG_ERROR(...) LogManager::Instance().GetLogger()->error(__VA_ARGS__)
-#define CT_LOG_CRITICAL(...)                                                   \
-    LogManager::Instance().GetLogger()->critical(__VA_ARGS__)
-
+// ============================================================================
+//  Class       : LogManager
+//  Purpose     : Singleton class that manages the Log handing.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Prints Trace, Debug, Info, Warn, Error, and Critical statements.
+//
+// ============================================================================
 class LogManager
 {
   public:
@@ -30,6 +31,8 @@ class LogManager
 
     void Init();
     void Shutdown();
+
+    bool IsInitialized() const;
 
     std::shared_ptr<spdlog::logger> GetLogger();
 
@@ -41,5 +44,6 @@ class LogManager
     LogManager &operator=(const LogManager &) = delete;
 
   private:
-    std::shared_ptr<spdlog::logger> logger;
+    std::shared_ptr<spdlog::logger> m_logger;
+    bool m_isInitialized = false;
 };

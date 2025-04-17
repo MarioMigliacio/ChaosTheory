@@ -16,6 +16,16 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
+// ============================================================================
+//  Class       : WindowManager
+//  Purpose     : Singleton class that manages the application window.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns SFML Render window, handles PollEvents,
+//                size adjustments, and rendering, and fullsize.
+//
+// ============================================================================
 class WindowManager
 {
   public:
@@ -24,13 +34,16 @@ class WindowManager
     void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
 
-    void Update();
+    bool IsInitialized() const;
+    bool IsOpen() const;
+
     void BeginDraw();
     void EndDraw();
 
-    bool IsOpen() const;
-    void ToggleFullscreen();
     void ApplySettings();
+    void ToggleFullscreen();
+
+    bool PollEvent(sf::Event &event);
 
     sf::RenderWindow &GetWindow();
 
@@ -45,4 +58,5 @@ class WindowManager
     std::unique_ptr<sf::RenderWindow> m_window;
     std::shared_ptr<Settings> m_settings;
     bool m_isFullscreen = false;
+    bool m_isInitialized = false;
 };
