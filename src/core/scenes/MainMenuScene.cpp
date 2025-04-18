@@ -31,6 +31,20 @@ void MainMenuScene::Init()
     AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu_clean.wav", true);
     InputManager::Instance().BindKey("MenuSelectNext", m_settings->m_keyBindings["MenuSelectNext"]);
 
+    m_button = std::make_unique<Button>(sf::Vector2f(100, 200), sf::Vector2f(200, 60));
+    m_button->SetText("Start", AssetManager::Instance().GetFont("default"));
+    m_button->SetCallback(
+        [this]()
+        {
+            CT_LOG_INFO("Start button pressed. Transitioning...");
+            m_shouldExit = true;
+
+            if (m_sceneChangeCallback)
+            {
+                m_sceneChangeCallback(SceneFactory::Instance().Create("Game"));
+            }
+        });
+
     m_isInitialized = true;
 
     CT_LOG_INFO("MainMenuScene initialized.");
@@ -42,6 +56,7 @@ void MainMenuScene::Shutdown()
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Shutdown");
 
     m_settings.reset();
+    m_button.reset();
     m_isInitialized = false;
 
     CT_LOG_INFO("MainMenuScene shutdown.");
@@ -65,27 +80,32 @@ bool MainMenuScene::IsInitialized()
 // Performs internal state management during a single frame.
 void MainMenuScene::Update(float dt)
 {
-    if (InputManager::Instance().IsJustReleased("MenuSelectNext"))
-    {
-        m_shouldExit = true;
-        AudioManager::Instance().StopMusic(true, 1.0f);
+    const auto mousePos = InputManager::Instance().GetMousePosition();
+    const bool isLeftClick = InputManager::Instance().IsMouseButtonPressed(sf::Mouse::Left);
 
-        CT_LOG_INFO("MainMenuScene Transition triggered.");
-    }
+    m_button->Update(mousePos, isLeftClick);
 
-    if (m_shouldExit)
-    {
-        if (!AudioManager::Instance().IsFadingOut())
-        {
-            CT_LOG_INFO("SceneChangeCallback 1/2 invoked from MainMenuScene.");
-            if (m_sceneChangeCallback)
-            {
-                m_sceneChangeCallback(SceneFactory::Instance().Create("Game"));
+    // if (InputManager::Instance().IsJustReleased("MenuSelectNext"))
+    // {
+    //     m_shouldExit = true;
+    //     AudioManager::Instance().StopMusic(true, 1.0f);
 
-                CT_LOG_INFO("SceneChangeCallback 2/2 invoked from MainMenuScene - and callback .");
-            }
-        }
-    }
+    //     CT_LOG_INFO("MainMenuScene Transition triggered.");
+    // }
+
+    // if (m_shouldExit)
+    // {
+    //     if (!AudioManager::Instance().IsFadingOut())
+    //     {
+    //         CT_LOG_INFO("SceneChangeCallback 1/2 invoked from MainMenuScene.");
+    //         if (m_sceneChangeCallback)
+    //         {
+    //             m_sceneChangeCallback(SceneFactory::Instance().Create("Game"));
+
+    //             CT_LOG_INFO("SceneChangeCallback 2/2 invoked from MainMenuScene - and callback .");
+    //         }
+    //     }
+    // }
 
     return;
 }
@@ -111,6 +131,7 @@ void MainMenuScene::Render()
     title.setPosition(100.f, 100.f);
 
     window.draw(title);
+    window.draw(*m_button);
 }
 
 // Callback to determine logic for the next action scene to take place.

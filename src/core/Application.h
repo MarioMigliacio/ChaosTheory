@@ -30,7 +30,7 @@
 class Application
 {
   public:
-    explicit Application(std::shared_ptr<Settings> sharedSettings);
+    Application(std::shared_ptr<Settings> sharedSettings);
     ~Application() = default;
 
     Application(const Application &) = delete;

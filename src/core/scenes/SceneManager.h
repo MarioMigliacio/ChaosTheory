@@ -31,7 +31,7 @@ class SceneManager
 {
   public:
     SceneManager() = default;
-    explicit SceneManager(std::shared_ptr<Settings> settings);
+    SceneManager(std::shared_ptr<Settings> settings);
     ~SceneManager() = default;
 
     SceneManager(const SceneManager &) = delete;

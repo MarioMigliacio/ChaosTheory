@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Button.h"
 #include "Scene.h"
 #include "Settings.h"
 #include <memory>
@@ -54,4 +55,6 @@ class MainMenuScene final : public Scene
   private:
     std::shared_ptr<Settings> m_settings;
     SceneChangeCallback m_sceneChangeCallback;
+
+    std::unique_ptr<Button> m_button;
 };

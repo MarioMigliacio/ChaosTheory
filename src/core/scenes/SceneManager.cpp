@@ -40,7 +40,7 @@ void SceneManager::Shutdown()
         if (m_scenes.top())
         {
             m_scenes.top()->OnExit();   // Optional
-            m_scenes.top()->Shutdown(); // Explicit call instead of relying on destructor
+            m_scenes.top()->Shutdown(); // call instead of relying on destructor
         }
         m_scenes.pop(); // smart pointer auto-deletes
     }
