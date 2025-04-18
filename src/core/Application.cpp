@@ -40,9 +40,7 @@ void Application::Init()
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
-
-    m_sceneManager = std::make_unique<SceneManager>(m_settings);
-    m_sceneManager->Init();
+    SceneManager::Instance().Init(m_settings);
 
     // TODO: This must be replaced in scene manager loading. 1.2.x must require this capability. NOT TO BE RELEASED IN
     // APPLICATION INIT logic.
@@ -53,7 +51,7 @@ void Application::Init()
                                           auto scene = std::make_unique<MainMenuScene>(m_settings);
                                           scene->SetSceneChangeCallback(
                                               [this](std::unique_ptr<Scene> next)
-                                              { m_sceneManager->PushScene(std::move(next)); });
+                                              { SceneManager::Instance().PushScene(std::move(next)); });
                                           return scene;
                                       });
 
@@ -63,11 +61,10 @@ void Application::Init()
                                           auto scene = std::make_unique<GameScene>(m_settings);
                                           scene->SetSceneChangeCallback(
                                               [this](std::unique_ptr<Scene> next)
-                                              { m_sceneManager->PushScene(std::move(next)); });
+                                              { SceneManager::Instance().PushScene(std::move(next)); });
                                           return scene;
                                       });
-    m_sceneManager->PushScene(SceneFactory::Instance().Create("MainMenu"));
-    // m_sceneManager->PushScene(SceneFactory::Instance().Create("Game"));
+    SceneManager::Instance().PushScene(SceneFactory::Instance().Create("MainMenu"));
 
     if (!WindowManager::Instance().IsOpen())
     {
@@ -93,7 +90,7 @@ void Application::Run()
 
         ProcessEvents();
         AudioManager::Instance().Update(dt);
-        m_sceneManager->Update(dt);
+        SceneManager::Instance().Update(dt);
         InputManager::Instance().PostUpdate();
         Render();
     }
@@ -104,16 +101,11 @@ void Application::Run()
 // Shuts down the Application after shutting down any manager and resets internal state.
 void Application::Shutdown()
 {
-    if (m_sceneManager)
-    {
-        m_sceneManager->Shutdown();
-        m_sceneManager.reset();
-    }
-
     WindowManager::Instance().Shutdown();
     InputManager::Instance().Shutdown();
     AssetManager::Instance().Shutdown();
     AudioManager::Instance().Shutdown();
+    SceneManager::Instance().Shutdown();
 
     CT_LOG_INFO("Application shutting down.");
     LogManager::Instance().Shutdown();
@@ -131,9 +123,9 @@ void Application::ProcessEvents()
     {
         InputManager::Instance().Update(event);
 
-        if (m_sceneManager && m_sceneManager->HasActiveScene())
+        if (SceneManager::Instance().HasActiveScene())
         {
-            m_sceneManager->GetActiveScene()->HandleEvent(event);
+            SceneManager::Instance().GetActiveScene()->HandleEvent(event);
         }
 
         if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
@@ -149,6 +141,6 @@ void Application::ProcessEvents()
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();
-    m_sceneManager->Render();
+    SceneManager::Instance().Render();
     WindowManager::Instance().EndDraw();
 }

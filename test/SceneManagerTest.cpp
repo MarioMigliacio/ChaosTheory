@@ -19,7 +19,6 @@ class SceneManagerTest : public ::testing::Test
 {
   protected:
     std::shared_ptr<Settings> m_settings;
-    std::unique_ptr<SceneManager> m_manager;
 
     void SetUp() override
     {
@@ -30,14 +29,17 @@ class SceneManagerTest : public ::testing::Test
             LogManager::Instance().Init();
         }
 
-        m_manager = std::make_unique<SceneManager>(m_settings);
-        m_manager->Init();
+        SceneManager::Instance().Init(m_settings);
     }
 
     void TearDown() override
     {
-        m_manager->Shutdown();
-        m_manager.reset();
+        if (SceneManager::Instance().IsInitialized())
+        {
+            SceneManager::Instance().Shutdown();
+        }
+
+        m_settings.reset();
     }
 };
 
@@ -48,20 +50,20 @@ class SceneManagerTest : public ::testing::Test
 TEST_F(SceneManagerTest, CanPushScene)
 {
     auto scene = std::make_unique<DummyScene>();
-    m_manager->PushScene(std::move(scene));
-    EXPECT_EQ(m_manager->GetSceneCount(), 1);
+    SceneManager::Instance().PushScene(std::move(scene));
+    EXPECT_EQ(SceneManager::Instance().GetSceneCount(), 1);
 }
 
 TEST_F(SceneManagerTest, ClearScenesEmptiesStack)
 {
-    m_manager->PushScene(std::make_unique<DummyScene>());
-    m_manager->ClearScenes();
-    EXPECT_EQ(m_manager->GetSceneCount(), 0);
+    SceneManager::Instance().PushScene(std::make_unique<DummyScene>());
+    SceneManager::Instance().ClearScenes();
+    EXPECT_EQ(SceneManager::Instance().GetSceneCount(), 0);
 }
 
 TEST_F(SceneManagerTest, PushSceneInitializesScene)
 {
     auto scene = std::make_unique<DummyScene>();
-    m_manager->PushScene(std::move(scene));
-    EXPECT_TRUE(m_manager->GetActiveScene()->IsInitialized());
+    SceneManager::Instance().PushScene(std::move(scene));
+    EXPECT_TRUE(SceneManager::Instance().GetActiveScene()->IsInitialized());
 }

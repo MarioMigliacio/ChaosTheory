@@ -47,5 +47,4 @@ class Application
     bool m_isRunning = false;
     bool m_isInitialized = false;
     std::shared_ptr<Settings> m_settings;
-    std::unique_ptr<SceneManager> m_sceneManager;
 };

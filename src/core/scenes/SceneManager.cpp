@@ -13,18 +13,21 @@
 #include "SceneManager.h"
 #include "Macros.h"
 
-SceneManager::SceneManager(std::shared_ptr<Settings> settings) : m_settings(settings)
+SceneManager &SceneManager::Instance()
 {
+    static SceneManager instance;
+    return instance;
 }
 
 // TODO: MARIO - The organization of the scenemanager h and cpp functions is correct, just need to add comments for
 // each, and do same for scenefactory. then 1.1.1_scene-manager will be ready for readme updates and final touch.s
 
 // Initializes the Scene Manager.
-void SceneManager::Init()
+void SceneManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
+    m_settings = settings;
     m_isInitialized = true;
 
     CT_LOG_INFO("SceneManager Initialized.");
@@ -42,6 +45,7 @@ void SceneManager::Shutdown()
             m_scenes.top()->OnExit();   // Optional
             m_scenes.top()->Shutdown(); // call instead of relying on destructor
         }
+
         m_scenes.pop(); // smart pointer auto-deletes
     }
 

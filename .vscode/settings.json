@@ -96,6 +96,7 @@
         "variant": "cpp",
         "stack": "cpp",
         "xstring": "cpp",
-        "xmemory": "cpp"
+        "xmemory": "cpp",
+        "xhash": "cpp"
     }
 }

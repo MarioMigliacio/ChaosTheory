@@ -30,14 +30,9 @@
 class SceneManager
 {
   public:
-    SceneManager() = default;
-    SceneManager(std::shared_ptr<Settings> settings);
-    ~SceneManager() = default;
+    static SceneManager &Instance();
 
-    SceneManager(const SceneManager &) = delete;
-    SceneManager &operator=(const SceneManager &) = delete;
-
-    void Init();
+    void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
 
     bool IsInitialized() const;
@@ -54,6 +49,13 @@ class SceneManager
     std::size_t GetSceneCount() const;
     Scene *GetActiveScene() const;
     bool HasActiveScene() const;
+
+  private:
+    SceneManager() = default;
+    ~SceneManager() = default;
+
+    SceneManager(const SceneManager &) = delete;
+    SceneManager &operator=(const SceneManager &) = delete;
 
   private:
     std::stack<std::unique_ptr<Scene>> m_scenes;
