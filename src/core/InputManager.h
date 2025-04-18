@@ -45,6 +45,15 @@ class InputManager
     bool IsJustPressed(const std::string &action) const;
     bool IsJustReleased(const std::string &action) const;
 
+    sf::Vector2i GetMousePosition() const;
+    void SetMousePosition(const sf::Vector2i &position);
+    void SetMouseButtonState(sf::Mouse::Button button, bool isPressed); // for testing
+
+    bool IsMouseButtonPressed(sf::Mouse::Button button) const;
+    bool IsMouseButtonJustPressed(sf::Mouse::Button button) const;
+    bool IsMouseButtonJustReleased(sf::Mouse::Button button) const;
+    void UpdateMouseButton(sf::Mouse::Button button, bool isDown);
+
     void BindKey(const std::string &action, sf::Keyboard::Key key);
     void UnbindKey(const std::string &action);
     sf::Keyboard::Key GetBoundKey(const std::string &action) const;
@@ -57,12 +66,15 @@ class InputManager
     InputManager &operator=(const InputManager &) = delete;
 
     void LoadBindings();
-    bool GetKeyState(const std::unordered_map<sf::Keyboard::Key, bool> &stateMap, sf::Keyboard::Key key) const;
 
   private:
     std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings;
     std::unordered_map<sf::Keyboard::Key, bool> m_currentState;
     std::unordered_map<sf::Keyboard::Key, bool> m_previousState;
+
+    sf::Vector2i m_mousePosition;
+    std::unordered_map<sf::Mouse::Button, bool> m_mouseCurrent;
+    std::unordered_map<sf::Mouse::Button, bool> m_mousePrevious;
 
     std::shared_ptr<Settings> m_settings;
     bool m_isInitialized = false;

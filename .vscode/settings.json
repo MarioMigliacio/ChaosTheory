@@ -1,4 +1,6 @@
 {
+    "C_Cpp.default.cppStandard": "c++20",
+
     // Use Microsoft's built-in C++ formatter
     "[cpp]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
@@ -6,7 +8,7 @@
     },
 
     // Style: LLVM base, 4-space indent, Allman braces (open on new line)
-    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, IndentWidth: 4, BreakBeforeBraces: Allman, AllowShortFunctionsOnASingleLine: None, AllowShortIfStatementsOnASingleLine: false, ColumnLimit: 120 }",
+    "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, IndentWidth: 4, BreakBeforeBraces: Allman, AllowShortFunctionsOnASingleLine: None, AllowShortIfStatementsOnASingleLine: false, ColumnLimit: 120, IndentCaseLabels: true }",
 
     // Optional: treat .h files like C++
     "[c]": {

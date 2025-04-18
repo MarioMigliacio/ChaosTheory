@@ -158,3 +158,9 @@ Scene *SceneManager::GetActiveScene() const
 
     return m_scenes.top().get();
 }
+
+// Returns whether or not there is a currently active scene.
+bool SceneManager::HasActiveScene() const
+{
+    return !m_scenes.empty();
+}

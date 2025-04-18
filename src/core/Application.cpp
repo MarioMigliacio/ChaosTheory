@@ -129,15 +129,19 @@ void Application::ProcessEvents()
 
     while (WindowManager::Instance().PollEvent(event))
     {
+        InputManager::Instance().Update(event);
+
+        if (m_sceneManager && m_sceneManager->HasActiveScene())
+        {
+            m_sceneManager->GetActiveScene()->HandleEvent(event);
+        }
+
         if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
         {
             m_isRunning = false;
 
             CT_LOG_INFO("Application closing from escape or close event.");
         }
-
-        InputManager::Instance().Update(event);
-        m_sceneManager->HandleEvent(event);
     }
 }
 

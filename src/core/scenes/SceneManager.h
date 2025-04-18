@@ -53,6 +53,7 @@ class SceneManager
     bool IsEmpty() const;
     std::size_t GetSceneCount() const;
     Scene *GetActiveScene() const;
+    bool HasActiveScene() const;
 
   private:
     std::stack<std::unique_ptr<Scene>> m_scenes;

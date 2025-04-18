@@ -7,7 +7,7 @@ It provides a clean foundation for building interactive and audio-enabled games 
 
 ## Features
 
--   Written in modern C++17
+-   Written in modern C++20
 -   Uses [SFML](https://www.sfml-dev.org/) for graphics, input, and audio
 -   Unit tested with [GoogleTest](https://github.com/google/googletest)
 -   Logging with [spdlog](https://github.com/gabime/spdlog)

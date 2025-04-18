@@ -132,7 +132,7 @@ sf::Font &AssetManager::GetFont(const std::string &name)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetFont", dummyFont);
 
-    if (m_fonts.find(name) == m_fonts.end())
+    if (!m_fonts.contains(name))
     {
         CT_LOG_WARN("Font '{}' not found. Using fallback.", name);
 
@@ -166,7 +166,7 @@ sf::Texture &AssetManager::GetTexture(const std::string &name)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetTexture", dummyTexture);
 
-    if (m_textures.find(name) == m_textures.end())
+    if (!m_textures.contains(name))
     {
         CT_LOG_WARN("Texture '{}' not found. Using fallback.", name);
 
@@ -200,7 +200,7 @@ sf::SoundBuffer &AssetManager::GetSound(const std::string &name)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetSound", dummySoundBuffer);
 
-    if (m_sounds.find(name) == m_sounds.end())
+    if (!m_sounds.contains(name))
     {
         CT_LOG_WARN("Sound '{}' not found. Using fallback.", name);
 
