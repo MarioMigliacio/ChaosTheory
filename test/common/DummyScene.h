@@ -49,4 +49,7 @@ class DummyScene : public Scene
     {
         return m_shouldExit;
     }
+    void OnResize(const sf::Vector2u &newSize) override
+    {
+    }
 };
