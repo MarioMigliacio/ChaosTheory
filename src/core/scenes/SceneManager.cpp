@@ -68,7 +68,14 @@ void SceneManager::Update(float dt)
 
     if (!m_scenes.empty())
     {
-        m_scenes.top()->Update(dt);
+        auto &scene = m_scenes.top();
+        scene->Update(dt);
+
+        if (scene->ShouldExit())
+        {
+            CT_LOG_INFO("SceneManager: Scene requested exit.");
+            m_scenes.pop();
+        }
     }
 }
 

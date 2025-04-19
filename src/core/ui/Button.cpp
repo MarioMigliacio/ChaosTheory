@@ -2,7 +2,7 @@
 //  File        : Button.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
-//  Created     : 2025-04-17
+//  Created     : 2025-04-18
 //  Description : Represents a clickable UI button with hover and press states.
 //                Can be used in menus and interactive scenes.
 //
@@ -36,8 +36,9 @@ void Button::SetText(const std::string &text, const sf::Font &font, unsigned int
     sf::FloatRect textRect = m_label.getLocalBounds();
     m_label.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
 
-    sf::FloatRect shapeRect = m_shape.getGlobalBounds();
-    m_label.setPosition(shapeRect.left + shapeRect.width / 2.f, shapeRect.top + shapeRect.height / 2.f);
+    sf::Vector2f pos = m_shape.getPosition();
+    sf::Vector2f sizeBox = m_shape.getSize();
+    m_label.setPosition(pos.x + sizeBox.x / 2.f, pos.y + sizeBox.y / 2.f);
 }
 
 // Sets the internal callback function for this Button, which responds to onClick.
@@ -81,6 +82,7 @@ void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
             m_isPressed = true;
 
             CT_LOG_INFO("Button clicked.");
+
             if (m_onClick)
             {
                 m_onClick();
@@ -103,6 +105,12 @@ void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
         m_shape.setFillColor(m_idleColor);
         m_isPressed = false;
     }
+}
+
+// Returns whether or not the point is within the bounds of this Button.
+bool Button::Contains(const sf::Vector2i &point) const
+{
+    return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
 // Draw this Button to the Renderable Target.

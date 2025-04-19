@@ -47,11 +47,24 @@ void GameScene::Shutdown()
     CT_LOG_INFO("GameScene shutdown.");
 }
 
+// Returns whether or not the GameScene should exit.
+bool GameScene::ShouldExit()
+{
+    return m_shouldExit;
+}
+
 // Handles the exit criteria for this scene.
 void GameScene::OnExit()
 {
-    AudioManager::Instance().StopMusic();
-    InputManager::Instance().UnbindKey("MenuSelectBack");
+    if (AudioManager::Instance().IsInitialized())
+    {
+        AudioManager::Instance().StopMusic();
+    }
+
+    if (AssetManager::Instance().IsInitialized())
+    {
+        InputManager::Instance().UnbindKey("MenuSelectBack");
+    }
 
     CT_LOG_INFO("GameScene OnExit.");
 }
@@ -96,6 +109,11 @@ void GameScene::HandleEvent(const sf::Event &event)
     // Only if you want to catch window resize, close, etc.
 }
 
+void GameScene::OnResize(const sf::Vector2u &newSize)
+{
+    // intentionally blank for now.
+}
+
 // While this scene is active, render the necessary components to the Game Scene.
 void GameScene::Render()
 {
@@ -117,10 +135,4 @@ void GameScene::Render()
 void GameScene::SetSceneChangeCallback(SceneChangeCallback callback)
 {
     m_sceneChangeCallback = std::move(callback);
-}
-
-// Returns whether or not the GameScene should exit.
-bool GameScene::ShouldExit()
-{
-    return m_shouldExit;
 }

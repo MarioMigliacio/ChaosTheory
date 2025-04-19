@@ -36,16 +36,15 @@ class Scene
 
     virtual void Init() = 0;
     virtual void Shutdown() = 0;
+    virtual bool ShouldExit() = 0;
     virtual void OnExit() = 0;
 
     virtual bool IsInitialized() = 0;
 
     virtual void Update(float dt) = 0;
     virtual void HandleEvent(const sf::Event &event) = 0;
+    virtual void OnResize(const sf::Vector2u &newSize) = 0;
     virtual void Render() = 0;
-
-  protected:
-    virtual bool ShouldExit() = 0;
 
   protected:
     bool m_shouldExit = false;

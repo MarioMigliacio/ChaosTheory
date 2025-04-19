@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : Button.h
+//  File        : RoundedButton.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-18
@@ -18,7 +18,7 @@
 #include <string>
 
 // ============================================================================
-//  Class       : Button
+//  Class       : RoundedButton
 //  Purpose     : Manages this Button logic at the ui level.
 //
 //  Responsibilities:
@@ -27,25 +27,26 @@
 //      - Display button specifics during render
 //
 // ============================================================================
-class Button : public UIElement
+class RoundedButton : public UIElement
 {
   public:
-    Button(const sf::Vector2f &position, const sf::Vector2f &size);
-    ~Button() override = default;
+    RoundedButton(const sf::Vector2f &position, const sf::Vector2f &size);
+    ~RoundedButton() override = default;
 
     // Disable copy
-    Button(const Button &) = delete;
-    Button &operator=(const Button &) = delete;
+    RoundedButton(const RoundedButton &) = delete;
+    RoundedButton &operator=(const RoundedButton &) = delete;
 
     // Allow move
-    Button(Button &&) noexcept = default;
-    Button &operator=(Button &&) noexcept = default;
+    RoundedButton(RoundedButton &&) noexcept = default;
+    RoundedButton &operator=(RoundedButton &&) noexcept = default;
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
     void SetCallback(std::function<void()> callback);
     void SetColors(const sf::Color &idle, const sf::Color &hover, const sf::Color &active);
+    void SetCornerRadius(float radius);
 
-    void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
+    void Update(const sf::Vector2i &mousePos, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
 
   private:
@@ -64,6 +65,8 @@ class Button : public UIElement
 
     bool m_isHovered = false;
     bool m_isPressed = false;
+
+    float m_cornerRadius = 8.0f; // Rounded edge radius
 
     std::function<void()> m_onClick;
 };

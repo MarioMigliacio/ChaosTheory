@@ -19,6 +19,7 @@
 #include "SceneFactory.h"
 #include "SceneManager.h"
 #include "Settings.h"
+#include "UIManager.h"
 #include "WindowManager.h"
 #include "version.h"
 
@@ -36,6 +37,7 @@ void Application::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     LogManager::Instance().Init();
+    UIManager::Instance().Init();
     WindowManager::Instance().Init(m_settings);
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
@@ -84,7 +86,7 @@ void Application::Run()
 {
     sf::Clock clock;
 
-    while (m_isRunning && WindowManager::Instance().IsOpen())
+    while (m_isRunning && WindowManager::Instance().IsOpen() && SceneManager::Instance().HasActiveScene())
     {
         float dt = clock.restart().asSeconds();
 
@@ -95,6 +97,8 @@ void Application::Run()
         Render();
     }
 
+    CT_LOG_INFO("No active scenes left. Shutting down application.");
+
     Shutdown();
 }
 
@@ -104,8 +108,9 @@ void Application::Shutdown()
     WindowManager::Instance().Shutdown();
     InputManager::Instance().Shutdown();
     AssetManager::Instance().Shutdown();
-    AudioManager::Instance().Shutdown();
     SceneManager::Instance().Shutdown();
+    AudioManager::Instance().Shutdown();
+    UIManager::Instance().Shutdown();
 
     CT_LOG_INFO("Application shutting down.");
     LogManager::Instance().Shutdown();
@@ -128,11 +133,40 @@ void Application::ProcessEvents()
             SceneManager::Instance().GetActiveScene()->HandleEvent(event);
         }
 
-        if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
+        switch (event.type)
         {
-            m_isRunning = false;
+            case sf::Event::Closed:
+                m_isRunning = false;
+                CT_LOG_INFO("Application closing from window close event.");
+                break;
 
-            CT_LOG_INFO("Application closing from escape or close event.");
+            case sf::Event::KeyPressed:
+                if (event.key.code == sf::Keyboard::Escape)
+                {
+                    m_isRunning = false;
+                    CT_LOG_INFO("Application closing from escape key.");
+                }
+                break;
+
+            case sf::Event::Resized:
+            {
+                auto &window = WindowManager::Instance().GetWindow();
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                window.setView(sf::View(visibleArea));
+
+                CT_LOG_INFO("Window resized to {}x{}", event.size.width, event.size.height);
+
+                // Optionally notify the scene to reposition UI
+                if (SceneManager::Instance().HasActiveScene())
+                {
+                    SceneManager::Instance().GetActiveScene()->OnResize({event.size.width, event.size.height});
+                }
+
+                break;
+            }
+
+            default:
+                break;
         }
     }
 }

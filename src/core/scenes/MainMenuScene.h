@@ -40,21 +40,29 @@ class MainMenuScene final : public Scene
 
     void Init() override;
     void Shutdown() override;
+    bool ShouldExit() override;
     void OnExit() override;
 
     bool IsInitialized() override;
 
     void Update(float dt) override;
     void HandleEvent(const sf::Event &event) override;
+    void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
     void SetSceneChangeCallback(SceneChangeCallback callback);
 
-    bool ShouldExit() override;
+  private:
+    // Setup helpers
+    void CreateTitleText();
+    void CreateButtons();
+    void LoadBackground();
+    void PlayIntroMusic();
 
   private:
     std::shared_ptr<Settings> m_settings;
     SceneChangeCallback m_sceneChangeCallback;
 
-    std::unique_ptr<Button> m_button;
+    std::unique_ptr<sf::Sprite> m_backgroundSprite;
+    sf::Text m_title;
 };

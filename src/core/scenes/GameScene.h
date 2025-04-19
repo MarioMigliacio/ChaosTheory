@@ -39,17 +39,17 @@ class GameScene final : public Scene
 
     void Init() override;
     void Shutdown() override;
+    bool ShouldExit() override;
     void OnExit() override;
 
     bool IsInitialized() override;
 
     void Update(float dt) override;
-    void HandleEvent(const sf::Event &event);
+    void HandleEvent(const sf::Event &event) override;
+    void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
     void SetSceneChangeCallback(SceneChangeCallback callback);
-
-    bool ShouldExit() override;
 
   private:
     std::shared_ptr<Settings> m_settings;
