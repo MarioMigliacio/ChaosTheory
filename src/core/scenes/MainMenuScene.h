@@ -11,20 +11,23 @@
 
 #pragma once
 
-#include "Button.h"
 #include "Scene.h"
 #include "Settings.h"
+#include "UIElement.h"
+#include "UIFactory.h"
+#include <SFML/Graphics.hpp>
 #include <memory>
 
 // ============================================================================
 //  Class       : MainMenuScene
-//  Purpose     : Leaf node class inheriting interface to define a Scene.
-//                Main menu logic upheld.
+//  Purpose     : Scene that displays the interactive main menu.
+//                Contains background, title, and Play/Exit buttons.
+//
 //  Responsibilities:
-//      - Initializes and shuts down
-//      - OnExit to call scene specific logic attributes
-//      - Init to accept input and event logic
-//      - Handles the render loop and time delta
+//      - Initialize background and music
+//      - Display a stylized title and interactable buttons
+//      - Handle user interaction and route scene transitions
+//      - Scale dynamically with window resize
 //
 // ============================================================================
 class MainMenuScene final : public Scene
@@ -40,10 +43,7 @@ class MainMenuScene final : public Scene
 
     void Init() override;
     void Shutdown() override;
-    bool ShouldExit() override;
     void OnExit() override;
-
-    bool IsInitialized() override;
 
     void Update(float dt) override;
     void HandleEvent(const sf::Event &event) override;
@@ -54,10 +54,14 @@ class MainMenuScene final : public Scene
 
   private:
     // Setup helpers
+    void SetupSceneAssets();
     void CreateTitleText();
     void CreateButtons();
     void LoadBackground();
     void PlayIntroMusic();
+
+    std::shared_ptr<UIElement> MakeMenuButton(ButtonType type, const sf::Vector2f &pos, const std::string &label,
+                                              std::function<void()> onClick);
 
   private:
     std::shared_ptr<Settings> m_settings;

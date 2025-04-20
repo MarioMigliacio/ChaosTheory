@@ -47,12 +47,6 @@ void GameScene::Shutdown()
     CT_LOG_INFO("GameScene shutdown.");
 }
 
-// Returns whether or not the GameScene should exit.
-bool GameScene::ShouldExit()
-{
-    return m_shouldExit;
-}
-
 // Handles the exit criteria for this scene.
 void GameScene::OnExit()
 {
@@ -67,12 +61,6 @@ void GameScene::OnExit()
     }
 
     CT_LOG_INFO("GameScene OnExit.");
-}
-
-// Returns whether or not this scene has been initialized.
-bool GameScene::IsInitialized()
-{
-    return m_isInitialized;
 }
 
 // Performs internal state management during a single frame.

@@ -39,10 +39,7 @@ class GameScene final : public Scene
 
     void Init() override;
     void Shutdown() override;
-    bool ShouldExit() override;
     void OnExit() override;
-
-    bool IsInitialized() override;
 
     void Update(float dt) override;
     void HandleEvent(const sf::Event &event) override;
