@@ -9,6 +9,7 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
+#include "ConfigLoader.h"
 #include "Settings.h"
 #include "core/Application.h"
 #include "core/AudioManager.h"
@@ -23,6 +24,11 @@
 int main()
 {
     auto settings = std::make_shared<Settings>();
+
+    if (!ConfigLoader::LoadFromJson("config.json", *settings))
+    {
+        std::cerr << "[WARNING] Falling back to default settings." << std::endl;
+    }
 
     Application app(settings);
     app.Init();

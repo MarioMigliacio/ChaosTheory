@@ -36,6 +36,7 @@ class AssetManager
     void Init(std::shared_ptr<const Settings> settings);
     void Shutdown();
 
+    void LoadAllAssets(); // Load all from font/audio/sprite dirs
     bool IsInitialized() const;
 
     bool LoadFont(const std::string &name, const std::string &filepath);

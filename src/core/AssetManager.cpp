@@ -41,49 +41,9 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
 
     CT_LOG_INFO("Initializing AssetManager...");
 
-    if (!fs::exists(m_settings->m_fontDirectory))
-    {
-        CT_LOG_WARN("Font directory not found: {}", m_settings->m_fontDirectory);
-        return;
-    }
-
-    if (!fs::exists(m_settings->m_audioDirectory))
-    {
-        CT_LOG_WARN("Audio directory not found: {}", m_settings->m_audioDirectory);
-        return;
-    }
-
-    if (!fs::exists(m_settings->m_spriteDirectory))
-    {
-        CT_LOG_WARN("Sprite directory not found: {}", m_settings->m_spriteDirectory);
-        return;
-    }
-
     m_isInitialized = true;
 
-    // Load fallback font(s) - this ideally from a loader.
-    std::string fallbackFont = m_settings->m_fontDirectory + "DefaultFont.ttf";
-
-    if (!LoadFont("default", fallbackFont))
-    {
-        CT_LOG_WARN("Failed to load fallback font: {}", fallbackFont);
-    }
-
-    // Load fallback texture(s) - this ideally from a loader.
-    std::string fallbackTexture = m_settings->m_spriteDirectory + "Fallback.png";
-
-    if (!LoadTexture("default", fallbackTexture))
-    {
-        CT_LOG_WARN("Failed to load fallback texture: {}", fallbackTexture);
-    }
-
-    // Load fallback sound(s) - this ideally from a loader.
-    std::string fallbackSound = m_settings->m_audioDirectory + "Fallback.wav";
-
-    if (!LoadSound("default", fallbackSound))
-    {
-        CT_LOG_WARN("Failed to load fallback sound: {}", fallbackSound);
-    }
+    LoadAllAssets();
 
     CT_LOG_INFO("AssetManager initialized.");
 }
@@ -101,6 +61,75 @@ void AssetManager::Shutdown()
     m_isInitialized = false;
 
     CT_LOG_INFO("AssetManager shutdown.");
+}
+
+void AssetManager::LoadAllAssets()
+{
+    CT_LOG_INFO("Loading all assets from configured directories...");
+
+    namespace fs = std::filesystem;
+
+    // --------- FONTS ----------
+    for (const auto &entry : fs::directory_iterator(m_settings->m_fontDirectory))
+    {
+        if (entry.is_regular_file())
+        {
+            std::string filename = entry.path().filename().string();
+            std::string name = entry.path().stem().string(); // no extension
+            std::string fullPath = entry.path().string();
+
+            if (LoadFont(name, fullPath))
+            {
+                CT_LOG_INFO("Loaded font '{}'", filename);
+            }
+            else
+            {
+                CT_LOG_WARN("Failed to load font '{}'", filename);
+            }
+        }
+    }
+
+    // --------- TEXTURES ----------
+    for (const auto &entry : fs::directory_iterator(m_settings->m_spriteDirectory))
+    {
+        if (entry.is_regular_file())
+        {
+            std::string filename = entry.path().filename().string();
+            std::string name = entry.path().stem().string();
+            std::string fullPath = entry.path().string();
+
+            if (LoadTexture(name, fullPath))
+            {
+                CT_LOG_INFO("Loaded texture '{}'", filename);
+            }
+            else
+            {
+                CT_LOG_WARN("Failed to load texture '{}'", filename);
+            }
+        }
+    }
+
+    // --------- SOUNDS ----------
+    for (const auto &entry : fs::directory_iterator(m_settings->m_audioDirectory))
+    {
+        if (entry.is_regular_file())
+        {
+            std::string filename = entry.path().filename().string();
+            std::string name = entry.path().stem().string();
+            std::string fullPath = entry.path().string();
+
+            if (LoadSound(name, fullPath))
+            {
+                CT_LOG_INFO("Loaded sound '{}'", filename);
+            }
+            else
+            {
+                CT_LOG_WARN("Failed to load sound '{}'", filename);
+            }
+        }
+    }
+
+    CT_LOG_INFO("Finished loading all assets.");
 }
 
 // Returns whether the Asset manager has been initialized.
