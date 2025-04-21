@@ -170,7 +170,7 @@ void MainMenuScene::SetupSceneAssets()
 // Assists with the loading of the TitleText for this MainMenuScene.
 void MainMenuScene::CreateTitleText()
 {
-    m_title.setFont(AssetManager::Instance().GetFont("default"));
+    m_title.setFont(AssetManager::Instance().GetFont("Default"));
     m_title.setString("Chaos Theory");
     m_title.setCharacterSize(DEFAULT_TITLE_FONT_SIZE); // Bigger for drama
     m_title.setFillColor(sf::Color(102, 255, 102));    // Alien green
@@ -218,8 +218,8 @@ void MainMenuScene::LoadBackground()
 {
     if (!AssetManager::Instance().LoadTexture("menu_bg", "assets/sprites/TitleBackground.png"))
     {
-        CT_LOG_WARN("Failed to load menu background. Using fallback.");
-        m_backgroundSprite = std::make_unique<sf::Sprite>(AssetManager::Instance().GetTexture("default"));
+        CT_LOG_WARN("Failed to load menu background. Using default.");
+        m_backgroundSprite = std::make_unique<sf::Sprite>(AssetManager::Instance().GetTexture("Default"));
 
         return;
     }

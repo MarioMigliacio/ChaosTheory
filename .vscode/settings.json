@@ -97,6 +97,8 @@
         "stack": "cpp",
         "xstring": "cpp",
         "xmemory": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "ranges": "cpp",
+        "valarray": "cpp"
     }
 }

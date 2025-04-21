@@ -26,7 +26,9 @@ struct Settings
     bool m_isFullscreen = false;
 
     float m_masterVolume = 100.0f;
-    bool m_audioMuted = false;
+    float m_musicVolume = 100.0f;
+    float m_sfxVolume = 100.0f;
+    bool m_isMuted = false;
 
     std::string m_audioDirectory = "assets/audio/";
     std::string m_fontDirectory = "assets/fonts/";

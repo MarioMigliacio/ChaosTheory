@@ -37,9 +37,9 @@ bool ConfigLoader::LoadFromJson(const std::string &filepath, Settings &settings)
         settings.m_spriteDirectory = j["paths"]["sprite_dir"];
 
         settings.m_masterVolume = j["audio"]["master_volume"];
-        // settings.m_musicVolume = j["audio"]["music_volume"];
-        // settings.m_sfxVolume = j["audio"]["sfx_volume"];
-        settings.m_audioMuted = j["audio"]["is_muted"];
+        settings.m_musicVolume = j["audio"]["music_volume"];
+        settings.m_sfxVolume = j["audio"]["sfx_volume"];
+        settings.m_isMuted = j["audio"]["is_muted"];
     }
     catch (const json::exception &e)
     {

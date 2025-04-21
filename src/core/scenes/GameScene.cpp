@@ -28,7 +28,7 @@ void GameScene::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     // Load assets, music, and scene-specific setup
-    AudioManager::Instance().SetVolume(50.f);
+    AudioManager::Instance().SetMasterVolume(50.f);
     AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Gametrack.wav", true);
     InputManager::Instance().BindKey("MenuSelectBack", m_settings->m_keyBindings["MenuSelectBack"]);
 
@@ -113,7 +113,7 @@ void GameScene::Render()
     text.setString("Game Scene - Press [Space] to return to Menu");
     text.setCharacterSize(24);
     text.setFillColor(sf::Color::Green);
-    text.setFont(AssetManager::Instance().GetFont("default"));
+    text.setFont(AssetManager::Instance().GetFont("Default"));
     text.setPosition(80.f, 80.f);
 
     window.draw(text);

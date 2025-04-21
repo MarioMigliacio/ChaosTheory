@@ -44,9 +44,22 @@ class AudioManager
     void ResumeMusic();
     bool IsMusicPlaying() const;
     bool IsFadingOut() const;
+    bool IsFadingIn() const;
 
-    void SetVolume(float volume);
-    float GetVolume() const;
+    void PlaySFX(const std::string &filename);
+
+    // Master Volume
+    void SetMasterVolume(float volume);
+    float GetMasterVolume() const;
+
+    // Music Volume
+    void SetMusicVolume(float volume);
+    float GetMusicVolume() const;
+
+    // SFX Volume (for future use)
+    void SetSFXVolume(float volume);
+    float GetSFXVolume() const;
+
     void Mute();
     void Unmute();
     bool IsMuted() const;
@@ -67,6 +80,11 @@ class AudioManager
 
     float m_masterVolume = 100.0f;
     float m_musicVolume = 100.0f;
+    float m_sfxVolume = 100.0f;
+
+    std::vector<sf::Sound> m_activeSounds;
+    size_t m_nextSoundIndex = 0;
+    const size_t MAX_SIMULTANEOUS_SOUNDS = 16;
 
     bool m_isMuted = false;
 

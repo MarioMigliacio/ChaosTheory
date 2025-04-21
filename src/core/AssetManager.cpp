@@ -80,7 +80,7 @@ void AssetManager::LoadAllAssets()
 
             if (LoadFont(name, fullPath))
             {
-                CT_LOG_INFO("Loaded font '{}'", filename);
+                CT_LOG_TRACE("Loaded font '{}'", filename);
             }
             else
             {
@@ -100,7 +100,7 @@ void AssetManager::LoadAllAssets()
 
             if (LoadTexture(name, fullPath))
             {
-                CT_LOG_INFO("Loaded texture '{}'", filename);
+                CT_LOG_TRACE("Loaded texture '{}'", filename);
             }
             else
             {
@@ -120,7 +120,7 @@ void AssetManager::LoadAllAssets()
 
             if (LoadSound(name, fullPath))
             {
-                CT_LOG_INFO("Loaded sound '{}'", filename);
+                CT_LOG_TRACE("Loaded sound '{}'", filename);
             }
             else
             {
@@ -163,9 +163,9 @@ sf::Font &AssetManager::GetFont(const std::string &name)
 
     if (!m_fonts.contains(name))
     {
-        CT_LOG_WARN("Font '{}' not found. Using fallback.", name);
+        CT_LOG_WARN("Font '{}' not found. Using Default.", name);
 
-        return m_fonts["default"];
+        return m_fonts["Default"];
     }
 
     return m_fonts[name];
@@ -197,9 +197,9 @@ sf::Texture &AssetManager::GetTexture(const std::string &name)
 
     if (!m_textures.contains(name))
     {
-        CT_LOG_WARN("Texture '{}' not found. Using fallback.", name);
+        CT_LOG_WARN("Texture '{}' not found. Using Default.", name);
 
-        return m_textures["default"];
+        return m_textures["Default"];
     }
 
     return m_textures[name];
@@ -231,9 +231,9 @@ sf::SoundBuffer &AssetManager::GetSound(const std::string &name)
 
     if (!m_sounds.contains(name))
     {
-        CT_LOG_WARN("Sound '{}' not found. Using fallback.", name);
+        CT_LOG_WARN("Sound '{}' not found. Using Default.", name);
 
-        return m_sounds["default"];
+        return m_sounds["Default"];
     }
 
     return m_sounds[name];

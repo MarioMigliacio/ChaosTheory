@@ -18,7 +18,7 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
 {
     std::shared_ptr<UIElement> button;
 
-    sf::Font &font = AssetManager::Instance().GetFont("default");
+    sf::Font &font = AssetManager::Instance().GetFont("Default");
 
     switch (type)
     {

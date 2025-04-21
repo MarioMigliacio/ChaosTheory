@@ -46,26 +46,26 @@ class AssetManagerTest : public ::testing::Test
 // TEST CASES
 // =========================================================================
 
-TEST_F(AssetManagerTest, CanLoadAndRetrieveTexture)
+TEST_F(AssetManagerTest, CanLoadAndRetrieveTextureFontAndSounds)
 {
-    const auto &texture = AssetManager::Instance().GetTexture("default");
+    const auto &texture = AssetManager::Instance().GetTexture("PlayerShip");
     EXPECT_NE(&texture, nullptr);
-}
 
-TEST_F(AssetManagerTest, CanLoadAndRetrieveFont)
-{
-    const auto &font = AssetManager::Instance().GetFont("default");
+    const auto &font = AssetManager::Instance().GetFont("Default");
     EXPECT_NE(&font, nullptr);
+
+    const auto &sound = AssetManager::Instance().GetSound("Bomb");
+    EXPECT_NE(&sound, nullptr);
 }
 
 TEST_F(AssetManagerTest, ReturnsFallbbackForMissingTexture)
 {
     const auto &texture = AssetManager::Instance().GetTexture("nonexistent");
     EXPECT_NE(&texture, nullptr);
-}
 
-TEST_F(AssetManagerTest, ReturnsFallbackForMissingFont)
-{
     const auto &font = AssetManager::Instance().GetFont("nonexistent");
     EXPECT_NE(&font, nullptr);
+
+    const auto &sound = AssetManager::Instance().GetSound("nonexistent");
+    EXPECT_NE(&sound, nullptr);
 }
