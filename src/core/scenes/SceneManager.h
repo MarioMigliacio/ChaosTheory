@@ -24,7 +24,6 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Stores Scene transition logic, and update management
-//      - TODO: handle factory logic of scenes and transition logic updates
 //
 // ============================================================================
 class SceneManager
@@ -43,6 +42,7 @@ class SceneManager
 
     void PushScene(std::unique_ptr<Scene> scene);
     void PopScene();
+    void ReplaceScene(std::unique_ptr<Scene> newScene);
     void ClearScenes();
 
     bool IsEmpty() const;

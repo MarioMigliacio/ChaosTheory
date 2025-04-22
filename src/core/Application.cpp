@@ -19,6 +19,7 @@
 #include "SceneFactory.h"
 #include "SceneManager.h"
 #include "Settings.h"
+#include "SplashScene.h"
 #include "UIManager.h"
 #include "WindowManager.h"
 #include "version.h"
@@ -38,7 +39,7 @@ void Application::Init()
 
     LogManager::Instance().Init();
     UIManager::Instance().Init();
-    WindowManager::Instance().Init(m_settings);
+    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar | sf::Style::Close);
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
@@ -47,26 +48,17 @@ void Application::Init()
     // TODO: This must be replaced in scene manager loading. 1.2.x must require this capability. NOT TO BE RELEASED IN
     // APPLICATION INIT logic.
     // Register scenes with factory, syntax looks a bit gnarly because of the lambda expression and function callback
-    SceneFactory::Instance().Register("MainMenu",
-                                      [this]()
-                                      {
-                                          auto scene = std::make_unique<MainMenuScene>(m_settings);
-                                          scene->SetSceneChangeCallback(
-                                              [this](std::unique_ptr<Scene> next)
-                                              { SceneManager::Instance().PushScene(std::move(next)); });
-                                          return scene;
-                                      });
 
-    SceneFactory::Instance().Register("Game",
+    SceneFactory::Instance().Register("Splash",
                                       [this]()
                                       {
-                                          auto scene = std::make_unique<GameScene>(m_settings);
+                                          auto scene = std::make_unique<SplashScene>(m_settings);
                                           scene->SetSceneChangeCallback(
                                               [this](std::unique_ptr<Scene> next)
-                                              { SceneManager::Instance().PushScene(std::move(next)); });
+                                              { SceneManager::Instance().ReplaceScene(std::move(next)); });
                                           return scene;
                                       });
-    SceneManager::Instance().PushScene(SceneFactory::Instance().Create("MainMenu"));
+    SceneManager::Instance().PushScene(SceneFactory::Instance().Create("Splash"));
 
     if (!WindowManager::Instance().IsOpen())
     {

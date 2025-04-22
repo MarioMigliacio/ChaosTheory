@@ -43,7 +43,7 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
 
     m_isInitialized = true;
 
-    LoadAllAssets();
+    // LoadAllAssets();
 
     CT_LOG_INFO("AssetManager initialized.");
 }

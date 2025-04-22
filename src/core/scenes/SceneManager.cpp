@@ -19,9 +19,6 @@ SceneManager &SceneManager::Instance()
     return instance;
 }
 
-// TODO: MARIO - The organization of the scenemanager h and cpp functions is correct, just need to add comments for
-// each, and do same for scenefactory. then 1.1.1_scene-manager will be ready for readme updates and final touch.s
-
 // Initializes the Scene Manager.
 void SceneManager::Init(std::shared_ptr<Settings> settings)
 {
@@ -122,8 +119,16 @@ void SceneManager::PopScene()
     if (!m_scenes.empty())
     {
         CT_LOG_INFO("Popping scene: {}", typeid(*m_scenes.top()).name());
+        m_scenes.top()->Shutdown();
         m_scenes.pop();
     }
+}
+
+// Exposes a callback scenario where the current scene is removed, and then its new scene is added to the m_scenes list
+void SceneManager::ReplaceScene(std::unique_ptr<Scene> newScene)
+{
+    PopScene();
+    PushScene(std::move(newScene));
 }
 
 // Remove all the scenes from the collection.

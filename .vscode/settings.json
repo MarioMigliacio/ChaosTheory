@@ -99,6 +99,7 @@
         "xmemory": "cpp",
         "xhash": "cpp",
         "ranges": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "future": "cpp"
     }
 }

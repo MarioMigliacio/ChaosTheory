@@ -25,7 +25,6 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Returns fonts, textures, and sounds in cache
-//      - TODO: Consider a loader which crawls recursively in a asset folder
 //
 // ============================================================================
 class AssetManager

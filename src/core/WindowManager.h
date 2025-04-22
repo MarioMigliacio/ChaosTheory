@@ -31,7 +31,7 @@ class WindowManager
   public:
     static WindowManager &Instance();
 
-    void Init(std::shared_ptr<Settings> settings);
+    void Init(std::shared_ptr<Settings> settings, sf::Uint32 style = sf::Style::Default);
     void Shutdown();
 
     bool IsInitialized() const;
@@ -40,7 +40,8 @@ class WindowManager
     void BeginDraw();
     void EndDraw();
 
-    void ApplySettings();
+    void Recreate(const unsigned int width, const unsigned int height, const std::string &title, sf::Uint32 style);
+    void ApplySettings(sf::Uint32 style = sf::Style::Default);
     void ToggleFullscreen();
 
     bool PollEvent(sf::Event &event);
@@ -53,6 +54,8 @@ class WindowManager
 
     WindowManager(const WindowManager &) = delete;
     WindowManager &operator=(const WindowManager &) = delete;
+
+    void Create(unsigned int width, unsigned int height, const std::string &title, sf::Uint32 style);
 
   private:
     std::unique_ptr<sf::RenderWindow> m_window;
