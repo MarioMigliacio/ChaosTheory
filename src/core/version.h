@@ -13,6 +13,6 @@
 
 #define CT_VERSION_MAJOR 1
 #define CT_VERSION_MINOR 1
-#define CT_VERSION_PATCH 1
+#define CT_VERSION_PATCH 2
 
-#define CT_VERSION_STRING "1.1.1-dev"
+#define CT_VERSION_STRING "1.1.2-dev"

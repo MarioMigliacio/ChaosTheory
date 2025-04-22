@@ -40,6 +40,9 @@ void InputManager::Shutdown()
     m_keyBindings.clear();
     m_currentState.clear();
     m_previousState.clear();
+    m_mouseCurrent.clear();
+    m_mousePrevious.clear();
+
     m_settings.reset();
     m_isInitialized = false;
 
@@ -57,23 +60,61 @@ void InputManager::Update(const sf::Event &event)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "Update");
 
-    if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)
+    switch (event.type)
     {
-        bool isDown = (event.type == sf::Event::KeyPressed);
-        m_currentState[event.key.code] = isDown;
-
-        // Ensure the key has a previous state entry too
-        if (m_previousState.find(event.key.code) == m_previousState.end())
+        case sf::Event::KeyPressed:
+        case sf::Event::KeyReleased:
         {
-            m_previousState[event.key.code] = !isDown;
+            bool isDown = (event.type == sf::Event::KeyPressed);
+            m_currentState[event.key.code] = isDown;
+
+            // Ensure the key has a previous state entry too
+            if (!m_previousState.contains(event.key.code))
+            {
+                m_previousState[event.key.code] = !isDown;
+            }
         }
+
+        break;
+
+        case sf::Event::MouseMoved:
+            m_mousePosition = {event.mouseMove.x, event.mouseMove.y};
+
+            break;
+
+        case sf::Event::MouseButtonPressed:
+        case sf::Event::MouseButtonReleased:
+        {
+            bool isDown = event.type == sf::Event::MouseButtonPressed;
+            auto button = event.mouseButton.button;
+
+            if (!m_mouseCurrent.contains(button))
+            {
+                m_mouseCurrent[button] = isDown;
+            }
+
+            if (!m_mousePrevious.contains(button))
+            {
+                m_mousePrevious[button] = !isDown;
+            }
+
+            m_mouseCurrent[button] = isDown;
+        }
+
+        break;
+
+        default:
+            break;
     }
 }
 
 // Completes state management during the end of a frame.
 void InputManager::PostUpdate()
 {
+    CT_WARN_IF_UNINITIALIZED("InputManager", "PostUpdate");
+
     m_previousState = m_currentState;
+    m_mousePrevious = m_mouseCurrent;
 }
 
 // Returns the state of whether a key is still being pressed based on the input action.
@@ -81,17 +122,14 @@ bool InputManager::IsKeyPressed(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsKeyPressed", false);
 
-    auto it = m_keyBindings.find(action);
-
-    if (it == m_keyBindings.end())
+    if (!m_keyBindings.contains(action))
     {
         return false;
     }
 
-    sf::Keyboard::Key code = it->second;
-    auto currentIt = m_currentState.find(code);
+    sf::Keyboard::Key key = m_keyBindings.at(action);
 
-    return (currentIt != m_currentState.end()) && currentIt->second;
+    return m_currentState.contains(key) ? m_currentState.at(key) : false;
 }
 
 // Returns the state of if a key has just been pressed, based on the input action.
@@ -99,17 +137,15 @@ bool InputManager::IsJustPressed(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsJustPressed", false);
 
-    auto it = m_keyBindings.find(action);
-
-    if (it == m_keyBindings.end())
+    if (!m_keyBindings.contains(action))
     {
         return false;
     }
 
-    sf::Keyboard::Key code = it->second;
+    sf::Keyboard::Key key = m_keyBindings.at(action);
 
-    const bool curr = GetKeyState(m_currentState, code);
-    const bool prev = GetKeyState(m_previousState, code);
+    const bool curr = m_currentState.contains(key) ? m_currentState.at(key) : false;
+    const bool prev = m_previousState.contains(key) ? m_previousState.at(key) : false;
 
     return curr && !prev;
 }
@@ -119,19 +155,84 @@ bool InputManager::IsJustReleased(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsJustReleased", false);
 
-    auto it = m_keyBindings.find(action);
-
-    if (it == m_keyBindings.end())
+    if (!m_keyBindings.contains(action))
     {
         return false;
     }
 
-    sf::Keyboard::Key code = it->second;
+    sf::Keyboard::Key key = m_keyBindings.at(action);
 
-    const bool curr = GetKeyState(m_currentState, code);
-    const bool prev = GetKeyState(m_previousState, code);
+    const bool curr = m_currentState.contains(key) ? m_currentState.at(key) : false;
+    const bool prev = m_previousState.contains(key) ? m_previousState.at(key) : false;
 
     return !curr && prev;
+}
+
+// Returns the currently tracked position of the mouse.
+sf::Vector2i InputManager::GetMousePosition() const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "GetMousePosition", sf::Vector2i(0, 0));
+
+    return m_mousePosition;
+}
+
+// Internally updates the mouse position during event processing.
+void InputManager::SetMousePosition(const sf::Vector2i &position)
+{
+    CT_WARN_IF_UNINITIALIZED("InputManager", "SetMousePosition");
+
+    m_mousePosition = position;
+}
+
+// Updates internal for mouse button press
+void InputManager::SetMouseButtonState(sf::Mouse::Button button, bool isPressed)
+{
+    CT_WARN_IF_UNINITIALIZED("InputManager", "SetMouseButtonState");
+
+    m_mouseCurrent[button] = isPressed;
+}
+
+// Returns whether or not the Mouse button identified as 'button' is being pressed.
+bool InputManager::IsMouseButtonPressed(sf::Mouse::Button button) const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsMouseButtonPressed", false);
+
+    return m_mouseCurrent.contains(button) ? m_mouseCurrent.at(button) : false;
+}
+
+// Returns whether or not the Mouse button identified as 'button' has just been pressed the first time.
+bool InputManager::IsMouseButtonJustPressed(sf::Mouse::Button button) const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsMouseButtonJustPressed", false);
+
+    bool curr = m_mouseCurrent.contains(button) ? m_mouseCurrent.at(button) : false;
+    bool prev = m_mousePrevious.contains(button) ? m_mousePrevious.at(button) : false;
+
+    return curr && !prev;
+}
+
+// Returns whether or not the Mouse button identified as 'button' has just been released.
+bool InputManager::IsMouseButtonJustReleased(sf::Mouse::Button button) const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsMouseButtonJustReleased", false);
+
+    bool curr = m_mouseCurrent.contains(button) ? m_mouseCurrent.at(button) : false;
+    bool prev = m_mousePrevious.contains(button) ? m_mousePrevious.at(button) : false;
+
+    return !curr && prev;
+}
+
+// Internally updates the state when SFML events are received
+void InputManager::UpdateMouseButton(sf::Mouse::Button button, bool isDown)
+{
+    CT_WARN_IF_UNINITIALIZED("InputManager", "UpdateMouseButton");
+
+    if (!m_mousePrevious.contains(button))
+    {
+        m_mousePrevious[button] = !isDown;
+    }
+
+    m_mousePrevious[button] = isDown;
 }
 
 // Stores an input action and the matching SFML Key to an internal unordered map.
@@ -155,11 +256,9 @@ sf::Keyboard::Key InputManager::GetBoundKey(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "GetBoundKey", sf::Keyboard::Unknown);
 
-    auto it = m_keyBindings.find(action);
-
-    if (it != m_keyBindings.end())
+    if (m_keyBindings.contains(action))
     {
-        return it->second;
+        return m_keyBindings.at(action);
     }
 
     return sf::Keyboard::Unknown;
@@ -174,11 +273,4 @@ void InputManager::LoadBindings()
     m_keyBindings["MoveDown"] = sf::Keyboard::S;
     m_keyBindings["MoveLeft"] = sf::Keyboard::A;
     m_keyBindings["MoveRight"] = sf::Keyboard::D;
-}
-
-// Internal helper method to getting the Key state of a queried sf::key.
-bool InputManager::GetKeyState(const std::unordered_map<sf::Keyboard::Key, bool> &stateMap, sf::Keyboard::Key key) const
-{
-    auto it = stateMap.find(key);
-    return it != stateMap.end() && it->second;
 }

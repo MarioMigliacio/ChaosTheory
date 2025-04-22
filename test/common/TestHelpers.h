@@ -22,6 +22,8 @@ inline std::shared_ptr<Settings> CreateTestSettings()
     settings->m_windowTitle = "Test Window";
     settings->m_audioDirectory = "assets/audio/";
     settings->m_masterVolume = 50.0f;
-    settings->m_audioMuted = false;
+    settings->m_musicVolume = 50.0f;
+    settings->m_sfxVolume = 50.0f;
+    settings->m_isMuted = false;
     return settings;
 }

@@ -1,0 +1,13 @@
+{
+    "paths": {
+        "font_dir": "assets/fonts/",
+        "audio_dir": "assets/audio/",
+        "sprite_dir": "assets/sprites/"
+    },
+    "audio": {
+        "master_volume": 80,
+        "music_volume": 70,
+        "sfx_volume": 70,
+        "is_muted": false
+    }
+}

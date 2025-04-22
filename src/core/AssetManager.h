@@ -25,7 +25,6 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Returns fonts, textures, and sounds in cache
-//      - TODO: Consider a loader which crawls recursively in a asset folder
 //
 // ============================================================================
 class AssetManager
@@ -36,6 +35,7 @@ class AssetManager
     void Init(std::shared_ptr<const Settings> settings);
     void Shutdown();
 
+    void LoadAllAssets();
     bool IsInitialized() const;
 
     bool LoadFont(const std::string &name, const std::string &filepath);

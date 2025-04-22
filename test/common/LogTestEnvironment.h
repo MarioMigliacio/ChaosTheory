@@ -13,6 +13,7 @@
 #pragma once
 
 #include "LogManager.h"
+#include "SFML/Graphics.hpp"
 #include <gtest/gtest.h>
 
 class LogTestEnvironment : public ::testing::Environment
@@ -24,6 +25,9 @@ class LogTestEnvironment : public ::testing::Environment
         {
             LogManager::Instance().Init();
         }
+
+        m_dummyWindow.create(sf::VideoMode(1, 1), "Dummy", sf::Style::None);
+        m_dummyWindow.setVisible(false);
     }
 
     void TearDown() override
@@ -32,5 +36,10 @@ class LogTestEnvironment : public ::testing::Environment
         {
             LogManager::Instance().Shutdown();
         }
+
+        m_dummyWindow.close();
     }
+
+  private:
+    sf::RenderWindow m_dummyWindow;
 };

@@ -19,6 +19,8 @@
 #include "SceneFactory.h"
 #include "SceneManager.h"
 #include "Settings.h"
+#include "SplashScene.h"
+#include "UIManager.h"
 #include "WindowManager.h"
 #include "version.h"
 
@@ -36,38 +38,23 @@ void Application::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     LogManager::Instance().Init();
-    WindowManager::Instance().Init(m_settings);
+    UIManager::Instance().Init();
+    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar | sf::Style::Close);
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
+    SceneManager::Instance().Init(m_settings);
 
-    m_sceneManager = std::make_unique<SceneManager>(m_settings);
-    m_sceneManager->Init();
-
-    // TODO: This must be replaced in scene manager loading. 1.2.x must require this capability. NOT TO BE RELEASED IN
-    // APPLICATION INIT logic.
-    // Register scenes with factory, syntax looks a bit gnarly because of the lambda expression and function callback
-    SceneFactory::Instance().Register("MainMenu",
+    SceneFactory::Instance().Register("Splash",
                                       [this]()
                                       {
-                                          auto scene = std::make_unique<MainMenuScene>(m_settings);
+                                          auto scene = std::make_unique<SplashScene>(m_settings);
                                           scene->SetSceneChangeCallback(
                                               [this](std::unique_ptr<Scene> next)
-                                              { m_sceneManager->PushScene(std::move(next)); });
+                                              { SceneManager::Instance().ReplaceScene(std::move(next)); });
                                           return scene;
                                       });
-
-    SceneFactory::Instance().Register("Game",
-                                      [this]()
-                                      {
-                                          auto scene = std::make_unique<GameScene>(m_settings);
-                                          scene->SetSceneChangeCallback(
-                                              [this](std::unique_ptr<Scene> next)
-                                              { m_sceneManager->PushScene(std::move(next)); });
-                                          return scene;
-                                      });
-    m_sceneManager->PushScene(SceneFactory::Instance().Create("MainMenu"));
-    // m_sceneManager->PushScene(SceneFactory::Instance().Create("Game"));
+    SceneManager::Instance().PushScene(SceneFactory::Instance().Create("Splash"));
 
     if (!WindowManager::Instance().IsOpen())
     {
@@ -87,16 +74,18 @@ void Application::Run()
 {
     sf::Clock clock;
 
-    while (m_isRunning && WindowManager::Instance().IsOpen())
+    while (m_isRunning && WindowManager::Instance().IsOpen() && SceneManager::Instance().HasActiveScene())
     {
         float dt = clock.restart().asSeconds();
 
         ProcessEvents();
         AudioManager::Instance().Update(dt);
-        m_sceneManager->Update(dt);
+        SceneManager::Instance().Update(dt);
         InputManager::Instance().PostUpdate();
         Render();
     }
+
+    CT_LOG_INFO("No active scenes left. Shutting down application.");
 
     Shutdown();
 }
@@ -104,16 +93,12 @@ void Application::Run()
 // Shuts down the Application after shutting down any manager and resets internal state.
 void Application::Shutdown()
 {
-    if (m_sceneManager)
-    {
-        m_sceneManager->Shutdown();
-        m_sceneManager.reset();
-    }
-
     WindowManager::Instance().Shutdown();
     InputManager::Instance().Shutdown();
     AssetManager::Instance().Shutdown();
+    SceneManager::Instance().Shutdown();
     AudioManager::Instance().Shutdown();
+    UIManager::Instance().Shutdown();
 
     CT_LOG_INFO("Application shutting down.");
     LogManager::Instance().Shutdown();
@@ -129,15 +114,48 @@ void Application::ProcessEvents()
 
     while (WindowManager::Instance().PollEvent(event))
     {
-        if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
-        {
-            m_isRunning = false;
+        InputManager::Instance().Update(event);
 
-            CT_LOG_INFO("Application closing from escape or close event.");
+        if (SceneManager::Instance().HasActiveScene())
+        {
+            SceneManager::Instance().GetActiveScene()->HandleEvent(event);
         }
 
-        InputManager::Instance().Update(event);
-        m_sceneManager->HandleEvent(event);
+        switch (event.type)
+        {
+            case sf::Event::Closed:
+                m_isRunning = false;
+                CT_LOG_INFO("Application closing from window close event.");
+                break;
+
+            case sf::Event::KeyPressed:
+                if (event.key.code == sf::Keyboard::Escape)
+                {
+                    m_isRunning = false;
+                    CT_LOG_INFO("Application closing from escape key.");
+                }
+                break;
+
+            case sf::Event::Resized:
+            {
+                auto &window = WindowManager::Instance().GetWindow();
+                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+                window.setView(sf::View(visibleArea));
+
+                CT_LOG_INFO("Window resized to {}x{}", event.size.width, event.size.height);
+
+                // Optionally notify the scene to reposition UI
+                if (SceneManager::Instance().HasActiveScene())
+                {
+                    SceneManager::Instance().GetActiveScene()->OnResize({event.size.width, event.size.height});
+                }
+
+                break;
+            }
+
+            default:
+                break;
+        }
     }
 }
 
@@ -145,6 +163,6 @@ void Application::ProcessEvents()
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();
-    m_sceneManager->Render();
+    SceneManager::Instance().Render();
     WindowManager::Instance().EndDraw();
 }

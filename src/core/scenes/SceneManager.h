@@ -24,20 +24,14 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Stores Scene transition logic, and update management
-//      - TODO: handle factory logic of scenes and transition logic updates
 //
 // ============================================================================
 class SceneManager
 {
   public:
-    SceneManager() = default;
-    explicit SceneManager(std::shared_ptr<Settings> settings);
-    ~SceneManager() = default;
+    static SceneManager &Instance();
 
-    SceneManager(const SceneManager &) = delete;
-    SceneManager &operator=(const SceneManager &) = delete;
-
-    void Init();
+    void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
 
     bool IsInitialized() const;
@@ -48,11 +42,20 @@ class SceneManager
 
     void PushScene(std::unique_ptr<Scene> scene);
     void PopScene();
+    void ReplaceScene(std::unique_ptr<Scene> newScene);
     void ClearScenes();
 
     bool IsEmpty() const;
     std::size_t GetSceneCount() const;
     Scene *GetActiveScene() const;
+    bool HasActiveScene() const;
+
+  private:
+    SceneManager() = default;
+    ~SceneManager() = default;
+
+    SceneManager(const SceneManager &) = delete;
+    SceneManager &operator=(const SceneManager &) = delete;
 
   private:
     std::stack<std::unique_ptr<Scene>> m_scenes;

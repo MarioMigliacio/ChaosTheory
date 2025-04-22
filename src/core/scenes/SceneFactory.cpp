@@ -26,9 +26,9 @@ void SceneFactory::Register(const std::string &sceneId, CreatorFn creator)
 // Generate a new Scene object using unique_ptr based on the requested id string.
 std::unique_ptr<Scene> SceneFactory::Create(const std::string &sceneId)
 {
-    if (auto it = m_creators.find(sceneId); it != m_creators.end())
+    if (m_creators.contains(sceneId))
     {
-        return it->second();
+        return m_creators[sceneId]();
     }
 
     return nullptr;

@@ -13,18 +13,18 @@
 #include "SceneManager.h"
 #include "Macros.h"
 
-SceneManager::SceneManager(std::shared_ptr<Settings> settings) : m_settings(settings)
+SceneManager &SceneManager::Instance()
 {
+    static SceneManager instance;
+    return instance;
 }
 
-// TODO: MARIO - The organization of the scenemanager h and cpp functions is correct, just need to add comments for
-// each, and do same for scenefactory. then 1.1.1_scene-manager will be ready for readme updates and final touch.s
-
 // Initializes the Scene Manager.
-void SceneManager::Init()
+void SceneManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
+    m_settings = settings;
     m_isInitialized = true;
 
     CT_LOG_INFO("SceneManager Initialized.");
@@ -40,8 +40,9 @@ void SceneManager::Shutdown()
         if (m_scenes.top())
         {
             m_scenes.top()->OnExit();   // Optional
-            m_scenes.top()->Shutdown(); // Explicit call instead of relying on destructor
+            m_scenes.top()->Shutdown(); // call instead of relying on destructor
         }
+
         m_scenes.pop(); // smart pointer auto-deletes
     }
 
@@ -64,7 +65,14 @@ void SceneManager::Update(float dt)
 
     if (!m_scenes.empty())
     {
-        m_scenes.top()->Update(dt);
+        auto &scene = m_scenes.top();
+        scene->Update(dt);
+
+        if (scene->ShouldExit())
+        {
+            CT_LOG_INFO("SceneManager: Scene requested exit.");
+            m_scenes.pop();
+        }
     }
 }
 
@@ -111,8 +119,18 @@ void SceneManager::PopScene()
     if (!m_scenes.empty())
     {
         CT_LOG_INFO("Popping scene: {}", typeid(*m_scenes.top()).name());
+        m_scenes.top()->Shutdown();
         m_scenes.pop();
     }
+}
+
+// Exposes a callback scenario where the current scene is removed, and then its new scene is added to the m_scenes list
+void SceneManager::ReplaceScene(std::unique_ptr<Scene> newScene)
+{
+    CT_WARN_IF_UNINITIALIZED("SceneManager", "ReplaceScene");
+
+    PopScene();
+    PushScene(std::move(newScene));
 }
 
 // Remove all the scenes from the collection.
@@ -141,7 +159,7 @@ bool SceneManager::IsEmpty() const
 // Returns the collection size of the number of existing scenes.
 std::size_t SceneManager::GetSceneCount() const
 {
-    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "GetSceneCount", 1);
+    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "GetSceneCount", 0);
 
     return m_scenes.size();
 }
@@ -157,4 +175,12 @@ Scene *SceneManager::GetActiveScene() const
     }
 
     return m_scenes.top().get();
+}
+
+// Returns whether or not there is a currently active scene.
+bool SceneManager::HasActiveScene() const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "HasActiveScene", false);
+
+    return !m_scenes.empty();
 }

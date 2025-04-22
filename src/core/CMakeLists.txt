@@ -14,6 +14,7 @@ target_include_directories(core PUBLIC
     ${PROJECT_SOURCE_DIR}/src/core
     ${PROJECT_SOURCE_DIR}/src/core/scenes
     ${PROJECT_SOURCE_DIR}/src/core/common
+    ${PROJECT_SOURCE_DIR}/src/core/ui
     ${PROJECT_SOURCE_DIR}/external/spdlog/include
     ${PROJECT_SOURCE_DIR}/external/sfml/include
 )

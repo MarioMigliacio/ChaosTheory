@@ -19,11 +19,14 @@
 //  Class       : GameScene
 //  Purpose     : Leaf node class inheriting interface to define a Scene.
 //                Game scene logic upheld.
+//
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - OnExit to call scene specific logic attributes
 //      - Init to accept input and event logic
 //      - Handles the render loop and time delta
+//      - TODO: v1.1.4: Clean and develop a sandbox
+//      - TODO: v1.1.3: Develop settings scene page
 //
 // ============================================================================
 class GameScene final : public Scene
@@ -41,15 +44,12 @@ class GameScene final : public Scene
     void Shutdown() override;
     void OnExit() override;
 
-    bool IsInitialized() override;
-
     void Update(float dt) override;
-    void HandleEvent(const sf::Event &event);
+    void HandleEvent(const sf::Event &event) override;
+    void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
     void SetSceneChangeCallback(SceneChangeCallback callback);
-
-    bool ShouldExit() override;
 
   private:
     std::shared_ptr<Settings> m_settings;

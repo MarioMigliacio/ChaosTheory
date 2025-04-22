@@ -28,7 +28,7 @@ void GameScene::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     // Load assets, music, and scene-specific setup
-    AudioManager::Instance().SetVolume(50.f);
+    AudioManager::Instance().SetMasterVolume(50.f);
     AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Gametrack.wav", true);
     InputManager::Instance().BindKey("MenuSelectBack", m_settings->m_keyBindings["MenuSelectBack"]);
 
@@ -50,16 +50,17 @@ void GameScene::Shutdown()
 // Handles the exit criteria for this scene.
 void GameScene::OnExit()
 {
-    AudioManager::Instance().StopMusic();
-    InputManager::Instance().UnbindKey("MenuSelectBack");
+    if (AudioManager::Instance().IsInitialized())
+    {
+        AudioManager::Instance().StopMusic();
+    }
+
+    if (AssetManager::Instance().IsInitialized())
+    {
+        InputManager::Instance().UnbindKey("MenuSelectBack");
+    }
 
     CT_LOG_INFO("GameScene OnExit.");
-}
-
-// Returns whether or not this scene has been initialized.
-bool GameScene::IsInitialized()
-{
-    return m_isInitialized;
 }
 
 // Performs internal state management during a single frame.
@@ -96,6 +97,11 @@ void GameScene::HandleEvent(const sf::Event &event)
     // Only if you want to catch window resize, close, etc.
 }
 
+void GameScene::OnResize(const sf::Vector2u &newSize)
+{
+    // intentionally blank for now.
+}
+
 // While this scene is active, render the necessary components to the Game Scene.
 void GameScene::Render()
 {
@@ -107,7 +113,7 @@ void GameScene::Render()
     text.setString("Game Scene - Press [Space] to return to Menu");
     text.setCharacterSize(24);
     text.setFillColor(sf::Color::Green);
-    text.setFont(AssetManager::Instance().GetFont("default"));
+    text.setFont(AssetManager::Instance().GetFont("Default"));
     text.setPosition(80.f, 80.f);
 
     window.draw(text);
@@ -117,10 +123,4 @@ void GameScene::Render()
 void GameScene::SetSceneChangeCallback(SceneChangeCallback callback)
 {
     m_sceneChangeCallback = std::move(callback);
-}
-
-// Returns whether or not the GameScene should exit.
-bool GameScene::ShouldExit()
-{
-    return m_shouldExit;
 }

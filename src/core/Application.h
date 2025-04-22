@@ -30,7 +30,7 @@
 class Application
 {
   public:
-    explicit Application(std::shared_ptr<Settings> sharedSettings);
+    Application(std::shared_ptr<Settings> sharedSettings);
     ~Application() = default;
 
     Application(const Application &) = delete;
@@ -47,5 +47,4 @@ class Application
     bool m_isRunning = false;
     bool m_isInitialized = false;
     std::shared_ptr<Settings> m_settings;
-    std::unique_ptr<SceneManager> m_sceneManager;
 };

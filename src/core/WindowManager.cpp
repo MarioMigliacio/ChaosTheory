@@ -28,7 +28,7 @@ WindowManager &WindowManager::Instance()
 }
 
 // Initializes the SFML window using the provided settings.
-void WindowManager::Init(std::shared_ptr<Settings> settings)
+void WindowManager::Init(std::shared_ptr<Settings> settings, sf::Uint32 style)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
@@ -88,17 +88,35 @@ void WindowManager::EndDraw()
     m_window->display();
 }
 
+// Custom recreate window with optional style, and aspect dimensions.
+void WindowManager::Recreate(const unsigned int width, const unsigned int height, const std::string &title,
+                             sf::Uint32 style)
+{
+    CT_WARN_IF_UNINITIALIZED("WindowManager", "Recreate");
+
+    if (m_window)
+    {
+        m_window->close();
+    }
+
+    sf::VideoMode mode(width, height);
+
+    m_window = std::make_unique<sf::RenderWindow>(mode, title, style);
+    m_window->setFramerateLimit(m_settings->m_targetFramerate);
+    m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
+}
+
 // Applies synchronization between the manager settings of the SFML window and the Settings object.
-void WindowManager::ApplySettings()
+void WindowManager::ApplySettings(sf::Uint32 style)
 {
     CT_WARN_IF_UNINITIALIZED("WindowManager", "ApplySettings");
 
     sf::VideoMode mode(m_settings->m_windowWidth, m_settings->m_windowHeight);
-    sf::Uint32 style = m_settings->m_isFullscreen ? sf::Style::Fullscreen : sf::Style::Default;
 
     m_window = std::make_unique<sf::RenderWindow>(mode, m_settings->m_windowTitle, style);
 
     m_window->setFramerateLimit(m_settings->m_targetFramerate);
+    m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 }
 
 // Changes the internal window state for full screen on/off.
