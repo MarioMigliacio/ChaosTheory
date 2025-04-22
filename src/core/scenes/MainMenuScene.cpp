@@ -210,7 +210,7 @@ void MainMenuScene::CreateButtons()
                                                         }
                                                     }));
     // Classic Exit Button
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Rounded, exitPos, "Exit",
+    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, exitPos, "Exit",
                                                     [this]()
                                                     {
                                                         CT_LOG_INFO("Exit button clicked!");

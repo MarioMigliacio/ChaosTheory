@@ -203,10 +203,12 @@ void SplashScene::ProcessAssetQueue(float dt)
         {
             success = AssetManager::Instance().LoadTexture(assetKey, request.filepath);
         }
+
         else if (request.type == "sound")
         {
             success = AssetManager::Instance().LoadSound(assetKey, request.filepath);
         }
+
         else if (request.type == "font")
         {
             success = AssetManager::Instance().LoadFont(assetKey, request.filepath);

@@ -3,7 +3,6 @@
 #include "UIFactory.h"
 #include "AssetManager.h"
 #include "Button.h"
-#include "RoundedButton.h"
 
 UIFactory &UIFactory::Instance()
 {
@@ -29,18 +28,6 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
 
             btn->SetText(label, font);
             btn->SetColors(sf::Color::Blue, sf::Color::Cyan, sf::Color::Green);
-            btn->SetCallback(onClick);
-
-            button = btn;
-
-            break;
-        }
-        case ButtonType::Rounded:
-        {
-            auto btn = std::make_shared<RoundedButton>(position, size);
-
-            btn->SetText(label, font);
-            btn->SetColors(sf::Color::Magenta, sf::Color::Yellow, sf::Color::Red);
             btn->SetCallback(onClick);
 
             button = btn;

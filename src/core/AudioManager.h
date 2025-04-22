@@ -24,7 +24,6 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Returns Music, volumes, and mute states.
-//      - TODO: Add sfx channel, buffers, more with settings in the future
 //
 // ============================================================================
 class AudioManager
@@ -56,7 +55,7 @@ class AudioManager
     void SetMusicVolume(float volume);
     float GetMusicVolume() const;
 
-    // SFX Volume (for future use)
+    // SFX Volume
     void SetSFXVolume(float volume);
     float GetSFXVolume() const;
 

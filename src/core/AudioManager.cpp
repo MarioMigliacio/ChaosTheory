@@ -220,6 +220,8 @@ void AudioManager::PlaySFX(const std::string &filename)
 // Synchronizes the Settings object with the internals of the Audio Manager volume controls.
 void AudioManager::SetMasterVolume(float volume)
 {
+    CT_WARN_IF_UNINITIALIZED("AudioManager", "SetMasterVolume");
+
     m_masterVolume = std::clamp(volume, 0.f, 100.f);
 
     if (m_settings)
@@ -237,12 +239,16 @@ void AudioManager::SetMasterVolume(float volume)
 // Returns the Audio managers current master volume.
 float AudioManager::GetMasterVolume() const
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetMasterVolume", 0.f);
+
     return m_masterVolume;
 }
 
 // Synchronizes the Settings object with the internals of the Audio Manager volume controls.
 void AudioManager::SetMusicVolume(float volume)
 {
+    CT_WARN_IF_UNINITIALIZED("AudioManager", "SetMusicVolume");
+
     m_musicVolume = std::clamp(volume, 0.f, 100.f);
 
     if (m_settings)
@@ -259,12 +265,15 @@ void AudioManager::SetMusicVolume(float volume)
 // Returns the Audio managers current music volume.
 float AudioManager::GetMusicVolume() const
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetMusicVolume", 0.f);
     return m_musicVolume;
 }
 
 // Synchronizes the Settings object with the internals of the Audio Manager volume controls.
 void AudioManager::SetSFXVolume(float volume)
 {
+    CT_WARN_IF_UNINITIALIZED("AudioManager", "SetSFXVolume");
+
     m_sfxVolume = std::clamp(volume, 0.f, 100.f);
 
     if (m_settings)
@@ -276,6 +285,8 @@ void AudioManager::SetSFXVolume(float volume)
 // Returns the Audio managers current sfx volume.
 float AudioManager::GetSFXVolume() const
 {
+    CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetSFXVolume", 0.f);
+
     return m_sfxVolume;
 }
 
@@ -339,6 +350,6 @@ void AudioManager::SwitchTrack(const std::string &filename, bool loop)
         return;
     }
 
-    StopMusic(true);                 // Fade out currrent
-    PlayMusic(filename, loop, true); // fade in next
+    StopMusic(true);
+    PlayMusic(filename, loop, true);
 }

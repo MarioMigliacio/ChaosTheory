@@ -45,10 +45,6 @@ void Application::Init()
     AudioManager::Instance().Init(m_settings);
     SceneManager::Instance().Init(m_settings);
 
-    // TODO: This must be replaced in scene manager loading. 1.2.x must require this capability. NOT TO BE RELEASED IN
-    // APPLICATION INIT logic.
-    // Register scenes with factory, syntax looks a bit gnarly because of the lambda expression and function callback
-
     SceneFactory::Instance().Register("Splash",
                                       [this]()
                                       {

@@ -55,8 +55,6 @@ class WindowManager
     WindowManager(const WindowManager &) = delete;
     WindowManager &operator=(const WindowManager &) = delete;
 
-    void Create(unsigned int width, unsigned int height, const std::string &title, sf::Uint32 style);
-
   private:
     std::unique_ptr<sf::RenderWindow> m_window;
     std::shared_ptr<Settings> m_settings;

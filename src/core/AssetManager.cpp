@@ -43,7 +43,7 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
 
     m_isInitialized = true;
 
-    // LoadAllAssets();
+    // LoadAllAssets(); // to be removed when deprecated.
 
     CT_LOG_INFO("AssetManager initialized.");
 }
@@ -63,6 +63,7 @@ void AssetManager::Shutdown()
     CT_LOG_INFO("AssetManager shutdown.");
 }
 
+// Loads every asset relative to the assets folder. Potential to deprecate in future in favor of lazy loading.
 void AssetManager::LoadAllAssets()
 {
     CT_LOG_INFO("Loading all assets from configured directories...");

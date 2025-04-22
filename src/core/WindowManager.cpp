@@ -92,7 +92,7 @@ void WindowManager::EndDraw()
 void WindowManager::Recreate(const unsigned int width, const unsigned int height, const std::string &title,
                              sf::Uint32 style)
 {
-    CT_WARN_IF_UNINITIALIZED("WindowManager", "ApplySettings");
+    CT_WARN_IF_UNINITIALIZED("WindowManager", "Recreate");
 
     if (m_window)
     {
