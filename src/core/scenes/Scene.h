@@ -18,6 +18,7 @@
 //  Class       : Scene
 //  Purpose     : Abstract base class with the interface to define a Scene.
 //                Scene implies a level in a game world, menu, or art screen.
+//
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - OnExit to call scene specific logic attributes

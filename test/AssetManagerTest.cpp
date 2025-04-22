@@ -48,12 +48,15 @@ class AssetManagerTest : public ::testing::Test
 
 TEST_F(AssetManagerTest, CanLoadAndRetrieveTextureFontAndSounds)
 {
+    AssetManager::Instance().LoadTexture("PlayerShip", "assets/sprites/playerShip.png");
     const auto &texture = AssetManager::Instance().GetTexture("PlayerShip");
     EXPECT_NE(&texture, nullptr);
 
+    AssetManager::Instance().LoadFont("Default", "assets/fonts/Default.ttf");
     const auto &font = AssetManager::Instance().GetFont("Default");
     EXPECT_NE(&font, nullptr);
 
+    AssetManager::Instance().LoadSound("Bomb", "assets/audio/Bomb.wav");
     const auto &sound = AssetManager::Instance().GetSound("Bomb");
     EXPECT_NE(&sound, nullptr);
 }

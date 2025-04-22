@@ -105,5 +105,6 @@ TEST_F(AudioManagerTest, SwitchTrackUpdatesState)
 TEST_F(AudioManagerTest, PlaySFXDoesNotCrash)
 {
     // Should trigger ring buffer assignment, no crash = pass
+    AssetManager::Instance().LoadSound("Bomb", "assets/audio/Bomb.wav");
     AudioManager::Instance().PlaySFX("Bomb");
 }

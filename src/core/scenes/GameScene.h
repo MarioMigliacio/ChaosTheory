@@ -19,11 +19,14 @@
 //  Class       : GameScene
 //  Purpose     : Leaf node class inheriting interface to define a Scene.
 //                Game scene logic upheld.
+//
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - OnExit to call scene specific logic attributes
 //      - Init to accept input and event logic
 //      - Handles the render loop and time delta
+//      - TODO: v1.1.4: Clean and develop a sandbox
+//      - TODO: v1.1.3: Develop settings scene page
 //
 // ============================================================================
 class GameScene final : public Scene

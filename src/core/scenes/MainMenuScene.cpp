@@ -40,6 +40,10 @@ void MainMenuScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
+    // New: MainMenuScene is designed to recreate the window using the settings, because SplashScene locked it.
+    WindowManager::Instance().Recreate(m_settings->m_windowWidth, m_settings->m_windowHeight, m_settings->m_windowTitle,
+                                       sf::Style::Default);
+
     SetupSceneAssets();
     PlayIntroMusic();
 
@@ -88,6 +92,7 @@ void MainMenuScene::Update(float dt)
     {
         CT_LOG_INFO("MainMenuScene requested exit.");
         m_sceneChangeCallback(nullptr); // or call SceneManager::PopScene() logic depending on your flow
+        m_shouldExit = false;           // Prevent re-entry if Update runs again
     }
 
     return;
@@ -170,7 +175,7 @@ void MainMenuScene::SetupSceneAssets()
 // Assists with the loading of the TitleText for this MainMenuScene.
 void MainMenuScene::CreateTitleText()
 {
-    m_title.setFont(AssetManager::Instance().GetFont("Default"));
+    m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
     m_title.setString("Chaos Theory");
     m_title.setCharacterSize(DEFAULT_TITLE_FONT_SIZE); // Bigger for drama
     m_title.setFillColor(sf::Color(102, 255, 102));    // Alien green
@@ -205,7 +210,7 @@ void MainMenuScene::CreateButtons()
                                                         }
                                                     }));
     // Classic Exit Button
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Rounded, exitPos, "Exit",
+    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, exitPos, "Exit",
                                                     [this]()
                                                     {
                                                         CT_LOG_INFO("Exit button clicked!");
@@ -243,7 +248,7 @@ void MainMenuScene::LoadBackground()
 // Plays the background music for this MainMenuScene.
 void MainMenuScene::PlayIntroMusic()
 {
-    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu_clean.wav", true);
+    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu.wav", true);
 }
 
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
