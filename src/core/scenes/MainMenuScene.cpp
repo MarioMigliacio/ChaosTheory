@@ -248,7 +248,7 @@ void MainMenuScene::LoadBackground()
 // Plays the background music for this MainMenuScene.
 void MainMenuScene::PlayIntroMusic()
 {
-    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu_clean.wav", true);
+    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu.wav", true);
 }
 
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,

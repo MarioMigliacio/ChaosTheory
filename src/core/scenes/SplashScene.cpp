@@ -38,10 +38,83 @@ void SplashScene::Init()
     CT_LOG_INFO("SplashScene initialized.");
 }
 
-// ============================================================================
+// There is no extraneous logic for Shutdown on this Splash Scene, but logging is useful.
 void SplashScene::Shutdown()
 {
     m_isInitialized = false;
+    CT_LOG_INFO("SplashScene Shutdown.");
+}
+
+// There is no extraneous logic for Exit on this Splash Scene, but logging is useful.
+void SplashScene::OnExit()
+{
+    CT_LOG_INFO("SplashScene exited.");
+}
+
+// Per frame, update the Background image with Shake Effect, Fade-in/out, and silent asset loading.
+void SplashScene::Update(float dt)
+{
+    UpdateFadeInOut(dt);
+    ApplyShakeEffect(dt);
+    ProcessAssetQueue(dt);
+
+    if (m_fadingOut && m_fadeTimer >= m_fadeOutDuration && m_doneLoading)
+    {
+        m_shouldExit = true;
+
+        if (m_sceneChangeCallback)
+        {
+            m_sceneChangeCallback(std::make_unique<MainMenuScene>(m_settings));
+        }
+    }
+}
+
+// Explicitely remove the ability for Resize event flowdowns.
+void SplashScene::HandleEvent(const sf::Event &event)
+{
+    if (event.type == sf::Event::Resized)
+    {
+        // Ignore resize during splash
+        return;
+    }
+}
+
+// Disable any ability for user to resize window during Splash Scene.
+void SplashScene::OnResize(const sf::Vector2u &newSize)
+{
+    // Intentionally do nothing
+}
+
+// While this scene is active, render the necessary components to the Splash Scene.
+void SplashScene::Render()
+{
+    auto &window = WindowManager::Instance().GetWindow();
+
+    window.clear();
+
+    if (m_background)
+    {
+        window.draw(*m_background);
+    }
+
+    if (AssetManager::Instance().IsInitialized())
+    {
+        sf::Text loading;
+        loading.setFont(AssetManager::Instance().GetFont("Default.ttf"));
+        loading.setString("Loading...");
+        loading.setCharacterSize(24);
+        loading.setFillColor(sf::Color(255, 255, 255, 180));
+        loading.setPosition(50.f, 600.f);
+        window.draw(loading);
+    }
+
+    window.display();
+}
+
+// Callback to determine logic for the next action scene to take place.
+void SplashScene::SetSceneChangeCallback(SceneChangeCallback callback)
+{
+    m_sceneChangeCallback = std::move(callback);
 }
 
 void SplashScene::LoadBackground()
@@ -49,6 +122,12 @@ void SplashScene::LoadBackground()
     if (!AssetManager::Instance().LoadTexture("splash_bg", "assets/sprites/ChaosTheorySplash1.png"))
     {
         CT_LOG_WARN("Failed to load splash background.");
+        return;
+    }
+
+    if (!AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf"))
+    {
+        CT_LOG_WARN("Failed to load splash font.");
         return;
     }
 
@@ -106,13 +185,11 @@ void SplashScene::QueueAssets()
 // Request to load Assets that have been gathered with the AssetManager Loading methods, thread safe.
 void SplashScene::ProcessAssetQueue(float dt)
 {
-    static float assetLoadDelay = 0.01f;
-    static float assetTimer = 0.f;
-    assetTimer += dt;
+    m_assetTimer += dt;
 
-    if (assetTimer >= assetLoadDelay && !m_assetQueue.empty())
+    if (m_assetTimer >= m_assetLoadDelay && !m_assetQueue.empty())
     {
-        assetTimer = 0.f;
+        m_assetTimer = 0.f;
 
         AssetLoadRequest request = m_assetQueue.front();
         m_assetQueue.pop();
@@ -138,44 +215,19 @@ void SplashScene::ProcessAssetQueue(float dt)
         CT_LOG_INFO("Loaded {}: {} -> {}", request.type, assetKey, success ? "Success" : "Failed");
     }
 
-    if (m_assetQueue.empty() && !m_fadingOut && m_fadeTimer > m_fadeDuration)
+    if (m_assetQueue.empty() && !m_fadingOut && m_fadeTimer > m_fadeInDuration)
     {
         m_fadingOut = true;
+        m_doneLoading = true;
         m_fadeTimer = 0.f;
     }
 }
 
-// Per frame, update the Background image with Shake Effect, Fade-in/out, and silent asset loading.
-void SplashScene::Update(float dt)
+// Begin the fading in timer and boolean logic.
+void SplashScene::StartFadeIn()
 {
-    ApplyShakeEffect(dt);
-    UpdateFadeInOut(dt);
-    ProcessAssetQueue(dt);
-
-    if (m_fadingOut && m_fadeTimer >= m_fadeDuration)
-    {
-        m_shouldExit = true;
-
-        if (m_sceneChangeCallback)
-        {
-            m_sceneChangeCallback(std::make_unique<MainMenuScene>(m_settings));
-        }
-    }
-}
-
-// While this scene is active, render the necessary components to the Splash Scene.
-void SplashScene::Render()
-{
-    auto &window = WindowManager::Instance().GetWindow();
-
-    window.clear();
-
-    if (m_background)
-    {
-        window.draw(*m_background);
-    }
-
-    window.display();
+    m_fadingIn = true;
+    m_fadeTimer = 0.f;
 }
 
 // Use update fade timer based on update delta times, Fade in the background alpha value.
@@ -187,9 +239,9 @@ void SplashScene::UpdateFadeInOut(float dt)
 
     if (m_fadingIn)
     {
-        alpha = static_cast<uint8_t>(std::min(255.f, (m_fadeTimer / m_fadeDuration) * 255.f));
+        alpha = static_cast<uint8_t>(std::min(255.f, (m_fadeTimer / m_fadeInDuration) * 255.f));
 
-        if (m_fadeTimer >= m_fadeDuration)
+        if (m_fadeTimer >= m_fadeInDuration)
         {
             m_fadingIn = false;
         }
@@ -197,7 +249,7 @@ void SplashScene::UpdateFadeInOut(float dt)
 
     else if (m_fadingOut)
     {
-        alpha = static_cast<uint8_t>(std::max(0.f, 255.f - (m_fadeTimer / m_fadeDuration) * 255.f));
+        alpha = static_cast<uint8_t>(std::max(0.f, 255.f - (m_fadeTimer / m_fadeOutDuration) * 255.f));
     }
 
     sf::Color bgColor = m_background->getColor();
@@ -215,41 +267,6 @@ void SplashScene::ApplyShakeEffect(float dt)
 
     sf::Vector2u winSize = WindowManager::Instance().GetWindow().getSize();
     m_background->setPosition(offsetX, offsetY);
-}
-
-// Begin the fading in timer and boolean logic.
-void SplashScene::StartFadeIn()
-{
-    m_fadingIn = true;
-    m_fadeTimer = 0.f;
-}
-
-// Explicitely remove the ability for Resize event flowdowns.
-void SplashScene::HandleEvent(const sf::Event &event)
-{
-    if (event.type == sf::Event::Resized)
-    {
-        // Ignore resize during splash
-        return;
-    }
-}
-
-// Disable any ability for user to resize window during Splash Scene.
-void SplashScene::OnResize(const sf::Vector2u &newSize)
-{
-    // Intentionally do nothing
-}
-
-// There is no extraneous logic for Exit on this Splash Scene, but logging is useful.
-void SplashScene::OnExit()
-{
-    CT_LOG_INFO("SplashScene exited.");
-}
-
-// Callback to determine logic for the next action scene to take place.
-void SplashScene::SetSceneChangeCallback(SceneChangeCallback callback)
-{
-    m_sceneChangeCallback = std::move(callback);
 }
 
 // Forces the Window to a set resolution size, which uses the Titlebar style so no resizing or fullscreen buttons.

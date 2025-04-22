@@ -23,6 +23,7 @@ struct Settings
     unsigned int m_windowWidth = 1280;
     unsigned int m_windowHeight = 720;
     unsigned int m_targetFramerate = 60;
+    bool m_verticleSyncEnabled = true;
     bool m_isFullscreen = false;
 
     float m_masterVolume = 100.0f;

@@ -62,13 +62,11 @@ class SplashScene final : public Scene
 
   private:
     void LoadBackground();
-
     void QueueAssets();
     void ProcessAssetQueue(float dt);
     void StartFadeIn();
     void UpdateFadeInOut(float dt);
     void ApplyShakeEffect(float dt);
-
     void LockWindow();
 
   private:
@@ -79,16 +77,18 @@ class SplashScene final : public Scene
     std::unique_ptr<sf::Texture> m_backgroundTexture;
 
     bool m_fadingIn = false;
-    bool m_fadeInComplete = false;
     bool m_fadingOut = false;
-    bool m_holdStarted = false;
+    bool m_doneLoading = false;
+
+    float m_assetTimer = 0.f;
+    float m_assetLoadDelay = 0.05f;
 
     float m_fadeTimer = 0.f;
-    float m_fadeDuration = 2.0f;
-    float m_holdDuration = 1.0f;
+    float m_fadeInDuration = 2.0f;
+    float m_fadeOutDuration = 4.0f;
 
     float m_shakeTimer = 0.f;
-    float m_shakeAmplitude = 2.f;
+    float m_shakeAmplitude = 4.f;
 
     std::queue<AssetLoadRequest> m_assetQueue;
 };

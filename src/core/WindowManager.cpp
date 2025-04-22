@@ -103,6 +103,7 @@ void WindowManager::Recreate(const unsigned int width, const unsigned int height
 
     m_window = std::make_unique<sf::RenderWindow>(mode, title, style);
     m_window->setFramerateLimit(m_settings->m_targetFramerate);
+    m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 }
 
 // Applies synchronization between the manager settings of the SFML window and the Settings object.
@@ -115,6 +116,7 @@ void WindowManager::ApplySettings(sf::Uint32 style)
     m_window = std::make_unique<sf::RenderWindow>(mode, m_settings->m_windowTitle, style);
 
     m_window->setFramerateLimit(m_settings->m_targetFramerate);
+    m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 }
 
 // Changes the internal window state for full screen on/off.
