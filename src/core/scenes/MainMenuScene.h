@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Scene.h"
+#include "SceneManager.h"
 #include "Settings.h"
 #include "UIElement.h"
 #include "UIFactory.h"
@@ -33,8 +34,6 @@
 class MainMenuScene final : public Scene
 {
   public:
-    using SceneChangeCallback = std::function<void(std::unique_ptr<Scene>)>;
-
     MainMenuScene(std::shared_ptr<Settings> settings);
     ~MainMenuScene() = default;
 
@@ -50,8 +49,6 @@ class MainMenuScene final : public Scene
     void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
-    void SetSceneChangeCallback(SceneChangeCallback callback);
-
   private:
     // Setup helpers
     void SetupSceneAssets();
@@ -65,8 +62,8 @@ class MainMenuScene final : public Scene
 
   private:
     std::shared_ptr<Settings> m_settings;
-    SceneChangeCallback m_sceneChangeCallback;
 
     std::unique_ptr<sf::Sprite> m_backgroundSprite;
     sf::Text m_title;
+    SceneID m_requestedScene = SceneID::Splash;
 };

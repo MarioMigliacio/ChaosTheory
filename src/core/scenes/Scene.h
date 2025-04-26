@@ -60,4 +60,5 @@ class Scene
   protected:
     bool m_shouldExit = false;
     bool m_isInitialized = false;
+    bool m_hasPendingTransition = false;
 };

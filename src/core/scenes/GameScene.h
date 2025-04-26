@@ -49,9 +49,6 @@ class GameScene final : public Scene
     void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
-    void SetSceneChangeCallback(SceneChangeCallback callback);
-
   private:
     std::shared_ptr<Settings> m_settings;
-    SceneChangeCallback m_sceneChangeCallback;
 };

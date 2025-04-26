@@ -43,7 +43,7 @@ bool ConfigLoader::LoadFromJson(const std::string &filepath, Settings &settings)
     }
     catch (const json::exception &e)
     {
-        std::cerr << "JSON parse error: " << e.what() << '\n';
+        std::cerr << "JSON parse error: " << e.what() << std::endl;
 
         return false;
     }

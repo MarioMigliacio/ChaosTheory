@@ -60,9 +60,19 @@ void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Update");
 
+    m_isUpdating = true;
+
     for (auto &element : m_elements)
     {
         element->Update(mousePos, isLeftClick);
+    }
+
+    m_isUpdating = false;
+
+    if (m_pendingClear)
+    {
+        Clear();
+        m_pendingClear = false;
     }
 }
 
@@ -81,6 +91,13 @@ void UIManager::Render(sf::RenderWindow &window)
 void UIManager::Clear()
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Clear");
+
+    if (m_isUpdating)
+    {
+        m_pendingClear = true;
+
+        return;
+    }
 
     m_elements.clear();
 }

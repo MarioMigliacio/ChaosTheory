@@ -17,6 +17,7 @@
 #include "Macros.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
+#include "SettingsScene.h"
 #include "UIFactory.h"
 #include "UIManager.h"
 #include "WindowManager.h"
@@ -60,7 +61,7 @@ void MainMenuScene::Shutdown()
     m_settings.reset();
     m_isInitialized = false;
 
-    CT_LOG_INFO("MainMenuScene shutdown.");
+    CT_LOG_INFO("MainMenuScene Shutdown.");
 }
 
 // Handles the exit criteria for this scene.
@@ -69,11 +70,6 @@ void MainMenuScene::OnExit()
     if (AudioManager::Instance().IsInitialized())
     {
         AudioManager::Instance().StopMusic();
-    }
-
-    if (AssetManager::Instance().IsInitialized())
-    {
-        InputManager::Instance().UnbindKey("MenuSelectNext");
     }
 
     CT_LOG_INFO("MainMenuScene OnExit.");
@@ -87,12 +83,20 @@ void MainMenuScene::Update(float dt)
 
     UIManager::Instance().Update(mousePos, isPressed);
 
-    // Handle exit request from the scene
-    if (m_shouldExit && m_sceneChangeCallback)
+    // Handle button scene request change
+    if (m_hasPendingTransition)
     {
-        CT_LOG_INFO("MainMenuScene requested exit.");
-        m_sceneChangeCallback(nullptr); // or call SceneManager::PopScene() logic depending on your flow
-        m_shouldExit = false;           // Prevent re-entry if Update runs again
+        CT_LOG_INFO("Requesting Scene Change to '{}'", ToString(m_requestedScene));
+        SceneManager::Instance().RequestSceneChange(m_requestedScene);
+        m_hasPendingTransition = false;
+    }
+
+    // Handle exit request from the scene
+    else if (m_shouldExit)
+    {
+        CT_LOG_INFO("MainMenuScene requested exit. Popping scene...");
+        SceneManager::Instance().PopScene();
+        m_shouldExit = false;
     }
 
     return;
@@ -158,12 +162,6 @@ void MainMenuScene::Render()
     UIManager::Instance().Render(window);
 }
 
-// Callback to determine logic for the next action scene to take place.
-void MainMenuScene::SetSceneChangeCallback(SceneChangeCallback callback)
-{
-    m_sceneChangeCallback = std::move(callback);
-}
-
 // Helper method to clear up clutter from main Init.
 void MainMenuScene::SetupSceneAssets()
 {
@@ -195,21 +193,29 @@ void MainMenuScene::CreateButtons()
     auto &window = WindowManager::Instance().GetWindow();
     const auto windowSize = window.getSize();
 
-    const sf::Vector2f playPos{(windowSize.x - BUTTON_WIDTH) / 2.f, windowSize.y * 0.75f};
-    const sf::Vector2f exitPos{playPos.x, playPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
+    const sf::Vector2f playPos{(windowSize.x - BUTTON_WIDTH) / 2.f, windowSize.y * 0.70f};
+    const sf::Vector2f settingsPos{playPos.x, playPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
+    const sf::Vector2f exitPos{settingsPos.x, settingsPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
 
-    // Classic Play Button
+    // Play Button
     UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, playPos, "Play",
                                                     [this]()
                                                     {
                                                         CT_LOG_INFO("Play button clicked!");
-                                                        if (m_sceneChangeCallback)
-                                                        {
-                                                            m_sceneChangeCallback(
-                                                                std::make_unique<GameScene>(m_settings));
-                                                        }
+                                                        m_hasPendingTransition = true;
+                                                        m_requestedScene = SceneID::Game;
                                                     }));
-    // Classic Exit Button
+
+    // Settings Button
+    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, settingsPos, "Settings",
+                                                    [this]()
+                                                    {
+                                                        CT_LOG_INFO("Settings button clicked!");
+                                                        m_hasPendingTransition = true;
+                                                        m_requestedScene = SceneID::Settings;
+                                                    }));
+
+    // Exit Button
     UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, exitPos, "Exit",
                                                     [this]()
                                                     {

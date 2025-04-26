@@ -58,8 +58,6 @@ class SplashScene final : public Scene
     void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
-    void SetSceneChangeCallback(SceneChangeCallback callback);
-
   private:
     void LoadBackground();
     void QueueAssets();
@@ -71,7 +69,6 @@ class SplashScene final : public Scene
 
   private:
     std::shared_ptr<Settings> m_settings;
-    SceneChangeCallback m_sceneChangeCallback;
 
     std::unique_ptr<sf::Sprite> m_background;
     std::unique_ptr<sf::Texture> m_backgroundTexture;
