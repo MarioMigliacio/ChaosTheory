@@ -52,11 +52,6 @@ class Scene
         return m_isInitialized;
     };
 
-    virtual bool ShouldExit()
-    {
-        return m_shouldExit;
-    };
-
   protected:
     bool m_shouldExit = false;
     bool m_isInitialized = false;

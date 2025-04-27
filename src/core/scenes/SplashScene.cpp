@@ -60,8 +60,6 @@ void SplashScene::Update(float dt)
 
     if (m_fadingOut && m_fadeTimer >= m_fadeOutDuration && m_doneLoading)
     {
-        m_shouldExit = true;
-
         SceneManager::Instance().RequestSceneChange(SceneID::MainMenu);
     }
 }

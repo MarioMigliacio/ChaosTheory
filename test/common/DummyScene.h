@@ -45,10 +45,6 @@ class DummyScene : public Scene
     void Render() override
     {
     }
-    bool ShouldExit() override
-    {
-        return m_shouldExit;
-    }
     void OnResize(const sf::Vector2u &newSize) override
     {
     }

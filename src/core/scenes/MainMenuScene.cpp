@@ -17,6 +17,7 @@
 #include "Macros.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
+#include "SceneTransitionManager.h"
 #include "SettingsScene.h"
 #include "UIFactory.h"
 #include "UIManager.h"
@@ -44,6 +45,9 @@ void MainMenuScene::Init()
     // New: MainMenuScene is designed to recreate the window using the settings, because SplashScene locked it.
     WindowManager::Instance().Recreate(m_settings->m_windowWidth, m_settings->m_windowHeight, m_settings->m_windowTitle,
                                        sf::Style::Default);
+
+    UIManager::Instance().Clear();
+    SceneTransitionManager::Instance().StartFadeIn();
 
     SetupSceneAssets();
     PlayIntroMusic();
@@ -86,9 +90,10 @@ void MainMenuScene::Update(float dt)
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
-        CT_LOG_INFO("Requesting Scene Change to '{}'", ToString(m_requestedScene));
-        SceneManager::Instance().RequestSceneChange(m_requestedScene);
+        CT_LOG_INFO("MainMenuScene Requesting Scene Change to '{}'", ToString(m_requestedScene));
         m_hasPendingTransition = false;
+        SceneTransitionManager::Instance().ForceFullyOpaque();
+        SceneManager::Instance().RequestSceneChange(m_requestedScene);
     }
 
     // Handle exit request from the scene
@@ -96,7 +101,6 @@ void MainMenuScene::Update(float dt)
     {
         CT_LOG_INFO("MainMenuScene requested exit. Popping scene...");
         SceneManager::Instance().PopScene();
-        m_shouldExit = false;
     }
 
     return;
@@ -254,7 +258,18 @@ void MainMenuScene::LoadBackground()
 // Plays the background music for this MainMenuScene.
 void MainMenuScene::PlayIntroMusic()
 {
-    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu.wav", true);
+    const std::string menuMusic = m_settings->m_audioDirectory + "RootMenu.wav";
+
+    if (!AudioManager::Instance().IsMusicPlaying() || AudioManager::Instance().GetCurrentMusicName() != menuMusic)
+    {
+        CT_LOG_INFO("MainMenuScene: Starting or resuming menu music.");
+        AudioManager::Instance().PlayMusic(menuMusic, true);
+    }
+
+    else
+    {
+        CT_LOG_INFO("MainMenuScene: Menu music already playing, no action needed.");
+    }
 }
 
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,

@@ -64,6 +64,7 @@ class AudioManager
     bool IsMuted() const;
 
     void SwitchTrack(const std::string &filename, bool loop = true);
+    const std::string &GetCurrentMusicName() const;
 
   private:
     AudioManager() = default;

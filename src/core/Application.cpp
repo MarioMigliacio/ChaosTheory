@@ -18,6 +18,7 @@
 #include "MainMenuScene.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
+#include "SceneTransitionManager.h"
 #include "SettingsManager.h"
 #include "SplashScene.h"
 #include "UIManager.h"
@@ -84,6 +85,7 @@ void Application::Run()
         ProcessEvents();
         AudioManager::Instance().Update(dt);
         SceneManager::Instance().Update(dt);
+        SceneTransitionManager::Instance().Update(dt);
         InputManager::Instance().PostUpdate();
         Render();
     }
@@ -166,6 +168,9 @@ void Application::ProcessEvents()
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();
+
     SceneManager::Instance().Render();
+    SceneTransitionManager::Instance().Render(WindowManager::Instance().GetWindow());
+
     WindowManager::Instance().EndDraw();
 }

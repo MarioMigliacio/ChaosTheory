@@ -12,6 +12,7 @@
 
 #include "WindowManager.h"
 #include "Macros.h"
+#include "SceneTransitionManager.h"
 #include "Settings.h"
 
 // This static reference to sf window objects is used for short circuit logic where the WindowManager might not yet
@@ -77,7 +78,7 @@ void WindowManager::BeginDraw()
 {
     CT_WARN_IF_UNINITIALIZED("WindowManager", "BeginDraw");
 
-    m_window->clear();
+    m_window->clear(m_clearColor);
 }
 
 // Completes rendering for the current frame.
@@ -94,9 +95,11 @@ void WindowManager::Recreate(const unsigned int width, const unsigned int height
 {
     CT_WARN_IF_UNINITIALIZED("WindowManager", "Recreate");
 
-    if (m_window)
+    if (m_window->getSize().x == width && m_window->getSize().y == height && m_title == title && m_style == style)
     {
-        m_window->close();
+        CT_LOG_INFO("WindowManager::Recreate skipped (no changes needed).");
+
+        return;
     }
 
     sf::VideoMode mode(width, height);
@@ -104,6 +107,9 @@ void WindowManager::Recreate(const unsigned int width, const unsigned int height
     m_window = std::make_unique<sf::RenderWindow>(mode, title, style);
     m_window->setFramerateLimit(m_settings->m_targetFramerate);
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
+
+    m_title = title;
+    m_style = style;
 }
 
 // Applies synchronization between the manager settings of the SFML window and the Settings object.
@@ -115,8 +121,16 @@ void WindowManager::ApplySettings(sf::Uint32 style)
 
     m_window = std::make_unique<sf::RenderWindow>(mode, m_settings->m_windowTitle, style);
 
+    m_title = m_settings->m_windowTitle;
+    m_style = style;
+
     m_window->setFramerateLimit(m_settings->m_targetFramerate);
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
+}
+
+void WindowManager::SetClearColor(const sf::Color &color)
+{
+    m_clearColor = color;
 }
 
 // Changes the internal window state for full screen on/off.

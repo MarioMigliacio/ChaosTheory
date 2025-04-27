@@ -353,3 +353,8 @@ void AudioManager::SwitchTrack(const std::string &filename, bool loop)
     StopMusic(true);
     PlayMusic(filename, loop, true);
 }
+
+const std::string &AudioManager::GetCurrentMusicName() const
+{
+    return m_currentTrack;
+}

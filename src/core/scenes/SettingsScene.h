@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Scene.h"
+#include "SceneManager.h"
 #include "Settings.h"
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
@@ -31,17 +32,18 @@
 class SettingsScene : public Scene
 {
   public:
-    using SceneChangeCallback = std::function<void(std::unique_ptr<Scene>)>;
-
     SettingsScene(std::shared_ptr<Settings> settings);
     ~SettingsScene() override = default;
+
+    SettingsScene(const SettingsScene &) = delete;
+    SettingsScene &operator=(const SettingsScene &) = delete;
 
     void Init() override;
     void Shutdown() override;
     void OnExit() override;
 
-    void HandleEvent(const sf::Event &event) override;
     void Update(float dt) override;
+    void HandleEvent(const sf::Event &event) override;
     void OnResize(const sf::Vector2u &newSize) override;
     void Render() override;
 
@@ -55,7 +57,11 @@ class SettingsScene : public Scene
 
   private:
     std::shared_ptr<Settings> m_settings;
+    Settings m_backupSettings;
 
     std::unique_ptr<sf::Sprite> m_backgroundSprite;
     sf::Text m_title;
+    SceneID m_requestedScene = SceneID::MainMenu;
+
+    bool m_hasUnsavedChanges = false;
 };

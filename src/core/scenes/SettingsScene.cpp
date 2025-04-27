@@ -16,6 +16,7 @@
 #include "Macros.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
+#include "SceneTransitionManager.h"
 #include "SettingsManager.h"
 #include "UIFactory.h"
 #include "UIManager.h"
@@ -40,6 +41,10 @@ void SettingsScene::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     auto windowSize = WindowManager::Instance().GetWindow().getSize();
+    m_backupSettings = *SettingsManager::Instance().GetSettings();
+
+    UIManager::Instance().Clear();
+    SceneTransitionManager::Instance().StartFadeIn();
 
     CreateTitleText();
     CreateSliders();
@@ -80,9 +85,18 @@ void SettingsScene::Update(float dt)
 
     UIManager::Instance().Update(mousePos, isPressed);
 
-    if (m_shouldExit)
+    if (m_hasPendingTransition)
     {
-        SceneManager::Instance().RequestSceneChange(SceneID::MainMenu);
+        CT_LOG_INFO("SettingsScene Requesting Scene Change to '{}'", ToString(m_requestedScene));
+        m_hasPendingTransition = false;
+        SceneTransitionManager::Instance().ForceFullyOpaque();
+        SceneManager::Instance().RequestSceneChange(m_requestedScene);
+    }
+
+    else if (m_shouldExit)
+    {
+        CT_LOG_INFO("SettingsScene requested exit. Popping scene...");
+        SceneManager::Instance().PopScene();
     }
 }
 
@@ -150,7 +164,8 @@ void SettingsScene::CreateButtons()
                                            [this]()
                                            {
                                                CT_LOG_INFO("SettingsScene: Back button clicked.");
-                                               m_shouldExit = true;
+                                               m_requestedScene = SceneID::MainMenu;
+                                               m_hasPendingTransition = true;
                                            }));
 }
 
