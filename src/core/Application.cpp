@@ -40,7 +40,7 @@ void Application::Init()
     m_settings = SettingsManager::Instance().GetSettings();
 
     UIManager::Instance().Init();
-    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar | sf::Style::Close);
+    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar);
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);

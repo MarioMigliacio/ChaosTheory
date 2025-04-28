@@ -62,6 +62,9 @@ class Button : public UIElement
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
 
+    void SetPosition(const sf::Vector2f &position) override;
+    void SetSize(const sf::Vector2f &size) override;
+
   private:
     void CenterLabel();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

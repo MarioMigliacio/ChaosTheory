@@ -118,6 +118,18 @@ bool Button::Contains(const sf::Vector2i &point) const
     return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
+void Button::SetPosition(const sf::Vector2f &position)
+{
+    m_shape.setPosition(position);
+    CenterLabel();
+}
+
+void Button::SetSize(const sf::Vector2f &size)
+{
+    m_shape.setSize(size);
+    CenterLabel();
+}
+
 void Button::CenterLabel()
 {
     sf::FloatRect textRect = m_label.getLocalBounds();

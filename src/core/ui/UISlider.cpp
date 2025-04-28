@@ -76,6 +76,31 @@ bool UISlider::Contains(const sf::Vector2i &point) const
            m_knob.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
+void UISlider::SetPosition(const sf::Vector2f &position)
+{
+    m_barBackground.setPosition(position);
+    m_barForeground.setPosition(position);
+
+    const auto bgSize = m_barBackground.getSize();
+    m_knob.setPosition(position.x + m_value * bgSize.x, position.y + bgSize.y / 2.f);
+}
+
+void UISlider::SetSize(const sf::Vector2f &size)
+{
+    m_barBackground.setSize(size);
+
+    // Foreground bar width is proportional to value
+    m_barForeground.setSize({size.x * m_value, size.y});
+
+    // Recompute knob size or position if needed
+    m_knob.setRadius(size.y / 2.f);
+    m_knob.setOrigin(m_knob.getRadius(), m_knob.getRadius());
+
+    // Also reposition handle
+    const auto position = m_barBackground.getPosition();
+    m_knob.setPosition(position.x + m_value * size.x, position.y + size.y / 2.f);
+}
+
 // Draws the slider's components
 void UISlider::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {

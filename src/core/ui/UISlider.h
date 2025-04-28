@@ -45,6 +45,9 @@ class UISlider : public UIElement
     void Update(const sf::Vector2i &mousePos, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
 
+    void SetPosition(const sf::Vector2f &position) override;
+    void SetSize(const sf::Vector2f &size) override;
+
     void SetFont(const sf::Font &font);
     void SetColor(const sf::Color &barColor, const sf::Color &knobColor);
     void SetValue(float value);

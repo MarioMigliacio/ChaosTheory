@@ -81,8 +81,8 @@ class SplashScene final : public Scene
     float m_assetLoadDelay = 0.05f;
 
     float m_fadeTimer = 0.f;
-    float m_fadeInDuration = 2.0f;
-    float m_fadeOutDuration = 4.0f;
+    float m_fadeInDuration = 1.0f;
+    float m_fadeOutDuration = 2.0f;
 
     float m_shakeTimer = 0.f;
     float m_shakeAmplitude = 4.f;

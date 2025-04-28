@@ -10,6 +10,7 @@
 #include "UIFactory.h"
 #include "AssetManager.h"
 #include "Button.h"
+#include "RadioButton.h"
 #include "SettingsManager.h"
 #include "UISlider.h"
 
@@ -24,27 +25,34 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
                                                    const sf::Vector2f &size, const std::string &label,
                                                    std::function<void()> onClick)
 {
-    auto button = std::make_shared<Button>(position, size);
-
-    button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 24);
-    button->SetCallback(std::move(onClick));
-
     switch (type)
     {
         case ButtonType::Classic:
         default:
         {
+            auto button = std::make_shared<Button>(position, size);
+
+            button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 24);
+            button->SetCallback(std::move(onClick));
             button->SetIdleColor(DEFAULT_IDLE_COLOR);
             button->SetHoverColor(DEFAULT_HOVER_COLOR);
             button->SetActiveColor(DEFAULT_ACTIVE_COLOR);
             button->SetTextColor(DEFAULT_TEXT_COLOR);
             button->SetHoverScale(1.05f); // Normal hover grow effect
 
+            return button;
+
+            break;
+        }
+
+        case ButtonType::Radio:
+        {
+            auto radio = std::make_shared<RadioButton>(position, size, label, std::move(onClick));
+            return radio;
+
             break;
         }
     }
-
-    return button;
 }
 
 std::shared_ptr<UIElement> UIFactory::CreateSlider(const std::string &label, const sf::Vector2f &position,

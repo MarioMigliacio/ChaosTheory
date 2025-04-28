@@ -37,7 +37,7 @@ void WindowManager::Init(std::shared_ptr<Settings> settings, sf::Uint32 style)
     m_isFullscreen = m_settings->m_isFullscreen;
 
     m_isInitialized = true;
-    ApplySettings();
+    ApplySettings(style);
 
     CT_LOG_INFO("WindowManager initialized.");
 }
@@ -141,7 +141,7 @@ void WindowManager::ToggleFullscreen()
     m_isFullscreen = !m_isFullscreen;
     m_settings->m_isFullscreen = m_isFullscreen;
 
-    ApplySettings();
+    ApplySettings(sf::Style::Fullscreen);
 }
 
 // Polls all pending window events.

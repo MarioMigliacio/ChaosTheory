@@ -41,7 +41,7 @@ class WindowManager
     void EndDraw();
 
     void Recreate(const unsigned int width, const unsigned int height, const std::string &title, sf::Uint32 style);
-    void ApplySettings(sf::Uint32 style = sf::Style::Default);
+    void ApplySettings(sf::Uint32 style);
     void SetClearColor(const sf::Color &color);
     void ToggleFullscreen();
 
