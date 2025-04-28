@@ -24,22 +24,21 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
                                                    const sf::Vector2f &size, const std::string &label,
                                                    std::function<void()> onClick)
 {
-    std::shared_ptr<UIElement> button;
+    auto button = std::make_shared<Button>(position, size);
 
-    sf::Font &font = AssetManager::Instance().GetFont("Default.ttf");
+    button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 24);
+    button->SetCallback(std::move(onClick));
 
     switch (type)
     {
         case ButtonType::Classic:
         default:
         {
-            auto btn = std::make_shared<Button>(position, size);
-
-            btn->SetText(label, font);
-            btn->SetColors(sf::Color::Blue, sf::Color::Cyan, sf::Color::Green);
-            btn->SetCallback(onClick);
-
-            button = btn;
+            button->SetIdleColor(DEFAULT_IDLE_COLOR);
+            button->SetHoverColor(DEFAULT_HOVER_COLOR);
+            button->SetActiveColor(DEFAULT_ACTIVE_COLOR);
+            button->SetTextColor(DEFAULT_TEXT_COLOR);
+            button->SetHoverScale(1.05f); // Normal hover grow effect
 
             break;
         }

@@ -105,3 +105,16 @@ std::shared_ptr<Settings> SettingsManager::GetSettings()
 {
     return m_settings;
 }
+
+bool SettingsManager::IsDifferentFrom(const Settings &other) const
+{
+    return m_settings->m_windowTitle != other.m_windowTitle || m_settings->m_windowWidth != other.m_windowWidth ||
+           m_settings->m_windowHeight != other.m_windowHeight ||
+           m_settings->m_targetFramerate != other.m_targetFramerate ||
+           m_settings->m_verticleSyncEnabled != other.m_verticleSyncEnabled ||
+           m_settings->m_isFullscreen != other.m_isFullscreen || m_settings->m_masterVolume != other.m_masterVolume ||
+           m_settings->m_musicVolume != other.m_musicVolume || m_settings->m_sfxVolume != other.m_sfxVolume ||
+           m_settings->m_isMuted != other.m_isMuted || m_settings->m_audioDirectory != other.m_audioDirectory ||
+           m_settings->m_fontDirectory != other.m_fontDirectory ||
+           m_settings->m_spriteDirectory != other.m_spriteDirectory || m_settings->m_keyBindings != other.m_keyBindings;
+}

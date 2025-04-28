@@ -17,6 +17,17 @@
 #include <functional>
 #include <string>
 
+//
+// Default Colors for Button States
+//
+const sf::Color DEFAULT_IDLE_COLOR(200, 200, 200);
+const sf::Color DEFAULT_HOVER_COLOR(160, 160, 255);
+const sf::Color DEFAULT_ACTIVE_COLOR(100, 100, 255);
+const sf::Color DEFAULT_DISABLED_IDLE_COLOR(100, 100, 100);
+const sf::Color DEFAULT_DISABLED_HOVER_COLOR(100, 100, 100);
+const sf::Color DEFAULT_TEXT_COLOR(0, 0, 0);
+const sf::Color DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
+
 // ============================================================================
 //  Class       : Button
 //  Purpose     : Manages this Button logic at the ui level.
@@ -33,34 +44,44 @@ class Button : public UIElement
     Button(const sf::Vector2f &position, const sf::Vector2f &size);
     ~Button() override = default;
 
-    // Disable copy
     Button(const Button &) = delete;
     Button &operator=(const Button &) = delete;
-
-    // Allow move
     Button(Button &&) noexcept = default;
     Button &operator=(Button &&) noexcept = default;
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
     void SetCallback(std::function<void()> callback);
-    void SetColors(const sf::Color &idle, const sf::Color &hover, const sf::Color &active);
+
+    void SetIdleColor(const sf::Color &color);
+    void SetHoverColor(const sf::Color &color);
+    void SetActiveColor(const sf::Color &color);
+    void SetTextColor(const sf::Color &color);
+    void SetFontSize(unsigned int size);
+    void SetHoverScale(float scale);
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
 
   private:
-    // In SFML, the draw() method is intended to be overridden from sf::Drawable, which is a friend of sf::RenderTarget.
-    // That’s why the draw method is typically marked private, and you don’t need to call it directly — SFML will handle
-    // it via window.draw(...) when used
+    void CenterLabel();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+    void UpdateScale();
+    void UpdateFillColor(bool isMousePressed);
+    void UpdateTextColor();
+    void HandleClickLogic(bool isMousePressed);
 
   private:
     sf::RectangleShape m_shape;
     sf::Text m_label;
 
-    sf::Color m_idleColor;
-    sf::Color m_hoverColor;
-    sf::Color m_activeColor;
+    sf::Color m_idleColor = DEFAULT_IDLE_COLOR;
+    sf::Color m_hoverColor = DEFAULT_HOVER_COLOR;
+    sf::Color m_activeColor = DEFAULT_ACTIVE_COLOR;
+    sf::Color m_textColor = DEFAULT_TEXT_COLOR;
+
+    unsigned int m_fontSize = 24;
+    float m_hoverScale = 1.05f;
 
     bool m_isHovered = false;
     bool m_isPressed = false;

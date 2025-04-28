@@ -1,9 +1,9 @@
 {
     "audio": {
         "is_muted": false,
-        "master_volume": 80.0,
-        "music_volume": 70.0,
-        "sfx_volume": 70.0
+        "master_volume": 67.33333587646484,
+        "music_volume": 75.33333587646484,
+        "sfx_volume": 100.0
     },
     "paths": {
         "audio_dir": "assets/audio/",

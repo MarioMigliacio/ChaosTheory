@@ -17,46 +17,70 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size)
 {
     m_shape.setPosition(position);
     m_shape.setSize(size);
-    m_shape.setFillColor(sf::Color::White); // Default color
-
-    m_idleColor = sf::Color(200, 200, 200);
-    m_hoverColor = sf::Color(160, 160, 255);
-    m_activeColor = sf::Color(100, 100, 255);
+    m_shape.setFillColor(m_idleColor);
 }
 
-// Sets the internal text related members for this Button.
 void Button::SetText(const std::string &text, const sf::Font &font, unsigned int size)
 {
     m_label.setFont(font);
     m_label.setString(text);
-    m_label.setCharacterSize(size);
-    m_label.setFillColor(sf::Color::Black);
+    m_fontSize = size;
+    m_label.setCharacterSize(m_fontSize);
+    m_label.setFillColor(m_textColor);
 
-    // Center the label
+    // Auto-fit text if too wide, nice to have!
+    const float maxWidth = m_shape.getSize().x * 0.9f; // Leave a little margin
     sf::FloatRect textRect = m_label.getLocalBounds();
-    m_label.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
 
-    sf::Vector2f pos = m_shape.getPosition();
-    sf::Vector2f sizeBox = m_shape.getSize();
-    m_label.setPosition(pos.x + sizeBox.x / 2.f, pos.y + sizeBox.y / 2.f);
+    while (textRect.width > maxWidth && m_fontSize > 8) // Don't go below readable size
+    {
+        m_fontSize -= 1;
+        m_label.setCharacterSize(m_fontSize);
+        textRect = m_label.getLocalBounds();
+    }
+
+    CenterLabel();
 }
 
-// Sets the internal callback function for this Button, which responds to onClick.
 void Button::SetCallback(std::function<void()> callback)
 {
     m_onClick = std::move(callback);
 }
 
-// Manages the colors for this Button based on input parameters.
-void Button::SetColors(const sf::Color &idle, const sf::Color &hover, const sf::Color &active)
+void Button::SetIdleColor(const sf::Color &color)
 {
-    m_idleColor = idle;
-    m_hoverColor = hover;
-    m_activeColor = active;
-    m_shape.setFillColor(idle);
+    m_idleColor = color;
+    m_shape.setFillColor(m_idleColor);
 }
 
-// Update logic for this Button includes, isHovered, isPressed
+void Button::SetHoverColor(const sf::Color &color)
+{
+    m_hoverColor = color;
+}
+
+void Button::SetActiveColor(const sf::Color &color)
+{
+    m_activeColor = color;
+}
+
+void Button::SetTextColor(const sf::Color &color)
+{
+    m_textColor = color;
+    m_label.setFillColor(m_textColor);
+}
+
+void Button::SetFontSize(unsigned int size)
+{
+    m_fontSize = size;
+    m_label.setCharacterSize(m_fontSize);
+    CenterLabel();
+}
+
+void Button::SetHoverScale(float scale)
+{
+    m_hoverScale = scale;
+}
+
 void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 {
     sf::Vector2f mouse(mousePosition);
@@ -64,58 +88,123 @@ void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 
     m_isHovered = m_shape.getGlobalBounds().contains(mouse);
 
-    if (m_isHovered)
+    if (m_isHovered && !wasHovered)
     {
-        // Log on hover enter
-        if (!wasHovered)
-        {
-            CT_LOG_DEBUG("Button hovered.");
-        }
-
-        // This gives a cool scaling effect on hovered buttons.
-        m_shape.setScale(1.05f, 1.05f);
-        m_label.setScale(1.05f, 1.05f);
-        m_shape.setFillColor(isMousePressed ? m_activeColor : m_hoverColor);
-
-        if (isMousePressed && !m_isPressed)
-        {
-            m_isPressed = true;
-
-            CT_LOG_INFO("Button clicked.");
-
-            if (m_onClick)
-            {
-                m_onClick();
-            }
-        }
-        else if (!isMousePressed)
-        {
-            m_isPressed = false;
-        }
+        CT_LOG_DEBUG("Button hovered.");
     }
+
+    else if (!m_isHovered && wasHovered)
+    {
+        CT_LOG_DEBUG("Button unhovered.");
+    }
+
+    UpdateScale();
+    UpdateFillColor(isMousePressed);
+    UpdateTextColor();
+
+    if (m_isHovered && m_enabled)
+    {
+        HandleClickLogic(isMousePressed);
+    }
+
     else
     {
-        if (wasHovered)
-        {
-            CT_LOG_DEBUG("Button unhovered.");
-        }
-
-        m_shape.setScale(1.f, 1.f);
-        m_label.setScale(1.f, 1.f);
-        m_shape.setFillColor(m_idleColor);
         m_isPressed = false;
     }
 }
 
-// Returns whether or not the point is within the bounds of this Button.
 bool Button::Contains(const sf::Vector2i &point) const
 {
     return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
-// Draw this Button to the Renderable Target.
+void Button::CenterLabel()
+{
+    sf::FloatRect textRect = m_label.getLocalBounds();
+    m_label.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+
+    m_label.setPosition(m_shape.getPosition().x + m_shape.getSize().x / 2.f,
+                        m_shape.getPosition().y + m_shape.getSize().y / 2.f);
+}
+
 void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_shape, states);
     target.draw(m_label, states);
+}
+
+void Button::UpdateScale()
+{
+    if (m_isHovered && m_enabled)
+    {
+        m_shape.setScale(m_hoverScale, m_hoverScale);
+        m_label.setScale(m_hoverScale, m_hoverScale);
+    }
+
+    else
+    {
+        m_shape.setScale(1.f, 1.f);
+        m_label.setScale(1.f, 1.f);
+    }
+}
+
+void Button::UpdateFillColor(bool isMousePressed)
+{
+    if (m_enabled)
+    {
+        if (m_isHovered)
+        {
+            m_shape.setFillColor(isMousePressed ? m_activeColor : m_hoverColor);
+        }
+
+        else
+        {
+            m_shape.setFillColor(m_idleColor);
+        }
+    }
+
+    else
+    {
+        if (m_isHovered)
+        {
+            m_shape.setFillColor(DEFAULT_DISABLED_HOVER_COLOR);
+        }
+
+        else
+        {
+            m_shape.setFillColor(DEFAULT_DISABLED_IDLE_COLOR);
+        }
+    }
+}
+
+void Button::UpdateTextColor()
+{
+    if (m_enabled)
+    {
+        m_label.setFillColor(m_textColor);
+    }
+
+    else
+    {
+        m_label.setFillColor(DEFAULT_DISABLED_TEXT_COLOR);
+    }
+}
+
+void Button::HandleClickLogic(bool isMousePressed)
+{
+    if (isMousePressed && !m_isPressed)
+    {
+        m_isPressed = true;
+        CT_LOG_INFO("Button clicked.");
+
+        if (m_onClick)
+        {
+            m_onClick();
+        }
+    }
+
+    else if (!isMousePressed)
+    {
+        m_isPressed = false;
+    }
 }

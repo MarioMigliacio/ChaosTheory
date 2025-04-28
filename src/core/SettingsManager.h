@@ -38,6 +38,7 @@ class SettingsManager
     bool SaveToFile(const std::string &path) const;
 
     std::shared_ptr<Settings> GetSettings();
+    bool IsDifferentFrom(const Settings &other) const;
 
   private:
     SettingsManager() = default;

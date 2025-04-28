@@ -14,7 +14,6 @@
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "Macros.h"
-#include "SceneFactory.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
 #include "SettingsManager.h"
@@ -27,9 +26,10 @@ namespace
 constexpr float SLIDER_WIDTH = 300.f;
 constexpr float SLIDER_HEIGHT = 20.f;
 constexpr float SLIDER_SPACING = 50.f;
-constexpr float BUTTON_WIDTH = 100.f;
+constexpr float BUTTON_WIDTH = 160.f;
 constexpr float BUTTON_HEIGHT = 30.f;
-constexpr float BUTTON_SPACING = 30.f;
+constexpr float BUTTON_SPACING = 20.f;
+constexpr float TOAST_DURATION = 2.0f;
 } // namespace
 
 SettingsScene::SettingsScene(std::shared_ptr<Settings> settings) : m_settings(settings)
@@ -40,15 +40,14 @@ void SettingsScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
-    auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    m_backupSettings = *SettingsManager::Instance().GetSettings();
-
     UIManager::Instance().Clear();
-    SceneTransitionManager::Instance().StartFadeIn();
+    m_backupSettings = *SettingsManager::Instance().GetSettings();
 
     CreateTitleText();
     CreateSliders();
     CreateButtons();
+
+    SceneTransitionManager::Instance().StartFadeIn();
 
     m_isInitialized = true;
 
@@ -67,8 +66,6 @@ void SettingsScene::Shutdown()
 
 void SettingsScene::OnExit()
 {
-    SettingsManager::Instance().SaveToFile("config.json");
-
     CT_LOG_INFO("SettingsScene OnExit.");
 }
 
@@ -85,18 +82,28 @@ void SettingsScene::Update(float dt)
 
     UIManager::Instance().Update(mousePos, isPressed);
 
+    CheckForUnsavedChanges();
+
+    if (m_applyButton)
+    {
+        m_applyButton->SetEnabled(m_hasUnsavedChanges);
+    }
+
+    if (m_showToast)
+    {
+        m_toastTimer -= dt;
+        if (m_toastTimer <= 0.f)
+        {
+            m_showToast = false;
+        }
+    }
+
     if (m_hasPendingTransition)
     {
         CT_LOG_INFO("SettingsScene Requesting Scene Change to '{}'", ToString(m_requestedScene));
         m_hasPendingTransition = false;
         SceneTransitionManager::Instance().ForceFullyOpaque();
         SceneManager::Instance().RequestSceneChange(m_requestedScene);
-    }
-
-    else if (m_shouldExit)
-    {
-        CT_LOG_INFO("SettingsScene requested exit. Popping scene...");
-        SceneManager::Instance().PopScene();
     }
 }
 
@@ -111,6 +118,11 @@ void SettingsScene::Render()
 
     window.draw(m_title);
     UIManager::Instance().Render(window);
+
+    if (m_showToast)
+    {
+        window.draw(m_toastText);
+    }
 }
 
 void SettingsScene::CreateTitleText()
@@ -127,6 +139,13 @@ void SettingsScene::CreateTitleText()
 
     const auto windowSize = WindowManager::Instance().GetWindow().getSize();
     m_title.setPosition(windowSize.x / 2.f, windowSize.y * 0.15f);
+
+    // Toast Text Setup
+    m_toastText.setFont(AssetManager::Instance().GetFont("Default.ttf"));
+    m_toastText.setCharacterSize(24);
+    m_toastText.setFillColor(sf::Color(0, 255, 0));
+    m_toastText.setOutlineColor(sf::Color::Black);
+    m_toastText.setOutlineThickness(2.f);
 }
 
 void SettingsScene::CreateSliders()
@@ -142,15 +161,16 @@ void SettingsScene::CreateSliders()
 
     startY += SLIDER_SPACING;
 
-    UIManager::Instance().AddElement(MakeSlider("Music Volume", {startX, startY + SLIDER_SPACING},
-                                                settings->m_musicVolume, [](float value)
+    UIManager::Instance().AddElement(MakeSlider("Music Volume", {startX, startY}, settings->m_musicVolume,
+                                                [](float value)
                                                 { SettingsManager::Instance().GetSettings()->m_musicVolume = value; }));
 
     startY += SLIDER_SPACING;
 
-    UIManager::Instance().AddElement(MakeSlider("SFX Volume", {startX, startY + SLIDER_SPACING}, settings->m_sfxVolume,
-                                                [](float value)
+    UIManager::Instance().AddElement(MakeSlider("SFX Volume", {startX, startY}, settings->m_sfxVolume, [](float value)
                                                 { SettingsManager::Instance().GetSettings()->m_sfxVolume = value; }));
+
+    startY += SLIDER_SPACING * 2;
 }
 
 void SettingsScene::CreateButtons()
@@ -159,14 +179,32 @@ void SettingsScene::CreateButtons()
     float startX = (windowSize.x - BUTTON_WIDTH) / 2.f;
     float startY = windowSize.y * 0.7f;
 
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateButton(ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Back",
-                                           [this]()
-                                           {
-                                               CT_LOG_INFO("SettingsScene: Back button clicked.");
-                                               m_requestedScene = SceneID::MainMenu;
-                                               m_hasPendingTransition = true;
-                                           }));
+    // Apply Changes Button
+    m_applyButton = UIFactory::Instance().CreateButton(
+        ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Apply Changes",
+        [this]()
+        {
+            CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
+            SettingsManager::Instance().SaveToFile("config.json");
+            m_backupSettings = *SettingsManager::Instance().GetSettings();
+            m_hasUnsavedChanges = false;
+            ShowToast("Settings Applied");
+        });
+
+    UIManager::Instance().AddElement(m_applyButton);
+
+    startY += BUTTON_HEIGHT + BUTTON_SPACING;
+
+    // Cancel Changes Button
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Cancel Changes",
+        [this]()
+        {
+            CT_LOG_INFO("SettingsScene: Cancel Changes clicked.");
+            *SettingsManager::Instance().GetSettings() = m_backupSettings;
+            m_requestedScene = SceneID::MainMenu;
+            m_hasPendingTransition = true;
+        }));
 }
 
 std::shared_ptr<UIElement> SettingsScene::MakeSlider(const std::string &label, const sf::Vector2f &position,
@@ -174,4 +212,25 @@ std::shared_ptr<UIElement> SettingsScene::MakeSlider(const std::string &label, c
 {
     return UIFactory::Instance().CreateSlider(label, position, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, initial,
                                               std::move(onChange));
+}
+
+void SettingsScene::CheckForUnsavedChanges()
+{
+    if (SettingsManager::Instance().GetSettings())
+    {
+        m_hasUnsavedChanges = SettingsManager::Instance().IsDifferentFrom(m_backupSettings);
+    }
+}
+
+void SettingsScene::ShowToast(const std::string &message)
+{
+    m_toastText.setString(message);
+    const auto bounds = m_toastText.getLocalBounds();
+    m_toastText.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+
+    auto windowSize = WindowManager::Instance().GetWindow().getSize();
+    m_toastText.setPosition(windowSize.x / 2.f, windowSize.y * 0.85f);
+
+    m_toastTimer = TOAST_DURATION;
+    m_showToast = true;
 }
