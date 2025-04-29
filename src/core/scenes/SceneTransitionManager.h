@@ -18,6 +18,8 @@ class SceneTransitionManager
   public:
     static SceneTransitionManager &Instance();
 
+    void Reset();
+
     void StartFadeOut(float duration = 1.0f);
     void StartFadeIn(float duration = 1.0f);
 

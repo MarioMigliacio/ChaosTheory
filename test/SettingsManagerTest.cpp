@@ -72,19 +72,19 @@ TEST_F(SettingsManagerTest, ShutdownClearsState)
 TEST_F(SettingsManagerTest, LoadDefaultsFromConfigSucceeds)
 {
     SettingsManager::Instance().Shutdown(); // reset clean
-    SettingsManager::Instance().LoadDefaultsFromConfig("config.json");
+    SettingsManager::Instance().LoadFromFile("config.json");
 
     auto loaded = SettingsManager::Instance().GetSettings();
     EXPECT_EQ(loaded->m_audioDirectory, "assets/audio/");
     EXPECT_EQ(loaded->m_fontDirectory, "assets/fonts/");
-    EXPECT_FLOAT_EQ(loaded->m_masterVolume, 80.f);
+    EXPECT_EQ(loaded->m_spriteDirectory, "assets/sprites/");
 }
 
 TEST_F(SettingsManagerTest, LoadDefaultsFromBadPathFails)
 {
     SettingsManager::Instance().Shutdown(); // clean up first
 
-    bool success = SettingsManager::Instance().LoadDefaultsFromConfig("bad/path/config.json");
+    bool success = SettingsManager::Instance().LoadFromFile("bad/path/config.json");
     EXPECT_FALSE(success);
     EXPECT_FALSE(SettingsManager::Instance().IsInitialized());
 }

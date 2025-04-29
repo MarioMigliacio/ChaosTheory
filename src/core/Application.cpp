@@ -35,7 +35,7 @@ void Application::Init()
     LogManager::Instance().Init();
 
     std::shared_ptr<Settings> settings = std::make_shared<Settings>();
-    SettingsManager::Instance().LoadDefaultsFromConfig("config.json");
+    SettingsManager::Instance().LoadFromFile("config.json");
 
     m_settings = SettingsManager::Instance().GetSettings();
 

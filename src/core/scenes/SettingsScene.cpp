@@ -46,6 +46,7 @@ void SettingsScene::Init()
     CreateTitleText();
     CreateSliders();
     CreateButtons();
+    LoadDefaultSFXFile();
 
     SceneTransitionManager::Instance().StartFadeIn();
 
@@ -109,6 +110,12 @@ void SettingsScene::Update(float dt)
 
 void SettingsScene::OnResize(const sf::Vector2u &newSize)
 {
+    CreateTitleText();
+
+    // Adjust UI elements
+    UIManager::Instance().Clear();
+    CreateButtons();
+    CreateSliders();
 }
 
 void SettingsScene::Render()
@@ -150,27 +157,25 @@ void SettingsScene::CreateTitleText()
 
 void SettingsScene::CreateSliders()
 {
-    auto settings = SettingsManager::Instance().GetSettings();
     auto windowSize = WindowManager::Instance().GetWindow().getSize();
     float startX = (windowSize.x - SLIDER_WIDTH) / 2.f;
     float startY = windowSize.y * 0.4f;
 
     UIManager::Instance().AddElement(
-        MakeSlider("Master Volume", {startX, startY}, settings->m_masterVolume,
+        MakeSlider("Master Volume", {startX, startY}, SettingsManager::Instance().GetSettings()->m_masterVolume,
                    [](float value) { SettingsManager::Instance().GetSettings()->m_masterVolume = value; }));
 
     startY += SLIDER_SPACING;
 
-    UIManager::Instance().AddElement(MakeSlider("Music Volume", {startX, startY}, settings->m_musicVolume,
-                                                [](float value)
-                                                { SettingsManager::Instance().GetSettings()->m_musicVolume = value; }));
+    UIManager::Instance().AddElement(
+        MakeSlider("Music Volume", {startX, startY}, SettingsManager::Instance().GetSettings()->m_musicVolume,
+                   [](float value) { SettingsManager::Instance().GetSettings()->m_musicVolume = value; }));
 
     startY += SLIDER_SPACING;
 
-    UIManager::Instance().AddElement(MakeSlider("SFX Volume", {startX, startY}, settings->m_sfxVolume, [](float value)
+    UIManager::Instance().AddElement(MakeSlider("SFX Volume", {startX, startY},
+                                                SettingsManager::Instance().GetSettings()->m_sfxVolume, [](float value)
                                                 { SettingsManager::Instance().GetSettings()->m_sfxVolume = value; }));
-
-    startY += SLIDER_SPACING * 2;
 }
 
 void SettingsScene::CreateButtons()
@@ -186,9 +191,13 @@ void SettingsScene::CreateButtons()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
             SettingsManager::Instance().SaveToFile("config.json");
+            SettingsManager::Instance().LoadFromFile("config.json");
             m_backupSettings = *SettingsManager::Instance().GetSettings();
             m_hasUnsavedChanges = false;
             ShowToast("Settings Applied");
+
+            AudioManager::Instance().HotReload(SettingsManager::Instance().GetSettings());
+            AudioManager::Instance().PlaySFX("PewPew");
         });
 
     UIManager::Instance().AddElement(m_applyButton);
@@ -205,6 +214,12 @@ void SettingsScene::CreateButtons()
             m_requestedScene = SceneID::MainMenu;
             m_hasPendingTransition = true;
         }));
+}
+
+// Meant to be self contained within SettingsScene if this sound effect has yet to be loaded.
+void SettingsScene::LoadDefaultSFXFile()
+{
+    AssetManager::Instance().LoadSound("PewPew", "assets/audio/PewPew.wav");
 }
 
 std::shared_ptr<UIElement> SettingsScene::MakeSlider(const std::string &label, const sf::Vector2f &position,

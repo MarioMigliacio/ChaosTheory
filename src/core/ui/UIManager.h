@@ -39,6 +39,7 @@ class UIManager
     bool IsInitialized() const;
 
     void AddElement(std::shared_ptr<UIElement> element);
+    const std::vector<std::shared_ptr<UIElement>> &GetElements() const;
 
     void Update(const sf::Vector2i &mousePos, bool isLeftClick);
     void Render(sf::RenderWindow &window);

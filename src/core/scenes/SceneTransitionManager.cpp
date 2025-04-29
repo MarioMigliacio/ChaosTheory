@@ -17,6 +17,15 @@ SceneTransitionManager &SceneTransitionManager::Instance()
     return instance;
 }
 
+void SceneTransitionManager::Reset()
+{
+    m_isFadingOut = false;
+    m_isFadingIn = false;
+    m_fadeComplete = true;
+    m_pendingFadeIn = false;
+    m_opacity = 0.f;
+}
+
 void SceneTransitionManager::StartFadeOut(float duration)
 {
     m_isFadingOut = true;

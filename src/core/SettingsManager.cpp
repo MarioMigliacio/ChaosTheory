@@ -47,7 +47,7 @@ bool SettingsManager::IsInitialized() const
 }
 
 // Loads in the essential default settings config file into this Settings object.
-bool SettingsManager::LoadDefaultsFromConfig(const std::string &filepath)
+bool SettingsManager::LoadFromFile(const std::string &filepath)
 {
     if (!m_settings)
     {

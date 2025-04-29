@@ -55,6 +55,11 @@ void UIManager::AddElement(std::shared_ptr<UIElement> element)
     m_elements.push_back(std::move(element));
 }
 
+const std::vector<std::shared_ptr<UIElement>> &UIManager::GetElements() const
+{
+    return m_elements;
+}
+
 // Performs collected Update logic for any UI components this UI manager handles.
 void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick)
 {

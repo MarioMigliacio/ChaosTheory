@@ -47,6 +47,7 @@ class SettingsScene : public Scene
     void CreateTitleText();
     void CreateSliders();
     void CreateButtons();
+    void LoadDefaultSFXFile();
     std::shared_ptr<UIElement> MakeSlider(const std::string &label, const sf::Vector2f &position, float initial,
                                           std::function<void(float)> onChange);
     void CheckForUnsavedChanges();

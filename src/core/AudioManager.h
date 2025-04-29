@@ -32,6 +32,7 @@ class AudioManager
     static AudioManager &Instance();
 
     void Init(std::shared_ptr<Settings> settings);
+    void HotReload(std::shared_ptr<Settings> settings);
     void Shutdown();
 
     bool IsInitialized() const;

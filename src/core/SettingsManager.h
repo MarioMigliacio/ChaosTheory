@@ -34,7 +34,7 @@ class SettingsManager
     void Shutdown();
 
     bool IsInitialized() const;
-    bool LoadDefaultsFromConfig(const std::string &filepath);
+    bool LoadFromFile(const std::string &filepath);
     bool SaveToFile(const std::string &path) const;
 
     std::shared_ptr<Settings> GetSettings();
