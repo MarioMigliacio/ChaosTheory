@@ -32,6 +32,7 @@ class AudioManager
     static AudioManager &Instance();
 
     void Init(std::shared_ptr<Settings> settings);
+    void HotReload(std::shared_ptr<Settings> settings);
     void Shutdown();
 
     bool IsInitialized() const;
@@ -64,6 +65,7 @@ class AudioManager
     bool IsMuted() const;
 
     void SwitchTrack(const std::string &filename, bool loop = true);
+    const std::string &GetCurrentMusicName() const;
 
   private:
     AudioManager() = default;

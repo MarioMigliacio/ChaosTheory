@@ -11,7 +11,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
-            "preLaunchTask": "build_ct"
+            "preLaunchTask": ""
         },
         {
             "name": "Run CT GTESTS",
@@ -23,7 +23,7 @@
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": true,
-            "preLaunchTask": "build_test"
+            "preLaunchTask": ""
         }
     ]
 }

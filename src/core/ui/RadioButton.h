@@ -1,10 +1,10 @@
 // ============================================================================
-//  File        : Button.h
+//  File        : RadioButton.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
-//  Created     : 2025-04-18
-//  Description : Represents a clickable UI button with hover and press states.
-//                Can be used in menus and interactive scenes.
+//  Created     : 2025-04-27
+//  Description : Represents a clickable UI button where only one option can
+//                be selected in a group option setting.
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -12,27 +12,15 @@
 
 #pragma once
 
+#include "Button.h"
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <string>
 
-//
-// Default Colors for Button States
-//
-const sf::Color DEFAULT_IDLE_COLOR(200, 200, 200);
-const sf::Color DEFAULT_HOVER_COLOR(160, 160, 255);
-const sf::Color DEFAULT_ACTIVE_COLOR(100, 100, 255);
-const sf::Color DEFAULT_DISABLED_IDLE_COLOR(100, 100, 100);
-const sf::Color DEFAULT_DISABLED_HOVER_COLOR(100, 100, 100);
-const sf::Color DEFAULT_TEXT_COLOR(0, 0, 0);
-const sf::Color DEFAULT_SELECTED_COLOR(100, 180, 255);
-const sf::Color DEFAULT_SELECTED_TEXT_COLOR(255, 255, 255);
-const sf::Color DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
-
 // ============================================================================
-//  Class       : Button
-//  Purpose     : Manages this Button logic at the ui level.
+//  Class       : RadioButton
+//  Purpose     : Manages this Radio Button logic at the ui level.
 //
 //  Responsibilities:
 //      - Set button position
@@ -40,29 +28,30 @@ const sf::Color DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
 //      - Display button specifics during render
 //
 // ============================================================================
-class Button : public UIElement
+class RadioButton : public UIElement
 {
   public:
-    Button(const sf::Vector2f &position, const sf::Vector2f &size);
-    ~Button() override = default;
+    RadioButton(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &label,
+                std::function<void()> onSelect);
+    ~RadioButton() override = default;
 
     // Disable copy
-    Button(const Button &) = delete;
-    Button &operator=(const Button &) = delete;
+    RadioButton(const RadioButton &) = delete;
+    RadioButton &operator=(const RadioButton &) = delete;
 
     // Allow move
-    Button(Button &&) noexcept = default;
-    Button &operator=(Button &&) noexcept = default;
+    RadioButton(RadioButton &&) noexcept = default;
+    RadioButton &operator=(RadioButton &&) noexcept = default;
+
+    void SetSelected(bool selected);
+    bool IsSelected() const;
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
-    void SetCallback(std::function<void()> callback);
-
-    void SetIdleColor(const sf::Color &color);
-    void SetHoverColor(const sf::Color &color);
-    void SetActiveColor(const sf::Color &color);
     void SetTextColor(const sf::Color &color);
+    void SetSelectedColor(const sf::Color &fillColor, const sf::Color &textColor);
+    void SetHoverColor(const sf::Color &hoverColor);
     void SetFontSize(unsigned int size);
-    void SetHoverScale(float scale);
+    void SetCallback(std::function<void()> onSelect);
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
@@ -74,10 +63,8 @@ class Button : public UIElement
     void CenterLabel();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-    void UpdateScale();
-    void UpdateFillColor(bool isMousePressed);
-    void UpdateTextColor();
     void HandleClickLogic(bool isMousePressed);
+    void UpdateVisualState();
 
   private:
     sf::RectangleShape m_shape;
@@ -85,14 +72,14 @@ class Button : public UIElement
 
     sf::Color m_idleColor = DEFAULT_IDLE_COLOR;
     sf::Color m_hoverColor = DEFAULT_HOVER_COLOR;
-    sf::Color m_activeColor = DEFAULT_ACTIVE_COLOR;
+    sf::Color m_selectedFillColor = DEFAULT_SELECTED_COLOR;
+    sf::Color m_selectedTextColor = DEFAULT_SELECTED_TEXT_COLOR;
     sf::Color m_textColor = DEFAULT_TEXT_COLOR;
 
     unsigned int m_fontSize = 24;
-    float m_hoverScale = 1.05f;
 
+    bool m_isSelected = false;
     bool m_isHovered = false;
-    bool m_isPressed = false;
 
-    std::function<void()> m_onClick;
+    std::function<void()> m_onSelect;
 };

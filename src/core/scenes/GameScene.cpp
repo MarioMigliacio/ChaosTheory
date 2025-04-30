@@ -16,6 +16,7 @@
 #include "Macros.h"
 #include "MainMenuScene.h"
 #include "SceneFactory.h"
+#include "SceneManager.h"
 #include "WindowManager.h"
 
 GameScene::GameScene(std::shared_ptr<Settings> settings) : m_settings(settings)
@@ -78,17 +79,11 @@ void GameScene::Update(float dt)
     {
         if (!AudioManager::Instance().IsFadingOut())
         {
-            CT_LOG_INFO("SceneChangeCallback 1/2 invoked from GameScene.");
-            if (m_sceneChangeCallback)
-            {
-                m_sceneChangeCallback(SceneFactory::Instance().Create("MainMenu"));
+            SceneManager::Instance().RequestSceneChange(SceneID::MainMenu);
 
-                CT_LOG_INFO("SceneChangeCallback 2/2 invoked from GameScene - and callback .");
-            }
+            CT_LOG_INFO(" invoked from GameScene - and callback .");
         }
     }
-
-    return;
 }
 
 // Handle any internal logic that should be done relevant to this scene.
@@ -117,10 +112,4 @@ void GameScene::Render()
     text.setPosition(80.f, 80.f);
 
     window.draw(text);
-}
-
-// Callback to determine logic for the next action scene to take place.
-void GameScene::SetSceneChangeCallback(SceneChangeCallback callback)
-{
-    m_sceneChangeCallback = std::move(callback);
 }

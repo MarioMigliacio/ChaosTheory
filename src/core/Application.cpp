@@ -18,15 +18,12 @@
 #include "MainMenuScene.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
-#include "Settings.h"
+#include "SceneTransitionManager.h"
+#include "SettingsManager.h"
 #include "SplashScene.h"
 #include "UIManager.h"
 #include "WindowManager.h"
 #include "version.h"
-
-Application::Application(std::shared_ptr<Settings> sharedSettings) : m_settings(std::move(sharedSettings))
-{
-}
 
 // Initializes the Application with all the Managers; holding final ownership over the provided settings.
 void Application::Init()
@@ -35,26 +32,21 @@ void Application::Init()
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
-
     LogManager::Instance().Init();
+
+    std::shared_ptr<Settings> settings = std::make_shared<Settings>();
+    SettingsManager::Instance().LoadFromFile("config.json");
+
+    m_settings = SettingsManager::Instance().GetSettings();
+
     UIManager::Instance().Init();
-    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar | sf::Style::Close);
+    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar);
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
     SceneManager::Instance().Init(m_settings);
 
-    SceneFactory::Instance().Register("Splash",
-                                      [this]()
-                                      {
-                                          auto scene = std::make_unique<SplashScene>(m_settings);
-                                          scene->SetSceneChangeCallback(
-                                              [this](std::unique_ptr<Scene> next)
-                                              { SceneManager::Instance().ReplaceScene(std::move(next)); });
-                                          return scene;
-                                      });
-    SceneManager::Instance().PushScene(SceneFactory::Instance().Create("Splash"));
+    SceneManager::Instance().PushScene(SceneManager::Instance().Create(SceneID::Splash));
 
     if (!WindowManager::Instance().IsOpen())
     {
@@ -81,6 +73,7 @@ void Application::Run()
         ProcessEvents();
         AudioManager::Instance().Update(dt);
         SceneManager::Instance().Update(dt);
+        SceneTransitionManager::Instance().Update(dt);
         InputManager::Instance().PostUpdate();
         Render();
     }
@@ -163,6 +156,9 @@ void Application::ProcessEvents()
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();
+
     SceneManager::Instance().Render();
+    SceneTransitionManager::Instance().Render(WindowManager::Instance().GetWindow());
+
     WindowManager::Instance().EndDraw();
 }

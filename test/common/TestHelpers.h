@@ -19,6 +19,9 @@ inline std::shared_ptr<Settings> CreateTestSettings()
     auto settings = std::make_shared<Settings>();
     settings->m_windowWidth = 800;
     settings->m_windowHeight = 600;
+    settings->m_targetFramerate = 60;
+    settings->m_verticleSyncEnabled = true;
+    settings->m_isFullscreen = false;
     settings->m_windowTitle = "Test Window";
     settings->m_audioDirectory = "assets/audio/";
     settings->m_masterVolume = 50.0f;

@@ -11,7 +11,11 @@
 // ============================================================================
 
 #include "SceneManager.h"
+#include "GameScene.h"
 #include "Macros.h"
+#include "MainMenuScene.h"
+#include "SettingsScene.h"
+#include "SplashScene.h"
 
 SceneManager &SceneManager::Instance()
 {
@@ -27,6 +31,9 @@ void SceneManager::Init(std::shared_ptr<Settings> settings)
     m_settings = settings;
     m_isInitialized = true;
 
+    RegisterAllDefaultScenes();
+
+    CT_LOG_INFO("SceneManager ready. Awaiting first scene push.");
     CT_LOG_INFO("SceneManager Initialized.");
 }
 
@@ -39,14 +46,15 @@ void SceneManager::Shutdown()
     {
         if (m_scenes.top())
         {
-            m_scenes.top()->OnExit();   // Optional
-            m_scenes.top()->Shutdown(); // call instead of relying on destructor
+            m_scenes.top()->OnExit();
+            m_scenes.top()->Shutdown();
         }
 
-        m_scenes.pop(); // smart pointer auto-deletes
+        m_scenes.pop();
     }
 
     m_settings.reset();
+    m_sceneRegistry.clear();
     m_isInitialized = false;
 
     CT_LOG_INFO("SceneManager Shutdown.");
@@ -67,12 +75,6 @@ void SceneManager::Update(float dt)
     {
         auto &scene = m_scenes.top();
         scene->Update(dt);
-
-        if (scene->ShouldExit())
-        {
-            CT_LOG_INFO("SceneManager: Scene requested exit.");
-            m_scenes.pop();
-        }
     }
 }
 
@@ -96,6 +98,48 @@ void SceneManager::Render()
     {
         m_scenes.top()->Render();
     }
+}
+
+// Registers a callback function for a scene by ID.
+void SceneManager::Register(SceneID sceneId, SceneCreateFunc createFn)
+{
+    if (m_sceneRegistry.contains(sceneId))
+    {
+        CT_LOG_WARN("SceneManager: Scene '{}' is already registered!", ToString(sceneId));
+
+        return;
+    }
+
+    m_sceneRegistry[sceneId] = std::move(createFn);
+
+    CT_LOG_INFO("Scene '{}' registered with SceneManager.", ToString(sceneId));
+}
+
+// Return a safe pointer to a scene that is already registered by sceneId key, else nullptr.
+std::unique_ptr<Scene> SceneManager::Create(SceneID sceneId)
+{
+
+    if (m_sceneRegistry.contains(sceneId))
+    {
+        CT_LOG_INFO("SceneManager: Create '{}'.", ToString(sceneId));
+
+        return m_sceneRegistry[sceneId]();
+    }
+
+    CT_LOG_WARN("SceneManager::Create failed: '{}' is not registered.", ToString(sceneId));
+
+    return nullptr;
+}
+
+// Grow with application development. Easily register all the game scenes to be retrieved and updated.
+void SceneManager::RegisterAllDefaultScenes()
+{
+    Register(SceneID::Splash, [this]() { return std::make_unique<SplashScene>(m_settings); });
+    Register(SceneID::MainMenu, [this]() { return std::make_unique<MainMenuScene>(m_settings); });
+    Register(SceneID::Settings, [this]() { return std::make_unique<SettingsScene>(m_settings); });
+    Register(SceneID::Game, [this]() { return std::make_unique<GameScene>(m_settings); });
+
+    CT_LOG_INFO("All default scenes registered.");
 }
 
 // Initialize the requested scene, and place it on the top of the collection of scenes.
@@ -156,6 +200,14 @@ bool SceneManager::IsEmpty() const
     return m_scenes.empty();
 }
 
+// Returns whether or not there is a currently active scene.
+bool SceneManager::HasActiveScene() const
+{
+    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "HasActiveScene", false);
+
+    return !m_scenes.empty();
+}
+
 // Returns the collection size of the number of existing scenes.
 std::size_t SceneManager::GetSceneCount() const
 {
@@ -177,10 +229,24 @@ Scene *SceneManager::GetActiveScene() const
     return m_scenes.top().get();
 }
 
-// Returns whether or not there is a currently active scene.
-bool SceneManager::HasActiveScene() const
+// Request that a scene transition based on ID immediately take place.
+void SceneManager::RequestSceneChange(SceneID id)
 {
-    CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "HasActiveScene", false);
+    if (!m_sceneRegistry.contains(id))
+    {
+        CT_LOG_WARN("SceneManager::RequestSceneChange: SceneID '{}' is not registered.", ToString(id));
 
-    return !m_scenes.empty();
+        return;
+    }
+
+    auto nextScene = Create(id);
+
+    if (nextScene)
+    {
+        ReplaceScene(std::move(nextScene));
+    }
+    else
+    {
+        CT_LOG_ERROR("SceneManager::RequestSceneChange failed to create scene!");
+    }
 }

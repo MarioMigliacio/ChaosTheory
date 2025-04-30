@@ -60,12 +60,7 @@ void SplashScene::Update(float dt)
 
     if (m_fadingOut && m_fadeTimer >= m_fadeOutDuration && m_doneLoading)
     {
-        m_shouldExit = true;
-
-        if (m_sceneChangeCallback)
-        {
-            m_sceneChangeCallback(std::make_unique<MainMenuScene>(m_settings));
-        }
+        SceneManager::Instance().RequestSceneChange(SceneID::MainMenu);
     }
 }
 
@@ -109,12 +104,6 @@ void SplashScene::Render()
     }
 
     window.display();
-}
-
-// Callback to determine logic for the next action scene to take place.
-void SplashScene::SetSceneChangeCallback(SceneChangeCallback callback)
-{
-    m_sceneChangeCallback = std::move(callback);
 }
 
 void SplashScene::LoadBackground()

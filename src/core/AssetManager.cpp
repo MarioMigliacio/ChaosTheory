@@ -37,7 +37,6 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     m_settings = settings;
-    namespace fs = std::filesystem;
 
     CT_LOG_INFO("Initializing AssetManager...");
 

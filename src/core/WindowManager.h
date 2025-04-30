@@ -41,9 +41,9 @@ class WindowManager
     void EndDraw();
 
     void Recreate(const unsigned int width, const unsigned int height, const std::string &title, sf::Uint32 style);
-    void ApplySettings(sf::Uint32 style = sf::Style::Default);
+    void ApplySettings(sf::Uint32 style);
+    void SetClearColor(const sf::Color &color);
     void ToggleFullscreen();
-
     bool PollEvent(sf::Event &event);
 
     sf::RenderWindow &GetWindow();
@@ -58,6 +58,12 @@ class WindowManager
   private:
     std::unique_ptr<sf::RenderWindow> m_window;
     std::shared_ptr<Settings> m_settings;
+
     bool m_isFullscreen = false;
     bool m_isInitialized = false;
+
+    std::string m_title;
+    sf::Uint32 m_style;
+
+    sf::Color m_clearColor = sf::Color::Black;
 };

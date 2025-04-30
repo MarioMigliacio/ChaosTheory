@@ -4,12 +4,20 @@ enable_testing()
 
 # More explicit instead of file glob
 add_executable(CT_tests
-    ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/SceneManagerTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/AudioManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/AudioManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/RadioButtonTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SceneFactoryTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SceneManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SceneTransitionManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SettingsManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UIFactoryTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UIManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UISliderTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/WindowManagerTest.cpp
     # add others here if needed
 )

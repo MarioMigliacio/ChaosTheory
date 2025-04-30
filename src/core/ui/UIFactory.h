@@ -15,9 +15,11 @@
 #include <memory>
 #include <string>
 
+// Simple enumeration for supported Button types.
 enum class ButtonType
 {
-    Classic
+    Classic,
+    Radio
 };
 
 // ============================================================================
@@ -36,6 +38,10 @@ class UIFactory
 
     std::shared_ptr<UIElement> CreateButton(ButtonType type, const sf::Vector2f &position, const sf::Vector2f &size,
                                             const std::string &label, std::function<void()> onClick);
+
+    std::shared_ptr<UIElement> CreateSlider(const std::string &label, const sf::Vector2f &position,
+                                            const sf::Vector2f &size, float minValue, float maxValue,
+                                            float initialValue, std::function<void(float)> onChange);
 
   private:
     UIFactory() = default;

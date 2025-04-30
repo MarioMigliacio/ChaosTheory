@@ -41,6 +41,19 @@ void AudioManager::Init(std::shared_ptr<Settings> settings)
                 m_musicVolume, m_sfxVolume, m_isMuted ? "Yes" : "No");
 }
 
+// Provides interface to reload settings and internal variable sync.
+void AudioManager::HotReload(std::shared_ptr<Settings> settings)
+{
+    m_settings = settings;
+
+    m_isMuted = m_settings->m_isMuted;
+    SetMasterVolume(m_settings->m_masterVolume);
+    SetMusicVolume(m_settings->m_musicVolume);
+    SetSFXVolume(m_settings->m_sfxVolume);
+
+    CT_LOG_INFO("AudioManager hot reloaded settings.");
+}
+
 // Shuts down the audio manager and resets internal state.
 void AudioManager::Shutdown()
 {
@@ -352,4 +365,9 @@ void AudioManager::SwitchTrack(const std::string &filename, bool loop)
 
     StopMusic(true);
     PlayMusic(filename, loop, true);
+}
+
+const std::string &AudioManager::GetCurrentMusicName() const
+{
+    return m_currentTrack;
 }

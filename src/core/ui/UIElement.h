@@ -31,6 +31,23 @@ class UIElement : public sf::Drawable
     virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed) = 0;
     virtual bool Contains(const sf::Vector2i &point) const = 0;
 
+    virtual void SetPosition(const sf::Vector2f &position) = 0;
+    virtual void SetSize(const sf::Vector2f &size) = 0;
+
+  public:
+    // Common, inheritting elements need not override these simple capabilities.
+    void SetEnabled(bool enabled)
+    {
+        m_enabled = enabled;
+    }
+
+    bool IsEnabled() const
+    {
+        return m_enabled;
+    }
+
   protected:
     virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override = 0;
+
+    bool m_enabled = true;
 };

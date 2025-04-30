@@ -25,7 +25,6 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Returns Key Press, Key Held, Key Release.
-//      - TODO: Mouse inputs, and any further robust additions.
 //
 // ============================================================================
 class InputManager
