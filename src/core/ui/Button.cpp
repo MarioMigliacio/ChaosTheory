@@ -20,6 +20,7 @@ Button::Button(const sf::Vector2f &position, const sf::Vector2f &size)
     m_shape.setFillColor(m_idleColor);
 }
 
+// Sets the internal text related members for this Button.
 void Button::SetText(const std::string &text, const sf::Font &font, unsigned int size)
 {
     m_label.setFont(font);
@@ -42,33 +43,39 @@ void Button::SetText(const std::string &text, const sf::Font &font, unsigned int
     CenterLabel();
 }
 
+// Sets the internal callback function for this Button, which responds to onClick.
 void Button::SetCallback(std::function<void()> callback)
 {
     m_onClick = std::move(callback);
 }
 
+// Sets the color for this button during non-hover time.
 void Button::SetIdleColor(const sf::Color &color)
 {
     m_idleColor = color;
     m_shape.setFillColor(m_idleColor);
 }
 
+// Sets the color for this button during hover event.
 void Button::SetHoverColor(const sf::Color &color)
 {
     m_hoverColor = color;
 }
 
+// While button is in focus and active, set the color.
 void Button::SetActiveColor(const sf::Color &color)
 {
     m_activeColor = color;
 }
 
+// Sets the color for this buttons text.
 void Button::SetTextColor(const sf::Color &color)
 {
     m_textColor = color;
     m_label.setFillColor(m_textColor);
 }
 
+// Sets the fontsize for this button.
 void Button::SetFontSize(unsigned int size)
 {
     m_fontSize = size;
@@ -76,11 +83,13 @@ void Button::SetFontSize(unsigned int size)
     CenterLabel();
 }
 
+// Updates the scale size for this button, during hover and active focus.
 void Button::SetHoverScale(float scale)
 {
     m_hoverScale = scale;
 }
 
+// Update logic for this Button includes, isHovered, isPressed, scale, color and text.
 void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 {
     sf::Vector2f mouse(mousePosition);
@@ -113,23 +122,27 @@ void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
     }
 }
 
+// Returns whether or not the point is within the bounds of this Button.
 bool Button::Contains(const sf::Vector2i &point) const
 {
     return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
+// Sets the position for this Button.
 void Button::SetPosition(const sf::Vector2f &position)
 {
     m_shape.setPosition(position);
     CenterLabel();
 }
 
+// Sets the size for this button and adjusts the label.
 void Button::SetSize(const sf::Vector2f &size)
 {
     m_shape.setSize(size);
     CenterLabel();
 }
 
+// Fix the label to be centered in this Button.
 void Button::CenterLabel()
 {
     sf::FloatRect textRect = m_label.getLocalBounds();
@@ -139,12 +152,14 @@ void Button::CenterLabel()
                         m_shape.getPosition().y + m_shape.getSize().y / 2.f);
 }
 
+// Draw this Button to the Renderable Target.
 void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_shape, states);
     target.draw(m_label, states);
 }
 
+// While hover and enable events, adjust the focus size of this button.
 void Button::UpdateScale()
 {
     if (m_isHovered && m_enabled)
@@ -160,6 +175,7 @@ void Button::UpdateScale()
     }
 }
 
+// Adjust the color of this button during enabled and hover events.
 void Button::UpdateFillColor(bool isMousePressed)
 {
     if (m_enabled)
@@ -189,6 +205,7 @@ void Button::UpdateFillColor(bool isMousePressed)
     }
 }
 
+// Adjust the color for this Button based on enabled states.
 void Button::UpdateTextColor()
 {
     if (m_enabled)
@@ -202,6 +219,7 @@ void Button::UpdateTextColor()
     }
 }
 
+// Adjust the click states for this Button.
 void Button::HandleClickLogic(bool isMousePressed)
 {
     if (isMousePressed && !m_isPressed)

@@ -17,6 +17,7 @@
 #include <memory>
 #include <stack>
 
+// Simple enumeration field to represent a type of scene.
 enum class SceneID
 {
     Splash,
@@ -42,18 +43,6 @@ inline const char *ToString(SceneID id)
             return "Unknown";
     }
 }
-
-// Hash specialization for SceneID (needed for unordered_map)
-namespace std
-{
-template <> struct hash<SceneID>
-{
-    std::size_t operator()(const SceneID &id) const
-    {
-        return static_cast<std::size_t>(id);
-    }
-};
-} // namespace std
 
 // ============================================================================
 //  Class       : SceneManager

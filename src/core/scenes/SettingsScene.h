@@ -38,6 +38,7 @@ class SettingsScene : public Scene
     void Init() override;
     void Shutdown() override;
     void OnExit() override;
+
     void Update(float dt) override;
     void HandleEvent(const sf::Event &event) override;
     void OnResize(const sf::Vector2u &newSize) override;

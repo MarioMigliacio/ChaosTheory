@@ -26,6 +26,8 @@ const sf::Color DEFAULT_ACTIVE_COLOR(100, 100, 255);
 const sf::Color DEFAULT_DISABLED_IDLE_COLOR(100, 100, 100);
 const sf::Color DEFAULT_DISABLED_HOVER_COLOR(100, 100, 100);
 const sf::Color DEFAULT_TEXT_COLOR(0, 0, 0);
+const sf::Color DEFAULT_SELECTED_COLOR(100, 180, 255);
+const sf::Color DEFAULT_SELECTED_TEXT_COLOR(255, 255, 255);
 const sf::Color DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
 
 // ============================================================================
@@ -44,8 +46,11 @@ class Button : public UIElement
     Button(const sf::Vector2f &position, const sf::Vector2f &size);
     ~Button() override = default;
 
+    // Disable copy
     Button(const Button &) = delete;
     Button &operator=(const Button &) = delete;
+
+    // Allow move
     Button(Button &&) noexcept = default;
     Button &operator=(Button &&) noexcept = default;
 

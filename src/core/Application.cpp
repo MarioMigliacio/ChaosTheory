@@ -44,21 +44,9 @@ void Application::Init()
     InputManager::Instance().Init(m_settings);
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
-
     SceneManager::Instance().Init(m_settings);
-    SceneManager::Instance().PushScene(SceneManager::Instance().Create(SceneID::Splash));
 
-    // New SceneManger Init should handle this.
-    // SceneFactory::Instance().Register("Splash",
-    //                                   [this]()
-    //                                   {
-    //                                       auto scene = std::make_unique<SplashScene>(m_settings);
-    //                                       scene->SetSceneChangeCallback(
-    //                                           [this](std::unique_ptr<Scene> next)
-    //                                           { SceneManager::Instance().ReplaceScene(std::move(next)); });
-    //                                       return scene;
-    //                                   });
-    // SceneManager::Instance().PushScene(SceneFactory::Instance().Create("Splash"));
+    SceneManager::Instance().PushScene(SceneManager::Instance().Create(SceneID::Splash));
 
     if (!WindowManager::Instance().IsOpen())
     {

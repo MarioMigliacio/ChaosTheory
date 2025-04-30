@@ -55,28 +55,26 @@ class UISlider : public UIElement
     float GetValue() const;
 
   private:
-    // In SFML, the draw() method is intended to be overridden from sf::Drawable, which is a friend of sf::RenderTarget.
-    // That’s why the draw method is typically marked private, and you don’t need to call it directly — SFML will handle
-    // it via window.draw(...) when used
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
     float ValueToPosition(float value) const;
     float PositionToValue(float x) const;
 
   private:
-    float m_min;
-    float m_max;
-    float m_value;
-    bool m_dragging;
+    sf::RectangleShape m_barBackground;
+    sf::RectangleShape m_barForeground;
+    sf::CircleShape m_knob;
+
+    sf::Text m_labelText;
     std::string m_label;
 
     sf::Vector2f m_position;
     sf::Vector2f m_size;
 
-    sf::RectangleShape m_barBackground;
-    sf::RectangleShape m_barForeground;
-    sf::CircleShape m_knob;
-    sf::Text m_labelText;
+    float m_min;
+    float m_max;
+    float m_value;
+    bool m_dragging;
 
-    std::function<void(float)> m_onChange;
+        std::function<void(float)> m_onChange;
 };

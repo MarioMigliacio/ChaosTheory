@@ -36,6 +36,7 @@ SettingsScene::SettingsScene(std::shared_ptr<Settings> settings) : m_settings(se
 {
 }
 
+// Initialize the internal components for this SettingsScene.
 void SettingsScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -55,6 +56,7 @@ void SettingsScene::Init()
     CT_LOG_INFO("SettingsScene initialized.");
 }
 
+// Do any necessary logic for shutting this scene down.
 void SettingsScene::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("SettingsScene", "Shutdown");
@@ -65,17 +67,13 @@ void SettingsScene::Shutdown()
     CT_LOG_INFO("SettingsScene Shutdown.");
 }
 
+// Do any necessary logic upon exit for this scene.
 void SettingsScene::OnExit()
 {
     CT_LOG_INFO("SettingsScene OnExit.");
 }
 
-// Handle any internal logic that should be done relevant to this scene.
-void SettingsScene::HandleEvent(const sf::Event &event)
-{
-    // Only if you want to catch window resize, close, etc.
-}
-
+// Update internal members for this Settings Scene.
 void SettingsScene::Update(float dt)
 {
     const auto mousePos = InputManager::Instance().GetMousePosition();
@@ -108,6 +106,13 @@ void SettingsScene::Update(float dt)
     }
 }
 
+// Handle any internal logic that should be done relevant to this scene.
+void SettingsScene::HandleEvent(const sf::Event &event)
+{
+    // Only if you want to catch window resize, close, etc.
+}
+
+// Update the dimensions for this Settings Scene.
 void SettingsScene::OnResize(const sf::Vector2u &newSize)
 {
     CreateTitleText();
@@ -118,6 +123,7 @@ void SettingsScene::OnResize(const sf::Vector2u &newSize)
     CreateSliders();
 }
 
+// Draw this Settings Scene to the render target.
 void SettingsScene::Render()
 {
     auto &window = WindowManager::Instance().GetWindow();
@@ -132,6 +138,7 @@ void SettingsScene::Render()
     }
 }
 
+// Generate the text that is the Title for this Settings Scene.
 void SettingsScene::CreateTitleText()
 {
     m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
@@ -155,6 +162,7 @@ void SettingsScene::CreateTitleText()
     m_toastText.setOutlineThickness(2.f);
 }
 
+// Generate the Sliders needed for this Settings Scene.
 void SettingsScene::CreateSliders()
 {
     auto windowSize = WindowManager::Instance().GetWindow().getSize();
@@ -178,6 +186,7 @@ void SettingsScene::CreateSliders()
                                                 { SettingsManager::Instance().GetSettings()->m_sfxVolume = value; }));
 }
 
+// Generate the buttons needed for this Settings Scene.
 void SettingsScene::CreateButtons()
 {
     auto windowSize = WindowManager::Instance().GetWindow().getSize();
@@ -229,6 +238,7 @@ std::shared_ptr<UIElement> SettingsScene::MakeSlider(const std::string &label, c
                                               std::move(onChange));
 }
 
+// Determines if there are any changes to the settings from the user.
 void SettingsScene::CheckForUnsavedChanges()
 {
     if (SettingsManager::Instance().GetSettings())
@@ -237,6 +247,7 @@ void SettingsScene::CheckForUnsavedChanges()
     }
 }
 
+// Display a friendly toast message to indicate that settings are changed.
 void SettingsScene::ShowToast(const std::string &message)
 {
     m_toastText.setString(message);

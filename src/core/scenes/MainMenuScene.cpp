@@ -272,6 +272,7 @@ void MainMenuScene::PlayIntroMusic()
     }
 }
 
+// Just a simplistic helper method to help make a menu button.
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
                                                          const std::string &label, std::function<void()> onClick)
 {

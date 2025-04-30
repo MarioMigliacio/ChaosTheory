@@ -15,6 +15,7 @@
 #include <memory>
 #include <string>
 
+// Simple enumeration for supported Button types.
 enum class ButtonType
 {
     Classic,

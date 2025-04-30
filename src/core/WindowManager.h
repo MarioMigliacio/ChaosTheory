@@ -44,7 +44,6 @@ class WindowManager
     void ApplySettings(sf::Uint32 style);
     void SetClearColor(const sf::Color &color);
     void ToggleFullscreen();
-
     bool PollEvent(sf::Event &event);
 
     sf::RenderWindow &GetWindow();

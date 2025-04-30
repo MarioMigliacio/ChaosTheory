@@ -13,6 +13,16 @@
 
 #include <SFML/Graphics.hpp>
 
+// ============================================================================
+//  Class       : SceneTransitionManager
+//  Purpose     : Singleton class that manages the fade in and opacity for
+//                scene transition callbacks.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Stores Scene transition logic, and update management
+//
+// ============================================================================
 class SceneTransitionManager
 {
   public:
@@ -39,12 +49,12 @@ class SceneTransitionManager
     SceneTransitionManager &operator=(const SceneTransitionManager &) = delete;
 
   private:
+    sf::RectangleShape m_fadeRectangle;
+
     bool m_isFadingOut = false;
     bool m_isFadingIn = false;
     bool m_fadeComplete = true;
     bool m_pendingFadeIn = false;
     float m_opacity = 0.f;
     float m_fadeSpeed = 1.f;
-
-    sf::RectangleShape m_fadeRectangle;
 };

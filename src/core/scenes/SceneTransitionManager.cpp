@@ -10,6 +10,7 @@
 // ============================================================================
 
 #include "SceneTransitionManager.h"
+#include "Macros.h"
 
 SceneTransitionManager &SceneTransitionManager::Instance()
 {
@@ -17,6 +18,7 @@ SceneTransitionManager &SceneTransitionManager::Instance()
     return instance;
 }
 
+// Safely reset the internal members for the Scene Transition Manager.
 void SceneTransitionManager::Reset()
 {
     m_isFadingOut = false;
@@ -26,8 +28,11 @@ void SceneTransitionManager::Reset()
     m_opacity = 0.f;
 }
 
+// Start the sequence to begin the fading out effect.
 void SceneTransitionManager::StartFadeOut(float duration)
 {
+    CT_LOG_DEBUG("SceneTransitionManager: StartFadeOut.");
+
     m_isFadingOut = true;
     m_isFadingIn = false;
     m_fadeComplete = false;
@@ -38,8 +43,11 @@ void SceneTransitionManager::StartFadeOut(float duration)
     m_fadeRectangle.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(m_opacity)));
 }
 
+// Start the sequence to begin fading in effect.
 void SceneTransitionManager::StartFadeIn(float duration)
 {
+    CT_LOG_DEBUG("SceneTransitionManager: StartFadeIn.");
+
     m_isFadingOut = false;
     m_isFadingIn = true;
     m_fadeComplete = false;
@@ -50,6 +58,7 @@ void SceneTransitionManager::StartFadeIn(float duration)
     m_fadeRectangle.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(m_opacity)));
 }
 
+// Update the current internal variables
 void SceneTransitionManager::Update(float dt)
 {
     if (m_isFadingOut)
@@ -79,6 +88,7 @@ void SceneTransitionManager::Update(float dt)
     m_fadeRectangle.setFillColor(sf::Color(0, 0, 0, static_cast<sf::Uint8>(m_opacity)));
 }
 
+// Draw this Scene Transition Effect to the target window.
 void SceneTransitionManager::Render(sf::RenderWindow &window)
 {
     if (m_isFadingOut || m_isFadingIn || m_pendingFadeIn)
@@ -95,16 +105,19 @@ void SceneTransitionManager::Render(sf::RenderWindow &window)
     }
 }
 
+// Returns the state of the scene currently in a fade state.
 bool SceneTransitionManager::IsFading() const
 {
     return m_isFadingOut || m_isFadingIn;
 }
 
+// Returns the state of whether or not the scene is currently in a fade complete state.
 bool SceneTransitionManager::IsFadeComplete() const
 {
     return m_fadeComplete;
 }
 
+// Forces the window to contain a rectangle of pure opaqueness. Useful to fade out.
 void SceneTransitionManager::ForceFullyOpaque()
 {
     m_opacity = 255.f;

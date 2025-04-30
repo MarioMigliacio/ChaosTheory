@@ -48,6 +48,12 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
         case ButtonType::Radio:
         {
             auto radio = std::make_shared<RadioButton>(position, size, label, std::move(onClick));
+            radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 24);
+            radio->SetCallback(std::move(onClick));
+            radio->SetTextColor(DEFAULT_TEXT_COLOR);
+            radio->SetHoverColor(DEFAULT_HOVER_COLOR);
+            radio->SetSelectedColor(DEFAULT_SELECTED_COLOR, DEFAULT_SELECTED_TEXT_COLOR);
+
             return radio;
 
             break;
@@ -55,6 +61,7 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
     }
 }
 
+// Manufactures a Slider ui element based on input parameters, returns a smart pointer.
 std::shared_ptr<UIElement> UIFactory::CreateSlider(const std::string &label, const sf::Vector2f &position,
                                                    const sf::Vector2f &size, float minValue, float maxValue,
                                                    float initialValue, std::function<void(float)> onChange)

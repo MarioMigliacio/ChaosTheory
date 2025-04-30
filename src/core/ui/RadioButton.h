@@ -1,10 +1,33 @@
+// ============================================================================
+//  File        : RadioButton.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-27
+//  Description : Represents a clickable UI button where only one option can
+//                be selected in a group option setting.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
+#include "Button.h"
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <string>
 
+// ============================================================================
+//  Class       : RadioButton
+//  Purpose     : Manages this Radio Button logic at the ui level.
+//
+//  Responsibilities:
+//      - Set button position
+//      - Perform logic during onClick
+//      - Display button specifics during render
+//
+// ============================================================================
 class RadioButton : public UIElement
 {
   public:
@@ -12,13 +35,23 @@ class RadioButton : public UIElement
                 std::function<void()> onSelect);
     ~RadioButton() override = default;
 
+    // Disable copy
     RadioButton(const RadioButton &) = delete;
     RadioButton &operator=(const RadioButton &) = delete;
+
+    // Allow move
     RadioButton(RadioButton &&) noexcept = default;
     RadioButton &operator=(RadioButton &&) noexcept = default;
 
     void SetSelected(bool selected);
     bool IsSelected() const;
+
+    void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
+    void SetTextColor(const sf::Color &color);
+    void SetSelectedColor(const sf::Color &fillColor, const sf::Color &textColor);
+    void SetHoverColor(const sf::Color &hoverColor);
+    void SetFontSize(unsigned int size);
+    void SetCallback(std::function<void()> onSelect);
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
@@ -36,11 +69,17 @@ class RadioButton : public UIElement
   private:
     sf::RectangleShape m_shape;
     sf::Text m_label;
-    std::function<void()> m_onSelect;
 
-    sf::Color m_currentFillColor;
-    sf::Color m_currentTextColor;
+    sf::Color m_idleColor = DEFAULT_IDLE_COLOR;
+    sf::Color m_hoverColor = DEFAULT_HOVER_COLOR;
+    sf::Color m_selectedFillColor = DEFAULT_SELECTED_COLOR;
+    sf::Color m_selectedTextColor = DEFAULT_SELECTED_TEXT_COLOR;
+    sf::Color m_textColor = DEFAULT_TEXT_COLOR;
+
+    unsigned int m_fontSize = 24;
 
     bool m_isSelected = false;
     bool m_isHovered = false;
+
+    std::function<void()> m_onSelect;
 };
