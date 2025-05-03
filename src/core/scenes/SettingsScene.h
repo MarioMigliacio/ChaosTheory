@@ -17,7 +17,15 @@
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <optional>
 #include <string>
+
+enum class SettingsPage
+{
+    Audio,
+    Video,
+    KeyBindings
+};
 
 // ============================================================================
 //  Class       : SettingsScene
@@ -45,27 +53,33 @@ class SettingsScene : public Scene
     void Render() override;
 
   private:
-    void CreateTitleText();
-    void CreateSliders();
+    void CreateSettingsPage(SettingsPage page);
+    void CreateUI(SettingsPage page);
+    void CreateTitle(SettingsPage page);
+    void CreateArrows(SettingsPage page);
     void CreateButtons();
+
     void LoadDefaultSFXFile();
-    std::shared_ptr<UIElement> MakeSlider(const std::string &label, const sf::Vector2f &position, float initial,
-                                          std::function<void(float)> onChange);
+
     void CheckForUnsavedChanges();
     void ShowToast(const std::string &message);
+
+    void SwitchToPage(SettingsPage page);
 
   private:
     std::shared_ptr<Settings> m_settings;
     Settings m_backupSettings;
-    bool m_hasUnsavedChanges = false;
+
+    SettingsPage m_currentPage = SettingsPage::Audio;
+    std::optional<SettingsPage> m_pendingPageChange;
 
     std::shared_ptr<UIElement> m_applyButton;
     SceneID m_requestedScene = SceneID::MainMenu;
 
+    bool m_hasUnsavedChanges = false;
     bool m_showToast = false;
     float m_toastTimer = 0.f;
 
     sf::Text m_toastText;
-
     sf::Text m_title;
 };

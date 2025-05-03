@@ -74,3 +74,8 @@ std::shared_ptr<UIElement> UIFactory::CreateSlider(const std::string &label, con
 
     return slider;
 }
+
+std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction)
+{
+    return std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
+}

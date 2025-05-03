@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "UIArrow.h"
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -42,6 +43,8 @@ class UIFactory
     std::shared_ptr<UIElement> CreateSlider(const std::string &label, const sf::Vector2f &position,
                                             const sf::Vector2f &size, float minValue, float maxValue,
                                             float initialValue, std::function<void(float)> onChange);
+
+    std::shared_ptr<UIArrow> CreateArrow(float x, float y, ArrowDirection direction);
 
   private:
     UIFactory() = default;

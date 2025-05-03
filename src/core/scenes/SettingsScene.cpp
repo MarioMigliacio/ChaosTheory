@@ -41,12 +41,13 @@ void SettingsScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
+    UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();
-    m_backupSettings = *SettingsManager::Instance().GetSettings();
 
-    CreateTitleText();
-    CreateSliders();
-    CreateButtons();
+    m_backupSettings = *SettingsManager::Instance().GetSettings();
+    m_currentPage = SettingsPage::Audio; // by default
+
+    CreateSettingsPage(m_currentPage);
     LoadDefaultSFXFile();
 
     SceneTransitionManager::Instance().StartFadeIn();
@@ -103,6 +104,15 @@ void SettingsScene::Update(float dt)
         m_hasPendingTransition = false;
         SceneTransitionManager::Instance().ForceFullyOpaque();
         SceneManager::Instance().RequestSceneChange(m_requestedScene);
+
+        return;
+    }
+
+    if (m_pendingPageChange.has_value())
+    {
+        UIManager::Instance().Clear();
+        CreateSettingsPage(m_pendingPageChange.value());
+        m_pendingPageChange.reset();
     }
 }
 
@@ -115,12 +125,12 @@ void SettingsScene::HandleEvent(const sf::Event &event)
 // Update the dimensions for this Settings Scene.
 void SettingsScene::OnResize(const sf::Vector2u &newSize)
 {
-    CreateTitleText();
+    CreateTitle(m_currentPage);
 
     // Adjust UI elements
     UIManager::Instance().Clear();
     CreateButtons();
-    CreateSliders();
+    CreateUI(m_currentPage);
 }
 
 // Draw this Settings Scene to the render target.
@@ -138,52 +148,182 @@ void SettingsScene::Render()
     }
 }
 
-// Generate the text that is the Title for this Settings Scene.
-void SettingsScene::CreateTitleText()
+// Generate the Entire Settings Page that is specific to the request.
+void SettingsScene::CreateSettingsPage(SettingsPage page)
 {
+    CreateTitle(page);
+    CreateUI(page);
+    CreateArrows(page);
+    CreateButtons();
+}
+
+// Generate the UI elements needed for specific SettingsPage.
+void SettingsScene::CreateUI(SettingsPage page)
+{
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    float startX = (winSize.x - SLIDER_WIDTH) / 2.f;
+    float startY = winSize.y * 0.4f;
+
+    m_currentPage = page;
+
+    switch (page)
+    {
+        case SettingsPage::Audio:
+        default:
+        {
+            UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
+                "Master Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f,
+                m_settings->m_masterVolume,
+                [](float val) { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
+
+            startY += SLIDER_SPACING;
+
+            UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
+                "Music Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_musicVolume,
+                [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
+
+            startY += SLIDER_SPACING;
+
+            UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
+                "SFX Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_sfxVolume,
+                [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
+
+            break;
+        }
+
+        case SettingsPage::Video:
+        {
+            float startX = (winSize.x - 300.f) / 2.f;
+            float startY = winSize.y * 0.4f;
+
+            std::vector<std::string> options = {"480p", "720p", "1080p", "Fullscreen"};
+
+            for (std::size_t i = 0; i < options.size(); ++i)
+            {
+                float offsetX = (i % 2 == 0) ? 0.f : 160.f;
+                float offsetY = (i < 2) ? 0.f : 50.f;
+
+                sf::Vector2f pos = {startX + offsetX, startY + offsetY};
+
+                UIManager::Instance().AddElement(
+                    UIFactory::Instance().CreateButton(ButtonType::Radio, pos, {140.f, 30.f}, options[i],
+                                                       [option = options[i]]()
+                                                       {
+                                                           CT_LOG_INFO("Resolution selected: {}", option);
+                                                           // TODO: Apply resolution state to settings
+                                                       }));
+            }
+            break;
+        }
+
+        case SettingsPage::KeyBindings:
+        {
+            // Placeholder UI panel with label
+            auto panelPos = sf::Vector2f((winSize.x - 360.f) / 2.f, winSize.y * 0.4f);
+            auto panelSize = sf::Vector2f(360.f, 120.f);
+            // auto kbPanel = UIFactory::Instance().CreatePanel(panelPos, panelSize);
+
+            auto text = std::make_shared<sf::Text>();
+            text->setFont(AssetManager::Instance().GetFont("Default.ttf"));
+            text->setString("Keybinding editing not yet available.");
+            text->setCharacterSize(18);
+            text->setFillColor(sf::Color::White);
+            text->setPosition(panelPos.x + 20.f, panelPos.y + 40.f);
+            // kbPanel->AddChildText(text);
+
+            // UIManager::Instance().AddElement(kbPanel);
+
+            break;
+        }
+    }
+}
+
+// Generate the text that is the Title for the requested SettingsPage.
+void SettingsScene::CreateTitle(SettingsPage page)
+{
+    AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf");
     m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    m_title.setString("Settings");
+
     m_title.setCharacterSize(48);
     m_title.setFillColor(sf::Color(255, 255, 200));
     m_title.setOutlineColor(sf::Color::Black);
     m_title.setOutlineThickness(2.f);
+
+    switch (page)
+    {
+        case SettingsPage::Audio:
+            m_title.setString("Audio Settings");
+            break;
+
+        case SettingsPage::Video:
+            m_title.setString("Video Settings");
+            break;
+
+        case SettingsPage::KeyBindings:
+            m_title.setString("Key Binding Settings");
+            break;
+    }
 
     const auto bounds = m_title.getLocalBounds();
     m_title.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 
     const auto windowSize = WindowManager::Instance().GetWindow().getSize();
     m_title.setPosition(windowSize.x / 2.f, windowSize.y * 0.15f);
-
-    // Toast Text Setup
-    m_toastText.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    m_toastText.setCharacterSize(24);
-    m_toastText.setFillColor(sf::Color(0, 255, 0));
-    m_toastText.setOutlineColor(sf::Color::Black);
-    m_toastText.setOutlineThickness(2.f);
 }
 
-// Generate the Sliders needed for this Settings Scene.
-void SettingsScene::CreateSliders()
+// Generate the relevent Arrow UI elements for the requested SettingsPage.
+void SettingsScene::CreateArrows(SettingsPage page)
 {
-    auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    float startX = (windowSize.x - SLIDER_WIDTH) / 2.f;
-    float startY = windowSize.y * 0.4f;
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    const float centerY = winSize.y / 2.f;
 
-    UIManager::Instance().AddElement(
-        MakeSlider("Master Volume", {startX, startY}, SettingsManager::Instance().GetSettings()->m_masterVolume,
-                   [](float value) { SettingsManager::Instance().GetSettings()->m_masterVolume = value; }));
+    if (page == SettingsPage::Audio || page == SettingsPage::KeyBindings)
+    {
+        // LEFT ARROW (to previous page)
+        auto leftArrow = UIFactory::Instance().CreateArrow(40.f, centerY, ArrowDirection::Left);
 
-    startY += SLIDER_SPACING;
+        leftArrow->SetOnClick(
+            [this, page]()
+            {
+                UIManager::Instance().BlockInputUntilMouseRelease();
 
-    UIManager::Instance().AddElement(
-        MakeSlider("Music Volume", {startX, startY}, SettingsManager::Instance().GetSettings()->m_musicVolume,
-                   [](float value) { SettingsManager::Instance().GetSettings()->m_musicVolume = value; }));
+                if (page == SettingsPage::KeyBindings)
+                {
+                    SwitchToPage(SettingsPage::Audio);
+                }
 
-    startY += SLIDER_SPACING;
+                else if (page == SettingsPage::Audio)
+                {
+                    SwitchToPage(SettingsPage::Video); // wrap or lock based on preference
+                }
+            });
 
-    UIManager::Instance().AddElement(MakeSlider("SFX Volume", {startX, startY},
-                                                SettingsManager::Instance().GetSettings()->m_sfxVolume, [](float value)
-                                                { SettingsManager::Instance().GetSettings()->m_sfxVolume = value; }));
+        UIManager::Instance().AddElement(leftArrow);
+    }
+
+    if (page == SettingsPage::Audio || page == SettingsPage::Video)
+    {
+        // RIGHT ARROW (to next page)
+        auto rightArrow = UIFactory::Instance().CreateArrow(winSize.x - 60.f, centerY, ArrowDirection::Right);
+
+        rightArrow->SetOnClick(
+            [this, page]()
+            {
+                UIManager::Instance().BlockInputUntilMouseRelease();
+
+                if (page == SettingsPage::Audio)
+                {
+                    SwitchToPage(SettingsPage::KeyBindings);
+                }
+
+                else if (page == SettingsPage::Video)
+                {
+                    SwitchToPage(SettingsPage::Audio);
+                }
+            });
+
+        UIManager::Instance().AddElement(rightArrow);
+    }
 }
 
 // Generate the buttons needed for this Settings Scene.
@@ -213,12 +353,12 @@ void SettingsScene::CreateButtons()
 
     startY += BUTTON_HEIGHT + BUTTON_SPACING;
 
-    // Cancel Changes Button
+    // Go Back Button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
-        ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Cancel Changes",
+        ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Go Back",
         [this]()
         {
-            CT_LOG_INFO("SettingsScene: Cancel Changes clicked.");
+            CT_LOG_INFO("SettingsScene: Go Back clicked.");
             *SettingsManager::Instance().GetSettings() = m_backupSettings;
             m_requestedScene = SceneID::MainMenu;
             m_hasPendingTransition = true;
@@ -229,13 +369,7 @@ void SettingsScene::CreateButtons()
 void SettingsScene::LoadDefaultSFXFile()
 {
     AssetManager::Instance().LoadSound("PewPew", "assets/audio/PewPew.wav");
-}
-
-std::shared_ptr<UIElement> SettingsScene::MakeSlider(const std::string &label, const sf::Vector2f &position,
-                                                     float initial, std::function<void(float)> onChange)
-{
-    return UIFactory::Instance().CreateSlider(label, position, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, initial,
-                                              std::move(onChange));
+    AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf");
 }
 
 // Determines if there are any changes to the settings from the user.
@@ -259,4 +393,18 @@ void SettingsScene::ShowToast(const std::string &message)
 
     m_toastTimer = TOAST_DURATION;
     m_showToast = true;
+}
+
+void SettingsScene::SwitchToPage(SettingsPage page)
+{
+    if (page == m_currentPage)
+    {
+        return;
+    }
+
+    // Revert any local changes before leaving page
+    *SettingsManager::Instance().GetSettings() = m_backupSettings;
+
+    // Don't switch immediately — set for safe deferred swap
+    m_pendingPageChange = page;
 }

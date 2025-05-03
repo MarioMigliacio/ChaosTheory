@@ -46,6 +46,7 @@ void MainMenuScene::Init()
     WindowManager::Instance().Recreate(m_settings->m_windowWidth, m_settings->m_windowHeight, m_settings->m_windowTitle,
                                        sf::Style::Default);
 
+    UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();
     SceneTransitionManager::Instance().StartFadeIn();
 

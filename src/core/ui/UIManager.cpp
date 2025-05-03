@@ -60,10 +60,29 @@ const std::vector<std::shared_ptr<UIElement>> &UIManager::GetElements() const
     return m_elements;
 }
 
+// Blocks any pending actions from impacting the UI for a brief logic check.
+void UIManager::BlockInputUntilMouseRelease()
+{
+    m_blockedUntilMouseRelease = true;
+}
+
 // Performs collected Update logic for any UI components this UI manager handles.
 void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Update");
+
+    if (m_blockedUntilMouseRelease)
+    {
+        if (!isLeftClick)
+        {
+            m_blockedUntilMouseRelease = false;
+        }
+
+        else
+        {
+            return;
+        }
+    }
 
     m_isUpdating = true;
 
