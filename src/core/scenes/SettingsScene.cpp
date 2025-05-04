@@ -12,6 +12,7 @@
 #include "SettingsScene.h"
 #include "AssetManager.h"
 #include "AudioManager.h"
+#include "GroupBox.h"
 #include "InputManager.h"
 #include "Macros.h"
 #include "RadioButton.h"
@@ -193,21 +194,7 @@ void SettingsScene::CreateUI(SettingsPage page)
 
         case SettingsPage::KeyBindings:
         {
-            // Placeholder UI panel with label
-            auto panelPos = sf::Vector2f((WindowManager::Instance().GetWindow().getSize().x - 360.f) / 2.f,
-                                         WindowManager::Instance().GetWindow().getSize().y * 0.4f);
-            auto panelSize = sf::Vector2f(360.f, 120.f);
-            // auto kbPanel = UIFactory::Instance().CreatePanel(panelPos, panelSize);
-
-            auto text = std::make_shared<sf::Text>();
-            text->setFont(AssetManager::Instance().GetFont("Default.ttf"));
-            text->setString("Keybinding editing not yet available.");
-            text->setCharacterSize(18);
-            text->setFillColor(sf::Color::White);
-            text->setPosition(panelPos.x + 20.f, panelPos.y + 40.f);
-            // kbPanel->AddChildText(text);
-
-            // UIManager::Instance().AddElement(kbPanel);
+            CreateKeyBindingControls();
 
             break;
         }
@@ -446,6 +433,33 @@ void SettingsScene::CreateResolutionControls()
 
         UIManager::Instance().AddElement(radio);
     }
+}
+
+// Generate the ui elements needed for this Key Bindings settings page.
+void SettingsScene::CreateKeyBindingControls()
+{
+    // merely a placeholder for the time being.
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+
+    // Create the GroupBox panel
+    auto groupBox = std::make_shared<GroupBox>(sf::Vector2f((winSize.x - 360.f) / 2.f, winSize.y * 0.4f),
+                                               sf::Vector2f(360.f, 160.f));
+    groupBox->SetTitle("Key Binding Settings", AssetManager::Instance().GetFont("Default.ttf"));
+    groupBox->SetLayoutMode(LayoutMode::Vertical);
+    groupBox->SetCenterChildren(true); // Try false if you want left-aligned buttons
+
+    // Add some placeholder buttons for binding keys
+    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f}, {200.f, 30.f}, "Fire Bomb",
+                                                            []() { CT_LOG_INFO("Fire Bomb clicked"); }));
+
+    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f}, {200.f, 30.f}, "Shoot",
+                                                            []() { CT_LOG_INFO("Shoot clicked"); }));
+
+    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f}, {200.f, 30.f}, "Strafe",
+                                                            []() { CT_LOG_INFO("Strafe clicked"); }));
+
+    // Add group box to the UI system
+    UIManager::Instance().AddElement(groupBox);
 }
 
 // Determines if there are any changes to the settings from the user.

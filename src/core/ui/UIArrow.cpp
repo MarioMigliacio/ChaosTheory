@@ -82,15 +82,28 @@ bool UIArrow::Contains(const sf::Vector2i &point) const
     return pixel.a > 32; // Consider hover only if mostly opaque
 }
 
+// Sets the position for this UI Arrow.
 void UIArrow::SetPosition(const sf::Vector2f &position)
 {
     m_position = position;
     UpdateSprite();
 }
 
+// Returns the position for this UI Arrow.
+sf::Vector2f UIArrow::GetPosition() const
+{
+    return m_position;
+}
+
 void UIArrow::SetSize(const sf::Vector2f &size)
 {
     m_size = size; // unused since texture controls sizing, but kept for API consistency
+}
+
+// Returns the size for this Button.
+sf::Vector2f UIArrow::GetSize() const
+{
+    return m_size;
 }
 
 void UIArrow::SetOnClick(std::function<void()> callback)

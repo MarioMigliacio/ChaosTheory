@@ -63,6 +63,7 @@ class SettingsScene : public Scene
     void CreateButtonControls();
     void CreateAudioControls();
     void CreateResolutionControls();
+    void CreateKeyBindingControls();
 
     void CheckForUnsavedChanges();
     void ShowToast(const std::string &message);

@@ -32,7 +32,10 @@ class UIElement : public sf::Drawable
     virtual bool Contains(const sf::Vector2i &point) const = 0;
 
     virtual void SetPosition(const sf::Vector2f &position) = 0;
+    virtual sf::Vector2f GetPosition() const = 0;
+
     virtual void SetSize(const sf::Vector2f &size) = 0;
+    virtual sf::Vector2f GetSize() const = 0;
 
   public:
     // Common, inheritting elements need not override these simple capabilities.

@@ -136,11 +136,23 @@ void RadioButton::SetPosition(const sf::Vector2f &position)
     m_label.setPosition(position.x + padding, position.y + (m_shape.getSize().y - m_fontSize) / 2.f);
 }
 
+// Returns the position for this Button.
+sf::Vector2f RadioButton::GetPosition() const
+{
+    return m_shape.getPosition();
+}
+
 // Sets the size for this Radio Button.
 void RadioButton::SetSize(const sf::Vector2f &size)
 {
     m_shape.setSize(size);
     CenterLabel();
+}
+
+// Returns the size for this Radio Button.
+sf::Vector2f RadioButton::GetSize() const
+{
+    return m_shape.getSize();
 }
 
 // Adjusts the text label for this Radio Button.

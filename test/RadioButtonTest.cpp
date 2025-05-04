@@ -41,27 +41,27 @@ class RadioButtonTest : public ::testing::Test
 
 TEST_F(RadioButtonTest, CanCreateRadioButton)
 {
-    RadioButton button({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton button({100.f, 100.f}, {180.f, 40.f});
     EXPECT_TRUE(button.Contains({150, 120}));
 }
 
 TEST_F(RadioButtonTest, SetPositionUpdatesCorrectly)
 {
-    RadioButton button({0.f, 0.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton button({0.f, 0.f}, {180.f, 40.f});
     button.SetPosition({300.f, 300.f});
     EXPECT_TRUE(button.Contains({310, 310}));
 }
 
 TEST_F(RadioButtonTest, SetSizeUpdatesCorrectly)
 {
-    RadioButton button({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton button({100.f, 100.f}, {180.f, 40.f});
     button.SetSize({300.f, 60.f});
     EXPECT_TRUE(button.Contains({150, 120}));
 }
 
 TEST_F(RadioButtonTest, CanToggleSelectedState)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetSelected(true);
     EXPECT_TRUE(btn.IsSelected());
 
@@ -71,7 +71,7 @@ TEST_F(RadioButtonTest, CanToggleSelectedState)
 
 TEST_F(RadioButtonTest, CanSetTextAndFont)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Initial", nullptr);
+    RadioButton btn({100.f, 100.f}, {180.f, 40.f});
     const auto &font = AssetManager::Instance().GetFont("Default.ttf");
 
     btn.SetText("Updated", font, 28);
@@ -81,14 +81,14 @@ TEST_F(RadioButtonTest, CanSetTextAndFont)
 
 TEST_F(RadioButtonTest, CanSetTextColor)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetTextColor(sf::Color::Red);
     SUCCEED(); // Visual test only
 }
 
 TEST_F(RadioButtonTest, CanSetSelectedColor)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetSelectedColor(sf::Color::Green, sf::Color::Blue);
     btn.SetSelected(true);
 
@@ -100,7 +100,7 @@ TEST_F(RadioButtonTest, CanSetSelectedColor)
 
 TEST_F(RadioButtonTest, CanSetHoverColor)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    RadioButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetHoverColor(sf::Color::Yellow);
     btn.Update({150, 120}, false); // simulate hover
     SUCCEED();

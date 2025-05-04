@@ -46,12 +46,14 @@ class UISlider : public UIElement
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;
+    sf::Vector2f GetPosition() const override;
+
     void SetSize(const sf::Vector2f &size) override;
+    sf::Vector2f GetSize() const override;
 
     void SetFont(const sf::Font &font);
     void SetColor(const sf::Color &barColor, const sf::Color &knobColor);
     void SetValue(float value);
-
     float GetValue() const;
 
   private:
@@ -76,5 +78,5 @@ class UISlider : public UIElement
     float m_value;
     bool m_dragging;
 
-        std::function<void(float)> m_onChange;
+    std::function<void(float)> m_onChange;
 };

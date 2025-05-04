@@ -85,6 +85,12 @@ void UISlider::SetPosition(const sf::Vector2f &position)
     m_knob.setPosition(position.x + m_value * bgSize.x, position.y + bgSize.y / 2.f);
 }
 
+// Returns the position for this UI Slider.
+sf::Vector2f UISlider::GetPosition() const
+{
+    return m_position;
+}
+
 void UISlider::SetSize(const sf::Vector2f &size)
 {
     m_barBackground.setSize(size);
@@ -99,6 +105,12 @@ void UISlider::SetSize(const sf::Vector2f &size)
     // Also reposition handle
     const auto position = m_barBackground.getPosition();
     m_knob.setPosition(position.x + m_value * size.x, position.y + size.y / 2.f);
+}
+
+// Returns the size for this UI Slider.
+sf::Vector2f UISlider::GetSize() const
+{
+    return m_size;
 }
 
 // Draws the slider's components

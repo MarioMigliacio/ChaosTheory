@@ -48,7 +48,9 @@ class UIArrow : public UIElement
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;
+    sf::Vector2f GetPosition() const override;
     void SetSize(const sf::Vector2f &size) override;
+    sf::Vector2f GetSize() const override;
 
     void SetOnClick(std::function<void()> callback);
 

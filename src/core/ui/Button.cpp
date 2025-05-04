@@ -135,11 +135,23 @@ void Button::SetPosition(const sf::Vector2f &position)
     CenterLabel();
 }
 
+// Returns the position for this Button.
+sf::Vector2f Button::GetPosition() const
+{
+    return m_shape.getPosition();
+}
+
 // Sets the size for this button and adjusts the label.
 void Button::SetSize(const sf::Vector2f &size)
 {
     m_shape.setSize(size);
     CenterLabel();
+}
+
+// Returns the size for this Button.
+sf::Vector2f Button::GetSize() const
+{
+    return m_shape.getSize();
 }
 
 // Fix the label to be centered in this Button.
