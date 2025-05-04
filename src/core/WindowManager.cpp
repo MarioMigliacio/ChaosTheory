@@ -131,11 +131,6 @@ void WindowManager::ApplySettings(sf::Uint32 style)
 // Applies the Resolution settings for the window.
 void WindowManager::ApplyResolution(ResolutionSetting res)
 {
-    // if (m_settings->m_resolution == res)
-    // {
-    //     return;
-    // }
-
     sf::Vector2u size;
 
     switch (res)
@@ -158,9 +153,30 @@ void WindowManager::ApplyResolution(ResolutionSetting res)
     sf::Uint32 style = (res == ResolutionSetting::Fullscreen) ? sf::Style::Fullscreen : sf::Style::Close;
 
     m_window->create(sf::VideoMode(size.x, size.y), "ChaosTheory", style);
+    m_window->requestFocus();
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 
     CT_LOG_INFO("Applied new resolution: {}x{} - vsync: {}", size.x, size.y, m_settings->m_verticleSyncEnabled);
+}
+
+// Returns the resolution size for this window.
+sf::Vector2u WindowManager::GetResolutionSize(ResolutionSetting setting) const
+{
+    switch (setting)
+    {
+        case ResolutionSetting::Res480p:
+            return {640, 480};
+        case ResolutionSetting::Res720p:
+        default:
+            return {1280, 720};
+        case ResolutionSetting::Res1080p:
+            return {1920, 1080};
+        case ResolutionSetting::Fullscreen:
+        {
+            sf::VideoMode mode = sf::VideoMode::getDesktopMode();
+            return {mode.width, mode.height};
+        }
+    }
 }
 
 void WindowManager::SetClearColor(const sf::Color &color)

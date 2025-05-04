@@ -322,6 +322,7 @@ void SettingsScene::CreateButtonControls()
         [this]()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
+
             SettingsManager::Instance().SaveToFile("config.json");
             SettingsManager::Instance().LoadFromFile("config.json");
             m_backupSettings = *SettingsManager::Instance().GetSettings();
@@ -331,10 +332,18 @@ void SettingsScene::CreateButtonControls()
             AudioManager::Instance().HotReload(SettingsManager::Instance().GetSettings());
             AudioManager::Instance().PlaySFX("PewPew");
 
-            WindowManager::Instance().ApplyResolution(SettingsManager::Instance().GetSettings()->m_resolution);
+            // Only apply resolution if size actually changed
+            auto &window = WindowManager::Instance().GetWindow();
+            auto currentSize = window.getSize();
+            auto targetSetting = SettingsManager::Instance().GetSettings()->m_resolution;
+            auto targetSize = WindowManager::Instance().GetResolutionSize(targetSetting);
 
-            // Safely defer the update logic
-            m_pendingPageChange = m_currentPage;
+            if (currentSize != targetSize)
+            {
+                WindowManager::Instance().ApplyResolution(targetSetting);
+                UIManager::Instance().BlockInputUntilMouseRelease();
+                m_pendingPageChange = m_currentPage;
+            }
         });
 
     UIManager::Instance().AddElement(m_applyButton);
