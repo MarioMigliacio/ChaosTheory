@@ -43,8 +43,7 @@ void MainMenuScene::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     // New: MainMenuScene is designed to recreate the window using the settings, because SplashScene locked it.
-    WindowManager::Instance().Recreate(m_settings->m_windowWidth, m_settings->m_windowHeight, m_settings->m_windowTitle,
-                                       sf::Style::Default);
+    WindowManager::Instance().ApplyResolution(m_settings->m_resolution);
 
     UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();

@@ -16,10 +16,20 @@
 #include <string>
 #include <unordered_map>
 
+// Simple enumeration type for window Resolution settings.
+enum class ResolutionSetting
+{
+    Res480p,
+    Res720p,
+    Res1080p,
+    Fullscreen
+};
+
 // Settings structure to hold internal game configurable data points.
 struct Settings
 {
     std::string m_windowTitle = "Chaos Theory";
+    ResolutionSetting m_resolution = ResolutionSetting::Res720p;
     unsigned int m_windowWidth = 1280;
     unsigned int m_windowHeight = 720;
     unsigned int m_targetFramerate = 60;

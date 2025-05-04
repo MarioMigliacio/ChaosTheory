@@ -32,7 +32,7 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
         {
             auto button = std::make_shared<Button>(position, size);
 
-            button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 24);
+            button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 18);
             button->SetCallback(std::move(onClick));
             button->SetIdleColor(DEFAULT_IDLE_COLOR);
             button->SetHoverColor(DEFAULT_HOVER_COLOR);
@@ -47,8 +47,9 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
 
         case ButtonType::Radio:
         {
-            auto radio = std::make_shared<RadioButton>(position, size, label, std::move(onClick));
-            radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 24);
+            auto radio = std::make_shared<RadioButton>(position, size);
+
+            radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 18);
             radio->SetCallback(std::move(onClick));
             radio->SetTextColor(DEFAULT_TEXT_COLOR);
             radio->SetHoverColor(DEFAULT_HOVER_COLOR);

@@ -128,6 +128,41 @@ void WindowManager::ApplySettings(sf::Uint32 style)
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 }
 
+// Applies the Resolution settings for the window.
+void WindowManager::ApplyResolution(ResolutionSetting res)
+{
+    // if (m_settings->m_resolution == res)
+    // {
+    //     return;
+    // }
+
+    sf::Vector2u size;
+
+    switch (res)
+    {
+        case ResolutionSetting::Res480p:
+            size = {640, 480};
+            break;
+        case ResolutionSetting::Res720p:
+            size = {1280, 720};
+            break;
+        case ResolutionSetting::Res1080p:
+            size = {1920, 1080};
+            break;
+        case ResolutionSetting::Fullscreen:
+            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+            size = {desktop.width, desktop.height};
+            break;
+    }
+
+    sf::Uint32 style = (res == ResolutionSetting::Fullscreen) ? sf::Style::Fullscreen : sf::Style::Close;
+
+    m_window->create(sf::VideoMode(size.x, size.y), "ChaosTheory", style);
+    m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
+
+    CT_LOG_INFO("Applied new resolution: {}x{} - vsync: {}", size.x, size.y, m_settings->m_verticleSyncEnabled);
+}
+
 void WindowManager::SetClearColor(const sf::Color &color)
 {
     m_clearColor = color;

@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "Settings.h"
+#include "SettingsManager.h"
 #include <string>
 
 // ============================================================================
@@ -25,4 +25,5 @@ class ConfigLoader
 {
   public:
     static bool LoadFromJson(const std::string &filepath, Settings &settings);
+    static bool SaveAsJson(const std::string &filepath, const Settings &settings);
 };

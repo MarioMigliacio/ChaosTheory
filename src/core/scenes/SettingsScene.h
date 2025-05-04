@@ -57,9 +57,12 @@ class SettingsScene : public Scene
     void CreateUI(SettingsPage page);
     void CreateTitle(SettingsPage page);
     void CreateArrows(SettingsPage page);
-    void CreateButtons();
 
     void LoadDefaultSFXFile();
+
+    void CreateButtonControls();
+    void CreateAudioControls();
+    void CreateResolutionControls();
 
     void CheckForUnsavedChanges();
     void ShowToast(const std::string &message);

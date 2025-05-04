@@ -62,6 +62,7 @@ bool SettingsManager::LoadFromFile(const std::string &filepath)
     return result;
 }
 
+// Saves the settings object to file for future use.
 bool SettingsManager::SaveToFile(const std::string &path) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SettingsManager", "SaveToFile", false);
@@ -71,33 +72,11 @@ bool SettingsManager::SaveToFile(const std::string &path) const
         return false;
     }
 
-    using json = nlohmann::json;
-
-    json j;
-
-    j["paths"]["font_dir"] = m_settings->m_fontDirectory;
-    j["paths"]["audio_dir"] = m_settings->m_audioDirectory;
-    j["paths"]["sprite_dir"] = m_settings->m_spriteDirectory;
-
-    j["audio"]["master_volume"] = m_settings->m_masterVolume;
-    j["audio"]["music_volume"] = m_settings->m_musicVolume;
-    j["audio"]["sfx_volume"] = m_settings->m_sfxVolume;
-    j["audio"]["is_muted"] = m_settings->m_isMuted;
-
-    std::ofstream out(path);
-
-    if (!out.is_open())
-    {
-        std::cerr << "Failed to open file for saving: " << path << "\\n";
-
-        return false;
-    }
-
-    out << j.dump(4); // Pretty print with indent
+    bool result = ConfigLoader::SaveAsJson(path, *m_settings);
 
     CT_LOG_INFO("SettingsManager saved to file: {}", path);
 
-    return true;
+    return result;
 }
 
 // Get the reference for the Settings object.
@@ -109,7 +88,7 @@ std::shared_ptr<Settings> SettingsManager::GetSettings()
 bool SettingsManager::IsDifferentFrom(const Settings &other) const
 {
     return m_settings->m_windowTitle != other.m_windowTitle || m_settings->m_windowWidth != other.m_windowWidth ||
-           m_settings->m_windowHeight != other.m_windowHeight ||
+           m_settings->m_windowHeight != other.m_windowHeight || m_settings->m_resolution != other.m_resolution ||
            m_settings->m_targetFramerate != other.m_targetFramerate ||
            m_settings->m_verticleSyncEnabled != other.m_verticleSyncEnabled ||
            m_settings->m_isFullscreen != other.m_isFullscreen || m_settings->m_masterVolume != other.m_masterVolume ||

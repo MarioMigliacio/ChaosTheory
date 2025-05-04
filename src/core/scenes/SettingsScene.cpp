@@ -14,6 +14,7 @@
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "Macros.h"
+#include "RadioButton.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
 #include "SettingsManager.h"
@@ -111,6 +112,7 @@ void SettingsScene::Update(float dt)
     if (m_pendingPageChange.has_value())
     {
         UIManager::Instance().Clear();
+        SceneTransitionManager::Instance().StartFadeIn();
         CreateSettingsPage(m_pendingPageChange.value());
         m_pendingPageChange.reset();
     }
@@ -125,12 +127,22 @@ void SettingsScene::HandleEvent(const sf::Event &event)
 // Update the dimensions for this Settings Scene.
 void SettingsScene::OnResize(const sf::Vector2u &newSize)
 {
-    CreateTitle(m_currentPage);
+    if (m_settings->m_resolution != ResolutionSetting::Fullscreen)
+    {
+        // Ignore manual resizes when not in fullscreen
+        const auto intendedSize = WindowManager::Instance().GetWindow().getSize();
 
-    // Adjust UI elements
+        if (newSize != intendedSize)
+        {
+            WindowManager::Instance().ApplyResolution(m_settings->m_resolution);
+
+            return;
+        }
+    }
+
+    // Proceed with layout reflow
     UIManager::Instance().Clear();
-    CreateButtons();
-    CreateUI(m_currentPage);
+    CreateSettingsPage(m_currentPage);
 }
 
 // Draw this Settings Scene to the render target.
@@ -154,16 +166,12 @@ void SettingsScene::CreateSettingsPage(SettingsPage page)
     CreateTitle(page);
     CreateUI(page);
     CreateArrows(page);
-    CreateButtons();
+    CreateButtonControls();
 }
 
 // Generate the UI elements needed for specific SettingsPage.
 void SettingsScene::CreateUI(SettingsPage page)
 {
-    const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    float startX = (winSize.x - SLIDER_WIDTH) / 2.f;
-    float startY = winSize.y * 0.4f;
-
     m_currentPage = page;
 
     switch (page)
@@ -171,55 +179,23 @@ void SettingsScene::CreateUI(SettingsPage page)
         case SettingsPage::Audio:
         default:
         {
-            UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
-                "Master Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f,
-                m_settings->m_masterVolume,
-                [](float val) { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
-
-            startY += SLIDER_SPACING;
-
-            UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
-                "Music Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_musicVolume,
-                [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
-
-            startY += SLIDER_SPACING;
-
-            UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
-                "SFX Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_sfxVolume,
-                [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
+            CreateAudioControls();
 
             break;
         }
 
         case SettingsPage::Video:
         {
-            float startX = (winSize.x - 300.f) / 2.f;
-            float startY = winSize.y * 0.4f;
+            CreateResolutionControls();
 
-            std::vector<std::string> options = {"480p", "720p", "1080p", "Fullscreen"};
-
-            for (std::size_t i = 0; i < options.size(); ++i)
-            {
-                float offsetX = (i % 2 == 0) ? 0.f : 160.f;
-                float offsetY = (i < 2) ? 0.f : 50.f;
-
-                sf::Vector2f pos = {startX + offsetX, startY + offsetY};
-
-                UIManager::Instance().AddElement(
-                    UIFactory::Instance().CreateButton(ButtonType::Radio, pos, {140.f, 30.f}, options[i],
-                                                       [option = options[i]]()
-                                                       {
-                                                           CT_LOG_INFO("Resolution selected: {}", option);
-                                                           // TODO: Apply resolution state to settings
-                                                       }));
-            }
             break;
         }
 
         case SettingsPage::KeyBindings:
         {
             // Placeholder UI panel with label
-            auto panelPos = sf::Vector2f((winSize.x - 360.f) / 2.f, winSize.y * 0.4f);
+            auto panelPos = sf::Vector2f((WindowManager::Instance().GetWindow().getSize().x - 360.f) / 2.f,
+                                         WindowManager::Instance().GetWindow().getSize().y * 0.4f);
             auto panelSize = sf::Vector2f(360.f, 120.f);
             // auto kbPanel = UIFactory::Instance().CreatePanel(panelPos, panelSize);
 
@@ -326,8 +302,15 @@ void SettingsScene::CreateArrows(SettingsPage page)
     }
 }
 
-// Generate the buttons needed for this Settings Scene.
-void SettingsScene::CreateButtons()
+// Meant to be self contained within SettingsScene if this sound effect has yet to be loaded.
+void SettingsScene::LoadDefaultSFXFile()
+{
+    AssetManager::Instance().LoadSound("PewPew", "assets/audio/PewPew.wav");
+    AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf");
+}
+
+// Generate the buttons needed for this Settings Scene Page.
+void SettingsScene::CreateButtonControls()
 {
     auto windowSize = WindowManager::Instance().GetWindow().getSize();
     float startX = (windowSize.x - BUTTON_WIDTH) / 2.f;
@@ -347,6 +330,11 @@ void SettingsScene::CreateButtons()
 
             AudioManager::Instance().HotReload(SettingsManager::Instance().GetSettings());
             AudioManager::Instance().PlaySFX("PewPew");
+
+            WindowManager::Instance().ApplyResolution(SettingsManager::Instance().GetSettings()->m_resolution);
+
+            // Safely defer the update logic
+            m_pendingPageChange = m_currentPage;
         });
 
     UIManager::Instance().AddElement(m_applyButton);
@@ -365,11 +353,90 @@ void SettingsScene::CreateButtons()
         }));
 }
 
-// Meant to be self contained within SettingsScene if this sound effect has yet to be loaded.
-void SettingsScene::LoadDefaultSFXFile()
+// Generate the Audio Sliders needed for this Settings Scene page.
+void SettingsScene::CreateAudioControls()
 {
-    AssetManager::Instance().LoadSound("PewPew", "assets/audio/PewPew.wav");
-    AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf");
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    float startX = (winSize.x - SLIDER_WIDTH) / 2.f;
+    float startY = winSize.y * 0.4f;
+
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
+        "Master Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_masterVolume,
+        [](float val) { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
+
+    startY += SLIDER_SPACING;
+
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
+        "Music Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_musicVolume,
+        [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
+
+    startY += SLIDER_SPACING;
+
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
+        "SFX Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_sfxVolume,
+        [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
+}
+
+// Generate the buttons needed for this Settings Scene resolution settings page.
+void SettingsScene::CreateResolutionControls()
+{
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    float startX = (winSize.x - 320.f) / 2.f;
+    float startY = winSize.y * 0.4f;
+
+    auto currentRes = SettingsManager::Instance().GetSettings()->m_resolution;
+
+    std::vector<std::pair<std::string, ResolutionSetting>> options = {{"480p", ResolutionSetting::Res480p},
+                                                                      {"720p", ResolutionSetting::Res720p},
+                                                                      {"1080p", ResolutionSetting::Res1080p},
+                                                                      {"Fullscreen", ResolutionSetting::Fullscreen}};
+
+    // Track radio buttons as base UIElement for standardization
+    std::vector<std::shared_ptr<UIElement>> elements;
+
+    for (size_t i = 0; i < options.size(); ++i)
+    {
+        float offsetX = (i % 2 == 0) ? 0.f : 160.f;
+        float offsetY = (i < 2) ? 0.f : 50.f;
+        sf::Vector2f pos = {startX + offsetX, startY + offsetY};
+
+        auto label = options[i].first;
+        auto resValue = options[i].second;
+
+        auto radio = std::dynamic_pointer_cast<RadioButton>(
+            UIFactory::Instance().CreateButton(ButtonType::Radio, pos, {140.f, 30.f}, label,
+                                               [this, resValue, label]()
+                                               {
+                                                   // Deselect all radios
+                                                   for (auto &el : UIManager::Instance().GetElements())
+                                                   {
+                                                       if (auto rb = std::dynamic_pointer_cast<RadioButton>(el))
+                                                           rb->SetSelected(false);
+                                                   }
+
+                                                   // Set selected resolution in the settings
+                                                   SettingsManager::Instance().GetSettings()->m_resolution = resValue;
+
+                                                   // Select the radio that matches the clicked label
+                                                   for (auto &el : UIManager::Instance().GetElements())
+                                                   {
+                                                       if (auto rb = std::dynamic_pointer_cast<RadioButton>(el))
+                                                       {
+                                                           if (rb->GetLabel() == label)
+                                                           {
+                                                               rb->SetSelected(true);
+                                                               break;
+                                                           }
+                                                       }
+                                                   }
+                                               }));
+
+        // Initial selection
+        if (currentRes == resValue)
+            radio->SetSelected(true);
+
+        UIManager::Instance().AddElement(radio);
+    }
 }
 
 // Determines if there are any changes to the settings from the user.

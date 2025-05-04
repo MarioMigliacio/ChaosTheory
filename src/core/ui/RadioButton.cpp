@@ -14,22 +14,11 @@
 #include "AssetManager.h"
 #include "Macros.h"
 
-RadioButton::RadioButton(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &label,
-                         std::function<void()> onSelect)
-    : m_onSelect(std::move(onSelect))
+RadioButton::RadioButton(const sf::Vector2f &position, const sf::Vector2f &size)
 {
     m_shape.setPosition(position);
     m_shape.setSize(size);
-
-    m_label.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    m_label.setString(label);
-    m_label.setCharacterSize(24);
-    m_label.setFillColor(DEFAULT_TEXT_COLOR);
-
-    m_selectedFillColor = DEFAULT_IDLE_COLOR;
-    m_textColor = DEFAULT_TEXT_COLOR;
-
-    CenterLabel();
+    m_shape.setFillColor(m_idleColor);
 }
 
 // Sets the internal state for the Is Selected logic for this Radio Button.
@@ -47,12 +36,32 @@ bool RadioButton::IsSelected() const
 // Sets the text fields for this Radio Button.
 void RadioButton::SetText(const std::string &text, const sf::Font &font, unsigned int size)
 {
-    m_fontSize = size;
     m_label.setFont(font);
     m_label.setString(text);
-    m_label.setCharacterSize(size);
+
+    // Start with requested size, but shrink to fit if necessary
+    m_fontSize = size;
+    m_label.setCharacterSize(m_fontSize);
+
+    float maxWidth = m_shape.getSize().x - 32.f; // padding from circle and edge
+    sf::FloatRect bounds = m_label.getLocalBounds();
+
+    while (bounds.width > maxWidth && m_fontSize > 10)
+    {
+        --m_fontSize;
+        m_label.setCharacterSize(m_fontSize);
+        bounds = m_label.getLocalBounds();
+    }
+
     m_label.setFillColor(m_textColor);
+
     CenterLabel();
+}
+
+// Return a reference to this Radio Button text label field.
+const std::string RadioButton::GetLabel() const
+{
+    return m_label.getString();
 }
 
 // Sets the text color for this Radio Button.
@@ -121,7 +130,10 @@ bool RadioButton::Contains(const sf::Vector2i &point) const
 void RadioButton::SetPosition(const sf::Vector2f &position)
 {
     m_shape.setPosition(position);
-    CenterLabel();
+
+    // Offset label to right of circle
+    float padding = 24.f;
+    m_label.setPosition(position.x + padding, position.y + (m_shape.getSize().y - m_fontSize) / 2.f);
 }
 
 // Sets the size for this Radio Button.
@@ -134,24 +146,39 @@ void RadioButton::SetSize(const sf::Vector2f &size)
 // Adjusts the text label for this Radio Button.
 void RadioButton::CenterLabel()
 {
-    sf::FloatRect textRect = m_label.getLocalBounds();
-    m_label.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
+    sf::FloatRect bounds = m_label.getLocalBounds();
 
-    m_label.setPosition(m_shape.getPosition().x + m_shape.getSize().x / 2.f,
-                        m_shape.getPosition().y + m_shape.getSize().y / 2.f);
+    m_label.setOrigin(0.f, bounds.top + bounds.height / 2.f);
+    m_label.setPosition(m_shape.getPosition().x + 28.f, m_shape.getPosition().y + m_shape.getSize().y / 2.f);
 }
 
 // Draw this Radio Button to the Render target.
 void RadioButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    sf::RectangleShape drawableShape = m_shape;
-    drawableShape.setFillColor(m_selectedFillColor);
+    // Draw background rectangle
+    target.draw(m_shape, states);
 
-    sf::Text drawableText = m_label;
-    drawableText.setFillColor(m_textColor);
+    // Draw circular selection indicator
+    sf::CircleShape circle(6.f); // Radius = 8px
+    circle.setOutlineThickness(2.f);
+    circle.setOutlineColor(sf::Color::Black);
 
-    target.draw(drawableShape, states);
-    target.draw(drawableText, states);
+    // Fill only if selected
+    if (m_isSelected)
+    {
+        circle.setFillColor(m_circleColorSelected); // or m_selectedFillColor
+    }
+
+    else
+    {
+        circle.setFillColor(sf::Color::Transparent);
+    }
+
+    circle.setPosition(m_shape.getPosition().x + 6.f, m_shape.getPosition().y + (m_shape.getSize().y / 2.f) - 6.f);
+    target.draw(circle, states);
+
+    // Draw label text (offset to the right of the circle)
+    target.draw(m_label, states);
 }
 
 // Updates the on click status and handling for this Radio Button.
@@ -159,7 +186,7 @@ void RadioButton::HandleClickLogic(bool isMousePressed)
 {
     if (m_isHovered && isMousePressed)
     {
-        CT_LOG_INFO("Button clicked.");
+        CT_LOG_INFO("Radio Button clicked.");
 
         if (m_onSelect)
         {
@@ -171,13 +198,7 @@ void RadioButton::HandleClickLogic(bool isMousePressed)
 // Updates button color and appearance logic.
 void RadioButton::UpdateVisualState()
 {
-    if (!m_enabled)
-    {
-        m_shape.setFillColor(DEFAULT_DISABLED_IDLE_COLOR);
-        m_label.setFillColor(DEFAULT_DISABLED_TEXT_COLOR);
-    }
-
-    else if (m_isSelected)
+    if (m_isSelected)
     {
         m_shape.setFillColor(m_selectedFillColor);
         m_label.setFillColor(m_selectedTextColor);
