@@ -10,10 +10,10 @@
 
 #include "UIFactory.h"
 #include "AssetManager.h"
-#include "Button.h"
 #include "Macros.h"
-#include "RadioButton.h"
 #include "TestHelpers.h"
+#include "UIButton.h"
+#include "UISelectableButton.h"
 #include "UISlider.h"
 #include <gtest/gtest.h>
 

@@ -9,8 +9,8 @@
 // ============================================================================
 
 #include "UIManager.h"
-#include "Button.h"
 #include "Macros.h"
+#include "UIButton.h"
 #include <gtest/gtest.h>
 
 class UIManagerTest : public ::testing::Test
@@ -38,7 +38,7 @@ class UIManagerTest : public ::testing::Test
 
 TEST_F(UIManagerTest, CanAddElement)
 {
-    auto button = std::make_shared<Button>(sf::Vector2f(100.f, 100.f), sf::Vector2f(180.f, 40.f));
+    auto button = std::make_shared<UIButton>(sf::Vector2f(100.f, 100.f), sf::Vector2f(180.f, 40.f));
     UIManager::Instance().AddElement(button);
 
     EXPECT_EQ(UIManager::Instance().GetElements().size(), 1);
@@ -46,8 +46,8 @@ TEST_F(UIManagerTest, CanAddElement)
 
 TEST_F(UIManagerTest, ClearRemovesAllElements)
 {
-    auto button1 = std::make_shared<Button>(sf::Vector2f(100.f, 100.f), sf::Vector2f(180.f, 40.f));
-    auto button2 = std::make_shared<Button>(sf::Vector2f(200.f, 200.f), sf::Vector2f(180.f, 40.f));
+    auto button1 = std::make_shared<UIButton>(sf::Vector2f(100.f, 100.f), sf::Vector2f(180.f, 40.f));
+    auto button2 = std::make_shared<UIButton>(sf::Vector2f(200.f, 200.f), sf::Vector2f(180.f, 40.f));
 
     UIManager::Instance().AddElement(button1);
     UIManager::Instance().AddElement(button2);

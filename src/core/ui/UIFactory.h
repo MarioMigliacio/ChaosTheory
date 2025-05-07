@@ -9,9 +9,9 @@
 
 #pragma once
 
-#include "GroupBox.h"
 #include "UIArrow.h"
 #include "UIElement.h"
+#include "UIGroupBox.h"
 #include "UISlider.h"
 #include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
@@ -19,7 +19,7 @@
 #include <memory>
 #include <string>
 
-// Simple enumeration for supported Button types.
+// Simple enumeration for supported UIButton types.
 enum class ButtonType
 {
     Classic,
@@ -49,14 +49,14 @@ class UIFactory
 
     std::shared_ptr<UIArrow> CreateArrow(float x, float y, ArrowDirection direction);
 
-    // Creates a standard vertical GroupBox occupying relative screen space with automatic scaling.
-    std::shared_ptr<GroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
-                                             const sf::Vector2f &relativeSize);
+    // Creates a standard vertical UIGroupBox occupying relative screen space with automatic scaling.
+    std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
+                                               const sf::Vector2f &relativeSize);
 
-    // Fully configurable GroupBox with layout, alignment, padding, and font size.
-    std::shared_ptr<GroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                             const sf::Vector2f &relativeSize, LayoutMode layoutMode, bool, float,
-                                             float, unsigned int fontSize);
+    // Fully configurable UIGroupBox with layout, alignment, padding, and font size.
+    std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
+                                               const sf::Vector2f &relativeSize, LayoutMode layoutMode, bool, float,
+                                               float, unsigned int fontSize);
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
                                                  unsigned int baseFontSize, bool centerOrigin);

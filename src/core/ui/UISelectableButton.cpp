@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : RadioButton.cpp
+//  File        : UISelectableButton.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
@@ -10,11 +10,11 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "RadioButton.h"
+#include "UISelectableButton.h"
 #include "AssetManager.h"
 #include "Macros.h"
 
-RadioButton::RadioButton(const sf::Vector2f &position, const sf::Vector2f &size)
+UISelectableButton::UISelectableButton(const sf::Vector2f &position, const sf::Vector2f &size)
 {
     m_shape.setPosition(position);
     m_shape.setSize(size);
@@ -22,19 +22,19 @@ RadioButton::RadioButton(const sf::Vector2f &position, const sf::Vector2f &size)
 }
 
 // Sets the internal state for the Is Selected logic for this Radio Button.
-void RadioButton::SetSelected(bool selected)
+void UISelectableButton::SetSelected(bool selected)
 {
     m_isSelected = selected;
 }
 
 // Returns the state of whether or not this Radio Button is being selected.
-bool RadioButton::IsSelected() const
+bool UISelectableButton::IsSelected() const
 {
     return m_isSelected;
 }
 
 // Sets the text fields for this Radio Button.
-void RadioButton::SetText(const std::string &text, const sf::Font &font, unsigned int size)
+void UISelectableButton::SetText(const std::string &text, const sf::Font &font, unsigned int size)
 {
     m_label.setFont(font);
     m_label.setString(text);
@@ -59,33 +59,33 @@ void RadioButton::SetText(const std::string &text, const sf::Font &font, unsigne
 }
 
 // Return a reference to this Radio Button text label field.
-const std::string RadioButton::GetLabel() const
+const std::string UISelectableButton::GetLabel() const
 {
     return m_label.getString();
 }
 
 // Sets the text color for this Radio Button.
-void RadioButton::SetTextColor(const sf::Color &color)
+void UISelectableButton::SetTextColor(const sf::Color &color)
 {
     m_textColor = color;
     m_label.setFillColor(color);
 }
 
 // When selected, update the color for this Radio Button.
-void RadioButton::SetSelectedColor(const sf::Color &fillColor, const sf::Color &textColor)
+void UISelectableButton::SetSelectedColor(const sf::Color &fillColor, const sf::Color &textColor)
 {
     m_selectedFillColor = fillColor;
     m_selectedTextColor = textColor;
 }
 
 // When hovered, update the color for this Radio Button.
-void RadioButton::SetHoverColor(const sf::Color &hoverColor)
+void UISelectableButton::SetHoverColor(const sf::Color &hoverColor)
 {
     m_hoverColor = hoverColor;
 }
 
 // Sets the font size for this Radio Button.
-void RadioButton::SetFontSize(unsigned int size)
+void UISelectableButton::SetFontSize(unsigned int size)
 {
     m_fontSize = size;
     m_label.setCharacterSize(size);
@@ -93,13 +93,13 @@ void RadioButton::SetFontSize(unsigned int size)
 }
 
 // Update the callback function set for this Radio Button when selected.
-void RadioButton::SetCallback(std::function<void()> onSelect)
+void UISelectableButton::SetCallback(std::function<void()> onSelect)
 {
     m_onSelect = std::move(onSelect);
 }
 
 // Update logic for this Radio Button includes, isHovered, isPressed, scale, color and text.
-void RadioButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
+void UISelectableButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 {
     sf::Vector2f mouse(mousePosition);
     bool wasHovered = m_isHovered;
@@ -108,12 +108,12 @@ void RadioButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 
     if (m_isHovered && !wasHovered)
     {
-        CT_LOG_DEBUG("RadioButton hovered.");
+        CT_LOG_DEBUG("UISelectableButton hovered.");
     }
 
     else if (!m_isHovered && wasHovered)
     {
-        CT_LOG_DEBUG("RadioButton unhovered.");
+        CT_LOG_DEBUG("UISelectableButton unhovered.");
     }
 
     HandleClickLogic(isMousePressed);
@@ -121,39 +121,39 @@ void RadioButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 }
 
 // Returns whether or not the point is within the bounds of this Radio Button.
-bool RadioButton::Contains(const sf::Vector2i &point) const
+bool UISelectableButton::Contains(const sf::Vector2i &point) const
 {
     return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
 // Sets the current position for this Radio Button.
-void RadioButton::SetPosition(const sf::Vector2f &position)
+void UISelectableButton::SetPosition(const sf::Vector2f &position)
 {
     m_shape.setPosition(position);
     CenterLabel();
 }
 
 // Returns the position for this Button.
-sf::Vector2f RadioButton::GetPosition() const
+sf::Vector2f UISelectableButton::GetPosition() const
 {
     return m_shape.getPosition();
 }
 
 // Sets the size for this Radio Button.
-void RadioButton::SetSize(const sf::Vector2f &size)
+void UISelectableButton::SetSize(const sf::Vector2f &size)
 {
     m_shape.setSize(size);
     CenterLabel();
 }
 
 // Returns the size for this Radio Button.
-sf::Vector2f RadioButton::GetSize() const
+sf::Vector2f UISelectableButton::GetSize() const
 {
     return m_shape.getSize();
 }
 
 // Adjusts the text label for this Radio Button.
-void RadioButton::CenterLabel()
+void UISelectableButton::CenterLabel()
 {
     sf::FloatRect bounds = m_label.getLocalBounds();
 
@@ -163,7 +163,7 @@ void RadioButton::CenterLabel()
 }
 
 // Draw this Radio Button to the Render target.
-void RadioButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
+void UISelectableButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     // Draw background rectangle
     target.draw(m_shape, states);
@@ -173,7 +173,7 @@ void RadioButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 }
 
 // Updates the on click status and handling for this Radio Button.
-void RadioButton::HandleClickLogic(bool isMousePressed)
+void UISelectableButton::HandleClickLogic(bool isMousePressed)
 {
     if (m_isHovered && isMousePressed)
     {
@@ -187,7 +187,7 @@ void RadioButton::HandleClickLogic(bool isMousePressed)
 }
 
 // Updates button color and appearance logic.
-void RadioButton::UpdateVisualState()
+void UISelectableButton::UpdateVisualState()
 {
     if (m_isSelected)
     {

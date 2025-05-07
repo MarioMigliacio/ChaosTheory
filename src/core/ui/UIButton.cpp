@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : Button.cpp
+//  File        : UIButton.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-18
@@ -10,18 +10,18 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "Button.h"
+#include "UIButton.h"
 #include "Macros.h"
 
-Button::Button(const sf::Vector2f &position, const sf::Vector2f &size)
+UIButton::UIButton(const sf::Vector2f &position, const sf::Vector2f &size)
 {
     m_shape.setPosition(position);
     m_shape.setSize(size);
     m_shape.setFillColor(m_idleColor);
 }
 
-// Sets the internal text related members for this Button.
-void Button::SetText(const std::string &text, const sf::Font &font, unsigned int size)
+// Sets the internal text related members for this UIButton.
+void UIButton::SetText(const std::string &text, const sf::Font &font, unsigned int size)
 {
     m_label.setFont(font);
     m_label.setString(text);
@@ -43,40 +43,40 @@ void Button::SetText(const std::string &text, const sf::Font &font, unsigned int
     CenterLabel();
 }
 
-// Sets the internal callback function for this Button, which responds to onClick.
-void Button::SetCallback(std::function<void()> callback)
+// Sets the internal callback function for this UIButton, which responds to onClick.
+void UIButton::SetCallback(std::function<void()> callback)
 {
     m_onClick = std::move(callback);
 }
 
 // Sets the color for this button during non-hover time.
-void Button::SetIdleColor(const sf::Color &color)
+void UIButton::SetIdleColor(const sf::Color &color)
 {
     m_idleColor = color;
     m_shape.setFillColor(m_idleColor);
 }
 
 // Sets the color for this button during hover event.
-void Button::SetHoverColor(const sf::Color &color)
+void UIButton::SetHoverColor(const sf::Color &color)
 {
     m_hoverColor = color;
 }
 
 // While button is in focus and active, set the color.
-void Button::SetActiveColor(const sf::Color &color)
+void UIButton::SetActiveColor(const sf::Color &color)
 {
     m_activeColor = color;
 }
 
 // Sets the color for this buttons text.
-void Button::SetTextColor(const sf::Color &color)
+void UIButton::SetTextColor(const sf::Color &color)
 {
     m_textColor = color;
     m_label.setFillColor(m_textColor);
 }
 
 // Sets the fontsize for this button.
-void Button::SetFontSize(unsigned int size)
+void UIButton::SetFontSize(unsigned int size)
 {
     m_fontSize = size;
     m_label.setCharacterSize(m_fontSize);
@@ -84,13 +84,13 @@ void Button::SetFontSize(unsigned int size)
 }
 
 // Updates the scale size for this button, during hover and active focus.
-void Button::SetHoverScale(float scale)
+void UIButton::SetHoverScale(float scale)
 {
     m_hoverScale = scale;
 }
 
-// Update logic for this Button includes, isHovered, isPressed, scale, color and text.
-void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
+// Update logic for this UIButton includes, isHovered, isPressed, scale, color and text.
+void UIButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 {
     sf::Vector2f mouse(mousePosition);
     bool wasHovered = m_isHovered;
@@ -99,12 +99,12 @@ void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 
     if (m_isHovered && !wasHovered)
     {
-        CT_LOG_DEBUG("Button hovered.");
+        CT_LOG_DEBUG("UIButton hovered.");
     }
 
     else if (!m_isHovered && wasHovered)
     {
-        CT_LOG_DEBUG("Button unhovered.");
+        CT_LOG_DEBUG("UIButton unhovered.");
     }
 
     UpdateScale();
@@ -122,40 +122,40 @@ void Button::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
     }
 }
 
-// Returns whether or not the point is within the bounds of this Button.
-bool Button::Contains(const sf::Vector2i &point) const
+// Returns whether or not the point is within the bounds of this UIButton.
+bool UIButton::Contains(const sf::Vector2i &point) const
 {
     return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
-// Sets the position for this Button.
-void Button::SetPosition(const sf::Vector2f &position)
+// Sets the position for this UIButton.
+void UIButton::SetPosition(const sf::Vector2f &position)
 {
     m_shape.setPosition(position);
     CenterLabel();
 }
 
-// Returns the position for this Button.
-sf::Vector2f Button::GetPosition() const
+// Returns the position for this UIButton.
+sf::Vector2f UIButton::GetPosition() const
 {
     return m_shape.getPosition();
 }
 
 // Sets the size for this button and adjusts the label.
-void Button::SetSize(const sf::Vector2f &size)
+void UIButton::SetSize(const sf::Vector2f &size)
 {
     m_shape.setSize(size);
     CenterLabel();
 }
 
-// Returns the size for this Button.
-sf::Vector2f Button::GetSize() const
+// Returns the size for this UIButton.
+sf::Vector2f UIButton::GetSize() const
 {
     return m_shape.getSize();
 }
 
-// Fix the label to be centered in this Button.
-void Button::CenterLabel()
+// Fix the label to be centered in this UIButton.
+void UIButton::CenterLabel()
 {
     sf::FloatRect textRect = m_label.getLocalBounds();
     m_label.setOrigin(textRect.left + textRect.width / 2.f, textRect.top + textRect.height / 2.f);
@@ -164,15 +164,15 @@ void Button::CenterLabel()
                         m_shape.getPosition().y + m_shape.getSize().y / 2.f);
 }
 
-// Draw this Button to the Renderable Target.
-void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
+// Draw this UIButton to the Renderable Target.
+void UIButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_shape, states);
     target.draw(m_label, states);
 }
 
 // While hover and enable events, adjust the focus size of this button.
-void Button::UpdateScale()
+void UIButton::UpdateScale()
 {
     if (m_isHovered && m_enabled)
     {
@@ -188,7 +188,7 @@ void Button::UpdateScale()
 }
 
 // Adjust the color of this button during enabled and hover events.
-void Button::UpdateFillColor(bool isMousePressed)
+void UIButton::UpdateFillColor(bool isMousePressed)
 {
     if (m_enabled)
     {
@@ -207,18 +207,18 @@ void Button::UpdateFillColor(bool isMousePressed)
     {
         if (m_isHovered)
         {
-            m_shape.setFillColor(DEFAULT_DISABLED_HOVER_COLOR);
+            m_shape.setFillColor(BUTTON_DEFAULT_DISABLED_HOVER_COLOR);
         }
 
         else
         {
-            m_shape.setFillColor(DEFAULT_DISABLED_IDLE_COLOR);
+            m_shape.setFillColor(BUTTON_DEFAULT_DISABLED_IDLE_COLOR);
         }
     }
 }
 
-// Adjust the color for this Button based on enabled states.
-void Button::UpdateTextColor()
+// Adjust the color for this UIButton based on enabled states.
+void UIButton::UpdateTextColor()
 {
     if (m_enabled)
     {
@@ -227,12 +227,12 @@ void Button::UpdateTextColor()
 
     else
     {
-        m_label.setFillColor(DEFAULT_DISABLED_TEXT_COLOR);
+        m_label.setFillColor(BUTTON_DEFAULT_DISABLED_TEXT_COLOR);
     }
 }
 
-// Adjust the click states for this Button.
-void Button::HandleClickLogic(bool isMousePressed)
+// Adjust the click states for this UIButton.
+void UIButton::HandleClickLogic(bool isMousePressed)
 {
     if (isMousePressed && !m_isPressed)
     {

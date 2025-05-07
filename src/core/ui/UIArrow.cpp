@@ -89,7 +89,7 @@ void UIArrow::SetPosition(const sf::Vector2f &position)
     UpdateSprite();
 }
 
-// Returns the position for this UI Arrow.
+// Returns the position for this UIArrow.
 sf::Vector2f UIArrow::GetPosition() const
 {
     return m_position;
@@ -100,7 +100,7 @@ void UIArrow::SetSize(const sf::Vector2f &size)
     m_size = size; // unused since texture controls sizing, but kept for API consistency
 }
 
-// Returns the size for this Button.
+// Returns the size for this UIArrow.
 sf::Vector2f UIArrow::GetSize() const
 {
     return m_size;

@@ -1,24 +1,45 @@
-
+// ============================================================================
+//  File        : UIGroupBox.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-05-07
+//  Description : Represents a UI rect containter for many use cases
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
 
 #pragma once
 
 #include "UIElement.h"
+#include "UIPresets.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <string>
 #include <vector>
 
+// Simple enumeration for supported UIGroupBox Layout types.
 enum class LayoutMode
 {
     Vertical,
     Horizontal
 };
 
-class GroupBox : public UIElement
+// ============================================================================
+//  Class       : UIGroupBox
+//  Purpose     : Manages this UIGroupBox logic at the ui level.
+//
+//  Responsibilities:
+//      - Set container position/size
+//      - Adjust children layout
+//      - Update and render all components
+//
+// ============================================================================
+class UIGroupBox : public UIElement
 {
   public:
-    explicit GroupBox(const sf::Vector2f &position, const sf::Vector2f &size);
-    ~GroupBox() override = default;
+    explicit UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size);
+    ~UIGroupBox() override = default;
 
     void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18);
     void AddElement(std::shared_ptr<UIElement> element);
@@ -53,8 +74,8 @@ class GroupBox : public UIElement
     std::vector<std::shared_ptr<UIElement>> m_children;
     LayoutMode m_layoutMode = LayoutMode::Vertical;
 
-    float m_internalPadding = 12.f;
-    float m_edgePadding = 10.f;
+    float m_internalPadding = GROUPBOX_DEFAULT_INTERNAL_PAD;
+    float m_edgePadding = GROUPBOX_DEFAULT_EDGE_PAD;
 
     bool m_centerChildren = false;
 };

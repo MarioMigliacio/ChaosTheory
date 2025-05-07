@@ -9,10 +9,10 @@
 
 #include "UIFactory.h"
 #include "AssetManager.h"
-#include "Button.h"
-#include "RadioButton.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
+#include "UIButton.h"
+#include "UISelectableButton.h"
 #include "UISlider.h"
 #include "UITextLabel.h"
 
@@ -22,7 +22,7 @@ UIFactory &UIFactory::Instance()
     return instance;
 }
 
-// Manufactures a 'type' of Button based on input parameters, returns a smart pointer.
+// Manufactures a 'type' of UIButton based on input parameters, returns a smart pointer.
 std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Vector2f &position,
                                                    const sf::Vector2f &size, const std::string &label,
                                                    std::function<void()> onClick)
@@ -36,14 +36,14 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
         case ButtonType::Classic:
         default:
         {
-            auto button = std::make_shared<Button>(position, scaledSize);
+            auto button = std::make_shared<UIButton>(position, scaledSize);
 
             button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
             button->SetCallback(std::move(onClick));
-            button->SetIdleColor(DEFAULT_IDLE_COLOR);
-            button->SetHoverColor(DEFAULT_HOVER_COLOR);
-            button->SetActiveColor(DEFAULT_ACTIVE_COLOR);
-            button->SetTextColor(DEFAULT_TEXT_COLOR);
+            button->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
+            button->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+            button->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
+            button->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
             button->SetHoverScale(1.05f);
 
             return button;
@@ -51,13 +51,13 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
 
         case ButtonType::Radio:
         {
-            auto radio = std::make_shared<RadioButton>(position, scaledSize);
+            auto radio = std::make_shared<UISelectableButton>(position, scaledSize);
 
             radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
             radio->SetCallback(std::move(onClick));
-            radio->SetTextColor(DEFAULT_TEXT_COLOR);
-            radio->SetHoverColor(DEFAULT_HOVER_COLOR);
-            radio->SetSelectedColor(DEFAULT_SELECTED_COLOR, DEFAULT_SELECTED_TEXT_COLOR);
+            radio->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+            radio->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+            radio->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
 
             return radio;
         }
@@ -90,9 +90,9 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection
     return std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
 }
 
-// Creates a standard vertical GroupBox occupying relative screen space with automatic scaling.
-std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
-                                                    const sf::Vector2f &relativeSize)
+// Creates a standard vertical UIGroupBox occupying relative screen space with automatic scaling.
+std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
+                                                      const sf::Vector2f &relativeSize)
 {
     return CreateGroupBox(title, relativePos, relativeSize,
                           LayoutMode::Vertical, // vertical layout is nice for controls
@@ -103,11 +103,11 @@ std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, co
     );
 }
 
-// Fully configurable GroupBox with layout, alignment, padding, and font size.
-std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                                    const sf::Vector2f &relativeSize, LayoutMode layoutMode,
-                                                    bool centerChildren, float internalPadRatio, float edgePadRatio,
-                                                    unsigned int fontSize)
+// Fully configurable UIGroupBox with layout, alignment, padding, and font size.
+std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
+                                                      const sf::Vector2f &relativeSize, LayoutMode layoutMode,
+                                                      bool centerChildren, float internalPadRatio, float edgePadRatio,
+                                                      unsigned int fontSize)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -118,7 +118,7 @@ std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, co
     const float internalPadding = scaleMgr.ScaledReferenceY(internalPadRatio);
     const float edgePadding = scaleMgr.ScaledReferenceY(edgePadRatio);
 
-    auto groupBox = std::make_shared<GroupBox>(scaledPos, scaledSize);
+    auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
     groupBox->SetTitle(title, AssetManager::Instance().GetFont("Default.ttf"),
                        fontSize > 0 ? fontSize : scaleMgr.ScaleFont(24));
     groupBox->SetLayoutMode(layoutMode);

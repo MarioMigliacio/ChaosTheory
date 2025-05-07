@@ -12,16 +12,16 @@
 #include "SettingsScene.h"
 #include "AssetManager.h"
 #include "AudioManager.h"
-#include "GroupBox.h"
 #include "InputManager.h"
 #include "Macros.h"
-#include "RadioButton.h"
 #include "ResolutionScaleManager.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
 #include "SettingsManager.h"
 #include "UIFactory.h"
+#include "UIGroupBox.h"
 #include "UIManager.h"
+#include "UISelectableButton.h"
 #include "WindowManager.h"
 
 namespace
@@ -299,7 +299,7 @@ void SettingsScene::CreateButtonControls()
     const sf::Vector2f applyPos{winSize.x / 2.f - spacingFromCenter - buttonWidth / 2.f, footerY};
     const sf::Vector2f backPos{winSize.x / 2.f + spacingFromCenter - buttonWidth / 2.f, footerY};
 
-    // Apply Changes Button
+    // Apply Changes UIButton
     m_applyButton = UIFactory::Instance().CreateButton(
         ButtonType::Classic, applyPos, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Apply Changes",
         [this]()
@@ -333,7 +333,7 @@ void SettingsScene::CreateButtonControls()
 
     UIManager::Instance().AddElement(m_applyButton);
 
-    // Go Back Button
+    // Go Back UIButton
     UIManager::Instance().AddElement(
         UIFactory::Instance().CreateButton(ButtonType::Classic, backPos, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Go Back",
                                            [this]()
@@ -354,7 +354,7 @@ void SettingsScene::CreateAudioControls()
     const sf::Vector2f relativePos{0.25f, 0.25f};
     const sf::Vector2f relativeSize{0.5f, 0.5f};
 
-    // Create a 50% screen width, 50% screen height GroupBox for UI elements as children.
+    // Create a 50% screen width, 50% screen height UIGroupBox for UI elements as children.
     auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
 
     const float referenceSliderWidth = 0.45f; // 45% of reference width
@@ -400,13 +400,13 @@ void SettingsScene::CreateResolutionControls()
 
     for (const auto &[label, resValue] : options)
     {
-        auto radio = std::dynamic_pointer_cast<RadioButton>(
+        auto radio = std::dynamic_pointer_cast<UISelectableButton>(
             UIFactory::Instance().CreateButton(ButtonType::Radio, {0.f, 0.f}, buttonSize, label,
                                                [this, resValue, label, groupBox]()
                                                {
                                                    for (auto &el : groupBox->GetChildren())
                                                    {
-                                                       if (auto rb = std::dynamic_pointer_cast<RadioButton>(el))
+                                                       if (auto rb = std::dynamic_pointer_cast<UISelectableButton>(el))
                                                        {
                                                            rb->SetSelected(rb->GetLabel() == label);
                                                        }

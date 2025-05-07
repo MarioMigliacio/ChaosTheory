@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : RadioButton.h
+//  File        : UISelectableButton.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
@@ -12,14 +12,14 @@
 
 #pragma once
 
-#include "Button.h"
 #include "UIElement.h"
+#include "UIPresets.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <string>
 
 // ============================================================================
-//  Class       : RadioButton
+//  Class       : UISelectableButton
 //  Purpose     : Manages this Radio Button logic at the ui level.
 //
 //  Responsibilities:
@@ -28,19 +28,19 @@
 //      - Display button specifics during render
 //
 // ============================================================================
-class RadioButton : public UIElement
+class UISelectableButton : public UIElement
 {
   public:
-    RadioButton(const sf::Vector2f &position, const sf::Vector2f &size);
-    ~RadioButton() override = default;
+    UISelectableButton(const sf::Vector2f &position, const sf::Vector2f &size);
+    ~UISelectableButton() override = default;
 
     // Disable copy
-    RadioButton(const RadioButton &) = delete;
-    RadioButton &operator=(const RadioButton &) = delete;
+    UISelectableButton(const UISelectableButton &) = delete;
+    UISelectableButton &operator=(const UISelectableButton &) = delete;
 
     // Allow move
-    RadioButton(RadioButton &&) noexcept = default;
-    RadioButton &operator=(RadioButton &&) noexcept = default;
+    UISelectableButton(UISelectableButton &&) noexcept = default;
+    UISelectableButton &operator=(UISelectableButton &&) noexcept = default;
 
     void SetSelected(bool selected);
     bool IsSelected() const;
@@ -74,13 +74,13 @@ class RadioButton : public UIElement
     sf::RectangleShape m_shape;
     sf::Text m_label;
 
-    sf::Color m_idleColor = DEFAULT_IDLE_COLOR;
-    sf::Color m_hoverColor = DEFAULT_HOVER_COLOR;
-    sf::Color m_selectedFillColor = DEFAULT_SELECTED_COLOR;
-    sf::Color m_selectedTextColor = DEFAULT_SELECTED_TEXT_COLOR;
-    sf::Color m_textColor = DEFAULT_TEXT_COLOR;
+    sf::Color m_idleColor = BUTTON_DEFAULT_IDLE_COLOR;
+    sf::Color m_hoverColor = BUTTON_DEFAULT_HOVER_COLOR;
+    sf::Color m_selectedFillColor = BUTTON_DEFAULT_SELECTED_COLOR;
+    sf::Color m_selectedTextColor = BUTTON_DEFAULT_SELECTED_TEXT_COLOR;
+    sf::Color m_textColor = BUTTON_DEFAULT_TEXT_COLOR;
 
-    unsigned int m_fontSize = 24;
+    unsigned int m_fontSize = BUTTON_DEFAULT_FONT_SIZE;
 
     bool m_isSelected = false;
     bool m_isHovered = false;

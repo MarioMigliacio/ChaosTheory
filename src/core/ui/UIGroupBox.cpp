@@ -1,8 +1,17 @@
+// ============================================================================
+//  File        : UIGroupBox.cpp
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-05-07
+//  Description : Represents a UI rect containter for many use cases
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
 
+#include "UIGroupBox.h"
 
-#include "GroupBox.h"
-
-GroupBox::GroupBox(const sf::Vector2f &position, const sf::Vector2f &size)
+UIGroupBox::UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size)
 {
     m_background.setPosition(position);
     m_background.setSize(size);
@@ -11,7 +20,7 @@ GroupBox::GroupBox(const sf::Vector2f &position, const sf::Vector2f &size)
     m_background.setOutlineThickness(1.f);
 }
 
-void GroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize)
+void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize)
 {
     m_title.setFont(font);
     m_title.setString(title);
@@ -23,14 +32,14 @@ void GroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned
     m_title.setPosition(m_background.getPosition().x + 10.f, m_background.getPosition().y - bounds.height - 5.f);
 }
 
-void GroupBox::AddElement(std::shared_ptr<UIElement> element)
+void UIGroupBox::AddElement(std::shared_ptr<UIElement> element)
 {
     m_children.push_back(std::move(element));
     RealignChildren();
 }
 
 // Force the children entities to readjust, useful for resizing.
-void GroupBox::RealignChildren()
+void UIGroupBox::RealignChildren()
 {
     const sf::Vector2f basePos = m_background.getPosition();
     sf::Vector2f currentPos = {basePos.x + m_edgePadding, basePos.y + m_edgePadding + 20.f};
@@ -59,7 +68,7 @@ void GroupBox::RealignChildren()
     }
 }
 
-void GroupBox::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
+void UIGroupBox::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 {
     if (!IsEnabled())
         return;
@@ -68,17 +77,17 @@ void GroupBox::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
         child->Update(mousePosition, isMousePressed);
 }
 
-bool GroupBox::Contains(const sf::Vector2i &point) const
+bool UIGroupBox::Contains(const sf::Vector2i &point) const
 {
     return m_background.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
-const std::vector<std::shared_ptr<UIElement>> &GroupBox::GetChildren() const
+const std::vector<std::shared_ptr<UIElement>> &UIGroupBox::GetChildren() const
 {
     return m_children;
 }
 
-void GroupBox::SetPosition(const sf::Vector2f &position)
+void UIGroupBox::SetPosition(const sf::Vector2f &position)
 {
     sf::Vector2f offset = position - m_background.getPosition();
     m_background.setPosition(position);
@@ -87,63 +96,63 @@ void GroupBox::SetPosition(const sf::Vector2f &position)
         child->SetPosition(child->GetPosition() + offset);
 }
 
-// Returns the position for this GroupBox.
-sf::Vector2f GroupBox::GetPosition() const
+// Returns the position for this UIGroupBox.
+sf::Vector2f UIGroupBox::GetPosition() const
 {
     return m_background.getPosition();
 }
 
-void GroupBox::SetSize(const sf::Vector2f &size)
+void UIGroupBox::SetSize(const sf::Vector2f &size)
 {
     m_background.setSize(size);
 }
 
-// Returns the size for this Button.
-sf::Vector2f GroupBox::GetSize() const
+// Returns the size for this UIGroupBox.
+sf::Vector2f UIGroupBox::GetSize() const
 {
     return m_background.getSize();
 }
 
-void GroupBox::SetLayoutMode(LayoutMode mode)
+void UIGroupBox::SetLayoutMode(LayoutMode mode)
 {
     m_layoutMode = mode;
     RealignChildren();
 }
 
-void GroupBox::SetCenterChildren(bool center)
+void UIGroupBox::SetCenterChildren(bool center)
 {
     m_centerChildren = center;
     RealignChildren();
 }
 
-void GroupBox::SetFillColor(const sf::Color &color)
+void UIGroupBox::SetFillColor(const sf::Color &color)
 {
     m_background.setFillColor(color);
 }
 
-void GroupBox::SetOutlineColor(const sf::Color &color)
+void UIGroupBox::SetOutlineColor(const sf::Color &color)
 {
     m_background.setOutlineColor(color);
 }
 
-void GroupBox::SetOutlineThickness(float thickness)
+void UIGroupBox::SetOutlineThickness(float thickness)
 {
     m_background.setOutlineThickness(thickness);
 }
 
-void GroupBox::SetInternalPadding(float padding)
+void UIGroupBox::SetInternalPadding(float padding)
 {
     m_internalPadding = padding;
     RealignChildren();
 }
 
-void GroupBox::SetEdgePadding(float padding)
+void UIGroupBox::SetEdgePadding(float padding)
 {
     m_edgePadding = padding;
     RealignChildren();
 }
 
-void GroupBox::draw(sf::RenderTarget &target, sf::RenderStates states) const
+void UIGroupBox::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_background, states);
     target.draw(m_title, states);
