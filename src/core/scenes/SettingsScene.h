@@ -15,6 +15,7 @@
 #include "SceneManager.h"
 #include "Settings.h"
 #include "UIElement.h"
+#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <optional>
@@ -55,7 +56,7 @@ class SettingsScene : public Scene
   private:
     void CreateSettingsPage(SettingsPage page);
     void CreateUI(SettingsPage page);
-    void CreateTitle(SettingsPage page);
+    void CreateTitle();
     void CreateArrows(SettingsPage page);
 
     void LoadDefaultSFXFile();
@@ -84,6 +85,6 @@ class SettingsScene : public Scene
     bool m_showToast = false;
     float m_toastTimer = 0.f;
 
+    std::shared_ptr<UITextLabel> m_titleLabel;
     sf::Text m_toastText;
-    sf::Text m_title;
 };

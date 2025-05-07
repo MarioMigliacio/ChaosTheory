@@ -14,6 +14,7 @@
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include "UISlider.h"
+#include "UITextLabel.h"
 
 UIFactory &UIFactory::Instance()
 {
@@ -64,9 +65,9 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
 }
 
 // Manufactures a Slider ui element based on input parameters, returns a smart pointer.
-std::shared_ptr<UIElement> UIFactory::CreateSlider(const std::string &label, const sf::Vector2f &position,
-                                                   const sf::Vector2f &size, float minValue, float maxValue,
-                                                   float initialValue, std::function<void(float)> onChange)
+std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, const sf::Vector2f &position,
+                                                  const sf::Vector2f &size, float minValue, float maxValue,
+                                                  float initialValue, std::function<void(float)> onChange)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -126,4 +127,17 @@ std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, co
     groupBox->SetEdgePadding(edgePadding);
 
     return groupBox;
+}
+
+std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text, const sf::Vector2f &position,
+                                                        unsigned int baseFontSize, bool centerOrigin)
+{
+    auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
+    auto label =
+        std::make_shared<UITextLabel>(text, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize, position);
+
+    if (!centerOrigin)
+        label->SetPosition(position); // no auto-centering
+
+    return label;
 }

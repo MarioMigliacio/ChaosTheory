@@ -156,7 +156,6 @@ void SettingsScene::Render()
     auto &window = WindowManager::Instance().GetWindow();
     window.clear();
 
-    window.draw(m_title);
     UIManager::Instance().Render(window);
 
     if (m_showToast)
@@ -168,7 +167,7 @@ void SettingsScene::Render()
 // Generate the Entire Settings Page that is specific to the request.
 void SettingsScene::CreateSettingsPage(SettingsPage page)
 {
-    CreateTitle(page);
+    CreateTitle();
     CreateUI(page);
     CreateArrows(page);
     CreateButtonControls();
@@ -206,36 +205,20 @@ void SettingsScene::CreateUI(SettingsPage page)
 }
 
 // Generate the text that is the Title for the requested SettingsPage.
-void SettingsScene::CreateTitle(SettingsPage page)
+void SettingsScene::CreateTitle()
 {
-    AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf");
-    m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    m_title.setCharacterSize(48);
-    m_title.setFillColor(sf::Color(255, 255, 200));
-    m_title.setOutlineColor(sf::Color::Black);
-    m_title.setOutlineThickness(2.f);
+    const std::string titleText = "Settings";
+    const unsigned int fontSize = scaleMgr.ScaleFont(48); // Scales nicely across resolutions
+    const sf::Vector2f centerPos = {
+        WindowManager::Instance().GetWindow().getSize().x / 2.f,
+        scaleMgr.ScaledReferenceY(0.1f) // 10% from top
+    };
 
-    switch (page)
-    {
-        case SettingsPage::Audio:
-            m_title.setString("Audio Settings");
-            break;
-
-        case SettingsPage::Video:
-            m_title.setString("Video Settings");
-            break;
-
-        case SettingsPage::KeyBindings:
-            m_title.setString("Key Binding Settings");
-            break;
-    }
-
-    const auto bounds = m_title.getLocalBounds();
-    m_title.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    m_title.setPosition(windowSize.x / 2.f, windowSize.y * 0.15f);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, 48, true);
+    m_titleLabel->SetColor(sf::Color(102, 255, 102));
+    UIManager::Instance().AddElement(m_titleLabel);
 }
 
 // Generate the relevent Arrow UI elements for the requested SettingsPage.

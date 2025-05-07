@@ -116,38 +116,7 @@ void MainMenuScene::HandleEvent(const sf::Event &event)
 // Adjust the current scene entities size and positioning.
 void MainMenuScene::OnResize(const sf::Vector2u &newSize)
 {
-    CT_LOG_INFO("MainMenuScene OnResize: new size = {}x{}", newSize.x, newSize.y);
-
-    // Adjust background
-    if (m_backgroundSprite && m_backgroundSprite->getTexture())
-    {
-        sf::Vector2u textureSize = m_backgroundSprite->getTexture()->getSize();
-
-        sf::Vector2f scale(static_cast<float>(newSize.x) / textureSize.x,
-                           static_cast<float>(newSize.y) / textureSize.y);
-
-        m_backgroundSprite->setScale(scale);
-        m_backgroundSprite->setPosition(0.f, 0.f);
-
-        CT_LOG_INFO("Resized background sprite to window size: {}x{}", newSize.x, newSize.y);
-    }
-
-    // Adjust title
-    if (!m_title.getString().isEmpty())
-    {
-        // Optionally resize the title font based on window height
-        const unsigned int fontSize = std::max(24u, newSize.y / 15); // prevent going too small
-        m_title.setCharacterSize(fontSize);
-
-        // Re-center the title horizontally
-        const auto bounds = m_title.getLocalBounds();
-        m_title.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-        m_title.setPosition(static_cast<float>(newSize.x) / 2.f, static_cast<float>(newSize.y) * TITLE_Y_RATIO);
-    }
-
-    // Adjust UI elements
-    UIManager::Instance().Clear();
-    CreateButtons();
+    // should never resize outside the settings page
 }
 
 // While this scene is active, render the necessary components to the Main Menu Scene.
@@ -163,7 +132,6 @@ void MainMenuScene::Render()
         window.draw(*m_backgroundSprite);
     }
 
-    window.draw(m_title);
     UIManager::Instance().Render(window);
 }
 
@@ -178,20 +146,18 @@ void MainMenuScene::SetupSceneAssets()
 // Assists with the loading of the TitleText for this MainMenuScene.
 void MainMenuScene::CreateTitleText()
 {
-    m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    m_title.setString("Chaos Theory");
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const float scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(BASE_TITLE_FONT_SIZE);
-    m_title.setCharacterSize(static_cast<unsigned int>(scaledFontSize));
-    m_title.setFillColor(sf::Color(102, 255, 102));
-    m_title.setOutlineColor(sf::Color::Black);
-    m_title.setOutlineThickness(3.f);
+    const std::string titleText = "Chaos Theory";
+    const unsigned int fontSize = scaleMgr.ScaleFont(48); // Scales nicely across resolutions
+    const sf::Vector2f centerPos = {
+        WindowManager::Instance().GetWindow().getSize().x / 2.f,
+        scaleMgr.ScaledReferenceY(0.1f) // 10% from top
+    };
 
-    const auto bounds = m_title.getLocalBounds();
-    m_title.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    m_title.setPosition(windowSize.x / 2.f, windowSize.y * TITLE_Y_RATIO);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, 48, true);
+    m_titleLabel->SetColor(sf::Color(102, 255, 102));
+    UIManager::Instance().AddElement(m_titleLabel);
 }
 
 // Assists with creating the Buttons for this MainMenuScene.
