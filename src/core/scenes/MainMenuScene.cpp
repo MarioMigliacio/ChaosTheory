@@ -15,6 +15,7 @@
 #include "GameScene.h"
 #include "InputManager.h"
 #include "Macros.h"
+#include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
@@ -26,11 +27,11 @@
 // Provides adjustable constants
 namespace
 {
-constexpr float BUTTON_WIDTH = 180.f;
-constexpr float BUTTON_HEIGHT = 48.f;
-constexpr float BUTTON_SPACING = 20.f;
+constexpr float BASE_BUTTON_WIDTH = 150.f;
+constexpr float BASE_BUTTON_HEIGHT = 40.f;
+constexpr float BASE_BUTTON_SPACING_PERCENT = .25f;
 constexpr float TITLE_Y_RATIO = 0.15f;
-constexpr unsigned int DEFAULT_TITLE_FONT_SIZE = 64;
+constexpr unsigned int BASE_TITLE_FONT_SIZE = 64;
 } // namespace
 
 MainMenuScene::MainMenuScene(std::shared_ptr<Settings> settings) : m_settings(settings)
@@ -179,8 +180,10 @@ void MainMenuScene::CreateTitleText()
 {
     m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
     m_title.setString("Chaos Theory");
-    m_title.setCharacterSize(DEFAULT_TITLE_FONT_SIZE); // Bigger for drama
-    m_title.setFillColor(sf::Color(102, 255, 102));    // Alien green
+
+    const float scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(BASE_TITLE_FONT_SIZE);
+    m_title.setCharacterSize(static_cast<unsigned int>(scaledFontSize));
+    m_title.setFillColor(sf::Color(102, 255, 102));
     m_title.setOutlineColor(sf::Color::Black);
     m_title.setOutlineThickness(3.f);
 
@@ -194,14 +197,18 @@ void MainMenuScene::CreateTitleText()
 // Assists with creating the Buttons for this MainMenuScene.
 void MainMenuScene::CreateButtons()
 {
-    auto &window = WindowManager::Instance().GetWindow();
-    const auto windowSize = window.getSize();
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    const sf::Vector2f playPos{(windowSize.x - BUTTON_WIDTH) / 2.f, windowSize.y * 0.70f};
-    const sf::Vector2f settingsPos{playPos.x, playPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
-    const sf::Vector2f exitPos{settingsPos.x, settingsPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
+    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH);
+    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(BASE_BUTTON_HEIGHT);
+    const float scaledSpacing = scaledButtonHeight * BASE_BUTTON_SPACING_PERCENT;
+    const float startY = winSize.y * 0.7f;
+    const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
 
-    // Play Button
+    const sf::Vector2f playPos{centerX, startY};
+    const sf::Vector2f settingsPos{centerX, playPos.y + scaledButtonHeight + scaledSpacing};
+    const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
+
     UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, playPos, "Play",
                                                     [this]()
                                                     {
@@ -210,7 +217,6 @@ void MainMenuScene::CreateButtons()
                                                         m_requestedScene = SceneID::Game;
                                                     }));
 
-    // Settings Button
     UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, settingsPos, "Settings",
                                                     [this]()
                                                     {
@@ -219,7 +225,6 @@ void MainMenuScene::CreateButtons()
                                                         m_requestedScene = SceneID::Settings;
                                                     }));
 
-    // Exit Button
     UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, exitPos, "Exit",
                                                     [this]()
                                                     {
@@ -276,5 +281,6 @@ void MainMenuScene::PlayIntroMusic()
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
                                                          const std::string &label, std::function<void()> onClick)
 {
-    return UIFactory::Instance().CreateButton(type, pos, {BUTTON_WIDTH, BUTTON_HEIGHT}, label, std::move(onClick));
+    return UIFactory::Instance().CreateButton(type, pos, {BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT}, label,
+                                              std::move(onClick));
 }

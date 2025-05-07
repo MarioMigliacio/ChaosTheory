@@ -57,8 +57,6 @@ inline std::string ToString(ResolutionSetting setting)
 {
     switch (setting)
     {
-        case ResolutionSetting::Res480p:
-            return "480p";
         case ResolutionSetting::Res720p:
         default: // fallback
             return "720p";
@@ -72,11 +70,6 @@ inline std::string ToString(ResolutionSetting setting)
 // Returns a ResultionSetting enumeration from a string.
 inline ResolutionSetting FromStringToResolution(const std::string &str)
 {
-    if (str == "480p")
-    {
-        return ResolutionSetting::Res480p;
-    }
-
     if (str == "720p")
     {
         return ResolutionSetting::Res720p;

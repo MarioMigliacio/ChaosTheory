@@ -12,6 +12,7 @@
 
 #include "WindowManager.h"
 #include "Macros.h"
+#include "ResolutionScaleManager.h"
 #include "SceneTransitionManager.h"
 #include "Settings.h"
 
@@ -117,7 +118,8 @@ void WindowManager::ApplySettings(sf::Uint32 style)
 {
     CT_WARN_IF_UNINITIALIZED("WindowManager", "ApplySettings");
 
-    sf::VideoMode mode(m_settings->m_windowWidth, m_settings->m_windowHeight);
+    sf::Vector2u size = GetResolutionSize(m_settings->m_resolution);
+    sf::VideoMode mode(size.x, size.y);
 
     m_window = std::make_unique<sf::RenderWindow>(mode, m_settings->m_windowTitle, style);
 
@@ -126,6 +128,11 @@ void WindowManager::ApplySettings(sf::Uint32 style)
 
     m_window->setFramerateLimit(m_settings->m_targetFramerate);
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
+
+    ResolutionScaleManager::Instance().SetReferenceResolution(ResolutionSetting::Res720p);
+    ResolutionScaleManager::Instance().SetCurrentResolution(m_window->getSize());
+
+    CT_LOG_INFO("Applied initial settings: {}x{}", m_window->getSize().x, m_window->getSize().y);
 }
 
 // Applies the Resolution settings for the window.
@@ -135,9 +142,6 @@ void WindowManager::ApplyResolution(ResolutionSetting res)
 
     switch (res)
     {
-        case ResolutionSetting::Res480p:
-            size = {640, 480};
-            break;
         case ResolutionSetting::Res720p:
             size = {1280, 720};
             break;
@@ -156,6 +160,9 @@ void WindowManager::ApplyResolution(ResolutionSetting res)
     m_window->requestFocus();
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 
+    ResolutionScaleManager::Instance().SetReferenceResolution(ResolutionSetting::Res720p);
+    ResolutionScaleManager::Instance().SetCurrentResolution(m_window->getSize());
+
     CT_LOG_INFO("Applied new resolution: {}x{} - vsync: {}", size.x, size.y, m_settings->m_verticleSyncEnabled);
 }
 
@@ -164,8 +171,6 @@ sf::Vector2u WindowManager::GetResolutionSize(ResolutionSetting setting) const
 {
     switch (setting)
     {
-        case ResolutionSetting::Res480p:
-            return {640, 480};
         case ResolutionSetting::Res720p:
         default:
             return {1280, 720};

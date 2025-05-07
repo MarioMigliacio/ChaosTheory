@@ -1,8 +1,8 @@
 {
     "audio": {
         "is_muted": false,
-        "master_volume": 100.0,
-        "music_volume": 100.0,
+        "master_volume": 60.06944274902344,
+        "music_volume": 64.2361068725586,
         "sfx_volume": 100.0
     },
     "paths": {
@@ -11,6 +11,6 @@
         "sprite_dir": "assets/sprites/"
     },
     "video": {
-        "resolution": "720p"
+        "resolution": "1080p"
     }
 }

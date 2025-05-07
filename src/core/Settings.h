@@ -19,7 +19,6 @@
 // Simple enumeration type for window Resolution settings.
 enum class ResolutionSetting
 {
-    Res480p,
     Res720p,
     Res1080p,
     Fullscreen

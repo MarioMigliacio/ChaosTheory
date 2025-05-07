@@ -11,6 +11,7 @@
 #include "AssetManager.h"
 #include "Button.h"
 #include "RadioButton.h"
+#include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include "UISlider.h"
 
@@ -25,39 +26,39 @@ std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Ve
                                                    const sf::Vector2f &size, const std::string &label,
                                                    std::function<void()> onClick)
 {
+    sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
+                            ResolutionScaleManager::Instance().ScaleY(size.y));
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+
     switch (type)
     {
         case ButtonType::Classic:
         default:
         {
-            auto button = std::make_shared<Button>(position, size);
+            auto button = std::make_shared<Button>(position, scaledSize);
 
-            button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 18);
+            button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
             button->SetCallback(std::move(onClick));
             button->SetIdleColor(DEFAULT_IDLE_COLOR);
             button->SetHoverColor(DEFAULT_HOVER_COLOR);
             button->SetActiveColor(DEFAULT_ACTIVE_COLOR);
             button->SetTextColor(DEFAULT_TEXT_COLOR);
-            button->SetHoverScale(1.05f); // Normal hover grow effect
+            button->SetHoverScale(1.05f);
 
             return button;
-
-            break;
         }
 
         case ButtonType::Radio:
         {
-            auto radio = std::make_shared<RadioButton>(position, size);
+            auto radio = std::make_shared<RadioButton>(position, scaledSize);
 
-            radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), 18);
+            radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
             radio->SetCallback(std::move(onClick));
             radio->SetTextColor(DEFAULT_TEXT_COLOR);
             radio->SetHoverColor(DEFAULT_HOVER_COLOR);
             radio->SetSelectedColor(DEFAULT_SELECTED_COLOR, DEFAULT_SELECTED_TEXT_COLOR);
 
             return radio;
-
-            break;
         }
     }
 }
@@ -67,11 +68,18 @@ std::shared_ptr<UIElement> UIFactory::CreateSlider(const std::string &label, con
                                                    const sf::Vector2f &size, float minValue, float maxValue,
                                                    float initialValue, std::function<void(float)> onChange)
 {
-    auto slider = std::make_shared<UISlider>(label, minValue, maxValue, initialValue, position, size, onChange);
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    sf::Font &font = AssetManager::Instance().GetFont("Default.ttf");
+    // We explicitely do scale the slider UI elements position because it impacts the slider background and knob
+    const sf::Vector2f scaledPos = {scaleMgr.ScaledReferenceX(position.x), scaleMgr.ScaledReferenceY(position.y)};
 
-    slider->SetFont(font);
+    const auto scaledSize = sf::Vector2f(scaleMgr.ScaledReferenceX(size.x), scaleMgr.ScaleY(size.y));
+    const auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(14);
+
+    auto slider = std::make_shared<UISlider>(label, minValue, maxValue, initialValue, scaledPos, scaledSize, onChange);
+    slider->SetFont(AssetManager::Instance().GetFont("Default.ttf"));
+    slider->SetFontSize(scaledFontSize);
+    slider->SetTitlePositionOffset(sf::Vector2f(0.f, -ResolutionScaleManager::Instance().ScaleY(24.f)));
 
     return slider;
 }
@@ -79,4 +87,43 @@ std::shared_ptr<UIElement> UIFactory::CreateSlider(const std::string &label, con
 std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction)
 {
     return std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
+}
+
+// Creates a standard vertical GroupBox occupying relative screen space with automatic scaling.
+std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
+                                                    const sf::Vector2f &relativeSize)
+{
+    return CreateGroupBox(title, relativePos, relativeSize,
+                          LayoutMode::Vertical, // vertical layout is nice for controls
+                          true,                 // center children
+                          0.1f,                 // use a default provided internal padding
+                          0.075f,               // use a defaut provided edge padding
+                          0                     // use default provided font size.
+    );
+}
+
+// Fully configurable GroupBox with layout, alignment, padding, and font size.
+std::shared_ptr<GroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
+                                                    const sf::Vector2f &relativeSize, LayoutMode layoutMode,
+                                                    bool centerChildren, float internalPadRatio, float edgePadRatio,
+                                                    unsigned int fontSize)
+{
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    const sf::Vector2f scaledPos{scaleMgr.ScaledReferenceX(relativePosition.x),
+                                 scaleMgr.ScaledReferenceY(relativePosition.y)};
+    const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(relativeSize.x), scaleMgr.ScaledReferenceY(relativeSize.y)};
+
+    const float internalPadding = scaleMgr.ScaledReferenceY(internalPadRatio);
+    const float edgePadding = scaleMgr.ScaledReferenceY(edgePadRatio);
+
+    auto groupBox = std::make_shared<GroupBox>(scaledPos, scaledSize);
+    groupBox->SetTitle(title, AssetManager::Instance().GetFont("Default.ttf"),
+                       fontSize > 0 ? fontSize : scaleMgr.ScaleFont(24));
+    groupBox->SetLayoutMode(layoutMode);
+    groupBox->SetCenterChildren(centerChildren);
+    groupBox->SetInternalPadding(internalPadding);
+    groupBox->SetEdgePadding(edgePadding);
+
+    return groupBox;
 }

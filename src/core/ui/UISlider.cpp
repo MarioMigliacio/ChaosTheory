@@ -10,34 +10,53 @@
 // ============================================================================
 
 #include "UISlider.h"
+#include "Macros.h"
 #include <algorithm>
 #include <sstream>
 
 UISlider::UISlider(const std::string &label, float minValue, float maxValue, float initialValue,
                    const sf::Vector2f &position, const sf::Vector2f &size, std::function<void(float)> onChange)
-    : m_label(label), m_min(minValue), m_max(maxValue), m_value(initialValue), m_position(position), m_size(size),
-      m_dragging(false), m_onChange(onChange)
+    : m_label(label), m_min(minValue), m_max(maxValue), m_value(std::clamp(initialValue, minValue, maxValue)),
+      m_position(position), m_size(size), m_dragging(false), m_onChange(std::move(onChange))
 {
+    // Setup visuals
+    SetupGraphics();
+}
+
+void UISlider::SetupGraphics()
+{
+    // Background bar
     m_barBackground.setSize(m_size);
     m_barBackground.setPosition(m_position);
     m_barBackground.setFillColor(sf::Color(100, 100, 100));
 
-    m_barForeground.setSize({ValueToPosition(m_value) - m_position.x, m_size.y});
+    // Foreground bar (volume filled)
+    float normalized = GetNormalizedValue();
+    m_barForeground.setSize({m_size.x * normalized, m_size.y});
     m_barForeground.setPosition(m_position);
     m_barForeground.setFillColor(sf::Color(200, 200, 200));
 
-    m_knob.setRadius(m_size.y / 2);
-    m_knob.setOrigin(m_knob.getRadius(), m_knob.getRadius());
+    // Knob
+    float knobRadius = std::max(6.f, m_size.y / 2.f);
+    m_knob.setRadius(knobRadius);
+    m_knob.setOrigin(knobRadius, knobRadius);
     m_knob.setPosition(ValueToPosition(m_value), m_position.y + m_size.y / 2);
-    m_knob.setFillColor(sf::Color::White);
+    m_knob.setFillColor(sf::Color::Green);
 
-    m_labelText.setString(m_label + ": " + std::to_string(static_cast<int>(m_value)));
+    // Label
+    std::stringstream ss;
+    ss << m_label << ": " << static_cast<int>(m_value);
+    m_labelText.setString(ss.str());
     m_labelText.setCharacterSize(14);
-    m_labelText.setPosition(m_position.x, m_position.y - 20);
     m_labelText.setFillColor(sf::Color::White);
+    m_labelText.setPosition(m_position.x, m_position.y - 20);
 }
 
-// Update the slider's state based on mouse input
+float UISlider::GetNormalizedValue() const
+{
+    return (m_value - m_min) / (m_max - m_min);
+}
+
 void UISlider::Update(const sf::Vector2i &mousePos, bool isMousePressed)
 {
     sf::Vector2f mPos(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
@@ -55,7 +74,9 @@ void UISlider::Update(const sf::Vector2i &mousePos, bool isMousePressed)
     {
         float newX = std::clamp(mPos.x, m_position.x, m_position.x + m_size.x);
         m_value = PositionToValue(newX);
-        m_barForeground.setSize({newX - m_position.x, m_size.y});
+
+        float normalized = GetNormalizedValue();
+        m_barForeground.setSize({m_size.x * normalized, m_size.y});
         m_knob.setPosition(newX, m_position.y + m_size.y / 2);
 
         std::stringstream ss;
@@ -69,7 +90,6 @@ void UISlider::Update(const sf::Vector2i &mousePos, bool isMousePressed)
     }
 }
 
-// Returns true if the slider's knob or bar contains the point
 bool UISlider::Contains(const sf::Vector2i &point) const
 {
     return m_barBackground.getGlobalBounds().contains(static_cast<sf::Vector2f>(point)) ||
@@ -78,14 +98,17 @@ bool UISlider::Contains(const sf::Vector2i &point) const
 
 void UISlider::SetPosition(const sf::Vector2f &position)
 {
-    m_barBackground.setPosition(position);
-    m_barForeground.setPosition(position);
+    m_position = position;
 
-    const auto bgSize = m_barBackground.getSize();
-    m_knob.setPosition(position.x + m_value * bgSize.x, position.y + bgSize.y / 2.f);
+    m_barBackground.setPosition(m_position);
+    m_barForeground.setPosition(m_position);
+
+    float normalized = GetNormalizedValue();
+    m_knob.setPosition(m_position.x + m_size.x * normalized, m_position.y + m_size.y / 2.f);
+
+    m_labelText.setPosition(position + m_labelOffset);
 }
 
-// Returns the position for this UI Slider.
 sf::Vector2f UISlider::GetPosition() const
 {
     return m_position;
@@ -93,27 +116,24 @@ sf::Vector2f UISlider::GetPosition() const
 
 void UISlider::SetSize(const sf::Vector2f &size)
 {
-    m_barBackground.setSize(size);
+    m_size = size;
 
-    // Foreground bar width is proportional to value
-    m_barForeground.setSize({size.x * m_value, size.y});
+    m_barBackground.setSize(m_size);
 
-    // Recompute knob size or position if needed
-    m_knob.setRadius(size.y / 2.f);
-    m_knob.setOrigin(m_knob.getRadius(), m_knob.getRadius());
+    float normalized = GetNormalizedValue();
+    m_barForeground.setSize({m_size.x * normalized, m_size.y});
 
-    // Also reposition handle
-    const auto position = m_barBackground.getPosition();
-    m_knob.setPosition(position.x + m_value * size.x, position.y + size.y / 2.f);
+    float knobRadius = std::max(6.f, m_size.y / 2.f);
+    m_knob.setRadius(knobRadius);
+    m_knob.setOrigin(knobRadius, knobRadius);
+    m_knob.setPosition(ValueToPosition(m_value), m_position.y + m_size.y / 2);
 }
 
-// Returns the size for this UI Slider.
 sf::Vector2f UISlider::GetSize() const
 {
     return m_size;
 }
 
-// Draws the slider's components
 void UISlider::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_barBackground, states);
@@ -122,49 +142,54 @@ void UISlider::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(m_labelText, states);
 }
 
-// Set a new font for the label
 void UISlider::SetFont(const sf::Font &font)
 {
     m_labelText.setFont(font);
 }
 
-// Set custom colors for the bar and knob
+void UISlider::SetFontSize(unsigned int size)
+{
+    m_labelText.setCharacterSize(size);
+}
+
+void UISlider::SetTitlePositionOffset(const sf::Vector2f &offset)
+{
+    m_labelOffset = offset;
+    m_labelText.setPosition(m_position + m_labelOffset);
+}
+
 void UISlider::SetColor(const sf::Color &barColor, const sf::Color &knobColor)
 {
     m_barForeground.setFillColor(barColor);
     m_knob.setFillColor(knobColor);
 }
 
-// Set the slider value directly and update visuals
 void UISlider::SetValue(float value)
 {
     m_value = std::clamp(value, m_min, m_max);
-    float posX = ValueToPosition(m_value);
-    m_barForeground.setSize({posX - m_position.x, m_size.y});
-    m_knob.setPosition(posX, m_position.y + m_size.y / 2);
+
+    float normalized = GetNormalizedValue();
+    m_barForeground.setSize({m_size.x * normalized, m_size.y});
+    m_knob.setPosition(ValueToPosition(m_value), m_position.y + m_size.y / 2);
 
     std::stringstream ss;
     ss << m_label << ": " << static_cast<int>(m_value);
     m_labelText.setString(ss.str());
 }
 
-// Get the current slider value
 float UISlider::GetValue() const
 {
     return m_value;
 }
 
-// Converts a value to its horizontal position on the slider
 float UISlider::ValueToPosition(float value) const
 {
-    float range = m_max - m_min;
-    float normalized = (value - m_min) / range;
+    float normalized = (value - m_min) / (m_max - m_min);
     return m_position.x + normalized * m_size.x;
 }
 
-// Converts a horizontal position to its corresponding slider value
 float UISlider::PositionToValue(float x) const
 {
     float relative = (x - m_position.x) / m_size.x;
-    return m_min + relative * (m_max - m_min);
+    return std::clamp(m_min + relative * (m_max - m_min), m_min, m_max);
 }

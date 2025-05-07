@@ -130,10 +130,7 @@ bool RadioButton::Contains(const sf::Vector2i &point) const
 void RadioButton::SetPosition(const sf::Vector2f &position)
 {
     m_shape.setPosition(position);
-
-    // Offset label to right of circle
-    float padding = 24.f;
-    m_label.setPosition(position.x + padding, position.y + (m_shape.getSize().y - m_fontSize) / 2.f);
+    CenterLabel();
 }
 
 // Returns the position for this Button.
@@ -160,8 +157,9 @@ void RadioButton::CenterLabel()
 {
     sf::FloatRect bounds = m_label.getLocalBounds();
 
-    m_label.setOrigin(0.f, bounds.top + bounds.height / 2.f);
-    m_label.setPosition(m_shape.getPosition().x + 28.f, m_shape.getPosition().y + m_shape.getSize().y / 2.f);
+    m_label.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    m_label.setPosition(m_shape.getPosition().x + m_shape.getSize().x / 2.f,
+                        m_shape.getPosition().y + m_shape.getSize().y / 2.f);
 }
 
 // Draw this Radio Button to the Render target.
@@ -170,26 +168,7 @@ void RadioButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
     // Draw background rectangle
     target.draw(m_shape, states);
 
-    // Draw circular selection indicator
-    sf::CircleShape circle(6.f); // Radius = 8px
-    circle.setOutlineThickness(2.f);
-    circle.setOutlineColor(sf::Color::Black);
-
-    // Fill only if selected
-    if (m_isSelected)
-    {
-        circle.setFillColor(m_circleColorSelected); // or m_selectedFillColor
-    }
-
-    else
-    {
-        circle.setFillColor(sf::Color::Transparent);
-    }
-
-    circle.setPosition(m_shape.getPosition().x + 6.f, m_shape.getPosition().y + (m_shape.getSize().y / 2.f) - 6.f);
-    target.draw(circle, states);
-
-    // Draw label text (offset to the right of the circle)
+    // Draw label text
     target.draw(m_label, states);
 }
 

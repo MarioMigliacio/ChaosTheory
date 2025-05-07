@@ -9,6 +9,7 @@
 
 #pragma once
 
+#include "GroupBox.h"
 #include "UIArrow.h"
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
@@ -45,6 +46,15 @@ class UIFactory
                                             float initialValue, std::function<void(float)> onChange);
 
     std::shared_ptr<UIArrow> CreateArrow(float x, float y, ArrowDirection direction);
+
+    // Creates a standard vertical GroupBox occupying relative screen space with automatic scaling.
+    std::shared_ptr<GroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
+                                             const sf::Vector2f &relativeSize);
+
+    // Fully configurable GroupBox with layout, alignment, padding, and font size.
+    std::shared_ptr<GroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
+                                             const sf::Vector2f &relativeSize, LayoutMode layoutMode, bool, float,
+                                             float, unsigned int fontSize);
 
   private:
     UIFactory() = default;

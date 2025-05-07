@@ -47,6 +47,7 @@ class RadioButton : public UIElement
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
     const std::string GetLabel() const;
+
     void SetTextColor(const sf::Color &color);
     void SetSelectedColor(const sf::Color &fillColor, const sf::Color &textColor);
     void SetHoverColor(const sf::Color &hoverColor);
@@ -58,6 +59,7 @@ class RadioButton : public UIElement
 
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
+
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
@@ -77,7 +79,6 @@ class RadioButton : public UIElement
     sf::Color m_selectedFillColor = DEFAULT_SELECTED_COLOR;
     sf::Color m_selectedTextColor = DEFAULT_SELECTED_TEXT_COLOR;
     sf::Color m_textColor = DEFAULT_TEXT_COLOR;
-    sf::Color m_circleColorSelected = DEFAULT_TEXT_COLOR;
 
     unsigned int m_fontSize = 24;
 

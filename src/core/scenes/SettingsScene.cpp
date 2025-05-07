@@ -16,6 +16,7 @@
 #include "InputManager.h"
 #include "Macros.h"
 #include "RadioButton.h"
+#include "ResolutionScaleManager.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
 #include "SettingsManager.h"
@@ -28,9 +29,10 @@ namespace
 constexpr float SLIDER_WIDTH = 300.f;
 constexpr float SLIDER_HEIGHT = 20.f;
 constexpr float SLIDER_SPACING = 50.f;
-constexpr float BUTTON_WIDTH = 160.f;
+constexpr float BUTTON_WIDTH = 145.f;
 constexpr float BUTTON_HEIGHT = 30.f;
 constexpr float BUTTON_SPACING = 20.f;
+constexpr float GROUP_EDGE_PAD = 20.f;
 constexpr float TOAST_DURATION = 2.0f;
 } // namespace
 
@@ -128,6 +130,8 @@ void SettingsScene::HandleEvent(const sf::Event &event)
 // Update the dimensions for this Settings Scene.
 void SettingsScene::OnResize(const sf::Vector2u &newSize)
 {
+    ResolutionScaleManager::Instance().SetCurrentResolution(newSize);
+
     if (m_settings->m_resolution != ResolutionSetting::Fullscreen)
     {
         // Ignore manual resizes when not in fullscreen
@@ -299,35 +303,46 @@ void SettingsScene::LoadDefaultSFXFile()
 // Generate the buttons needed for this Settings Scene Page.
 void SettingsScene::CreateButtonControls()
 {
-    auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    float startX = (windowSize.x - BUTTON_WIDTH) / 2.f;
-    float startY = windowSize.y * 0.7f;
+    auto winSize = WindowManager::Instance().GetWindow().getSize();
+
+    const float footerY = winSize.y * .85f; // 15% away from absolute bottom
+
+    const float buttonWidth = BUTTON_WIDTH;
+    const float buttonHeight = BUTTON_HEIGHT;
+
+    // Offset from center for symmetry
+    const float spacingFromCenter = ResolutionScaleManager::Instance().ScaleX(BUTTON_WIDTH / 2 + BUTTON_SPACING);
+
+    const sf::Vector2f applyPos{winSize.x / 2.f - spacingFromCenter - buttonWidth / 2.f, footerY};
+    const sf::Vector2f backPos{winSize.x / 2.f + spacingFromCenter - buttonWidth / 2.f, footerY};
 
     // Apply Changes Button
     m_applyButton = UIFactory::Instance().CreateButton(
-        ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Apply Changes",
+        ButtonType::Classic, applyPos, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Apply Changes",
         [this]()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
 
+            auto currentSetting = m_backupSettings.m_resolution;
+
             SettingsManager::Instance().SaveToFile("config.json");
             SettingsManager::Instance().LoadFromFile("config.json");
+
             m_backupSettings = *SettingsManager::Instance().GetSettings();
             m_hasUnsavedChanges = false;
+
             ShowToast("Settings Applied");
 
             AudioManager::Instance().HotReload(SettingsManager::Instance().GetSettings());
             AudioManager::Instance().PlaySFX("PewPew");
 
-            // Only apply resolution if size actually changed
-            auto &window = WindowManager::Instance().GetWindow();
-            auto currentSize = window.getSize();
             auto targetSetting = SettingsManager::Instance().GetSettings()->m_resolution;
-            auto targetSize = WindowManager::Instance().GetResolutionSize(targetSetting);
 
-            if (currentSize != targetSize)
+            if (currentSetting != targetSetting)
             {
+                auto targetSize = WindowManager::Instance().GetResolutionSize(targetSetting);
                 WindowManager::Instance().ApplyResolution(targetSetting);
+                ResolutionScaleManager::Instance().SetCurrentResolution(targetSize);
                 UIManager::Instance().BlockInputUntilMouseRelease();
                 m_pendingPageChange = m_currentPage;
             }
@@ -335,127 +350,119 @@ void SettingsScene::CreateButtonControls()
 
     UIManager::Instance().AddElement(m_applyButton);
 
-    startY += BUTTON_HEIGHT + BUTTON_SPACING;
-
     // Go Back Button
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
-        ButtonType::Classic, {startX, startY}, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Go Back",
-        [this]()
-        {
-            CT_LOG_INFO("SettingsScene: Go Back clicked.");
-            *SettingsManager::Instance().GetSettings() = m_backupSettings;
-            m_requestedScene = SceneID::MainMenu;
-            m_hasPendingTransition = true;
-        }));
+    UIManager::Instance().AddElement(
+        UIFactory::Instance().CreateButton(ButtonType::Classic, backPos, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Go Back",
+                                           [this]()
+                                           {
+                                               CT_LOG_INFO("SettingsScene: Go Back clicked.");
+                                               *SettingsManager::Instance().GetSettings() = m_backupSettings;
+                                               m_requestedScene = SceneID::MainMenu;
+                                               m_hasPendingTransition = true;
+                                           }));
 }
 
 // Generate the Audio Sliders needed for this Settings Scene page.
 void SettingsScene::CreateAudioControls()
 {
-    const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    float startX = (winSize.x - SLIDER_WIDTH) / 2.f;
-    float startY = winSize.y * 0.4f;
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
-        "Master Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_masterVolume,
+    const std::string title = "Audio Settings";
+    const sf::Vector2f relativePos{0.25f, 0.25f};
+    const sf::Vector2f relativeSize{0.5f, 0.5f};
+
+    // Create a 50% screen width, 50% screen height GroupBox for UI elements as children.
+    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+
+    const float referenceSliderWidth = 0.45f; // 45% of reference width
+    const float sliderHeight = scaleMgr.ScaleY(SLIDER_HEIGHT);
+
+    groupBox->AddElement(UIFactory::Instance().CreateSlider(
+        "Master Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_masterVolume,
         [](float val) { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
 
-    startY += SLIDER_SPACING;
-
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
-        "Music Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_musicVolume,
+    groupBox->AddElement(UIFactory::Instance().CreateSlider(
+        "Music Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_musicVolume,
         [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
 
-    startY += SLIDER_SPACING;
-
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateSlider(
-        "SFX Volume", {startX, startY}, {SLIDER_WIDTH, SLIDER_HEIGHT}, 0.f, 100.f, m_settings->m_sfxVolume,
+    groupBox->AddElement(UIFactory::Instance().CreateSlider(
+        "SFX Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_sfxVolume,
         [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
+
+    UIManager::Instance().AddElement(groupBox);
 }
 
 // Generate the buttons needed for this Settings Scene resolution settings page.
 void SettingsScene::CreateResolutionControls()
 {
-    const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    float startX = (winSize.x - 320.f) / 2.f;
-    float startY = winSize.y * 0.4f;
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    auto currentRes = SettingsManager::Instance().GetSettings()->m_resolution;
+    const std::string title = "Video Settings";
+    const sf::Vector2f relativePos{0.375f, 0.33f};
+    const sf::Vector2f relativeSize{0.25f, 0.33f};
 
-    std::vector<std::pair<std::string, ResolutionSetting>> options = {{"480p", ResolutionSetting::Res480p},
-                                                                      {"720p", ResolutionSetting::Res720p},
+    // Create the group box using the centralized UIFactory
+    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.01f));
+    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.2f * relativeSize.y));
+
+    // Define the resolution options
+    std::vector<std::pair<std::string, ResolutionSetting>> options = {{"720p", ResolutionSetting::Res720p},
                                                                       {"1080p", ResolutionSetting::Res1080p},
                                                                       {"Fullscreen", ResolutionSetting::Fullscreen}};
 
-    // Track radio buttons as base UIElement for standardization
-    std::vector<std::shared_ptr<UIElement>> elements;
+    const sf::Vector2f buttonSize = {BUTTON_WIDTH, BUTTON_HEIGHT};
 
-    for (size_t i = 0; i < options.size(); ++i)
+    const auto current = SettingsManager::Instance().GetSettings()->m_resolution;
+
+    for (const auto &[label, resValue] : options)
     {
-        float offsetX = (i % 2 == 0) ? 0.f : 160.f;
-        float offsetY = (i < 2) ? 0.f : 50.f;
-        sf::Vector2f pos = {startX + offsetX, startY + offsetY};
-
-        auto label = options[i].first;
-        auto resValue = options[i].second;
-
         auto radio = std::dynamic_pointer_cast<RadioButton>(
-            UIFactory::Instance().CreateButton(ButtonType::Radio, pos, {140.f, 30.f}, label,
-                                               [this, resValue, label]()
+            UIFactory::Instance().CreateButton(ButtonType::Radio, {0.f, 0.f}, buttonSize, label,
+                                               [this, resValue, label, groupBox]()
                                                {
-                                                   // Deselect all radios
-                                                   for (auto &el : UIManager::Instance().GetElements())
-                                                   {
-                                                       if (auto rb = std::dynamic_pointer_cast<RadioButton>(el))
-                                                           rb->SetSelected(false);
-                                                   }
-
-                                                   // Set selected resolution in the settings
-                                                   SettingsManager::Instance().GetSettings()->m_resolution = resValue;
-
-                                                   // Select the radio that matches the clicked label
-                                                   for (auto &el : UIManager::Instance().GetElements())
+                                                   for (auto &el : groupBox->GetChildren())
                                                    {
                                                        if (auto rb = std::dynamic_pointer_cast<RadioButton>(el))
                                                        {
-                                                           if (rb->GetLabel() == label)
-                                                           {
-                                                               rb->SetSelected(true);
-                                                               break;
-                                                           }
+                                                           rb->SetSelected(rb->GetLabel() == label);
                                                        }
                                                    }
+                                                   SettingsManager::Instance().GetSettings()->m_resolution = resValue;
                                                }));
 
-        // Initial selection
-        if (currentRes == resValue)
-            radio->SetSelected(true);
-
-        UIManager::Instance().AddElement(radio);
+        radio->SetSelected(resValue == current);
+        groupBox->AddElement(radio);
     }
+
+    UIManager::Instance().AddElement(groupBox);
 }
 
 // Generate the ui elements needed for this Key Bindings settings page.
 void SettingsScene::CreateKeyBindingControls()
 {
-    // merely a placeholder for the time being.
-    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    // Create the GroupBox panel
-    auto groupBox = std::make_shared<GroupBox>(sf::Vector2f((winSize.x - 360.f) / 2.f, winSize.y * 0.4f),
-                                               sf::Vector2f(360.f, 160.f));
-    groupBox->SetTitle("Key Binding Settings", AssetManager::Instance().GetFont("Default.ttf"));
-    groupBox->SetLayoutMode(LayoutMode::Vertical);
-    groupBox->SetCenterChildren(true); // Try false if you want left-aligned buttons
+    const std::string title = "Key Binding Settings";
+    const sf::Vector2f relativePos{0.375f, 0.33f};
+    const sf::Vector2f relativeSize{0.25f, 0.33f};
+
+    // Create the group box using the centralized UIFactory
+    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.01f));
+    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.2f * relativeSize.y));
 
     // Add some placeholder buttons for binding keys
-    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f}, {200.f, 30.f}, "Fire Bomb",
+    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
+                                                            {BUTTON_WIDTH, BUTTON_HEIGHT}, "Fire Bomb",
                                                             []() { CT_LOG_INFO("Fire Bomb clicked"); }));
 
-    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f}, {200.f, 30.f}, "Shoot",
+    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
+                                                            {BUTTON_WIDTH, BUTTON_HEIGHT}, "Shoot",
                                                             []() { CT_LOG_INFO("Shoot clicked"); }));
 
-    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f}, {200.f, 30.f}, "Strafe",
+    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
+                                                            {BUTTON_WIDTH, BUTTON_HEIGHT}, "Strafe",
                                                             []() { CT_LOG_INFO("Strafe clicked"); }));
 
     // Add group box to the UI system
@@ -471,7 +478,7 @@ void SettingsScene::CheckForUnsavedChanges()
     }
 }
 
-// Display a friendly toast message to indicate that settings are changed.
+// Display a friendly toast message to indicate that settings are changed
 void SettingsScene::ShowToast(const std::string &message)
 {
     m_toastText.setString(message);

@@ -42,6 +42,8 @@ class UISlider : public UIElement
     UISlider(UISlider &&) noexcept = default;
     UISlider &operator=(UISlider &&) noexcept = default;
 
+    void SetupGraphics();
+
     void Update(const sf::Vector2i &mousePos, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
 
@@ -52,6 +54,9 @@ class UISlider : public UIElement
     sf::Vector2f GetSize() const override;
 
     void SetFont(const sf::Font &font);
+    void SetFontSize(unsigned int size);
+    void SetTitlePositionOffset(const sf::Vector2f &offset);
+
     void SetColor(const sf::Color &barColor, const sf::Color &knobColor);
     void SetValue(float value);
     float GetValue() const;
@@ -61,6 +66,7 @@ class UISlider : public UIElement
 
     float ValueToPosition(float value) const;
     float PositionToValue(float x) const;
+    float GetNormalizedValue() const;
 
   private:
     sf::RectangleShape m_barBackground;
@@ -70,6 +76,7 @@ class UISlider : public UIElement
     sf::Text m_labelText;
     std::string m_label;
 
+    sf::Vector2f m_labelOffset{0.f, -20.f};
     sf::Vector2f m_position;
     sf::Vector2f m_size;
 

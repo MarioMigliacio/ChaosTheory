@@ -32,29 +32,29 @@ void GroupBox::AddElement(std::shared_ptr<UIElement> element)
 // Force the children entities to readjust, useful for resizing.
 void GroupBox::RealignChildren()
 {
-    const float padding = 10.f;
     const sf::Vector2f basePos = m_background.getPosition();
-    sf::Vector2f currentPos = {basePos.x + padding, basePos.y + padding + 20.f};
+    sf::Vector2f currentPos = {basePos.x + m_edgePadding, basePos.y + m_edgePadding + 20.f};
 
     for (auto &child : m_children)
     {
-        sf::Vector2f childSize = child->GetSize(); // You may need to add GetSize() to UIElement too!
+        sf::Vector2f childSize = child->GetSize();
 
         if (m_layoutMode == LayoutMode::Vertical)
         {
-            float x =
-                m_centerChildren ? basePos.x + (m_background.getSize().x - childSize.x) / 2.f : basePos.x + padding;
+            float x = m_centerChildren ? basePos.x + (m_background.getSize().x - childSize.x) / 2.f
+                                       : basePos.x + m_edgePadding;
 
+            child->SetSize(childSize);
             child->SetPosition({x, currentPos.y});
-            currentPos.y += childSize.y + padding;
+            currentPos.y += childSize.y + m_internalPadding;
         }
         else // Horizontal layout
         {
-            float y =
-                m_centerChildren ? basePos.y + (m_background.getSize().y - childSize.y) / 2.f : basePos.y + padding;
+            float y = m_centerChildren ? basePos.y + (m_background.getSize().y - childSize.y) / 2.f
+                                       : basePos.y + m_edgePadding;
 
             child->SetPosition({currentPos.x, y});
-            currentPos.x += childSize.x + padding;
+            currentPos.x += childSize.x + m_internalPadding;
         }
     }
 }
@@ -71,6 +71,11 @@ void GroupBox::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
 bool GroupBox::Contains(const sf::Vector2i &point) const
 {
     return m_background.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
+}
+
+const std::vector<std::shared_ptr<UIElement>> &GroupBox::GetChildren() const
+{
+    return m_children;
 }
 
 void GroupBox::SetPosition(const sf::Vector2f &position)
@@ -124,6 +129,18 @@ void GroupBox::SetOutlineColor(const sf::Color &color)
 void GroupBox::SetOutlineThickness(float thickness)
 {
     m_background.setOutlineThickness(thickness);
+}
+
+void GroupBox::SetInternalPadding(float padding)
+{
+    m_internalPadding = padding;
+    RealignChildren();
+}
+
+void GroupBox::SetEdgePadding(float padding)
+{
+    m_edgePadding = padding;
+    RealignChildren();
 }
 
 void GroupBox::draw(sf::RenderTarget &target, sf::RenderStates states) const

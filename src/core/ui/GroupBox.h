@@ -26,6 +26,7 @@ class GroupBox : public UIElement
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
     bool Contains(const sf::Vector2i &point) const override;
+    const std::vector<std::shared_ptr<UIElement>> &GetChildren() const;
 
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
@@ -39,6 +40,9 @@ class GroupBox : public UIElement
     void SetOutlineColor(const sf::Color &color);
     void SetOutlineThickness(float thickness);
 
+    void SetInternalPadding(float padding);
+    void SetEdgePadding(float padding);
+
   private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -48,5 +52,9 @@ class GroupBox : public UIElement
 
     std::vector<std::shared_ptr<UIElement>> m_children;
     LayoutMode m_layoutMode = LayoutMode::Vertical;
+
+    float m_internalPadding = 12.f;
+    float m_edgePadding = 10.f;
+
     bool m_centerChildren = false;
 };
