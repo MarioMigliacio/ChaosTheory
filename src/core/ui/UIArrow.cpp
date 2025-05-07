@@ -111,6 +111,11 @@ void UIArrow::SetOnClick(std::function<void()> callback)
     m_onClick = std::move(callback);
 }
 
+const ArrowDirection UIArrow::GetDirection() const
+{
+    return m_direction;
+}
+
 void UIArrow::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_sprite, states);

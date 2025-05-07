@@ -49,11 +49,12 @@ class UIArrow : public UIElement
 
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
-    
+
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
     void SetOnClick(std::function<void()> callback);
+    const ArrowDirection GetDirection() const;
 
   protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
