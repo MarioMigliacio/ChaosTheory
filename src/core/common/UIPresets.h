@@ -18,6 +18,7 @@
 
 // Titles:
 const std::string DEFAULT_TITLE_STR = "Chaos Theory";
+const std::string DEFAULT_SETTINGS_STR = "Settings";
 const sf::Color DEFAULT_TITLE_COLOR(102, 255, 102);
 constexpr unsigned int DEFAULT_TITLE_FONT_SIZE = 48;
 constexpr float DEFAULT_TITLE_HEIGHT_PERCENT = .1f;
@@ -55,3 +56,9 @@ constexpr float GROUPBOX_DEFAULT_EDGE_PAD = 10.f;
 
 // Generic Toast uses:
 constexpr float TOAST_DURATION = 2.f;
+
+// Generic Arrow uses:
+constexpr float DEFAULT_ARROW_LEFT_CENTER_PERCENT = .05f;
+constexpr float DEFAULT_ARROW_TOP_CENTER_PERCENT = .05f;
+constexpr float DEFAULT_ARROW_RIGHT_CENTER_PERCENT = .95f;
+constexpr float DEFAULT_ARROW_BOTTOM_CENTER_PERCENT = .95f;

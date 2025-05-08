@@ -198,7 +198,7 @@ void SettingsScene::CreateTitleText()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string titleText = DEFAULT_TITLE_STR;
+    const std::string titleText = DEFAULT_SETTINGS_STR;
     const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TITLE_FONT_SIZE);
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
@@ -211,13 +211,16 @@ void SettingsScene::CreateTitleText()
 // Generate the relevent Arrow UI elements for the requested SettingsPage.
 void SettingsScene::CreateArrows(SettingsPage page)
 {
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
     const float centerY = winSize.y / 2.f;
 
     if (page == SettingsPage::Audio || page == SettingsPage::KeyBindings)
     {
         // LEFT ARROW (to previous page)
-        auto leftArrow = UIFactory::Instance().CreateArrow(40.f, centerY, ArrowDirection::Left);
+        const float arrow_x = scaleMgr.ScaledReferenceX(DEFAULT_ARROW_LEFT_CENTER_PERCENT);
+        auto leftArrow = UIFactory::Instance().CreateArrow(arrow_x, centerY, ArrowDirection::Left);
 
         leftArrow->SetOnClick(
             [this, page]()
@@ -241,7 +244,8 @@ void SettingsScene::CreateArrows(SettingsPage page)
     if (page == SettingsPage::Audio || page == SettingsPage::Video)
     {
         // RIGHT ARROW (to next page)
-        auto rightArrow = UIFactory::Instance().CreateArrow(winSize.x - 60.f, centerY, ArrowDirection::Right);
+        const float arrow_x = scaleMgr.ScaledReferenceX(DEFAULT_ARROW_RIGHT_CENTER_PERCENT);
+        auto rightArrow = UIFactory::Instance().CreateArrow(arrow_x, centerY, ArrowDirection::Right);
 
         rightArrow->SetOnClick(
             [this, page]()
