@@ -21,20 +21,9 @@
 #include "UIFactory.h"
 #include "UIGroupBox.h"
 #include "UIManager.h"
+#include "UIPresets.h"
 #include "UISelectableButton.h"
 #include "WindowManager.h"
-
-namespace
-{
-constexpr float SLIDER_WIDTH = 300.f;
-constexpr float SLIDER_HEIGHT = 20.f;
-constexpr float SLIDER_SPACING = 50.f;
-constexpr float BUTTON_WIDTH = 145.f;
-constexpr float BUTTON_HEIGHT = 30.f;
-constexpr float BUTTON_SPACING = 20.f;
-constexpr float GROUP_EDGE_PAD = 20.f;
-constexpr float TOAST_DURATION = 2.0f;
-} // namespace
 
 SettingsScene::SettingsScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
@@ -167,7 +156,7 @@ void SettingsScene::Render()
 // Generate the Entire Settings Page that is specific to the request.
 void SettingsScene::CreateSettingsPage(SettingsPage page)
 {
-    CreateTitle();
+    CreateTitleText();
     CreateUI(page);
     CreateArrows(page);
     CreateButtonControls();
@@ -205,19 +194,17 @@ void SettingsScene::CreateUI(SettingsPage page)
 }
 
 // Generate the text that is the Title for the requested SettingsPage.
-void SettingsScene::CreateTitle()
+void SettingsScene::CreateTitleText()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string titleText = "Settings";
-    const unsigned int fontSize = scaleMgr.ScaleFont(48); // Scales nicely across resolutions
-    const sf::Vector2f centerPos = {
-        WindowManager::Instance().GetWindow().getSize().x / 2.f,
-        scaleMgr.ScaledReferenceY(0.1f) // 10% from top
-    };
+    const std::string titleText = DEFAULT_TITLE_STR;
+    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TITLE_FONT_SIZE);
+    const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                    scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, 48, true);
-    m_titleLabel->SetColor(sf::Color(102, 255, 102));
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
+    m_titleLabel->SetColor(DEFAULT_TITLE_COLOR);
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
@@ -288,20 +275,22 @@ void SettingsScene::CreateButtonControls()
 {
     auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    const float footerY = winSize.y * .85f; // 15% away from absolute bottom
+    const float footerY = winSize.y * BASE_FOOTER_HEIGHT_85_PERCENT;
+    ; // 15% away from absolute bottom
 
-    const float buttonWidth = BUTTON_WIDTH;
-    const float buttonHeight = BUTTON_HEIGHT;
+    const float buttonWidth = BASE_BUTTON_WIDTH_PIXEL;
+    const float buttonHeight = BASE_BUTTON_HEIGHT_PIXEL;
 
     // Offset from center for symmetry
-    const float spacingFromCenter = ResolutionScaleManager::Instance().ScaleX(BUTTON_WIDTH / 2 + BUTTON_SPACING);
+    const float spacingFromCenter =
+        ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH_PIXEL / 2 + BASE_BUTTON_SPACING_PIXEL);
 
     const sf::Vector2f applyPos{winSize.x / 2.f - spacingFromCenter - buttonWidth / 2.f, footerY};
     const sf::Vector2f backPos{winSize.x / 2.f + spacingFromCenter - buttonWidth / 2.f, footerY};
 
     // Apply Changes UIButton
     m_applyButton = UIFactory::Instance().CreateButton(
-        ButtonType::Classic, applyPos, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Apply Changes",
+        ButtonType::Classic, applyPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Apply Changes",
         [this]()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
@@ -313,8 +302,6 @@ void SettingsScene::CreateButtonControls()
 
             m_backupSettings = *SettingsManager::Instance().GetSettings();
             m_hasUnsavedChanges = false;
-
-            ShowToast("Settings Applied");
 
             AudioManager::Instance().HotReload(SettingsManager::Instance().GetSettings());
             AudioManager::Instance().PlaySFX("PewPew");
@@ -329,20 +316,22 @@ void SettingsScene::CreateButtonControls()
                 UIManager::Instance().BlockInputUntilMouseRelease();
                 m_pendingPageChange = m_currentPage;
             }
+
+            ShowToast("Settings Applied");
         });
 
     UIManager::Instance().AddElement(m_applyButton);
 
     // Go Back UIButton
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateButton(ButtonType::Classic, backPos, {BUTTON_WIDTH, BUTTON_HEIGHT}, "Go Back",
-                                           [this]()
-                                           {
-                                               CT_LOG_INFO("SettingsScene: Go Back clicked.");
-                                               *SettingsManager::Instance().GetSettings() = m_backupSettings;
-                                               m_requestedScene = SceneID::MainMenu;
-                                               m_hasPendingTransition = true;
-                                           }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        ButtonType::Classic, backPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Go Back",
+        [this]()
+        {
+            CT_LOG_INFO("SettingsScene: Go Back clicked.");
+            *SettingsManager::Instance().GetSettings() = m_backupSettings;
+            m_requestedScene = SceneID::MainMenu;
+            m_hasPendingTransition = true;
+        }));
 }
 
 // Generate the Audio Sliders needed for this Settings Scene page.
@@ -357,8 +346,8 @@ void SettingsScene::CreateAudioControls()
     // Create a 50% screen width, 50% screen height UIGroupBox for UI elements as children.
     auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
 
-    const float referenceSliderWidth = 0.45f; // 45% of reference width
-    const float sliderHeight = scaleMgr.ScaleY(SLIDER_HEIGHT);
+    const float referenceSliderWidth = BASE_SLIDER_WIDTH_PERCENT; // 45% of reference width
+    const float sliderHeight = scaleMgr.ScaleY(BASE_SLIDER_HEIGHT_PIXEL);
 
     groupBox->AddElement(UIFactory::Instance().CreateSlider(
         "Master Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_masterVolume,
@@ -394,7 +383,7 @@ void SettingsScene::CreateResolutionControls()
                                                                       {"1080p", ResolutionSetting::Res1080p},
                                                                       {"Fullscreen", ResolutionSetting::Fullscreen}};
 
-    const sf::Vector2f buttonSize = {BUTTON_WIDTH, BUTTON_HEIGHT};
+    const sf::Vector2f buttonSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
     const auto current = SettingsManager::Instance().GetSettings()->m_resolution;
 
@@ -437,16 +426,16 @@ void SettingsScene::CreateKeyBindingControls()
 
     // Add some placeholder buttons for binding keys
     groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
-                                                            {BUTTON_WIDTH, BUTTON_HEIGHT}, "Fire Bomb",
-                                                            []() { CT_LOG_INFO("Fire Bomb clicked"); }));
+                                                            {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
+                                                            "Fire Bomb", []() { CT_LOG_INFO("Fire Bomb clicked"); }));
 
     groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
-                                                            {BUTTON_WIDTH, BUTTON_HEIGHT}, "Shoot",
-                                                            []() { CT_LOG_INFO("Shoot clicked"); }));
+                                                            {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
+                                                            "Shoot", []() { CT_LOG_INFO("Shoot clicked"); }));
 
     groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
-                                                            {BUTTON_WIDTH, BUTTON_HEIGHT}, "Strafe",
-                                                            []() { CT_LOG_INFO("Strafe clicked"); }));
+                                                            {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
+                                                            "Strafe", []() { CT_LOG_INFO("Strafe clicked"); }));
 
     // Add group box to the UI system
     UIManager::Instance().AddElement(groupBox);
@@ -464,12 +453,17 @@ void SettingsScene::CheckForUnsavedChanges()
 // Display a friendly toast message to indicate that settings are changed
 void SettingsScene::ShowToast(const std::string &message)
 {
-    m_toastText.setString(message);
     const auto bounds = m_toastText.getLocalBounds();
+
+    m_toastText.setFont(AssetManager::Instance().GetFont("Default.ttf"));
+    m_toastText.setString(message);
+
     m_toastText.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    m_toastText.setFillColor(DEFAULT_TITLE_COLOR);
+    m_toastText.setCharacterSize(24);
 
     auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    m_toastText.setPosition(windowSize.x / 2.f, windowSize.y * 0.85f);
+    m_toastText.setPosition(windowSize.x * BASE_FOOTER_WIDTH_75_PERCENT, windowSize.y * BASE_FOOTER_HEIGHT_85_PERCENT);
 
     m_toastTimer = TOAST_DURATION;
     m_showToast = true;

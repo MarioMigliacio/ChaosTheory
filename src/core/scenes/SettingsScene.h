@@ -21,6 +21,7 @@
 #include <optional>
 #include <string>
 
+// Simple enumeration for supported SettingsPage types.
 enum class SettingsPage
 {
     Audio,
@@ -56,7 +57,7 @@ class SettingsScene : public Scene
   private:
     void CreateSettingsPage(SettingsPage page);
     void CreateUI(SettingsPage page);
-    void CreateTitle();
+    void CreateTitleText();
     void CreateArrows(SettingsPage page);
 
     void LoadDefaultSFXFile();

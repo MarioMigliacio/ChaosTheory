@@ -24,16 +24,6 @@
 #include "UIManager.h"
 #include "WindowManager.h"
 
-// Provides adjustable constants
-namespace
-{
-constexpr float BASE_BUTTON_WIDTH = 150.f;
-constexpr float BASE_BUTTON_HEIGHT = 40.f;
-constexpr float BASE_BUTTON_SPACING_PERCENT = .25f;
-constexpr float TITLE_Y_RATIO = 0.15f;
-constexpr unsigned int BASE_TITLE_FONT_SIZE = 64;
-} // namespace
-
 MainMenuScene::MainMenuScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
 }
@@ -148,15 +138,13 @@ void MainMenuScene::CreateTitleText()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string titleText = "Chaos Theory";
-    const unsigned int fontSize = scaleMgr.ScaleFont(48); // Scales nicely across resolutions
-    const sf::Vector2f centerPos = {
-        WindowManager::Instance().GetWindow().getSize().x / 2.f,
-        scaleMgr.ScaledReferenceY(0.1f) // 10% from top
-    };
+    const std::string titleText = DEFAULT_TITLE_STR;
+    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TITLE_FONT_SIZE);
+    const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                    scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, 48, true);
-    m_titleLabel->SetColor(sf::Color(102, 255, 102));
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
+    m_titleLabel->SetColor(DEFAULT_TITLE_COLOR);
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
@@ -165,8 +153,8 @@ void MainMenuScene::CreateButtons()
 {
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH);
-    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(BASE_BUTTON_HEIGHT);
+    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH_PIXEL);
+    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(BASE_BUTTON_HEIGHT_PIXEL);
     const float scaledSpacing = scaledButtonHeight * BASE_BUTTON_SPACING_PERCENT;
     const float startY = winSize.y * 0.7f;
     const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
@@ -247,6 +235,6 @@ void MainMenuScene::PlayIntroMusic()
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
                                                          const std::string &label, std::function<void()> onClick)
 {
-    return UIFactory::Instance().CreateButton(type, pos, {BASE_BUTTON_WIDTH, BASE_BUTTON_HEIGHT}, label,
+    return UIFactory::Instance().CreateButton(type, pos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, label,
                                               std::move(onClick));
 }
