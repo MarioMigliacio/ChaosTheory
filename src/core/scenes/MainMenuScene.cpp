@@ -44,7 +44,6 @@ void MainMenuScene::Init()
         WindowManager::Instance().ApplyResolution(desiredSetting);
     }
 
-    // UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();
     SceneTransitionManager::Instance().StartFadeIn();
 

@@ -34,7 +34,6 @@ void SettingsScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
-    // UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();
 
     m_backupSettings = *SettingsManager::Instance().GetSettings();
@@ -233,8 +232,6 @@ void SettingsScene::CreateArrows(SettingsPage page)
         leftArrow->SetOnClick(
             [this, page]()
             {
-                // UIManager::Instance().BlockInputUntilMouseRelease();
-
                 if (page == SettingsPage::KeyBindings)
                 {
                     SwitchToPage(SettingsPage::Audio);
@@ -258,8 +255,6 @@ void SettingsScene::CreateArrows(SettingsPage page)
         rightArrow->SetOnClick(
             [this, page]()
             {
-                // UIManager::Instance().BlockInputUntilMouseRelease();
-
                 if (page == SettingsPage::Audio)
                 {
                     SwitchToPage(SettingsPage::KeyBindings);
@@ -324,7 +319,6 @@ void SettingsScene::CreateButtonControls()
                 auto targetSize = WindowManager::Instance().GetResolutionSize(targetSetting);
                 WindowManager::Instance().ApplyResolution(targetSetting);
                 ResolutionScaleManager::Instance().SetCurrentResolution(targetSize);
-                // UIManager::Instance().BlockInputUntilMouseRelease();
                 m_pendingPageChange = m_currentPage;
                 m_pendingToast = "Settings Applied"; // defer toast display
             }

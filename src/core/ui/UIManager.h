@@ -41,7 +41,6 @@ class UIManager
     void AddElement(std::shared_ptr<UIElement> element);
     const std::vector<std::shared_ptr<UIElement>> &GetElements() const;
 
-    void BlockInputUntilMouseRelease();
     void Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJustClicked, float dt);
     void Render(sf::RenderWindow &window);
     void Clear();

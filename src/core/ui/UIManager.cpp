@@ -61,12 +61,6 @@ const std::vector<std::shared_ptr<UIElement>> &UIManager::GetElements() const
     return m_elements;
 }
 
-// Blocks any pending actions from impacting the UI for a brief logic check.
-void UIManager::BlockInputUntilMouseRelease()
-{
-    m_blockedUntilMouseRelease = true;
-}
-
 // Performs collected Update logic for any UI components this UI manager handles.
 void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJustClicked, float dt)
 {
