@@ -60,7 +60,7 @@ TEST_F(UIManagerTest, ClearRemovesAllElements)
 TEST_F(UIManagerTest, UpdateDoesNotCrashWithNoElements)
 {
     // Should not throw or crash
-    UIManager::Instance().Update({0, 0}, false);
+    UIManager::Instance().Update({0, 0}, false, 0.f);
 
     SUCCEED();
 }

@@ -93,7 +93,7 @@ TEST_F(UISelectableButtonTest, CanSetSelectedColor)
     btn.SetSelected(true);
 
     // Force visual update
-    btn.Update({150, 120}, false);
+    btn.Update({150, 120}, false, 0.f);
 
     SUCCEED();
 }
@@ -102,6 +102,6 @@ TEST_F(UISelectableButtonTest, CanSetHoverColor)
 {
     UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetHoverColor(sf::Color::Yellow);
-    btn.Update({150, 120}, false); // simulate hover
+    btn.Update({150, 120}, false, 0.f); // simulate hover
     SUCCEED();
 }

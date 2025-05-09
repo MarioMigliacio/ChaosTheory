@@ -44,7 +44,7 @@ class UISlider : public UIElement
 
     void SetupGraphics();
 
-    void Update(const sf::Vector2i &mousePos, bool isMousePressed) override;
+    void Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;

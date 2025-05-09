@@ -67,7 +67,7 @@ void UIManager::BlockInputUntilMouseRelease()
 }
 
 // Performs collected Update logic for any UI components this UI manager handles.
-void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick)
+void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, float dt)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Update");
 
@@ -88,7 +88,7 @@ void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick)
 
     for (auto &element : m_elements)
     {
-        element->Update(mousePos, isLeftClick);
+        element->Update(mousePos, isLeftClick, dt);
     }
 
     m_isUpdating = false;

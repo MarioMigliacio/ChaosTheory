@@ -73,7 +73,7 @@ void SettingsScene::Update(float dt)
     const auto mousePos = InputManager::Instance().GetMousePosition();
     const bool isPressed = InputManager::Instance().IsMouseButtonPressed(sf::Mouse::Left);
 
-    UIManager::Instance().Update(mousePos, isPressed);
+    UIManager::Instance().Update(mousePos, isPressed, dt);
 
     CheckForUnsavedChanges();
 

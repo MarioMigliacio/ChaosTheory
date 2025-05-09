@@ -24,13 +24,13 @@ enum class ArrowDirection
 };
 
 // ============================================================================
-//  Class       : Button
-//  Purpose     : Manages this Button logic at the ui level.
+//  Class       : UIArrow
+//  Purpose     : Manages this UIArrow logic at the ui level.
 //
 //  Responsibilities:
-//      - Set button position
+//      - Set arrow position
 //      - Perform logic during onClick
-//      - Display button specifics during render
+//      - Display arrow specifics during render
 //
 // ============================================================================
 class UIArrow : public UIElement
@@ -44,7 +44,7 @@ class UIArrow : public UIElement
     UIArrow(UIArrow &&) = delete;
     UIArrow &operator=(UIArrow &&) = delete;
 
-    void Update(const sf::Vector2i &mousePos, bool isMousePressed) override;
+    void Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;

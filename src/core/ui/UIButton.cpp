@@ -90,7 +90,7 @@ void UIButton::SetHoverScale(float scale)
 }
 
 // Update logic for this UIButton includes, isHovered, isPressed, scale, color and text.
-void UIButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed)
+void UIButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed, float dt)
 {
     sf::Vector2f mouse(mousePosition);
     bool wasHovered = m_isHovered;

@@ -20,7 +20,7 @@ UIArrow::UIArrow(const sf::Vector2f &position, ArrowDirection direction)
     UpdateSprite();
 }
 
-void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed)
+void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt)
 {
     m_hovered = m_sprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
 
