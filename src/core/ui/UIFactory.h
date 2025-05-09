@@ -10,10 +10,13 @@
 #pragma once
 
 #include "UIArrow.h"
+#include "UIButton.h"
 #include "UIElement.h"
 #include "UIGroupBox.h"
+#include "UISelectableButton.h"
 #include "UISlider.h"
 #include "UITextLabel.h"
+#include "UIToastMessage.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <memory>
@@ -60,6 +63,9 @@ class UIFactory
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
                                                  unsigned int baseFontSize, bool centerOrigin);
+
+    std::shared_ptr<UIToastMessage> CreateToastMessage(const std::string &text, const sf::Vector2f &position,
+                                                       float duration);
 
   private:
     UIFactory() = default;

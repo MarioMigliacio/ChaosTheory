@@ -11,7 +11,6 @@
 
 #include "UIArrow.h"
 #include "AssetManager.h"
-#include "WindowManager.h"
 
 UIArrow::UIArrow(const sf::Vector2f &position, ArrowDirection direction)
     : m_direction(direction), m_position(position), m_size(64.f, 64.f)

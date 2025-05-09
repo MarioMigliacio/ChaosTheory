@@ -55,7 +55,10 @@ constexpr float GROUPBOX_DEFAULT_INTERNAL_PAD = 12.f;
 constexpr float GROUPBOX_DEFAULT_EDGE_PAD = 10.f;
 
 // Generic Toast uses:
-constexpr float TOAST_DURATION = 2.f;
+constexpr float TOAST_DEFAULT_DURATION = 2.f;
+constexpr float TOAST_DEFAULT_FADE_DURATION = 1.f;
+constexpr float TOAST_DEFAULT_DRIFT_PERCENTAGE = .05f;
+const sf::Color TOAST_DEFAULT_COLOR(102, 255, 102);
 
 // Generic Arrow uses:
 constexpr float DEFAULT_ARROW_LEFT_CENTER_PERCENT = .05f;

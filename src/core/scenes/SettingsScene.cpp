@@ -106,6 +106,13 @@ void SettingsScene::Update(float dt)
         UIManager::Instance().Clear();
         SceneTransitionManager::Instance().StartFadeIn();
         CreateSettingsPage(m_pendingPageChange.value());
+
+        if (m_pendingToast.has_value())
+        {
+            ShowToast(m_pendingToast.value());
+            m_pendingToast.reset();
+        }
+
         m_pendingPageChange.reset();
     }
 }
@@ -319,9 +326,13 @@ void SettingsScene::CreateButtonControls()
                 ResolutionScaleManager::Instance().SetCurrentResolution(targetSize);
                 UIManager::Instance().BlockInputUntilMouseRelease();
                 m_pendingPageChange = m_currentPage;
+                m_pendingToast = "Settings Applied"; // defer toast display
             }
 
-            ShowToast("Settings Applied");
+            else
+            {
+                ShowToast("Settings Applied"); // no resolution change, show immediately
+            }
         });
 
     UIManager::Instance().AddElement(m_applyButton);
@@ -457,20 +468,29 @@ void SettingsScene::CheckForUnsavedChanges()
 // Display a friendly toast message to indicate that settings are changed
 void SettingsScene::ShowToast(const std::string &message)
 {
-    const auto bounds = m_toastText.getLocalBounds();
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    sf::Vector2f pos{winSize.x * BASE_FOOTER_WIDTH_75_PERCENT, winSize.y * BASE_FOOTER_HEIGHT_85_PERCENT};
 
-    m_toastText.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    m_toastText.setString(message);
+    auto toast = UIFactory::Instance().CreateToastMessage(message, pos, TOAST_DEFAULT_DURATION);
+    toast->SetColor(TOAST_DEFAULT_COLOR);
+    UIManager::Instance().AddElement(toast);
 
-    m_toastText.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-    m_toastText.setFillColor(DEFAULT_TITLE_COLOR);
-    m_toastText.setCharacterSize(24);
+    // ------
+    // const auto bounds = m_toastText.getLocalBounds();
 
-    auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    m_toastText.setPosition(windowSize.x * BASE_FOOTER_WIDTH_75_PERCENT, windowSize.y * BASE_FOOTER_HEIGHT_85_PERCENT);
+    // m_toastText.setFont(AssetManager::Instance().GetFont("Default.ttf"));
+    // m_toastText.setString(message);
 
-    m_toastTimer = TOAST_DURATION;
-    m_showToast = true;
+    // m_toastText.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    // m_toastText.setFillColor(DEFAULT_TITLE_COLOR);
+    // m_toastText.setCharacterSize(24);
+
+    // auto windowSize = WindowManager::Instance().GetWindow().getSize();
+    // m_toastText.setPosition(windowSize.x * BASE_FOOTER_WIDTH_75_PERCENT, windowSize.y *
+    // BASE_FOOTER_HEIGHT_85_PERCENT);
+
+    // m_toastTimer = TOAST_DEFAULT_DURATION;
+    // m_showToast = true;
 }
 
 void SettingsScene::SwitchToPage(SettingsPage page)

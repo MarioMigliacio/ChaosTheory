@@ -78,6 +78,7 @@ class SettingsScene : public Scene
 
     SettingsPage m_currentPage = SettingsPage::Audio;
     std::optional<SettingsPage> m_pendingPageChange;
+    std::optional<std::string> m_pendingToast;
 
     std::shared_ptr<UIElement> m_applyButton;
     SceneID m_requestedScene = SceneID::MainMenu;

@@ -12,6 +12,7 @@
 #pragma once
 
 #include "UIElement.h"
+#include "UIPresets.h"
 #include <SFML/Graphics.hpp>
 #include <string>
 
@@ -50,15 +51,25 @@ class UIToastMessage : public UIElement
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
+    void SetFont(const sf::Font &font);
+    void SetFontSize(unsigned int size);
+    void SetColor(const sf::Color &color);
+
     bool IsExpired() const;
 
   private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
-    void UpdateVisuals();
 
   private:
     sf::Text m_text;
-    float m_duration = 0.f;
-    float m_elapsed = 0.f;
+
+    float m_duration = TOAST_DEFAULT_DURATION;
+    float m_elapsed = 0.0f;
+
+    float m_startY = 0.0f;
+    float m_targetY = 0.0f;
+    float m_alpha = 255.f;
+    float m_fadeOutDuration = TOAST_DEFAULT_FADE_DURATION;
+
     bool m_centerOrigin = true;
 };

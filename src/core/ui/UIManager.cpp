@@ -13,6 +13,7 @@
 #include "UIManager.h"
 #include "LogManager.h"
 #include "Macros.h"
+#include "UIToastMessage.h"
 
 UIManager &UIManager::Instance()
 {
@@ -86,9 +87,29 @@ void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, float dt)
 
     m_isUpdating = true;
 
-    for (auto &element : m_elements)
+    std::vector<size_t> toRemove;
+
+    for (size_t i = 0; i < m_elements.size(); ++i)
     {
+        // Copy shared_ptr first in case underlying vector is mutated elsewhere
+        auto element = m_elements[i];
+
         element->Update(mousePos, isLeftClick, dt);
+
+        // Expire any toast messages automatically
+        if (auto toast = std::dynamic_pointer_cast<UIToastMessage>(element))
+        {
+            if (toast->IsExpired())
+            {
+                toRemove.push_back(i);
+            }
+        }
+    }
+
+    // Remove expired elements safely in reverse
+    for (auto it = toRemove.rbegin(); it != toRemove.rend(); ++it)
+    {
+        m_elements.erase(m_elements.begin() + *it);
     }
 
     m_isUpdating = false;

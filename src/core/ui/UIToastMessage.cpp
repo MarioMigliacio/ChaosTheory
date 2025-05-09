@@ -10,6 +10,8 @@
 // ============================================================================
 
 #include "UIToastMessage.h"
+#include "ResolutionScaleManager.h"
+#include "WindowManager.h"
 
 UIToastMessage::UIToastMessage(const std::string &text, const sf::Vector2f &position, float durationSeconds,
                                const sf::Font &font, unsigned int fontSize, const sf::Color &textColor,
@@ -27,11 +29,27 @@ UIToastMessage::UIToastMessage(const std::string &text, const sf::Vector2f &posi
 void UIToastMessage::Update(const sf::Vector2i &, bool, float dt)
 {
     if (!IsEnabled())
+    {
         return;
+    }
 
-    m_elapsed += 1.0f / 60.0f; // Assume ~60 FPS; for true dt tracking, pass dt in your scene
+    m_elapsed += dt;
 
-    // Could add fade-out or slide animation here in future
+    // Slide animation: interpolate Y position upward (toast rise)
+    float t = std::min(1.f, m_elapsed / m_duration);
+    float newY = m_startY + (m_targetY - m_startY) * t;
+    auto pos = m_text.getPosition();
+    m_text.setPosition(pos.x, newY);
+
+    // Fade out near end
+    if (m_elapsed >= m_duration - m_fadeOutDuration)
+    {
+        float fadeT = (m_duration - m_elapsed) / m_fadeOutDuration;
+        m_alpha = 255.f * std::clamp(fadeT, 0.f, 1.f);
+        auto color = m_text.getFillColor();
+        color.a = static_cast<sf::Uint8>(m_alpha);
+        m_text.setFillColor(color);
+    }
 }
 
 bool UIToastMessage::Contains(const sf::Vector2i &point) const
@@ -46,12 +64,20 @@ void UIToastMessage::SetPosition(const sf::Vector2f &position)
         const auto bounds = m_text.getLocalBounds();
         m_text.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
     }
+
     else
     {
         m_text.setOrigin(0.f, 0.f);
     }
+    // Calculate Y drift
+    float drift = ResolutionScaleManager::Instance().ScaledReferenceY(TOAST_DEFAULT_DRIFT_PERCENTAGE);
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    m_text.setPosition(position);
+    // Clamp start and target Y within screen bounds
+    m_targetY = std::min(position.y, winSize.y - drift);        // target must remain on-screen
+    m_startY = std::min(position.y + drift, winSize.y - drift); // drift downward but within screen
+
+    m_text.setPosition(position.x, m_startY);
 }
 
 sf::Vector2f UIToastMessage::GetPosition() const
@@ -68,6 +94,24 @@ sf::Vector2f UIToastMessage::GetSize() const
 {
     const auto bounds = m_text.getGlobalBounds();
     return {bounds.width, bounds.height};
+}
+
+void UIToastMessage::SetFont(const sf::Font &font)
+{
+    m_text.setFont(font);
+}
+
+void UIToastMessage::SetFontSize(unsigned int size)
+{
+    m_text.setCharacterSize(size);
+    // Optional: Re-center origin if needed
+    sf::FloatRect bounds = m_text.getLocalBounds();
+    m_text.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+}
+
+void UIToastMessage::SetColor(const sf::Color &color)
+{
+    m_text.setFillColor(color);
 }
 
 bool UIToastMessage::IsExpired() const

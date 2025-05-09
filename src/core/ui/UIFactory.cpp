@@ -9,12 +9,9 @@
 
 #include "UIFactory.h"
 #include "AssetManager.h"
+#include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
-#include "UIButton.h"
-#include "UISelectableButton.h"
-#include "UISlider.h"
-#include "UITextLabel.h"
 
 UIFactory &UIFactory::Instance()
 {
@@ -140,4 +137,18 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
         label->SetPosition(position); // no auto-centering
 
     return label;
+}
+
+std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string &text, const sf::Vector2f &position,
+                                                              float duration)
+{
+    const auto &font = AssetManager::Instance().GetFont("Default.ttf");
+    unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    sf::Color color = sf::Color::White;
+    bool centerOrigin = true;
+
+    auto toast = std::make_shared<UIToastMessage>(text, position, duration, font, fontSize, color, centerOrigin);
+    toast->SetSize({0.f, 0.f}); // still required by interface
+
+    return toast;
 }
