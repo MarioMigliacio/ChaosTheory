@@ -68,7 +68,7 @@ void UIManager::BlockInputUntilMouseRelease()
 }
 
 // Performs collected Update logic for any UI components this UI manager handles.
-void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, float dt)
+void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJustClicked, float dt)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Update");
 
@@ -94,7 +94,7 @@ void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, float dt)
         // Copy shared_ptr first in case underlying vector is mutated elsewhere
         auto element = m_elements[i];
 
-        element->Update(mousePos, isLeftClick, dt);
+        element->Update(mousePos, isLeftClick, isJustClicked, dt);
 
         // Expire any toast messages automatically
         if (auto toast = std::dynamic_pointer_cast<UIToastMessage>(element))

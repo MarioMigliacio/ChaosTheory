@@ -34,7 +34,7 @@ void SettingsScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
-    UIManager::Instance().BlockInputUntilMouseRelease();
+    // UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();
 
     m_backupSettings = *SettingsManager::Instance().GetSettings();
@@ -72,8 +72,9 @@ void SettingsScene::Update(float dt)
 {
     const auto mousePos = InputManager::Instance().GetMousePosition();
     const bool isPressed = InputManager::Instance().IsMouseButtonPressed(sf::Mouse::Left);
+    const bool isJustPressed = InputManager::Instance().IsMouseButtonJustPressed(sf::Mouse::Left);
 
-    UIManager::Instance().Update(mousePos, isPressed, dt);
+    UIManager::Instance().Update(mousePos, isPressed, isJustPressed, dt);
 
     CheckForUnsavedChanges();
 
@@ -232,7 +233,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
         leftArrow->SetOnClick(
             [this, page]()
             {
-                UIManager::Instance().BlockInputUntilMouseRelease();
+                // UIManager::Instance().BlockInputUntilMouseRelease();
 
                 if (page == SettingsPage::KeyBindings)
                 {
@@ -257,7 +258,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
         rightArrow->SetOnClick(
             [this, page]()
             {
-                UIManager::Instance().BlockInputUntilMouseRelease();
+                // UIManager::Instance().BlockInputUntilMouseRelease();
 
                 if (page == SettingsPage::Audio)
                 {
@@ -287,7 +288,6 @@ void SettingsScene::CreateButtonControls()
     auto winSize = WindowManager::Instance().GetWindow().getSize();
 
     const float footerY = winSize.y * BASE_FOOTER_HEIGHT_85_PERCENT;
-    ; // 15% away from absolute bottom
 
     const float buttonWidth = BASE_BUTTON_WIDTH_PIXEL;
     const float buttonHeight = BASE_BUTTON_HEIGHT_PIXEL;
@@ -324,7 +324,7 @@ void SettingsScene::CreateButtonControls()
                 auto targetSize = WindowManager::Instance().GetResolutionSize(targetSetting);
                 WindowManager::Instance().ApplyResolution(targetSetting);
                 ResolutionScaleManager::Instance().SetCurrentResolution(targetSize);
-                UIManager::Instance().BlockInputUntilMouseRelease();
+                // UIManager::Instance().BlockInputUntilMouseRelease();
                 m_pendingPageChange = m_currentPage;
                 m_pendingToast = "Settings Applied"; // defer toast display
             }

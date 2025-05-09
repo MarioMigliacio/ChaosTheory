@@ -68,13 +68,17 @@ void UIGroupBox::RealignChildren()
     }
 }
 
-void UIGroupBox::Update(const sf::Vector2i &mousePosition, bool isMousePressed, float dt)
+void UIGroupBox::Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed, float dt)
 {
     if (!IsEnabled())
+    {
         return;
+    }
 
     for (auto &child : m_children)
-        child->Update(mousePosition, isMousePressed, dt);
+    {
+        child->Update(mousePosition, isMousePressed, isMouseJustPressed, dt);
+    }
 }
 
 bool UIGroupBox::Contains(const sf::Vector2i &point) const

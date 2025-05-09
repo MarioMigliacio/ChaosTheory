@@ -44,7 +44,7 @@ class UIArrow : public UIElement
     UIArrow(UIArrow &&) = delete;
     UIArrow &operator=(UIArrow &&) = delete;
 
-    void Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt) override;
+    void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;

@@ -157,7 +157,11 @@ void WindowManager::ApplyResolution(ResolutionSetting res)
     sf::Uint32 style = (res == ResolutionSetting::Fullscreen) ? sf::Style::Fullscreen : sf::Style::Close;
 
     m_window->create(sf::VideoMode(size.x, size.y), "ChaosTheory", style);
+
+    // Delay before requestFocus - OS can silently fail, delay min helps run more consistently.
+    sf::sleep(sf::milliseconds(10));
     m_window->requestFocus();
+
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);
 
     ResolutionScaleManager::Instance().SetReferenceResolution(ResolutionSetting::Res720p);

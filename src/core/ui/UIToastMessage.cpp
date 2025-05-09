@@ -26,7 +26,7 @@ UIToastMessage::UIToastMessage(const std::string &text, const sf::Vector2f &posi
     SetPosition(position); // will auto-center if needed
 }
 
-void UIToastMessage::Update(const sf::Vector2i &, bool, float dt)
+void UIToastMessage::Update(const sf::Vector2i &, bool, bool, float dt)
 {
     if (!IsEnabled())
     {

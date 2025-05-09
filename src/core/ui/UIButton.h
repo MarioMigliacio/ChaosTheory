@@ -52,7 +52,7 @@ class UIButton : public UIElement
     void SetFontSize(unsigned int size);
     void SetHoverScale(float scale);
 
-    void Update(const sf::Vector2i &mousePosition, bool isMousePressed, float dt) override;
+    void Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;

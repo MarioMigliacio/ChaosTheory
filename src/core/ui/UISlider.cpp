@@ -57,7 +57,7 @@ float UISlider::GetNormalizedValue() const
     return (m_value - m_min) / (m_max - m_min);
 }
 
-void UISlider::Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt)
+void UISlider::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt)
 {
     sf::Vector2f mPos(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 

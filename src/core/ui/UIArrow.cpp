@@ -19,7 +19,7 @@ UIArrow::UIArrow(const sf::Vector2f &position, ArrowDirection direction)
     UpdateSprite();
 }
 
-void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt)
+void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt)
 {
     m_hovered = m_sprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
 
@@ -48,12 +48,12 @@ void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt
     m_sprite.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(m_opacity)));
     m_sprite.setScale(m_scale, m_scale);
 
-    if (m_hovered && isMousePressed && !m_pressedLastFrame && m_onClick)
+    if (m_hovered && isMouseJustPressed /*&& !m_pressedLastFrame && m_onClick */)
     {
         m_onClick();
     }
 
-    m_pressedLastFrame = isMousePressed;
+    /* m_pressedLastFrame = isMousePressed; */
 }
 
 // per-pixel hover detection:

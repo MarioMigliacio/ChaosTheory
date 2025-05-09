@@ -33,7 +33,7 @@ class UITextLabel : public UIElement
     void SetSize(const sf::Vector2f &size) override; // unused, for interface
     sf::Vector2f GetSize() const override;
 
-    virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt)
+    virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt)
     {
     }
     bool Contains(const sf::Vector2i &) const override

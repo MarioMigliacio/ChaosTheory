@@ -35,8 +35,15 @@ const sf::Color BUTTON_DEFAULT_SELECTED_TEXT_COLOR(255, 255, 255);
 const sf::Color BUTTON_DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
 constexpr unsigned int BUTTON_DEFAULT_FONT_SIZE = 24;
 
+constexpr float MAIN_MENU_BUTTON_WIDTH_PIXEL = 180.f;
+constexpr float MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL = 45.f;
+
 constexpr float BASE_BUTTON_WIDTH_PIXEL = 140.f;
 constexpr float BASE_BUTTON_HEIGHT_PIXEL = 30.f;
+
+constexpr float BASE_BUTTON_WIDTH_20_PERCENT = .20f;
+constexpr float BASE_BUTTON_HEIGHT_5_PERCENT = .05f;
+
 constexpr float BASE_BUTTON_SPACING_PERCENT = .25f;
 constexpr float BASE_BUTTON_SPACING_PIXEL = 20.f;
 

@@ -33,10 +33,18 @@ void MainMenuScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
-    // New: MainMenuScene is designed to recreate the window using the settings, because SplashScene locked it.
-    WindowManager::Instance().ApplyResolution(m_settings->m_resolution);
+    auto &window = WindowManager::Instance().GetWindow();
+    auto desiredSetting = m_settings->m_resolution;
+    auto desiredSize = WindowManager::Instance().GetResolutionSize(desiredSetting);
+    auto currentSize = window.getSize();
 
-    UIManager::Instance().BlockInputUntilMouseRelease();
+    // Only re-apply resolution if needed
+    if (currentSize != desiredSize)
+    {
+        WindowManager::Instance().ApplyResolution(desiredSetting);
+    }
+
+    // UIManager::Instance().BlockInputUntilMouseRelease();
     UIManager::Instance().Clear();
     SceneTransitionManager::Instance().StartFadeIn();
 
@@ -75,8 +83,9 @@ void MainMenuScene::Update(float dt)
 {
     const auto mousePos = InputManager::Instance().GetMousePosition();
     const bool isPressed = InputManager::Instance().IsMouseButtonPressed(sf::Mouse::Left);
+    const bool isJustPressed = InputManager::Instance().IsMouseButtonJustPressed(sf::Mouse::Left);
 
-    UIManager::Instance().Update(mousePos, isPressed, dt);
+    UIManager::Instance().Update(mousePos, isPressed, isJustPressed, dt);
 
     // Handle button scene request change
     if (m_hasPendingTransition)
@@ -153,8 +162,8 @@ void MainMenuScene::CreateButtons()
 {
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH_PIXEL);
-    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(BASE_BUTTON_HEIGHT_PIXEL);
+    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(MAIN_MENU_BUTTON_WIDTH_PIXEL);
+    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL);
     const float scaledSpacing = scaledButtonHeight * BASE_BUTTON_SPACING_PERCENT;
     const float startY = winSize.y * 0.7f;
     const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
@@ -235,6 +244,6 @@ void MainMenuScene::PlayIntroMusic()
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
                                                          const std::string &label, std::function<void()> onClick)
 {
-    return UIFactory::Instance().CreateButton(type, pos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, label,
-                                              std::move(onClick));
+    return UIFactory::Instance().CreateButton(
+        type, pos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, label, std::move(onClick));
 }

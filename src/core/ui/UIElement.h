@@ -28,7 +28,7 @@ class UIElement : public sf::Drawable
   public:
     virtual ~UIElement() = default;
 
-    virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed, float dt) = 0;
+    virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) = 0;
     virtual bool Contains(const sf::Vector2i &point) const = 0;
 
     virtual void SetPosition(const sf::Vector2f &position) = 0;

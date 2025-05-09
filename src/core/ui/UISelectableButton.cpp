@@ -99,7 +99,8 @@ void UISelectableButton::SetCallback(std::function<void()> onSelect)
 }
 
 // Update logic for this Radio Button includes, isHovered, isPressed, scale, color and text.
-void UISelectableButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed, float dt)
+void UISelectableButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed,
+                                float dt)
 {
     sf::Vector2f mouse(mousePosition);
     bool wasHovered = m_isHovered;
@@ -116,7 +117,7 @@ void UISelectableButton::Update(const sf::Vector2i &mousePosition, bool isMouseP
         CT_LOG_DEBUG("UISelectableButton unhovered.");
     }
 
-    HandleClickLogic(isMousePressed);
+    HandleClickLogic(isMouseJustPressed);
     UpdateVisualState();
 }
 
