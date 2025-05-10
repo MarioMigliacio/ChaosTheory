@@ -25,6 +25,7 @@
 //      - OnExit to call scene specific logic attributes
 //      - Init to accept input and event logic
 //      - Handles the render loop and time delta
+//      - TODO, make a more clean sandbox in the future.
 //
 // ============================================================================
 class GameScene final : public Scene

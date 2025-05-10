@@ -18,7 +18,8 @@
 //  Class       : ConfigLoader
 //  Purpose     : Assists in the main loading for the settings file.
 //  Responsibilities:
-//      - Singular LoadFromJson capability
+//      - LoadFromJson capability
+//      - SaveAsJson capability
 //
 // ============================================================================
 class ConfigLoader

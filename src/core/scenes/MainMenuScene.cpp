@@ -12,24 +12,23 @@
 #include "MainMenuScene.h"
 #include "AssetManager.h"
 #include "AudioManager.h"
-#include "GameScene.h"
 #include "InputManager.h"
 #include "Macros.h"
 #include "MainMenuAssets.h"
 #include "ResolutionScaleManager.h"
-#include "SceneFactory.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
-#include "SettingsScene.h"
 #include "UIFactory.h"
 #include "UIManager.h"
 #include "WindowManager.h"
 
+/// @brief Constructor for the MainMenuScene.
+/// @param settings Internal settings to initialize with.
 MainMenuScene::MainMenuScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
 }
 
-// Initializes the MainMenuScene.
+/// @brief  Initializes the MainMenuScene.
 void MainMenuScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -56,6 +55,7 @@ void MainMenuScene::Init()
     CT_LOG_INFO("MainMenuScene initialized.");
 }
 
+/// @brief Load any required assets listed in the MainMenuAssets namespace.
 void MainMenuScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
@@ -75,9 +75,11 @@ void MainMenuScene::LoadRequiredAssets()
             CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
         }
     }
+
+    CT_LOG_INFO("MainMenuScene finished LoadRequiredAssets.");
 }
 
-// Shuts down this scene and resets internal state.
+/// @brief Shuts down this scene and resets internal state.
 void MainMenuScene::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Shutdown");
@@ -88,7 +90,7 @@ void MainMenuScene::Shutdown()
     CT_LOG_INFO("MainMenuScene Shutdown.");
 }
 
-// Handles the exit criteria for this scene.
+/// @brief Handles the exit criteria for this scene.
 void MainMenuScene::OnExit()
 {
     if (AudioManager::Instance().IsInitialized())
@@ -99,7 +101,8 @@ void MainMenuScene::OnExit()
     CT_LOG_INFO("MainMenuScene OnExit.");
 }
 
-// Performs internal state management during a single frame.
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update.
 void MainMenuScene::Update(float dt)
 {
     const auto mousePos = InputManager::Instance().GetMousePosition();
@@ -127,19 +130,19 @@ void MainMenuScene::Update(float dt)
     return;
 }
 
-// Handle any internal logic that should be done relevant to this scene.
+/// @brief Not used in MainMenuScene context.
+/// @param event bubbled down from caller, not needed.
 void MainMenuScene::HandleEvent(const sf::Event &event)
 {
-    // Only if you want to catch window resize, close, etc.
 }
 
-// Adjust the current scene entities size and positioning.
+/// @brief Not used in MainMenuScene context.
+/// @param newSize bubbled down from caller, not needed.
 void MainMenuScene::OnResize(const sf::Vector2u &newSize)
 {
-    // should never resize outside the settings page
 }
 
-// While this scene is active, render the necessary components to the Main Menu Scene.
+/// @brief While this scene is active, render the necessary components to the Main Menu Scene.
 void MainMenuScene::Render()
 {
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Render");
@@ -155,7 +158,7 @@ void MainMenuScene::Render()
     UIManager::Instance().Render(window);
 }
 
-// Helper method to clear up clutter from main Init.
+/// @brief Helper method to clear up clutter from main Init.
 void MainMenuScene::SetupSceneComponents()
 {
     CreateTitleText();
@@ -164,7 +167,7 @@ void MainMenuScene::SetupSceneComponents()
     PlayIntroMusic();
 }
 
-// Assists with the loading of the TitleText for this MainMenuScene.
+/// @brief Assists with the loading of the TitleText for this MainMenuScene.
 void MainMenuScene::CreateTitleText()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -179,7 +182,7 @@ void MainMenuScene::CreateTitleText()
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
-// Assists with creating the Buttons for this MainMenuScene.
+/// @brief Assists with creating the Buttons for this MainMenuScene.
 void MainMenuScene::CreateButtons()
 {
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
@@ -218,7 +221,7 @@ void MainMenuScene::CreateButtons()
                                                     }));
 }
 
-// Loads the main background image for this MainMenuScene.
+/// @brief Loads the main background image for this MainMenuScene.
 void MainMenuScene::LoadBackground()
 {
     sf::Texture &bgTexture = AssetManager::Instance().GetTexture(MainMenuAssets::MenuBackground);
@@ -237,7 +240,7 @@ void MainMenuScene::LoadBackground()
     CT_LOG_INFO("Menu background loaded and scaled.");
 }
 
-// Plays the background music for this MainMenuScene.
+/// @brief Plays the background music for this MainMenuScene.
 void MainMenuScene::PlayIntroMusic()
 {
     if (!AudioManager::Instance().IsMusicPlaying() ||
@@ -253,7 +256,12 @@ void MainMenuScene::PlayIntroMusic()
     }
 }
 
-// Just a simplistic helper method to help make a menu button.
+/// @brief simplistic helper method to help make a menu button.
+/// @param type Which type of Button requested.
+/// @param pos Vector2f position location.
+/// @param label String used for setting button text.
+/// @param onClick Callback function behavior when button clicked.
+/// @return A shared pointer to a UIElement for the requested button.
 std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
                                                          const std::string &label, std::function<void()> onClick)
 {

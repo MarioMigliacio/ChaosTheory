@@ -16,7 +16,10 @@
 
 using json = nlohmann::json;
 
-// Uses the Nlohmann library to Load Json to populate a Settings object. (Deserialize)
+/// @brief Uses the Nlohmann library to Load Json to populate a Settings object. (Deserialize)
+/// @param filepath readonly filepath name
+/// @param settings readonly Settings object
+/// @return pass / fail
 bool ConfigLoader::LoadFromJson(const std::string &filepath, Settings &settings)
 {
     std::ifstream in(filepath);
@@ -60,7 +63,10 @@ bool ConfigLoader::LoadFromJson(const std::string &filepath, Settings &settings)
     return true;
 }
 
-// Uses the Nlohmann library Save Json to the configuration settings file. (Serialize)
+/// @brief Uses the Nlohmann library Save Json to the configuration settings file. (Serialize)
+/// @param filepath readonly filepath name
+/// @param settings readonly Settings object
+/// @return pass / fail
 bool ConfigLoader::SaveAsJson(const std::string &filepath, const Settings &settings)
 {
     using json = nlohmann::json;

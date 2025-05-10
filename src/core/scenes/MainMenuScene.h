@@ -14,8 +14,8 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
-#include "UIElement.h"
 #include "UIFactory.h"
+#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
