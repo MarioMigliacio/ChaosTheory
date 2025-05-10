@@ -1,3 +1,15 @@
+// ============================================================================
+//  File        : SplashAssets.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-05-09
+//  Description : Hosts the namespace for SplashAssets
+//                SplashAssets are used in the SplashScene.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
 #include <string>
@@ -5,11 +17,10 @@
 
 namespace SplashAssets
 {
-// Keys
+/// @brief Key to the SplashBackground Asset.
 constexpr auto SplashBackground = "SplashBackground";
 
-// future scenes will likely have more than just one element in the map, so enforcing use of map even with one element
-// for future consistency.
+/// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Textures = {
     {"SplashBackground", "assets/backgrounds/ChaosTheorySplash.png"},
 };
