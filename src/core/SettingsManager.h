@@ -51,39 +51,3 @@ class SettingsManager
     std::shared_ptr<Settings> m_settings = nullptr;
     bool m_isInitialized = false;
 };
-
-// Returns a string from a ResolutionSettings enumeration
-inline std::string ToString(ResolutionSetting setting)
-{
-    switch (setting)
-    {
-        case ResolutionSetting::Res720p:
-        default: // fallback
-            return "720p";
-        case ResolutionSetting::Res1080p:
-            return "1080p";
-        case ResolutionSetting::Fullscreen:
-            return "Fullscreen";
-    }
-}
-
-// Returns a ResultionSetting enumeration from a string.
-inline ResolutionSetting FromStringToResolution(const std::string &str)
-{
-    if (str == "720p")
-    {
-        return ResolutionSetting::Res720p;
-    }
-
-    if (str == "1080p")
-    {
-        return ResolutionSetting::Res1080p;
-    }
-
-    if (str == "Fullscreen")
-    {
-        return ResolutionSetting::Fullscreen;
-    }
-
-    return ResolutionSetting::Res720p; // default fallback
-}

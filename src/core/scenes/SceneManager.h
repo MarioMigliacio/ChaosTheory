@@ -17,7 +17,7 @@
 #include <memory>
 #include <stack>
 
-// Simple enumeration field to represent a type of scene.
+/// @brief Simple enumeration field to represent a type of scene.
 enum class SceneID
 {
     Splash,
@@ -26,8 +26,10 @@ enum class SceneID
     Game,
 };
 
-// Utility function to convert SceneID to string
-inline const char *ToString(SceneID id)
+/// @brief Utility function to convert SceneID to string
+/// @param id which SceneID enumeration.
+/// @return readyonly string identifying the SceneID enum.
+inline const char *SceneIDToString(SceneID id)
 {
     switch (id)
     {
@@ -62,7 +64,6 @@ class SceneManager
 
     void Init(std::shared_ptr<Settings> settings);
     void Shutdown();
-
     bool IsInitialized() const;
 
     void Update(float dt);
@@ -70,8 +71,8 @@ class SceneManager
     void Render();
 
     void Register(SceneID sceneId, SceneCreateFunc creator);
-    std::unique_ptr<Scene> Create(SceneID sceneId);
     void RegisterAllDefaultScenes();
+    std::unique_ptr<Scene> Create(SceneID sceneId);
 
     void PushScene(std::unique_ptr<Scene> scene);
     void PopScene();

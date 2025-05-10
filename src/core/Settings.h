@@ -24,6 +24,46 @@ enum class ResolutionSetting
     Fullscreen
 };
 
+/// @brief Utility function to convert ResolutionSetting to string
+/// @param id which ResolutionSetting enumeration.
+/// @return readyonly string identifying the ResolutionSetting enum.
+inline std::string ResolutionSettingToString(ResolutionSetting setting)
+{
+    switch (setting)
+    {
+        case ResolutionSetting::Res720p:
+        default: // fallback
+            return "720p";
+        case ResolutionSetting::Res1080p:
+            return "1080p";
+        case ResolutionSetting::Fullscreen:
+            return "Fullscreen";
+    }
+}
+
+/// @brief Returns a ResultionSetting enumeration from a string.
+/// @param str input ResolutionSetting as a string representation.
+/// @return an Enumeration form of ResolutionSetting.
+inline ResolutionSetting FromStringToResolution(const std::string &str)
+{
+    if (str == "720p")
+    {
+        return ResolutionSetting::Res720p;
+    }
+
+    if (str == "1080p")
+    {
+        return ResolutionSetting::Res1080p;
+    }
+
+    if (str == "Fullscreen")
+    {
+        return ResolutionSetting::Fullscreen;
+    }
+
+    return ResolutionSetting::Res720p; // default fallback
+}
+
 // Settings structure to hold internal game configurable data points.
 struct Settings
 {

@@ -81,7 +81,7 @@ bool ConfigLoader::SaveAsJson(const std::string &filepath, const Settings &setti
     j["audio"]["sfx_volume"] = settings.m_sfxVolume;
     j["audio"]["is_muted"] = settings.m_isMuted;
 
-    j["video"]["resolution"] = ToString(settings.m_resolution);
+    j["video"]["resolution"] = ResolutionSettingToString(settings.m_resolution);
 
     std::ofstream out(filepath);
 

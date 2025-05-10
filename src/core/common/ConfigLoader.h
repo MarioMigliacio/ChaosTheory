@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "SettingsManager.h"
+#include "Settings.h"
 #include <string>
 
 // ============================================================================

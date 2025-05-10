@@ -114,7 +114,7 @@ void MainMenuScene::Update(float dt)
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
-        CT_LOG_INFO("MainMenuScene Requesting Scene Change to '{}'", ToString(m_requestedScene));
+        CT_LOG_INFO("MainMenuScene Requesting Scene Change to '{}'", SceneIDToString(m_requestedScene));
         m_hasPendingTransition = false;
         SceneTransitionManager::Instance().ForceFullyOpaque();
         SceneManager::Instance().RequestSceneChange(m_requestedScene);
