@@ -58,8 +58,9 @@ class UIFactory
 
     // Fully configurable UIGroupBox with layout, alignment, padding, and font size.
     std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                               const sf::Vector2f &relativeSize, LayoutMode layoutMode, bool, float,
-                                               float, unsigned int fontSize);
+                                               const sf::Vector2f &relativeSize, LayoutMode layoutMode,
+                                               bool centerChildren, float internalPadRatio, float edgePadRatio,
+                                               unsigned int fontSize);
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
                                                  unsigned int baseFontSize, bool centerOrigin);

@@ -15,6 +15,7 @@
 #include "GameScene.h"
 #include "InputManager.h"
 #include "Macros.h"
+#include "MainMenuAssets.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
@@ -47,12 +48,33 @@ void MainMenuScene::Init()
     UIManager::Instance().Clear();
     SceneTransitionManager::Instance().StartFadeIn();
 
-    SetupSceneAssets();
-    PlayIntroMusic();
+    LoadRequiredAssets();
+    SetupSceneComponents();
 
     m_isInitialized = true;
 
     CT_LOG_INFO("MainMenuScene initialized.");
+}
+
+void MainMenuScene::LoadRequiredAssets()
+{
+    auto &assets = AssetManager::Instance();
+
+    for (const auto &[key, path] : MainMenuAssets::Textures)
+    {
+        if (!assets.LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : MainMenuAssets::Fonts)
+    {
+        if (!assets.LoadFont(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
+        }
+    }
 }
 
 // Shuts down this scene and resets internal state.
@@ -134,11 +156,12 @@ void MainMenuScene::Render()
 }
 
 // Helper method to clear up clutter from main Init.
-void MainMenuScene::SetupSceneAssets()
+void MainMenuScene::SetupSceneComponents()
 {
-    LoadBackground();
     CreateTitleText();
     CreateButtons();
+    LoadBackground();
+    PlayIntroMusic();
 }
 
 // Assists with the loading of the TitleText for this MainMenuScene.
@@ -198,15 +221,7 @@ void MainMenuScene::CreateButtons()
 // Loads the main background image for this MainMenuScene.
 void MainMenuScene::LoadBackground()
 {
-    if (!AssetManager::Instance().LoadTexture("menu_bg", "assets/sprites/TitleBackground.png"))
-    {
-        CT_LOG_WARN("Failed to load menu background. Using default.");
-        m_backgroundSprite = std::make_unique<sf::Sprite>(AssetManager::Instance().GetTexture("Default"));
-
-        return;
-    }
-
-    sf::Texture &bgTexture = AssetManager::Instance().GetTexture("menu_bg");
+    sf::Texture &bgTexture = AssetManager::Instance().GetTexture(MainMenuAssets::MenuBackground);
     m_backgroundSprite = std::make_unique<sf::Sprite>(bgTexture);
 
     // Scale to window size
@@ -225,12 +240,11 @@ void MainMenuScene::LoadBackground()
 // Plays the background music for this MainMenuScene.
 void MainMenuScene::PlayIntroMusic()
 {
-    const std::string menuMusic = m_settings->m_audioDirectory + "RootMenu.wav";
-
-    if (!AudioManager::Instance().IsMusicPlaying() || AudioManager::Instance().GetCurrentMusicName() != menuMusic)
+    if (!AudioManager::Instance().IsMusicPlaying() ||
+        AudioManager::Instance().GetCurrentMusicName() != MainMenuAssets::MenuSong)
     {
         CT_LOG_INFO("MainMenuScene: Starting or resuming menu music.");
-        AudioManager::Instance().PlayMusic(menuMusic, true);
+        AudioManager::Instance().PlayMusic(MainMenuAssets::MenuSong, true);
     }
 
     else

@@ -41,6 +41,7 @@ class MainMenuScene final : public Scene
     MainMenuScene &operator=(const MainMenuScene &) = delete;
 
     void Init() override;
+    void LoadRequiredAssets() override;
     void Shutdown() override;
     void OnExit() override;
 
@@ -51,7 +52,7 @@ class MainMenuScene final : public Scene
 
   private:
     // Setup helpers
-    void SetupSceneAssets();
+    void SetupSceneComponents();
     void CreateTitleText();
     void CreateButtons();
     void LoadBackground();

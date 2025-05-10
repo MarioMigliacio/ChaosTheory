@@ -13,6 +13,7 @@
 
 #include "Scene.h"
 #include "Settings.h"
+#include "SplashAssets.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <mutex>
@@ -50,6 +51,7 @@ class SplashScene final : public Scene
     SplashScene &operator=(const SplashScene &) = delete;
 
     void Init() override;
+    void LoadRequiredAssets() override;
     void Shutdown() override;
     void OnExit() override;
 
@@ -60,9 +62,8 @@ class SplashScene final : public Scene
 
   private:
     void LoadBackground();
-    void QueueAssets();
-    void ProcessAssetQueue(float dt);
     void StartFadeIn();
+    void StartFadeOut();
     void UpdateFadeInOut(float dt);
     void ApplyShakeEffect(float dt);
     void LockWindow();
@@ -75,17 +76,9 @@ class SplashScene final : public Scene
 
     bool m_fadingIn = false;
     bool m_fadingOut = false;
-    bool m_doneLoading = false;
-
-    float m_assetTimer = 0.f;
-    float m_assetLoadDelay = 0.05f;
 
     float m_fadeTimer = 0.f;
-    float m_fadeInDuration = 1.0f;
-    float m_fadeOutDuration = 2.0f;
-
     float m_shakeTimer = 0.f;
-    float m_shakeAmplitude = 4.f;
 
     std::queue<AssetLoadRequest> m_assetQueue;
 };

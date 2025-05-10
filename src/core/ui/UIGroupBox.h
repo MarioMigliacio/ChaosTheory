@@ -38,7 +38,7 @@ enum class LayoutMode
 class UIGroupBox : public UIElement
 {
   public:
-    explicit UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size);
+    UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size);
     ~UIGroupBox() override = default;
 
     void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18);

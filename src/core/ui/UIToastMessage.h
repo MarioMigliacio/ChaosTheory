@@ -28,9 +28,8 @@
 class UIToastMessage : public UIElement
 {
   public:
-    explicit UIToastMessage(const std::string &text, const sf::Vector2f &position, float durationSeconds,
-                            const sf::Font &font, unsigned int fontSize = 20,
-                            const sf::Color &textColor = sf::Color::White, bool centerOrigin = true);
+    UIToastMessage(const std::string &text, const sf::Vector2f &position, float durationSeconds, const sf::Font &font,
+                   unsigned int fontSize = 20, const sf::Color &textColor = sf::Color::White, bool centerOrigin = true);
 
     ~UIToastMessage() override = default;
 

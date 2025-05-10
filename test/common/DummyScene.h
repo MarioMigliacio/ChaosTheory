@@ -29,6 +29,9 @@ class DummyScene : public Scene
     {
         m_isInitialized = false;
     }
+    void LoadRequiredAssets() override
+    {
+    }
     void OnExit() override
     {
     }

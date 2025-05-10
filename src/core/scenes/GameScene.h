@@ -41,6 +41,7 @@ class GameScene final : public Scene
     GameScene &operator=(const GameScene &) = delete;
 
     void Init() override;
+    void LoadRequiredAssets() override;
     void Shutdown() override;
     void OnExit() override;
 

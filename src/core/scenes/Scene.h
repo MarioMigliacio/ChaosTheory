@@ -37,6 +37,7 @@ class Scene
 
     virtual void Init() = 0;
     virtual void Shutdown() = 0;
+    virtual void LoadRequiredAssets() = 0;
 
     virtual void OnExit() = 0;
 

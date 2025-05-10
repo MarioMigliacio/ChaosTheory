@@ -36,7 +36,7 @@ enum class ArrowDirection
 class UIArrow : public UIElement
 {
   public:
-    explicit UIArrow(const sf::Vector2f &position, ArrowDirection direction);
+    UIArrow(const sf::Vector2f &position, ArrowDirection direction);
     ~UIArrow() override = default;
 
     UIArrow(const UIArrow &) = delete;

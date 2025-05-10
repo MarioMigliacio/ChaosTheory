@@ -49,6 +49,10 @@ void SettingsScene::Init()
     CT_LOG_INFO("SettingsScene initialized.");
 }
 
+void SettingsScene::LoadRequiredAssets()
+{
+}
+
 // Do any necessary logic for shutting this scene down.
 void SettingsScene::Shutdown()
 {

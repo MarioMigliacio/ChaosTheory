@@ -46,6 +46,7 @@ class SettingsScene : public Scene
     explicit SettingsScene(std::shared_ptr<Settings> settings);
 
     void Init() override;
+    void LoadRequiredAssets() override;
     void Shutdown() override;
     void OnExit() override;
 
