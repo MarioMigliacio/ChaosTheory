@@ -143,6 +143,11 @@ bool AssetManager::LoadFont(const std::string &name, const std::string &filepath
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadFont", false);
 
+    if (m_fonts.contains(name))
+    {
+        return true;
+    }
+
     sf::Font font;
 
     if (!font.loadFromFile(filepath))
@@ -175,6 +180,11 @@ sf::Font &AssetManager::GetFont(const std::string &name)
 bool AssetManager::LoadTexture(const std::string &name, const std::string &filepath)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadTexture", false);
+
+    if (m_textures.contains(name))
+    {
+        return true;
+    }
 
     sf::Texture texture;
 
@@ -209,6 +219,11 @@ sf::Texture &AssetManager::GetTexture(const std::string &name)
 bool AssetManager::LoadSound(const std::string &name, const std::string &filepath)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadSound", false);
+
+    if (m_sounds.contains(name))
+    {
+        return true;
+    }
 
     sf::SoundBuffer buffer;
 

@@ -159,7 +159,7 @@ void WindowManager::ApplyResolution(ResolutionSetting res)
     m_window->create(sf::VideoMode(size.x, size.y), "ChaosTheory", style);
 
     // Delay before requestFocus - OS can silently fail, delay min helps run more consistently.
-    sf::sleep(sf::milliseconds(10));
+    sf::sleep(sf::milliseconds(100));
     m_window->requestFocus();
 
     m_window->setVerticalSyncEnabled(m_settings->m_verticleSyncEnabled);

@@ -189,5 +189,5 @@ void SplashScene::LockWindow()
     sf::VideoMode mode = sf::VideoMode(1280, 720);
     sf::Uint32 style = sf::Style::Titlebar;
 
-    WindowManager::Instance().Recreate(mode.width, mode.height, "Chaos Theory", style);
+    WindowManager::Instance().Recreate(mode.width, mode.height, "ChaosTheory", style);
 }

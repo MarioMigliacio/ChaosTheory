@@ -17,6 +17,7 @@
 #include "ResolutionScaleManager.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
+#include "SettingsAssets.h"
 #include "SettingsManager.h"
 #include "UIFactory.h"
 #include "UIGroupBox.h"
@@ -39,8 +40,8 @@ void SettingsScene::Init()
     m_backupSettings = *SettingsManager::Instance().GetSettings();
     m_currentPage = SettingsPage::Audio; // by default
 
+    LoadRequiredAssets();
     CreateSettingsPage(m_currentPage);
-    LoadDefaultSFXFile();
 
     SceneTransitionManager::Instance().StartFadeIn();
 
@@ -51,6 +52,31 @@ void SettingsScene::Init()
 
 void SettingsScene::LoadRequiredAssets()
 {
+    auto &assets = AssetManager::Instance();
+
+    for (const auto &[key, path] : SettingsAssets::Textures)
+    {
+        if (!assets.LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : SettingsAssets::Sounds)
+    {
+        if (!assets.LoadSound(key, path))
+        {
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadSound failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : SettingsAssets::Fonts)
+    {
+        if (!assets.LoadFont(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
+        }
+    }
 }
 
 // Do any necessary logic for shutting this scene down.
@@ -156,6 +182,11 @@ void SettingsScene::Render()
     auto &window = WindowManager::Instance().GetWindow();
     window.clear();
 
+    if (m_backgroundSprite)
+    {
+        window.draw(*m_backgroundSprite);
+    }
+
     UIManager::Instance().Render(window);
 
     if (m_showToast)
@@ -168,6 +199,7 @@ void SettingsScene::Render()
 void SettingsScene::CreateSettingsPage(SettingsPage page)
 {
     CreateTitleText();
+    LoadBackground();
     CreateUI(page);
     CreateArrows(page);
     CreateButtonControls();
@@ -217,6 +249,25 @@ void SettingsScene::CreateTitleText()
     m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
     m_titleLabel->SetColor(DEFAULT_TITLE_COLOR);
     UIManager::Instance().AddElement(m_titleLabel);
+}
+
+// Loads the main background image for this SettingsScene.
+void SettingsScene::LoadBackground()
+{
+    sf::Texture &bgTexture = AssetManager::Instance().GetTexture(SettingsAssets::SettingsBackground);
+    m_backgroundSprite = std::make_unique<sf::Sprite>(bgTexture);
+
+    // Scale to window size
+    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
+    const auto texSize = bgTexture.getSize();
+
+    const float scaleX = static_cast<float>(windowSize.x) / texSize.x;
+    const float scaleY = static_cast<float>(windowSize.y) / texSize.y;
+
+    m_backgroundSprite->setScale(scaleX, scaleY);
+    m_backgroundSprite->setPosition(0.f, 0.f);
+
+    CT_LOG_INFO("Menu background loaded and scaled.");
 }
 
 // Generate the relevent Arrow UI elements for the requested SettingsPage.
@@ -274,13 +325,6 @@ void SettingsScene::CreateArrows(SettingsPage page)
     }
 }
 
-// Meant to be self contained within SettingsScene if this sound effect has yet to be loaded.
-void SettingsScene::LoadDefaultSFXFile()
-{
-    AssetManager::Instance().LoadSound("PewPew", "assets/audio/PewPew.wav");
-    AssetManager::Instance().LoadFont("Default.ttf", "assets/fonts/Default.ttf");
-}
-
 // Generate the buttons needed for this Settings Scene Page.
 void SettingsScene::CreateButtonControls()
 {
@@ -314,7 +358,7 @@ void SettingsScene::CreateButtonControls()
             m_hasUnsavedChanges = false;
 
             AudioManager::Instance().HotReload(SettingsManager::Instance().GetSettings());
-            AudioManager::Instance().PlaySFX("PewPew");
+            AudioManager::Instance().PlaySFX(SettingsAssets::SettingsSound);
 
             auto targetSetting = SettingsManager::Instance().GetSettings()->m_resolution;
 
@@ -472,23 +516,6 @@ void SettingsScene::ShowToast(const std::string &message)
     auto toast = UIFactory::Instance().CreateToastMessage(message, pos, TOAST_DEFAULT_DURATION);
     toast->SetColor(TOAST_DEFAULT_COLOR);
     UIManager::Instance().AddElement(toast);
-
-    // ------
-    // const auto bounds = m_toastText.getLocalBounds();
-
-    // m_toastText.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    // m_toastText.setString(message);
-
-    // m_toastText.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-    // m_toastText.setFillColor(DEFAULT_TITLE_COLOR);
-    // m_toastText.setCharacterSize(24);
-
-    // auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    // m_toastText.setPosition(windowSize.x * BASE_FOOTER_WIDTH_75_PERCENT, windowSize.y *
-    // BASE_FOOTER_HEIGHT_85_PERCENT);
-
-    // m_toastTimer = TOAST_DEFAULT_DURATION;
-    // m_showToast = true;
 }
 
 void SettingsScene::SwitchToPage(SettingsPage page)

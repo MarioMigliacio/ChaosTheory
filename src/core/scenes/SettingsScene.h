@@ -59,9 +59,8 @@ class SettingsScene : public Scene
     void CreateSettingsPage(SettingsPage page);
     void CreateUI(SettingsPage page);
     void CreateTitleText();
+    void LoadBackground();
     void CreateArrows(SettingsPage page);
-
-    void LoadDefaultSFXFile();
 
     void CreateButtonControls();
     void CreateAudioControls();
@@ -89,5 +88,6 @@ class SettingsScene : public Scene
     float m_toastTimer = 0.f;
 
     std::shared_ptr<UITextLabel> m_titleLabel;
+    std::unique_ptr<sf::Sprite> m_backgroundSprite;
     sf::Text m_toastText;
 };
