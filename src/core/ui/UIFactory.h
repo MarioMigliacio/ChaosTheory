@@ -50,7 +50,7 @@ class UIFactory
                                            const sf::Vector2f &size, float minValue, float maxValue, float initialValue,
                                            std::function<void(float)> onChange);
 
-    std::shared_ptr<UIArrow> CreateArrow(float x, float y, ArrowDirection direction);
+    std::shared_ptr<UIArrow> CreateArrow(float x, float y, ArrowDirection direction, std::function<void()> onClick);
 
     // Creates a standard vertical UIGroupBox occupying relative screen space with automatic scaling.
     std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,

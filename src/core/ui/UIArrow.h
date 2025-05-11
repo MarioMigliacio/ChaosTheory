@@ -41,6 +41,7 @@ class UIArrow : public UIElement
 
     UIArrow(const UIArrow &) = delete;
     UIArrow &operator=(const UIArrow &) = delete;
+
     UIArrow(UIArrow &&) = delete;
     UIArrow &operator=(UIArrow &&) = delete;
 

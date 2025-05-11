@@ -273,46 +273,42 @@ void SettingsScene::CreateArrows(SettingsPage page)
 
     if (page == SettingsPage::Audio || page == SettingsPage::KeyBindings)
     {
-        // LEFT ARROW (to previous page)
+        // LEFT ARROW
         const float arrow_x = scaleMgr.ScaledReferenceX(DEFAULT_ARROW_LEFT_CENTER_PERCENT);
-        auto leftArrow = UIFactory::Instance().CreateArrow(arrow_x, centerY, ArrowDirection::Left);
+        auto leftArrow = UIFactory::Instance().CreateArrow(arrow_x, centerY, ArrowDirection::Left,
+                                                           [this, page]()
+                                                           {
+                                                               if (page == SettingsPage::KeyBindings)
+                                                               {
+                                                                   SwitchToPage(SettingsPage::Audio);
+                                                               }
 
-        leftArrow->SetOnClick(
-            [this, page]()
-            {
-                if (page == SettingsPage::KeyBindings)
-                {
-                    SwitchToPage(SettingsPage::Audio);
-                }
-
-                else if (page == SettingsPage::Audio)
-                {
-                    SwitchToPage(SettingsPage::Video);
-                }
-            });
+                                                               else if (page == SettingsPage::Audio)
+                                                               {
+                                                                   SwitchToPage(SettingsPage::Video);
+                                                               }
+                                                           });
 
         UIManager::Instance().AddElement(leftArrow);
     }
 
     if (page == SettingsPage::Audio || page == SettingsPage::Video)
     {
-        // RIGHT ARROW (to next page)
+        // RIGHT ARROW
         const float arrow_x = scaleMgr.ScaledReferenceX(DEFAULT_ARROW_RIGHT_CENTER_PERCENT);
-        auto rightArrow = UIFactory::Instance().CreateArrow(arrow_x, centerY, ArrowDirection::Right);
+        auto rightArrow = UIFactory::Instance().CreateArrow(arrow_x, centerY, ArrowDirection::Right,
+                                                            [this, page]()
+                                                            {
+                                                                if (page == SettingsPage::Audio)
+                                                                {
+                                                                    SwitchToPage(SettingsPage::KeyBindings);
+                                                                }
 
-        rightArrow->SetOnClick(
-            [this, page]()
-            {
-                if (page == SettingsPage::Audio)
-                {
-                    SwitchToPage(SettingsPage::KeyBindings);
-                }
-
-                else if (page == SettingsPage::Video)
-                {
-                    SwitchToPage(SettingsPage::Audio);
-                }
-            });
+                                                                else if (page == SettingsPage::Video)
+                                                                {
+                                                                    SwitchToPage(SettingsPage::Audio);
+                                                                }
+                                                            });
 
         UIManager::Instance().AddElement(rightArrow);
     }

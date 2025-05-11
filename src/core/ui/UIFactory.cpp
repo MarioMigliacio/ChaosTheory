@@ -82,9 +82,13 @@ std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, cons
     return slider;
 }
 
-std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction)
+std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction,
+                                                std::function<void()> onClick)
 {
-    return std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
+    auto arrow = std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
+    arrow->SetOnClick(onClick);
+
+    return arrow;
 }
 
 // Creates a standard vertical UIGroupBox occupying relative screen space with automatic scaling.
