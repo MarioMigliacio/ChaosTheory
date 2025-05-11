@@ -21,7 +21,7 @@
 #include <optional>
 #include <string>
 
-// Simple enumeration for supported SettingsPage types.
+/// @brief Simple enumeration for supported SettingsPage types.
 enum class SettingsPage
 {
     Audio,
@@ -32,18 +32,22 @@ enum class SettingsPage
 // ============================================================================
 //  Class       : SettingsScene
 //  Purpose     : Scene that displays the default configurable settings
-//                and provides ability to save settings
+//                and provides ability to save settings.
 //
 //  Responsibilities:
 //      - Initialize background and ui elements
-//      - Display a stylized title with interactable
+//      - Display a stylized title with interactable ui elements
 //      - Handle user interaction and route back to main menu
 //
 // ============================================================================
 class SettingsScene : public Scene
 {
   public:
-    explicit SettingsScene(std::shared_ptr<Settings> settings);
+    SettingsScene(std::shared_ptr<Settings> settings);
+    ~SettingsScene() = default;
+
+    SettingsScene(const SettingsScene &) = delete;
+    SettingsScene &operator=(const SettingsScene &) = delete;
 
     void Init() override;
     void LoadRequiredAssets() override;
@@ -56,7 +60,7 @@ class SettingsScene : public Scene
     void Render() override;
 
   private:
-    void CreateSettingsPage(SettingsPage page);
+    void SetupSceneComponents(SettingsPage page);
     void CreateUI(SettingsPage page);
     void CreateTitleText();
     void LoadBackground();

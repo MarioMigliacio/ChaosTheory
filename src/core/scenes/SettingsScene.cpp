@@ -26,11 +26,13 @@
 #include "UISelectableButton.h"
 #include "WindowManager.h"
 
+/// @brief Constructor for the SettingsScene.
+/// @param settings Internal settings to initialize with.
 SettingsScene::SettingsScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
 }
 
-// Initialize the internal components for this SettingsScene.
+/// @brief Initialize the internal components for this SettingsScene.
 void SettingsScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -38,10 +40,10 @@ void SettingsScene::Init()
     UIManager::Instance().Clear();
 
     m_backupSettings = *SettingsManager::Instance().GetSettings();
-    m_currentPage = SettingsPage::Audio; // by default
+    m_currentPage = SettingsPage::Audio;
 
     LoadRequiredAssets();
-    CreateSettingsPage(m_currentPage);
+    SetupSceneComponents(m_currentPage);
 
     SceneTransitionManager::Instance().StartFadeIn();
 
@@ -50,6 +52,7 @@ void SettingsScene::Init()
     CT_LOG_INFO("SettingsScene initialized.");
 }
 
+/// @brief Load any required assets listed in the SettingsAssets namespace.
 void SettingsScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
@@ -58,7 +61,7 @@ void SettingsScene::LoadRequiredAssets()
     {
         if (!assets.LoadTexture(key, path))
         {
-            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
         }
     }
 
@@ -74,12 +77,14 @@ void SettingsScene::LoadRequiredAssets()
     {
         if (!assets.LoadFont(key, path))
         {
-            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
         }
     }
+
+    CT_LOG_INFO("SettingsScene finished LoadRequiredAssets.");
 }
 
-// Do any necessary logic for shutting this scene down.
+/// @brief Do any necessary logic for shutting this scene down.
 void SettingsScene::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("SettingsScene", "Shutdown");
@@ -90,13 +95,14 @@ void SettingsScene::Shutdown()
     CT_LOG_INFO("SettingsScene Shutdown.");
 }
 
-// Do any necessary logic upon exit for this scene.
+/// @brief Do any necessary logic upon exit for this scene.
 void SettingsScene::OnExit()
 {
     CT_LOG_INFO("SettingsScene OnExit.");
 }
 
-// Update internal members for this Settings Scene.
+/// @brief Update internal members for this Settings Scene.
+/// @param dt delta time since last update.
 void SettingsScene::Update(float dt)
 {
     const auto mousePos = InputManager::Instance().GetMousePosition();
@@ -115,6 +121,7 @@ void SettingsScene::Update(float dt)
     if (m_showToast)
     {
         m_toastTimer -= dt;
+
         if (m_toastTimer <= 0.f)
         {
             m_showToast = false;
@@ -135,7 +142,7 @@ void SettingsScene::Update(float dt)
     {
         UIManager::Instance().Clear();
         SceneTransitionManager::Instance().StartFadeIn();
-        CreateSettingsPage(m_pendingPageChange.value());
+        SetupSceneComponents(m_pendingPageChange.value());
 
         if (m_pendingToast.has_value())
         {
@@ -147,36 +154,19 @@ void SettingsScene::Update(float dt)
     }
 }
 
-// Handle any internal logic that should be done relevant to this scene.
+/// @brief Not used in SettingsScene context.
+/// @param event bubbled down from caller, not needed.
 void SettingsScene::HandleEvent(const sf::Event &event)
 {
-    // Only if you want to catch window resize, close, etc.
 }
 
-// Update the dimensions for this Settings Scene.
+/// @brief Not used in SettingsScene context. We manually call for adjustResolution.
+/// @param newSize bubbled down from caller, not needed.
 void SettingsScene::OnResize(const sf::Vector2u &newSize)
 {
-    ResolutionScaleManager::Instance().SetCurrentResolution(newSize);
-
-    if (m_settings->m_resolution != ResolutionSetting::Fullscreen)
-    {
-        // Ignore manual resizes when not in fullscreen
-        const auto intendedSize = WindowManager::Instance().GetWindow().getSize();
-
-        if (newSize != intendedSize)
-        {
-            WindowManager::Instance().ApplyResolution(m_settings->m_resolution);
-
-            return;
-        }
-    }
-
-    // Proceed with layout reflow
-    UIManager::Instance().Clear();
-    CreateSettingsPage(m_currentPage);
 }
 
-// Draw this Settings Scene to the render target.
+/// @brief Draw this SettingsScene to the render target.
 void SettingsScene::Render()
 {
     auto &window = WindowManager::Instance().GetWindow();
@@ -195,8 +185,9 @@ void SettingsScene::Render()
     }
 }
 
-// Generate the Entire Settings Page that is specific to the request.
-void SettingsScene::CreateSettingsPage(SettingsPage page)
+/// @brief Generate the Entire Settings Page that is specific to the request.
+/// @param page Enumeration corresponding to the setting page type.
+void SettingsScene::SetupSceneComponents(SettingsPage page)
 {
     CreateTitleText();
     LoadBackground();
@@ -205,7 +196,8 @@ void SettingsScene::CreateSettingsPage(SettingsPage page)
     CreateButtonControls();
 }
 
-// Generate the UI elements needed for specific SettingsPage.
+/// @brief Generate the UI elements needed for specific SettingsPage.
+/// @param page Enumeration corresponding to the setting page type.
 void SettingsScene::CreateUI(SettingsPage page)
 {
     m_currentPage = page;
@@ -236,7 +228,7 @@ void SettingsScene::CreateUI(SettingsPage page)
     }
 }
 
-// Generate the text that is the Title for the requested SettingsPage.
+/// @brief Generate the text that is the Title for this SettingsScene.
 void SettingsScene::CreateTitleText()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -251,7 +243,7 @@ void SettingsScene::CreateTitleText()
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
-// Loads the main background image for this SettingsScene.
+/// @brief Loads the main background image for this SettingsScene.
 void SettingsScene::LoadBackground()
 {
     sf::Texture &bgTexture = AssetManager::Instance().GetTexture(SettingsAssets::SettingsBackground);
@@ -267,10 +259,11 @@ void SettingsScene::LoadBackground()
     m_backgroundSprite->setScale(scaleX, scaleY);
     m_backgroundSprite->setPosition(0.f, 0.f);
 
-    CT_LOG_INFO("Menu background loaded and scaled.");
+    CT_LOG_INFO("SettingsScene background loaded and scaled.");
 }
 
-// Generate the relevent Arrow UI elements for the requested SettingsPage.
+/// @brief Generate the relevent Arrow UI elements for the requested SettingsPage.
+/// @param page Enumeration corresponding to the setting page type.
 void SettingsScene::CreateArrows(SettingsPage page)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -294,7 +287,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
 
                 else if (page == SettingsPage::Audio)
                 {
-                    SwitchToPage(SettingsPage::Video); // wrap or lock based on preference
+                    SwitchToPage(SettingsPage::Video);
                 }
             });
 
@@ -325,7 +318,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
     }
 }
 
-// Generate the buttons needed for this Settings Scene Page.
+/// @brief Generate the buttons needed for this Settings Scene Page.
 void SettingsScene::CreateButtonControls()
 {
     auto winSize = WindowManager::Instance().GetWindow().getSize();
@@ -391,7 +384,7 @@ void SettingsScene::CreateButtonControls()
         }));
 }
 
-// Generate the Audio Sliders needed for this Settings Scene page.
+/// @brief Generate the Audio Sliders needed for the Audio Settings Scene page.
 void SettingsScene::CreateAudioControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -421,7 +414,7 @@ void SettingsScene::CreateAudioControls()
     UIManager::Instance().AddElement(groupBox);
 }
 
-// Generate the buttons needed for this Settings Scene resolution settings page.
+/// @brief Generate the buttons needed for the Resolution Settings page.
 void SettingsScene::CreateResolutionControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -467,7 +460,7 @@ void SettingsScene::CreateResolutionControls()
     UIManager::Instance().AddElement(groupBox);
 }
 
-// Generate the ui elements needed for this Key Bindings settings page.
+/// @brief Generate the ui elements needed for the Key Bindings Settings page.
 void SettingsScene::CreateKeyBindingControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -494,11 +487,10 @@ void SettingsScene::CreateKeyBindingControls()
                                                             {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
                                                             "Strafe", []() { CT_LOG_INFO("Strafe clicked"); }));
 
-    // Add group box to the UI system
     UIManager::Instance().AddElement(groupBox);
 }
 
-// Determines if there are any changes to the settings from the user.
+/// @brief Determines if there are any changes to the settings from the user.
 void SettingsScene::CheckForUnsavedChanges()
 {
     if (SettingsManager::Instance().GetSettings())
@@ -507,7 +499,8 @@ void SettingsScene::CheckForUnsavedChanges()
     }
 }
 
-// Display a friendly toast message to indicate that settings are changed
+/// @brief Display a friendly toast message specific to this SettingsScene, that settings are changed.
+/// @param message The toast message to render.
 void SettingsScene::ShowToast(const std::string &message)
 {
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
@@ -518,6 +511,8 @@ void SettingsScene::ShowToast(const std::string &message)
     UIManager::Instance().AddElement(toast);
 }
 
+/// @brief Upon clicking a navigation arrow, change the current Settings page to display.
+/// @param page Enumeration corresponding to the setting page type.
 void SettingsScene::SwitchToPage(SettingsPage page)
 {
     if (page == m_currentPage)

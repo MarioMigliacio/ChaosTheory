@@ -19,8 +19,9 @@
 //                scene transition callbacks.
 //
 //  Responsibilities:
-//      - Initializes and shuts down
-//      - Stores Scene transition logic, and update management
+//      - Always exists, no need for Init or Shutdown.
+//      - Provides interface to Fade screen.
+//      - Stores Scene transition logic, and update management.
 //
 // ============================================================================
 class SceneTransitionManager
@@ -53,8 +54,8 @@ class SceneTransitionManager
 
     bool m_isFadingOut = false;
     bool m_isFadingIn = false;
-    bool m_fadeComplete = true;
+    bool m_fadeComplete = false;
     bool m_pendingFadeIn = false;
     float m_opacity = 0.f;
-    float m_fadeSpeed = 1.f;
+    float m_fadeSpeed = 0.f;
 };

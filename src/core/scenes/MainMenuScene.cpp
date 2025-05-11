@@ -142,7 +142,7 @@ void MainMenuScene::OnResize(const sf::Vector2u &newSize)
 {
 }
 
-/// @brief While this scene is active, render the necessary components to the Main Menu Scene.
+/// @brief While this scene is active, render the necessary components.
 void MainMenuScene::Render()
 {
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Render");

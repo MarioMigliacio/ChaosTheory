@@ -67,7 +67,7 @@ inline ResolutionSetting FromStringToResolution(const std::string &str)
 // Settings structure to hold internal game configurable data points.
 struct Settings
 {
-    std::string m_windowTitle = "Chaos Theory";
+    std::string m_windowTitle = "ChaosTheory";
     ResolutionSetting m_resolution = ResolutionSetting::Res720p;
     unsigned int m_windowWidth = 1280;
     unsigned int m_windowHeight = 720;

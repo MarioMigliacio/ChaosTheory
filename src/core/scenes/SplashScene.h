@@ -13,37 +13,22 @@
 
 #include "Scene.h"
 #include "Settings.h"
-#include "SplashAssets.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include <mutex>
-#include <queue>
-#include <thread>
-
-// Struct representing an asset loading request
-struct AssetLoadRequest
-{
-    std::string type;     // "texture", "sound", "font"
-    std::string filepath; // Path to the asset file
-};
 
 // ============================================================================
 //  Class       : SplashScene
-//  Purpose     : Scene that displays the interactive main menu.
-//                Contains background, title, and Play/Exit buttons.
+//  Purpose     : Scene that displays the Splash entry scene for ChaosTheory.
 //
 //  Responsibilities:
 //      - Fade in background image on scene start
 //      - Shake animation(random offsets during display)
-//      - Asynchronously load assets so AssetManager is fully loaded
-//      - Transition to MainMenuScene once assets are loaded and fades out
+//      - Transition to MainMenuScene once it fades out
 //
 // ============================================================================
 class SplashScene final : public Scene
 {
   public:
-    using SceneChangeCallback = std::function<void(std::unique_ptr<Scene>)>;
-
     SplashScene(std::shared_ptr<Settings> settings);
     ~SplashScene() = default;
 
@@ -79,6 +64,4 @@ class SplashScene final : public Scene
 
     float m_fadeTimer = 0.f;
     float m_shakeTimer = 0.f;
-
-    std::queue<AssetLoadRequest> m_assetQueue;
 };

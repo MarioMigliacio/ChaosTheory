@@ -31,8 +31,6 @@
 class GameScene final : public Scene
 {
   public:
-    using SceneChangeCallback = std::function<void(std::unique_ptr<Scene>)>;
-
     GameScene(std::shared_ptr<Settings> settings);
     ~GameScene() override = default;
 

@@ -156,7 +156,7 @@ void WindowManager::ApplyResolution(ResolutionSetting res)
 
     sf::Uint32 style = (res == ResolutionSetting::Fullscreen) ? sf::Style::Fullscreen : sf::Style::Close;
 
-    m_window->create(sf::VideoMode(size.x, size.y), "ChaosTheory", style);
+    m_window->create(sf::VideoMode(size.x, size.y), m_settings->m_windowTitle, style);
 
     // Delay before requestFocus - OS can silently fail, delay min helps run more consistently.
     sf::sleep(sf::milliseconds(100));

@@ -12,23 +12,31 @@
 #include "SplashScene.h"
 #include "AssetManager.h"
 #include "Macros.h"
-#include "MainMenuScene.h"
 #include "SceneManager.h"
+#include "SplashAssets.h"
 #include "WindowManager.h"
 #include <filesystem>
 #include <random>
 
 namespace
 {
+/// @brief Controls how far the texture image will shake during update.
 constexpr float SHAKE_AMPLITUDE = 4.f;
+
+/// @brief Controls how long the SplashScene will fade in.
 constexpr float FADE_IN_DURATION = 2.0f;
+
+/// @brief Controls how long the SplashScene will fade out.
 constexpr float FADE_OUT_DURATION = 2.0f;
 } // namespace
 
+/// @brief Constructor for the SplashScene.
+/// @param settings Internal settings to initialize with.
 SplashScene::SplashScene(std::shared_ptr<Settings> settings) : m_settings(std::move(settings))
 {
 }
 
+/// @brief Initialize the internal components for this SplashScene.
 void SplashScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -43,6 +51,7 @@ void SplashScene::Init()
     CT_LOG_INFO("SplashScene initialized.");
 }
 
+/// @brief Load any required assets listed in the SplashAssets namespace.
 void SplashScene::LoadRequiredAssets()
 {
     const std::string key = SplashAssets::SplashBackground;
@@ -50,25 +59,28 @@ void SplashScene::LoadRequiredAssets()
 
     if (!AssetManager::Instance().LoadTexture(key, path))
     {
-        CT_LOG_WARN("Failed to load splash background.");
-        return;
+        CT_LOG_ERROR("SplashScene: Failed to load splash background.");
     }
+
+    CT_LOG_INFO("SplashScene finished LoadRequiredAssets.");
 }
 
-// There is no extraneous logic for Shutdown on this Splash Scene, but logging is useful.
+/// @brief Shuts down this scene and resets internal state.
 void SplashScene::Shutdown()
 {
     m_isInitialized = false;
+
     CT_LOG_INFO("SplashScene Shutdown.");
 }
 
-// There is no extraneous logic for Exit on this Splash Scene, but logging is useful.
+/// @brief Handles the exit criteria for this scene.
 void SplashScene::OnExit()
 {
-    CT_LOG_INFO("SplashScene exited.");
+    CT_LOG_INFO("SplashScene OnExit.");
 }
 
-// Per frame, update the Background image with Shake Effect, Fade-in/out, and silent asset loading.
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update.
 void SplashScene::Update(float dt)
 {
     UpdateFadeInOut(dt);
@@ -76,27 +88,25 @@ void SplashScene::Update(float dt)
 
     if (m_fadingOut && m_fadeTimer >= FADE_OUT_DURATION)
     {
+        CT_LOG_INFO("SplashScene requesting scene change.");
+
         SceneManager::Instance().RequestSceneChange(SceneID::MainMenu);
     }
 }
 
-// Explicitely remove the ability for Resize event flowdowns.
+/// @brief Not used in SplashScene context.
+/// @param event bubbled down from caller, not needed.
 void SplashScene::HandleEvent(const sf::Event &event)
 {
-    if (event.type == sf::Event::Resized)
-    {
-        // Ignore resize during splash
-        return;
-    }
 }
 
-// Disable any ability for user to resize window during Splash Scene.
+/// @brief Not used in SplashScene context.
+/// @param newSize bubbled down from caller, not needed.
 void SplashScene::OnResize(const sf::Vector2u &newSize)
 {
-    // Intentionally do nothing
 }
 
-// While this scene is active, render the necessary components to the Splash Scene.
+/// @brief While this scene is active, render the necessary components.
 void SplashScene::Render()
 {
     auto &window = WindowManager::Instance().GetWindow();
@@ -111,6 +121,7 @@ void SplashScene::Render()
     window.display();
 }
 
+/// @brief Loads the Splash texture background image from the SplashAssets namespace.
 void SplashScene::LoadBackground()
 {
     sf::Texture &bgTexture = AssetManager::Instance().GetTexture(SplashAssets::SplashBackground);
@@ -129,20 +140,22 @@ void SplashScene::LoadBackground()
     CT_LOG_INFO("Splash background scaled to window.");
 }
 
-// Begin the fading in timer and boolean logic.
+/// @brief Begin the fading in timer and boolean logic.
 void SplashScene::StartFadeIn()
 {
     m_fadingIn = true;
     m_fadeTimer = 0.f;
 }
 
+/// @brief Begin the fading out timer and boolean logic.
 void SplashScene::StartFadeOut()
 {
     m_fadingOut = true;
     m_fadeTimer = 0.f;
 }
 
-// Use update fade timer based on update delta times, Fade in the background alpha value.
+/// @brief Update fade timer based on update delta times, Fade in the background alpha value.
+/// @param dt delta time since last update.
 void SplashScene::UpdateFadeInOut(float dt)
 {
     m_fadeTimer += dt;
@@ -171,7 +184,8 @@ void SplashScene::UpdateFadeInOut(float dt)
     m_background->setColor(bgColor);
 }
 
-// Use Sin and Cos functions plus some variance from clock cycles to give the Background image some motion.
+/// @brief Use Sin and Cos functions plus some variance from clock cycles to give the Background image some motion.
+/// @param dt delta time since last update.
 void SplashScene::ApplyShakeEffect(float dt)
 {
     m_shakeTimer += dt;
@@ -183,11 +197,11 @@ void SplashScene::ApplyShakeEffect(float dt)
     m_background->setPosition(offsetX, offsetY);
 }
 
-// Forces the Window to a set resolution size, which uses the Titlebar style so no resizing or fullscreen buttons.
+/// @brief Forces the Window to a specific resolution size, tailored for the SplashScene.
 void SplashScene::LockWindow()
 {
     sf::VideoMode mode = sf::VideoMode(1280, 720);
     sf::Uint32 style = sf::Style::Titlebar;
 
-    WindowManager::Instance().Recreate(mode.width, mode.height, "ChaosTheory", style);
+    WindowManager::Instance().Recreate(mode.width, mode.height, m_settings->m_windowTitle, style);
 }
