@@ -126,6 +126,15 @@ constexpr float GROUPBOX_DEFAULT_INTERNAL_PAD = 12.f;
 /// @brief Default groupbox spacing between edge in pixels.
 constexpr float GROUPBOX_DEFAULT_EDGE_PAD = 10.f;
 
+/// @brief When constructed in the factory, placeholder internal padding is safe.
+constexpr float BASE_GROUPBOX_INTERNAL_PAD_RATIO = 0.1f;
+
+/// @brief When constructed in the factory, placeholder edge pad is safe.
+constexpr float BASE_GROUPBOX_EDGE_PAD_RATIO = 0.075f;
+
+/// @brief When constructed in the factory, placeholder font is safe.
+constexpr unsigned int BASE_GROUPBOX_FONT_SIZE = 24;
+
 // ============================================================================
 // Generic Toast uses:
 // ============================================================================

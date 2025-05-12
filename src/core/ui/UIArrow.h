@@ -15,6 +15,7 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
+/// @brief Simple enumeration for supported ArrowDirection types.
 enum class ArrowDirection
 {
     Left,
@@ -42,8 +43,8 @@ class UIArrow : public UIElement
     UIArrow(const UIArrow &) = delete;
     UIArrow &operator=(const UIArrow &) = delete;
 
-    UIArrow(UIArrow &&) = delete;
-    UIArrow &operator=(UIArrow &&) = delete;
+    UIArrow(UIArrow &&) noexcept = default;
+    UIArrow &operator=(UIArrow &&) noexcept = default;
 
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
@@ -75,5 +76,6 @@ class UIArrow : public UIElement
     float m_scale = 1.0f;
     bool m_hovered = false;
     bool m_pressedLastFrame = false;
+
     std::function<void()> m_onClick;
 };

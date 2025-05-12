@@ -197,28 +197,31 @@ void MainMenuScene::CreateButtons()
     const sf::Vector2f settingsPos{centerX, playPos.y + scaledButtonHeight + scaledSpacing};
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, playPos, "Play",
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Play button clicked!");
-                                                        m_hasPendingTransition = true;
-                                                        m_requestedScene = SceneID::Game;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        playPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Play",
+        [this]()
+        {
+            CT_LOG_INFO("Play button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::Game;
+        }));
 
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, settingsPos, "Settings",
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Settings button clicked!");
-                                                        m_hasPendingTransition = true;
-                                                        m_requestedScene = SceneID::Settings;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        settingsPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Settings",
+        [this]()
+        {
+            CT_LOG_INFO("Settings button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::Settings;
+        }));
 
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, exitPos, "Exit",
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Exit button clicked!");
-                                                        m_shouldExit = true;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        exitPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Exit",
+        [this]()
+        {
+            CT_LOG_INFO("Exit button clicked!");
+            m_shouldExit = true;
+        }));
 }
 
 /// @brief Loads the main background image for this MainMenuScene.
@@ -254,17 +257,4 @@ void MainMenuScene::PlayIntroMusic()
     {
         CT_LOG_INFO("MainMenuScene: Menu music already playing, no action needed.");
     }
-}
-
-/// @brief simplistic helper method to help make a menu button.
-/// @param type Which type of Button requested.
-/// @param pos Vector2f position location.
-/// @param label String used for setting button text.
-/// @param onClick Callback function behavior when button clicked.
-/// @return A shared pointer to a UIElement for the requested button.
-std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
-                                                         const std::string &label, std::function<void()> onClick)
-{
-    return UIFactory::Instance().CreateButton(
-        type, pos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, label, std::move(onClick));
 }

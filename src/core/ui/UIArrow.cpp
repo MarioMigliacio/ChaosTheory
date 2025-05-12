@@ -157,7 +157,6 @@ void UIArrow::draw(sf::RenderTarget &target, sf::RenderStates states) const
 /// @brief Load the texture into usable sprite for this UIArrow.
 void UIArrow::LoadTexture()
 {
-
     const std::string textureName = "arrow_texture";
     AssetManager::Instance().LoadTexture(textureName, "assets/ui/arrow_texture.png");
     m_texture = &AssetManager::Instance().GetTexture(textureName);

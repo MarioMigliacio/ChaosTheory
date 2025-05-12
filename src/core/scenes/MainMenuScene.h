@@ -14,6 +14,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
+#include "UIButton.h"
 #include "UIFactory.h"
 #include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
@@ -57,9 +58,6 @@ class MainMenuScene final : public Scene
     void CreateButtons();
     void LoadBackground();
     void PlayIntroMusic();
-
-    std::shared_ptr<UIElement> MakeMenuButton(ButtonType type, const sf::Vector2f &pos, const std::string &label,
-                                              std::function<void()> onClick);
 
   private:
     std::shared_ptr<Settings> m_settings;

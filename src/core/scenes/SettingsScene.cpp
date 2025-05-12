@@ -333,7 +333,7 @@ void SettingsScene::CreateButtonControls()
 
     // Apply Changes UIButton
     m_applyButton = UIFactory::Instance().CreateButton(
-        ButtonType::Classic, applyPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Apply Changes",
+        applyPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Apply Changes",
         [this]()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
@@ -369,15 +369,15 @@ void SettingsScene::CreateButtonControls()
     UIManager::Instance().AddElement(m_applyButton);
 
     // Go Back UIButton
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
-        ButtonType::Classic, backPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Go Back",
-        [this]()
-        {
-            CT_LOG_INFO("SettingsScene: Go Back clicked.");
-            *SettingsManager::Instance().GetSettings() = m_backupSettings;
-            m_requestedScene = SceneID::MainMenu;
-            m_hasPendingTransition = true;
-        }));
+    UIManager::Instance().AddElement(
+        UIFactory::Instance().CreateButton(backPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Go Back",
+                                           [this]()
+                                           {
+                                               CT_LOG_INFO("SettingsScene: Go Back clicked.");
+                                               *SettingsManager::Instance().GetSettings() = m_backupSettings;
+                                               m_requestedScene = SceneID::MainMenu;
+                                               m_hasPendingTransition = true;
+                                           }));
 }
 
 /// @brief Generate the Audio Sliders needed for the Audio Settings Scene page.
@@ -435,22 +435,22 @@ void SettingsScene::CreateResolutionControls()
 
     for (const auto &[label, resValue] : options)
     {
-        auto radio = std::dynamic_pointer_cast<UISelectableButton>(
-            UIFactory::Instance().CreateButton(ButtonType::Radio, {0.f, 0.f}, buttonSize, label,
-                                               [this, resValue, label, groupBox]()
-                                               {
-                                                   for (auto &el : groupBox->GetChildren())
-                                                   {
-                                                       if (auto rb = std::dynamic_pointer_cast<UISelectableButton>(el))
-                                                       {
-                                                           rb->SetSelected(rb->GetLabel() == label);
-                                                       }
-                                                   }
-                                                   SettingsManager::Instance().GetSettings()->m_resolution = resValue;
-                                               }));
+        auto selectableButton = UIFactory::Instance().CreateSelectableButton(
+            {0.f, 0.f}, buttonSize, label,
+            [this, resValue, label, groupBox]()
+            {
+                for (auto &el : groupBox->GetChildren())
+                {
+                    if (auto sb = std::dynamic_pointer_cast<UISelectableButton>(el))
+                    {
+                        sb->SetSelected(sb->GetLabel() == label);
+                    }
+                }
+                SettingsManager::Instance().GetSettings()->m_resolution = resValue;
+            });
 
-        radio->SetSelected(resValue == current);
-        groupBox->AddElement(radio);
+        selectableButton->SetSelected(resValue == current);
+        groupBox->AddElement(selectableButton);
     }
 
     UIManager::Instance().AddElement(groupBox);
@@ -471,15 +471,15 @@ void SettingsScene::CreateKeyBindingControls()
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.2f * relativeSize.y));
 
     // Add some placeholder buttons for binding keys
-    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
+    groupBox->AddElement(UIFactory::Instance().CreateButton({0.f, 0.f},
                                                             {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
                                                             "Fire Bomb", []() { CT_LOG_INFO("Fire Bomb clicked"); }));
 
-    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
+    groupBox->AddElement(UIFactory::Instance().CreateButton({0.f, 0.f},
                                                             {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
                                                             "Shoot", []() { CT_LOG_INFO("Shoot clicked"); }));
 
-    groupBox->AddElement(UIFactory::Instance().CreateButton(ButtonType::Classic, {0.f, 0.f},
+    groupBox->AddElement(UIFactory::Instance().CreateButton({0.f, 0.f},
                                                             {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
                                                             "Strafe", []() { CT_LOG_INFO("Strafe clicked"); }));
 

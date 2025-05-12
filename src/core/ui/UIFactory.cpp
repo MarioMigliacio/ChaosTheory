@@ -19,46 +19,44 @@ UIFactory &UIFactory::Instance()
     return instance;
 }
 
-// Manufactures a 'type' of UIButton based on input parameters, returns a smart pointer.
-std::shared_ptr<UIElement> UIFactory::CreateButton(ButtonType type, const sf::Vector2f &position,
-                                                   const sf::Vector2f &size, const std::string &label,
-                                                   std::function<void()> onClick)
+std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, const sf::Vector2f &size,
+                                                  const std::string &label, std::function<void()> onClick)
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
     unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
 
-    switch (type)
-    {
-        case ButtonType::Classic:
-        default:
-        {
-            auto button = std::make_shared<UIButton>(position, scaledSize);
+    auto button = std::make_shared<UIButton>(position, scaledSize);
 
-            button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
-            button->SetCallback(std::move(onClick));
-            button->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
-            button->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
-            button->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
-            button->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
-            button->SetHoverScale(1.05f);
+    button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
+    button->SetCallback(std::move(onClick));
+    button->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
+    button->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+    button->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
+    button->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+    button->SetHoverScale(1.05f);
 
-            return button;
-        }
+    return button;
+}
 
-        case ButtonType::Radio:
-        {
-            auto radio = std::make_shared<UISelectableButton>(position, scaledSize);
+std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::Vector2f &position,
+                                                                      const sf::Vector2f &size,
+                                                                      const std::string &label,
+                                                                      std::function<void()> onClick)
+{
+    sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
+                            ResolutionScaleManager::Instance().ScaleY(size.y));
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
 
-            radio->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
-            radio->SetCallback(std::move(onClick));
-            radio->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
-            radio->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
-            radio->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
+    auto selectableButton = std::make_shared<UISelectableButton>(position, scaledSize);
 
-            return radio;
-        }
-    }
+    selectableButton->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
+    selectableButton->SetCallback(std::move(onClick));
+    selectableButton->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+    selectableButton->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+    selectableButton->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
+
+    return selectableButton;
 }
 
 // Manufactures a Slider ui element based on input parameters, returns a smart pointer.
@@ -91,24 +89,9 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection
     return arrow;
 }
 
-// Creates a standard vertical UIGroupBox occupying relative screen space with automatic scaling.
-std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
-                                                      const sf::Vector2f &relativeSize)
-{
-    return CreateGroupBox(title, relativePos, relativeSize,
-                          LayoutMode::Vertical, // vertical layout is nice for controls
-                          true,                 // center children
-                          0.1f,                 // use a default provided internal padding
-                          0.075f,               // use a defaut provided edge padding
-                          0                     // use default provided font size.
-    );
-}
-
 // Fully configurable UIGroupBox with layout, alignment, padding, and font size.
 std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                                      const sf::Vector2f &relativeSize, LayoutMode layoutMode,
-                                                      bool centerChildren, float internalPadRatio, float edgePadRatio,
-                                                      unsigned int fontSize)
+                                                      const sf::Vector2f &relativeSize)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -116,14 +99,14 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
                                  scaleMgr.ScaledReferenceY(relativePosition.y)};
     const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(relativeSize.x), scaleMgr.ScaledReferenceY(relativeSize.y)};
 
-    const float internalPadding = scaleMgr.ScaledReferenceY(internalPadRatio);
-    const float edgePadding = scaleMgr.ScaledReferenceY(edgePadRatio);
+    const float internalPadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_INTERNAL_PAD_RATIO);
+    const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
     groupBox->SetTitle(title, AssetManager::Instance().GetFont("Default.ttf"),
-                       fontSize > 0 ? fontSize : scaleMgr.ScaleFont(24));
-    groupBox->SetLayoutMode(layoutMode);
-    groupBox->SetCenterChildren(centerChildren);
+                       scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE));
+    groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
+    groupBox->SetCenterChildren(true);             // safe default state
     groupBox->SetInternalPadding(internalPadding);
     groupBox->SetEdgePadding(edgePadding);
 
