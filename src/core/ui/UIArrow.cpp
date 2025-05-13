@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : UIArrow.h
+//  File        : UIArrow.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-05-01
@@ -11,6 +11,7 @@
 
 #include "UIArrow.h"
 #include "AssetManager.h"
+#include "ResolutionScaleManager.h"
 
 namespace
 {

@@ -13,12 +13,20 @@
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 
+/// @brief Get the current Instance for this UIFactory singleton.
+/// @return reference to existing UIFactory interface.
 UIFactory &UIFactory::Instance()
 {
     static UIFactory instance;
     return instance;
 }
 
+/// @brief Creates a UI Button element, given the custom input parameters.
+/// @param position Button position.
+/// @param size Button size.
+/// @param label Button text with font and font size.
+/// @param onClick Pointer to callback function, when clicked.
+/// @return safe pointer to a UIButton.
 std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, const sf::Vector2f &size,
                                                   const std::string &label, std::function<void()> onClick)
 {
@@ -39,6 +47,12 @@ std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, 
     return button;
 }
 
+/// @brief Creates a UI Selectable Button element, given the custom input parameters.
+/// @param position Button position.
+/// @param size Button size.
+/// @param label Button text with font and font size.
+/// @param onClick Pointer to callback function, when clicked.
+/// @return safe pointer to a UISelectableButton.
 std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::Vector2f &position,
                                                                       const sf::Vector2f &size,
                                                                       const std::string &label,
@@ -59,7 +73,15 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
     return selectableButton;
 }
 
-// Manufactures a Slider ui element based on input parameters, returns a smart pointer.
+/// @brief Creates a UI Slider element, given the custom input parameters.
+/// @param label String representation for slider content.
+/// @param position Slider position.
+/// @param size Slider size.
+/// @param minValue Slider minimum value.
+/// @param maxValue Slider maximum value.
+/// @param initialValue Slider default value.
+/// @param onChange Pointer to callback function, when value changed.
+/// @return safe pointer to a UISlider.
 std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, const sf::Vector2f &position,
                                                   const sf::Vector2f &size, float minValue, float maxValue,
                                                   float initialValue, std::function<void(float)> onChange)
@@ -80,6 +102,12 @@ std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, cons
     return slider;
 }
 
+/// @brief Creates a UI Arrow element, given the custom input parameters.
+/// @param x X coordinate for position to be set.
+/// @param y Y coordinate for position to be set.
+/// @param direction Arrow direction L, R, U, D.
+/// @param onClick Pointer to callback function, when clicked.
+/// @return safe pointer to a UIArrow.
 std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction,
                                                 std::function<void()> onClick)
 {
@@ -89,7 +117,11 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection
     return arrow;
 }
 
-// Fully configurable UIGroupBox with layout, alignment, padding, and font size.
+/// @brief Creates a UI UIGroupBox element, given the custom input parameters.
+/// @param title String representation for GroupBox.
+/// @param relativePosition Screen relative position to be centered around.
+/// @param relativeSize Screen relative size to occupy.
+/// @return safe pointer to a UIGroupBox.
 std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
                                                       const sf::Vector2f &relativeSize)
 {
@@ -113,6 +145,12 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
     return groupBox;
 }
 
+/// @brief Creates a UI UITextLabel element, given the custom input parameters.
+/// @param text String representation for the element.
+/// @param position Position for text label.
+/// @param baseFontSize Font size for the text label.
+/// @param centerOrigin Used for centering the string contents around the position during construction.
+/// @return safe pointer to a UITextLabel.
 std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text, const sf::Vector2f &position,
                                                         unsigned int baseFontSize, bool centerOrigin)
 {
@@ -126,6 +164,11 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
     return label;
 }
 
+/// @brief Creates a UI UIToastMessage element, given the custom input parameters.
+/// @param text String representation for the toast message.
+/// @param position Position for the toast message.
+/// @param duration Duration for how long the toast message will exist.
+/// @return safe pointer to a UIToastMessage.
 std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string &text, const sf::Vector2f &position,
                                                               float duration)
 {

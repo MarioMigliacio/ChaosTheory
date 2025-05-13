@@ -18,7 +18,7 @@
 #include <string>
 #include <vector>
 
-// Simple enumeration for supported UIGroupBox Layout types.
+/// @brief Simple enumeration for supported UIGroupBox Layout types.
 enum class LayoutMode
 {
     Vertical,
@@ -74,8 +74,8 @@ class UIGroupBox : public UIElement
     std::vector<std::shared_ptr<UIElement>> m_children;
     LayoutMode m_layoutMode = LayoutMode::Vertical;
 
-    float m_internalPadding = GROUPBOX_DEFAULT_INTERNAL_PAD;
-    float m_edgePadding = GROUPBOX_DEFAULT_EDGE_PAD;
+    float m_internalPadding = DEFAULT_GROUPBOX_INTERNAL_PAD;
+    float m_edgePadding = DEFAULT_GROUPBOX_EDGE_PAD;
 
     bool m_centerChildren = false;
 };

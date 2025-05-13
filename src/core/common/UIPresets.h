@@ -120,11 +120,20 @@ constexpr float BASE_SLIDER_WIDTH_PERCENT = .45f;
 // Generic GroupBox uses:
 // ============================================================================
 
+/// @brief Default constructed groupbox fill color.
+const sf::Color DEFAULT_GROUPBOX_FILL_COLOR = sf::Color(25, 25, 25, 160);
+
+/// @brief Default constructed groupbox outline color.
+const sf::Color DEFAULT_GROUPBOX_OUTLINE_COLOR = sf::Color(150, 255, 150, 200);
+
 /// @brief Default groupbox padding between elements in pixels.
-constexpr float GROUPBOX_DEFAULT_INTERNAL_PAD = 12.f;
+constexpr float DEFAULT_GROUPBOX_INTERNAL_PAD = 12.f;
 
 /// @brief Default groupbox spacing between edge in pixels.
-constexpr float GROUPBOX_DEFAULT_EDGE_PAD = 10.f;
+constexpr float DEFAULT_GROUPBOX_EDGE_PAD = 10.f;
+
+/// @brief Default constructed groupbox outline edge thickness.
+constexpr float DEFAULT_GROUPBOX_OUTLINE_THICKNESS = 1.f;
 
 /// @brief When constructed in the factory, placeholder internal padding is safe.
 constexpr float BASE_GROUPBOX_INTERNAL_PAD_RATIO = 0.1f;

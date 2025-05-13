@@ -58,5 +58,4 @@ class UIManager
     bool m_isInitialized = false;
     bool m_isUpdating = false;
     bool m_pendingClear = false;
-    bool m_blockedUntilMouseRelease = false;
 };

@@ -15,13 +15,15 @@
 #include "Macros.h"
 #include "UIToastMessage.h"
 
+/// @brief Get the current Instance for this UIManager singleton.
+/// @return reference to existing UIManager interface.
 UIManager &UIManager::Instance()
 {
     static UIManager instance;
     return instance;
 }
 
-// Initializes the UI manager.
+/// @brief Initializes the UIManager.
 void UIManager::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -31,7 +33,7 @@ void UIManager::Init()
     CT_LOG_INFO("UIManager initialized.");
 }
 
-// Shuts down the UI manager and resets internal state.
+/// @brief Shuts down the UIManager and resets internal state.
 void UIManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Shutdown");
@@ -42,13 +44,15 @@ void UIManager::Shutdown()
     CT_LOG_INFO("UIManager shutdown.");
 }
 
-// Returns whether or not the UI manager is initialized.
+/// @brief Returns whether or not the UI manager is initialized.
+/// @return m_isInitialized.
 bool UIManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Pushes a new ui element to the UI managers collection of elements.
+/// @brief Pushes a new ui element to the UIManagers collection of elements.
+/// @param element Added to m_elements.
 void UIManager::AddElement(std::shared_ptr<UIElement> element)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "AddElement");
@@ -56,28 +60,21 @@ void UIManager::AddElement(std::shared_ptr<UIElement> element)
     m_elements.push_back(std::move(element));
 }
 
+/// @brief Returns a reference to the UIManagers collection of elements.
+/// @return m_elements.
 const std::vector<std::shared_ptr<UIElement>> &UIManager::GetElements() const
 {
     return m_elements;
 }
 
-// Performs collected Update logic for any UI components this UI manager handles.
+/// @brief Performs internal state management during a single frame.
+/// @param mousePos Current MousePosition.
+/// @param isLeftClick IsLeftClick?
+/// @param isJustClicked IsJustClicked?
+/// @param dt delta time since last update.
 void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJustClicked, float dt)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Update");
-
-    if (m_blockedUntilMouseRelease)
-    {
-        if (!isLeftClick)
-        {
-            m_blockedUntilMouseRelease = false;
-        }
-
-        else
-        {
-            return;
-        }
-    }
 
     m_isUpdating = true;
 
@@ -115,7 +112,8 @@ void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJu
     }
 }
 
-// Performs collected Draw logic for any UI components this UI manager handles.
+/// @brief Performs collected Draw logic for any UI components this UIManager handles.
+/// @param window render target.
 void UIManager::Render(sf::RenderWindow &window)
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Draw");
@@ -126,7 +124,7 @@ void UIManager::Render(sf::RenderWindow &window)
     }
 }
 
-// Performs collected Clear logic, useful for the shutting down of smart object collectables.
+/// @brief Performs collected Clear logic, emptying the collection of UIElements.
 void UIManager::Clear()
 {
     CT_WARN_IF_UNINITIALIZED("UIManager", "Clear");

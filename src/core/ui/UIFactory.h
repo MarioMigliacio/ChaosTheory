@@ -22,13 +22,6 @@
 #include <memory>
 #include <string>
 
-// Simple enumeration for supported UIButton types.
-// enum class ButtonType
-// {
-//     Classic,
-//     Radio
-// };
-
 // ============================================================================
 //  Class       : UIFactory
 //  Purpose     : Singleton class that manages the generation of UI elements.
