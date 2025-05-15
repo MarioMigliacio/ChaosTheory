@@ -14,6 +14,9 @@
 #include "AssetManager.h"
 #include "Macros.h"
 
+/// @brief Constructs a UISelectableButton.
+/// @param position sets internal position.
+/// @param size sets internal size.
 UISelectableButton::UISelectableButton(const sf::Vector2f &position, const sf::Vector2f &size)
 {
     m_shape.setPosition(position);
@@ -21,26 +24,31 @@ UISelectableButton::UISelectableButton(const sf::Vector2f &position, const sf::V
     m_shape.setFillColor(m_idleColor);
 }
 
-// Sets the internal state for the Is Selected logic for this Radio Button.
+/// @brief Sets the internal state for the Is Selected logic for this SelectableButton.
+/// @param selected new m_isSelected.
 void UISelectableButton::SetSelected(bool selected)
 {
     m_isSelected = selected;
 }
 
-// Returns the state of whether or not this Radio Button is being selected.
+/// @brief Returns the state of whether or not this SelectableButton is being selected.
+/// @return m_isSelected.
 bool UISelectableButton::IsSelected() const
 {
     return m_isSelected;
 }
 
-// Sets the text fields for this Radio Button.
-void UISelectableButton::SetText(const std::string &text, const sf::Font &font, unsigned int size)
+/// @brief Sets the text fields for this SelectableButton.
+/// @param text String representation for the SelectableButton.
+/// @param font Font used.
+/// @param fontSize Font size.
+void UISelectableButton::SetText(const std::string &text, const sf::Font &font, unsigned int fontSize)
 {
     m_label.setFont(font);
     m_label.setString(text);
 
     // Start with requested size, but shrink to fit if necessary
-    m_fontSize = size;
+    m_fontSize = fontSize;
     m_label.setCharacterSize(m_fontSize);
 
     float maxWidth = m_shape.getSize().x - 32.f; // padding from circle and edge
@@ -58,33 +66,39 @@ void UISelectableButton::SetText(const std::string &text, const sf::Font &font, 
     CenterLabel();
 }
 
-// Return a reference to this Radio Button text label field.
+/// @brief Return a reference to this SelectableButton text label field.
+/// @return m_label as string.
 const std::string UISelectableButton::GetLabel() const
 {
     return m_label.getString();
 }
 
-// Sets the text color for this Radio Button.
+/// @brief Sets the text color for this SelectableButton.
+/// @param color new m_textColor.
 void UISelectableButton::SetTextColor(const sf::Color &color)
 {
     m_textColor = color;
     m_label.setFillColor(color);
 }
 
-// When selected, update the color for this Radio Button.
+/// @brief When selected, update the color for this SelectableButton.
+/// @param fillColor new Fill color.
+/// @param textColor new Text color.
 void UISelectableButton::SetSelectedColor(const sf::Color &fillColor, const sf::Color &textColor)
 {
     m_selectedFillColor = fillColor;
     m_selectedTextColor = textColor;
 }
 
-// When hovered, update the color for this Radio Button.
+/// @brief When hovered, update the color for this SelectableButton.
+/// @param hoverColor new m_hoverColor.
 void UISelectableButton::SetHoverColor(const sf::Color &hoverColor)
 {
     m_hoverColor = hoverColor;
 }
 
-// Sets the font size for this Radio Button.
+/// @brief Sets the font size for this SelectableButton.
+/// @param size new fontSize.
 void UISelectableButton::SetFontSize(unsigned int size)
 {
     m_fontSize = size;
@@ -92,13 +106,18 @@ void UISelectableButton::SetFontSize(unsigned int size)
     CenterLabel();
 }
 
-// Update the callback function set for this Radio Button when selected.
+/// @brief Update the callback function set for this SelectableButton when selected.
+/// @param onSelect Function pointer to run typically when clicked.
 void UISelectableButton::SetCallback(std::function<void()> onSelect)
 {
     m_onSelect = std::move(onSelect);
 }
 
-// Update logic for this Radio Button includes, isHovered, isPressed, scale, color and text.
+/// @brief Performs internal state management during a single frame.
+/// @param mousePosition current MousePosition.
+/// @param isMousePressed IsMousePressed?
+/// @param isMouseJustPressed IsMouseJustPressed?
+/// @param dt delta time since last update.
 void UISelectableButton::Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed,
                                 float dt)
 {
@@ -121,39 +140,45 @@ void UISelectableButton::Update(const sf::Vector2i &mousePosition, bool isMouseP
     UpdateVisualState();
 }
 
-// Returns whether or not the point is within the bounds of this Radio Button.
+/// @brief Returns whether or not the point is within the bounds of this SelectableButton.
+/// @param point Compare against us.
+/// @return true / false
 bool UISelectableButton::Contains(const sf::Vector2i &point) const
 {
     return m_shape.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
 }
 
-// Sets the current position for this Radio Button.
+/// @brief Sets the current position for this SelectableButton.
+/// @param position new m_position.
 void UISelectableButton::SetPosition(const sf::Vector2f &position)
 {
     m_shape.setPosition(position);
     CenterLabel();
 }
 
-// Returns the position for this Button.
+/// @brief Returns the position for this SelectableButton.
+/// @return m_position.
 sf::Vector2f UISelectableButton::GetPosition() const
 {
     return m_shape.getPosition();
 }
 
-// Sets the size for this Radio Button.
+/// @brief Sets the size for this SelectableButton.
+/// @param size new m_size.
 void UISelectableButton::SetSize(const sf::Vector2f &size)
 {
     m_shape.setSize(size);
     CenterLabel();
 }
 
-// Returns the size for this Radio Button.
+/// @brief Returns the size for this SelectableButton.
+/// @return m_size.
 sf::Vector2f UISelectableButton::GetSize() const
 {
     return m_shape.getSize();
 }
 
-// Adjusts the text label for this Radio Button.
+/// @brief Adjusts the text label for this SelectableButton.
 void UISelectableButton::CenterLabel()
 {
     sf::FloatRect bounds = m_label.getLocalBounds();
@@ -163,22 +188,22 @@ void UISelectableButton::CenterLabel()
                         m_shape.getPosition().y + m_shape.getSize().y / 2.f);
 }
 
-// Draw this Radio Button to the Render target.
+/// @brief Draw this SelectableButton to the Render target.
+/// @param target render target.
+/// @param states optional sf::RenderStates.
 void UISelectableButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    // Draw background rectangle
     target.draw(m_shape, states);
-
-    // Draw label text
     target.draw(m_label, states);
 }
 
-// Updates the on click status and handling for this Radio Button.
+/// @brief Updates the on click status and handling for this Selectable Button.
+/// @param isMousePressed Whether or not the Mouse was registered as Pressed.
 void UISelectableButton::HandleClickLogic(bool isMousePressed)
 {
     if (m_isHovered && isMousePressed)
     {
-        CT_LOG_INFO("Radio Button clicked.");
+        CT_LOG_INFO("Selectable Button clicked.");
 
         if (m_onSelect)
         {
@@ -187,7 +212,7 @@ void UISelectableButton::HandleClickLogic(bool isMousePressed)
     }
 }
 
-// Updates button color and appearance logic.
+/// @brief Updates button color and appearance logic.
 void UISelectableButton::UpdateVisualState()
 {
     if (m_isSelected)

@@ -3,8 +3,8 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
-//  Description : Represents a clickable UI button where only one option can
-//                be selected in a group option setting.
+//  Description : Represents a clickable UI button where one option can
+//                be selected to appear differently then at rest.
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -20,7 +20,7 @@
 
 // ============================================================================
 //  Class       : UISelectableButton
-//  Purpose     : Manages this Radio Button logic at the ui level.
+//  Purpose     : Manages this Selectable Button logic at the ui level.
 //
 //  Responsibilities:
 //      - Set button position

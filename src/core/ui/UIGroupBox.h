@@ -41,6 +41,14 @@ class UIGroupBox : public UIElement
     UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size);
     ~UIGroupBox() override = default;
 
+    // Disable copy
+    UIGroupBox(const UIGroupBox &) = delete;
+    UIGroupBox &operator=(const UIGroupBox &) = delete;
+
+    // Allow move
+    UIGroupBox(UIGroupBox &&) noexcept = default;
+    UIGroupBox &operator=(UIGroupBox &&) noexcept = default;
+
     void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18);
     void AddElement(std::shared_ptr<UIElement> element);
     void RealignChildren();

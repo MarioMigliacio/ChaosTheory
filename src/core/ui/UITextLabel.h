@@ -1,4 +1,14 @@
-
+// ============================================================================
+//  File        : UITextLabel.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-23
+//  Description : Represents a UI string element.
+//                Can be used in menus and interactive scenes.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
 
 #pragma once
 
@@ -6,6 +16,15 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+// ============================================================================
+//  Class       : UITextLabel
+//  Purpose     : Manages this UITextLabel logic at the ui level.
+//
+//  Responsibilities:
+//      - Set string position, color, size, outline.
+//      - Display string specifics during render.
+//
+// ============================================================================
 class UITextLabel : public UIElement
 {
   public:
@@ -30,9 +49,11 @@ class UITextLabel : public UIElement
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
 
-    void SetSize(const sf::Vector2f &size) override; // unused, for interface
+    void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
+  public:
+    // common.
     virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt)
     {
     }

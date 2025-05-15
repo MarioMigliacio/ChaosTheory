@@ -40,9 +40,11 @@ class UIArrow : public UIElement
     UIArrow(const sf::Vector2f &position, ArrowDirection direction);
     ~UIArrow() override = default;
 
+    // Disable copy
     UIArrow(const UIArrow &) = delete;
     UIArrow &operator=(const UIArrow &) = delete;
 
+    // Allow move
     UIArrow(UIArrow &&) noexcept = default;
     UIArrow &operator=(UIArrow &&) noexcept = default;
 

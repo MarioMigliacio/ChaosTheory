@@ -25,7 +25,7 @@ constexpr auto DEFAULT_TITLE_STR = "Chaos Theory";
 constexpr auto DEFAULT_SETTINGS_STR = "Settings";
 
 /// @brief Default Title string color.
-const sf::Color DEFAULT_TITLE_COLOR(102, 255, 102);
+const sf::Color DEFAULT_TITLE_COLOR = sf::Color(102, 255, 102);
 
 /// @brief Default Title font size.
 constexpr unsigned int DEFAULT_TITLE_FONT_SIZE = 48;
@@ -38,31 +38,31 @@ constexpr float DEFAULT_TITLE_HEIGHT_PERCENT = .1f;
 // ============================================================================
 
 /// @brief Color impacts the idle buttons color.
-const sf::Color BUTTON_DEFAULT_IDLE_COLOR(200, 200, 200);
+const sf::Color BUTTON_DEFAULT_IDLE_COLOR = sf::Color(200, 200, 200);
 
 /// @brief Color impacts the hovered buttons color.
-const sf::Color BUTTON_DEFAULT_HOVER_COLOR(160, 160, 255);
+const sf::Color BUTTON_DEFAULT_HOVER_COLOR = sf::Color(160, 160, 255);
 
 /// @brief Color impacts the buttons color while in active state.
-const sf::Color BUTTON_DEFAULT_ACTIVE_COLOR(100, 100, 255);
+const sf::Color BUTTON_DEFAULT_ACTIVE_COLOR = sf::Color(100, 100, 255);
 
 /// @brief Color impacts the idle buttons color while in disabled state.
-const sf::Color BUTTON_DEFAULT_DISABLED_IDLE_COLOR(100, 100, 100);
+const sf::Color BUTTON_DEFAULT_DISABLED_IDLE_COLOR = sf::Color(100, 100, 100);
 
 /// @brief Color impacts the hovered buttons color while in disabled state.
-const sf::Color BUTTON_DEFAULT_DISABLED_HOVER_COLOR(100, 100, 100);
+const sf::Color BUTTON_DEFAULT_DISABLED_HOVER_COLOR = sf::Color(100, 100, 100);
 
 /// @brief Color impacts the buttons text color.
-const sf::Color BUTTON_DEFAULT_TEXT_COLOR(0, 0, 0);
+const sf::Color BUTTON_DEFAULT_TEXT_COLOR = sf::Color(0, 0, 0);
 
 /// @brief Color impacts the selectable buttons color while in selected state.
-const sf::Color BUTTON_DEFAULT_SELECTED_COLOR(100, 180, 255);
+const sf::Color BUTTON_DEFAULT_SELECTED_COLOR = sf::Color(100, 180, 255);
 
 /// @brief Color impacts the selectable buttons text color while in selected state.
-const sf::Color BUTTON_DEFAULT_SELECTED_TEXT_COLOR(255, 255, 255);
+const sf::Color BUTTON_DEFAULT_SELECTED_TEXT_COLOR = sf::Color(255, 255, 255);
 
 /// @brief Color impacts the buttons text color while in disabled state.
-const sf::Color BUTTON_DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
+const sf::Color BUTTON_DEFAULT_DISABLED_TEXT_COLOR = sf::Color(200, 200, 200);
 
 /// @brief Default button font size.
 constexpr unsigned int BUTTON_DEFAULT_FONT_SIZE = 24;
@@ -115,6 +115,18 @@ constexpr float BASE_SLIDER_SPACING_PERCENT = .05f;
 
 /// @brief Generic slider width in relative screen sizing, 45%.
 constexpr float BASE_SLIDER_WIDTH_PERCENT = .45f;
+
+/// @brief Generic slider knob radius for default constructing.
+constexpr float BASE_SLIDER_KNOB_RADIUS = 6.f;
+
+/// @brief Generic fill color for defaullt constructing.
+const sf::Color BASE_SLIDER_FILL_COLOR = sf::Color(200, 200, 200);
+
+/// @brief Generic color for the background for default constructing.
+const sf::Color BASE_SLIDER_BACK_COLOR = sf::Color(100, 100, 100);
+
+/// @brief Generic color for the knob for default constructing.
+const sf::Color BASE_SLIDER_KNOB_COLOR = sf::Color(102, 255, 102);
 
 // ============================================================================
 // Generic GroupBox uses:

@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-23
-//  Description : Represents a UI slider winteractable elements.
+//  Description : Represents a UI slider with interactable elements.
 //                Can be used in menus and interactive scenes.
 //
 //  License     : N/A Open source
