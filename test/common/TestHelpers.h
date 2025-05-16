@@ -17,8 +17,9 @@
 inline std::shared_ptr<Settings> CreateTestSettings()
 {
     auto settings = std::make_shared<Settings>();
-    settings->m_windowWidth = 800;
-    settings->m_windowHeight = 600;
+    settings->m_resolution = ResolutionSetting::Res720p;
+    settings->m_windowWidth = 1280;
+    settings->m_windowHeight = 720;
     settings->m_targetFramerate = 60;
     settings->m_verticleSyncEnabled = true;
     settings->m_isFullscreen = false;

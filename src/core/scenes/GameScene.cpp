@@ -37,6 +37,10 @@ void GameScene::Init()
     CT_LOG_INFO("GameScene initialized.");
 }
 
+void GameScene::LoadRequiredAssets()
+{
+}
+
 // Shuts down this scene and resets internal state.
 void GameScene::Shutdown()
 {

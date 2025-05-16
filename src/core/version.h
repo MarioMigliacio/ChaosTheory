@@ -11,8 +11,14 @@
 
 #pragma once
 
+/// @brief Major Version of Chaos Theory to date.
 #define CT_VERSION_MAJOR 1
-#define CT_VERSION_MINOR 1
-#define CT_VERSION_PATCH 3
 
-#define CT_VERSION_STRING "1.1.3-dev"
+/// @brief Minor Version of Chaos Theory to date.
+#define CT_VERSION_MINOR 1
+
+/// @brief Patch Version of Chaos Theory to date.
+#define CT_VERSION_PATCH 4
+
+/// @brief String representation for Chaos Theory version.
+#define CT_VERSION_STRING "1.1.4"

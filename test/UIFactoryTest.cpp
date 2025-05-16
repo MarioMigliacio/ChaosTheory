@@ -10,10 +10,10 @@
 
 #include "UIFactory.h"
 #include "AssetManager.h"
-#include "Button.h"
 #include "Macros.h"
-#include "RadioButton.h"
 #include "TestHelpers.h"
+#include "UIButton.h"
+#include "UISelectableButton.h"
 #include "UISlider.h"
 #include <gtest/gtest.h>
 
@@ -44,16 +44,14 @@ class UIFactoryTest : public ::testing::Test
 
 TEST_F(UIFactoryTest, CanCreateClassicButton)
 {
-    auto button =
-        UIFactory::Instance().CreateButton(ButtonType::Classic, {100.f, 100.f}, {180.f, 40.f}, "TestButton", nullptr);
+    auto button = UIFactory::Instance().CreateButton({100.f, 100.f}, {180.f, 40.f}, "TestButton", nullptr);
     EXPECT_NE(button, nullptr);
 }
 
-TEST_F(UIFactoryTest, CanCreateRadioButton)
+TEST_F(UIFactoryTest, CanCreateSelectableButton)
 {
-    auto radio =
-        UIFactory::Instance().CreateButton(ButtonType::Radio, {100.f, 100.f}, {180.f, 40.f}, "TestRadio", nullptr);
-    EXPECT_NE(radio, nullptr);
+    auto sb = UIFactory::Instance().CreateSelectableButton({100.f, 100.f}, {180.f, 40.f}, "TestRadio", nullptr);
+    EXPECT_NE(sb, nullptr);
 }
 
 TEST_F(UIFactoryTest, CanCreateSlider)

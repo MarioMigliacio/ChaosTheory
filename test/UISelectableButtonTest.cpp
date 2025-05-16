@@ -1,20 +1,20 @@
 // ============================================================================
-//  File        : RadioButtonTest.cpp
+//  File        : UISelectableButtonTest.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
-//  Description : Main test for the Chaos Theory RadioButton class
+//  Description : Main test for the Chaos Theory UISelectableButton class
 //
 //  License     : N/A Open source
 // ============================================================================
 
-#include "RadioButton.h"
+#include "UISelectableButton.h"
 #include "AssetManager.h"
 #include "Macros.h"
 #include "TestHelpers.h"
 #include <gtest/gtest.h>
 
-class RadioButtonTest : public ::testing::Test
+class UISelectableButtonTest : public ::testing::Test
 {
   protected:
     void SetUp() override
@@ -39,29 +39,29 @@ class RadioButtonTest : public ::testing::Test
     }
 };
 
-TEST_F(RadioButtonTest, CanCreateRadioButton)
+TEST_F(UISelectableButtonTest, CanCreateRadioButton)
 {
-    RadioButton button({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton button({100.f, 100.f}, {180.f, 40.f});
     EXPECT_TRUE(button.Contains({150, 120}));
 }
 
-TEST_F(RadioButtonTest, SetPositionUpdatesCorrectly)
+TEST_F(UISelectableButtonTest, SetPositionUpdatesCorrectly)
 {
-    RadioButton button({0.f, 0.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton button({0.f, 0.f}, {180.f, 40.f});
     button.SetPosition({300.f, 300.f});
     EXPECT_TRUE(button.Contains({310, 310}));
 }
 
-TEST_F(RadioButtonTest, SetSizeUpdatesCorrectly)
+TEST_F(UISelectableButtonTest, SetSizeUpdatesCorrectly)
 {
-    RadioButton button({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton button({100.f, 100.f}, {180.f, 40.f});
     button.SetSize({300.f, 60.f});
     EXPECT_TRUE(button.Contains({150, 120}));
 }
 
-TEST_F(RadioButtonTest, CanToggleSelectedState)
+TEST_F(UISelectableButtonTest, CanToggleSelectedState)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetSelected(true);
     EXPECT_TRUE(btn.IsSelected());
 
@@ -69,9 +69,9 @@ TEST_F(RadioButtonTest, CanToggleSelectedState)
     EXPECT_FALSE(btn.IsSelected());
 }
 
-TEST_F(RadioButtonTest, CanSetTextAndFont)
+TEST_F(UISelectableButtonTest, CanSetTextAndFont)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Initial", nullptr);
+    UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
     const auto &font = AssetManager::Instance().GetFont("Default.ttf");
 
     btn.SetText("Updated", font, 28);
@@ -79,29 +79,29 @@ TEST_F(RadioButtonTest, CanSetTextAndFont)
     SUCCEED();
 }
 
-TEST_F(RadioButtonTest, CanSetTextColor)
+TEST_F(UISelectableButtonTest, CanSetTextColor)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetTextColor(sf::Color::Red);
     SUCCEED(); // Visual test only
 }
 
-TEST_F(RadioButtonTest, CanSetSelectedColor)
+TEST_F(UISelectableButtonTest, CanSetSelectedColor)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetSelectedColor(sf::Color::Green, sf::Color::Blue);
     btn.SetSelected(true);
 
     // Force visual update
-    btn.Update({150, 120}, false);
+    btn.Update({150, 120}, false, false, 0.f);
 
     SUCCEED();
 }
 
-TEST_F(RadioButtonTest, CanSetHoverColor)
+TEST_F(UISelectableButtonTest, CanSetHoverColor)
 {
-    RadioButton btn({100.f, 100.f}, {180.f, 40.f}, "Test", nullptr);
+    UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
     btn.SetHoverColor(sf::Color::Yellow);
-    btn.Update({150, 120}, false); // simulate hover
+    btn.Update({150, 120}, false, false, 0.f); // simulate hover
     SUCCEED();
 }

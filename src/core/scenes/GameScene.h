@@ -25,15 +25,12 @@
 //      - OnExit to call scene specific logic attributes
 //      - Init to accept input and event logic
 //      - Handles the render loop and time delta
-//      - TODO: v1.1.4: Clean and develop a sandbox
-//      - TODO: v1.1.3: Develop settings scene page
+//      - TODO, make a more clean sandbox in the future.
 //
 // ============================================================================
 class GameScene final : public Scene
 {
   public:
-    using SceneChangeCallback = std::function<void(std::unique_ptr<Scene>)>;
-
     GameScene(std::shared_ptr<Settings> settings);
     ~GameScene() override = default;
 
@@ -41,6 +38,7 @@ class GameScene final : public Scene
     GameScene &operator=(const GameScene &) = delete;
 
     void Init() override;
+    void LoadRequiredAssets() override;
     void Shutdown() override;
     void OnExit() override;
 

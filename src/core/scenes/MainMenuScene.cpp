@@ -12,52 +12,74 @@
 #include "MainMenuScene.h"
 #include "AssetManager.h"
 #include "AudioManager.h"
-#include "GameScene.h"
 #include "InputManager.h"
 #include "Macros.h"
-#include "SceneFactory.h"
+#include "MainMenuAssets.h"
+#include "ResolutionScaleManager.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
-#include "SettingsScene.h"
 #include "UIFactory.h"
 #include "UIManager.h"
 #include "WindowManager.h"
 
-// Provides adjustable constants
-namespace
-{
-constexpr float BUTTON_WIDTH = 180.f;
-constexpr float BUTTON_HEIGHT = 48.f;
-constexpr float BUTTON_SPACING = 20.f;
-constexpr float TITLE_Y_RATIO = 0.15f;
-constexpr unsigned int DEFAULT_TITLE_FONT_SIZE = 64;
-} // namespace
-
+/// @brief Constructor for the MainMenuScene.
+/// @param settings Internal settings to initialize with.
 MainMenuScene::MainMenuScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
 }
 
-// Initializes the MainMenuScene.
+/// @brief  Initializes the MainMenuScene.
 void MainMenuScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
-    // New: MainMenuScene is designed to recreate the window using the settings, because SplashScene locked it.
-    WindowManager::Instance().Recreate(m_settings->m_windowWidth, m_settings->m_windowHeight, m_settings->m_windowTitle,
-                                       sf::Style::Default);
+    auto &window = WindowManager::Instance().GetWindow();
+    auto desiredSetting = m_settings->m_resolution;
+    auto desiredSize = WindowManager::Instance().GetResolutionSize(desiredSetting);
+    auto currentSize = window.getSize();
+
+    // Only re-apply resolution if needed
+    if (currentSize != desiredSize)
+    {
+        WindowManager::Instance().ApplyResolution(desiredSetting);
+    }
 
     UIManager::Instance().Clear();
     SceneTransitionManager::Instance().StartFadeIn();
 
-    SetupSceneAssets();
-    PlayIntroMusic();
+    LoadRequiredAssets();
+    SetupSceneComponents();
 
     m_isInitialized = true;
 
     CT_LOG_INFO("MainMenuScene initialized.");
 }
 
-// Shuts down this scene and resets internal state.
+/// @brief Load any required assets listed in the MainMenuAssets namespace.
+void MainMenuScene::LoadRequiredAssets()
+{
+    auto &assets = AssetManager::Instance();
+
+    for (const auto &[key, path] : MainMenuAssets::Textures)
+    {
+        if (!assets.LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : MainMenuAssets::Fonts)
+    {
+        if (!assets.LoadFont(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    CT_LOG_INFO("MainMenuScene finished LoadRequiredAssets.");
+}
+
+/// @brief Shuts down this scene and resets internal state.
 void MainMenuScene::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Shutdown");
@@ -68,7 +90,7 @@ void MainMenuScene::Shutdown()
     CT_LOG_INFO("MainMenuScene Shutdown.");
 }
 
-// Handles the exit criteria for this scene.
+/// @brief Handles the exit criteria for this scene.
 void MainMenuScene::OnExit()
 {
     if (AudioManager::Instance().IsInitialized())
@@ -79,18 +101,20 @@ void MainMenuScene::OnExit()
     CT_LOG_INFO("MainMenuScene OnExit.");
 }
 
-// Performs internal state management during a single frame.
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update.
 void MainMenuScene::Update(float dt)
 {
     const auto mousePos = InputManager::Instance().GetMousePosition();
     const bool isPressed = InputManager::Instance().IsMouseButtonPressed(sf::Mouse::Left);
+    const bool isJustPressed = InputManager::Instance().IsMouseButtonJustPressed(sf::Mouse::Left);
 
-    UIManager::Instance().Update(mousePos, isPressed);
+    UIManager::Instance().Update(mousePos, isPressed, isJustPressed, dt);
 
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
-        CT_LOG_INFO("MainMenuScene Requesting Scene Change to '{}'", ToString(m_requestedScene));
+        CT_LOG_INFO("MainMenuScene Requesting Scene Change to '{}'", SceneIDToString(m_requestedScene));
         m_hasPendingTransition = false;
         SceneTransitionManager::Instance().ForceFullyOpaque();
         SceneManager::Instance().RequestSceneChange(m_requestedScene);
@@ -106,50 +130,19 @@ void MainMenuScene::Update(float dt)
     return;
 }
 
-// Handle any internal logic that should be done relevant to this scene.
+/// @brief Not used in MainMenuScene context.
+/// @param event bubbled down from caller, not needed.
 void MainMenuScene::HandleEvent(const sf::Event &event)
 {
-    // Only if you want to catch window resize, close, etc.
 }
 
-// Adjust the current scene entities size and positioning.
+/// @brief Not used in MainMenuScene context.
+/// @param newSize bubbled down from caller, not needed.
 void MainMenuScene::OnResize(const sf::Vector2u &newSize)
 {
-    CT_LOG_INFO("MainMenuScene OnResize: new size = {}x{}", newSize.x, newSize.y);
-
-    // Adjust background
-    if (m_backgroundSprite && m_backgroundSprite->getTexture())
-    {
-        sf::Vector2u textureSize = m_backgroundSprite->getTexture()->getSize();
-
-        sf::Vector2f scale(static_cast<float>(newSize.x) / textureSize.x,
-                           static_cast<float>(newSize.y) / textureSize.y);
-
-        m_backgroundSprite->setScale(scale);
-        m_backgroundSprite->setPosition(0.f, 0.f);
-
-        CT_LOG_INFO("Resized background sprite to window size: {}x{}", newSize.x, newSize.y);
-    }
-
-    // Adjust title
-    if (!m_title.getString().isEmpty())
-    {
-        // Optionally resize the title font based on window height
-        const unsigned int fontSize = std::max(24u, newSize.y / 15); // prevent going too small
-        m_title.setCharacterSize(fontSize);
-
-        // Re-center the title horizontally
-        const auto bounds = m_title.getLocalBounds();
-        m_title.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-        m_title.setPosition(static_cast<float>(newSize.x) / 2.f, static_cast<float>(newSize.y) * TITLE_Y_RATIO);
-    }
-
-    // Adjust UI elements
-    UIManager::Instance().Clear();
-    CreateButtons();
 }
 
-// While this scene is active, render the necessary components to the Main Menu Scene.
+/// @brief While this scene is active, render the necessary components.
 void MainMenuScene::Render()
 {
     CT_WARN_IF_UNINITIALIZED("MainMenuScene", "Render");
@@ -162,84 +155,79 @@ void MainMenuScene::Render()
         window.draw(*m_backgroundSprite);
     }
 
-    window.draw(m_title);
     UIManager::Instance().Render(window);
 }
 
-// Helper method to clear up clutter from main Init.
-void MainMenuScene::SetupSceneAssets()
+/// @brief Helper method to clear up clutter from main Init.
+void MainMenuScene::SetupSceneComponents()
 {
-    LoadBackground();
     CreateTitleText();
     CreateButtons();
+    LoadBackground();
+    PlayIntroMusic();
 }
 
-// Assists with the loading of the TitleText for this MainMenuScene.
+/// @brief Assists with the loading of the TitleText for this MainMenuScene.
 void MainMenuScene::CreateTitleText()
 {
-    m_title.setFont(AssetManager::Instance().GetFont("Default.ttf"));
-    m_title.setString("Chaos Theory");
-    m_title.setCharacterSize(DEFAULT_TITLE_FONT_SIZE); // Bigger for drama
-    m_title.setFillColor(sf::Color(102, 255, 102));    // Alien green
-    m_title.setOutlineColor(sf::Color::Black);
-    m_title.setOutlineThickness(3.f);
+    auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const auto bounds = m_title.getLocalBounds();
-    m_title.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    const std::string titleText = DEFAULT_TITLE_STR;
+    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TITLE_FONT_SIZE);
+    const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                    scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
 
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    m_title.setPosition(windowSize.x / 2.f, windowSize.y * TITLE_Y_RATIO);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
+    m_titleLabel->SetColor(DEFAULT_TITLE_COLOR);
+    UIManager::Instance().AddElement(m_titleLabel);
 }
 
-// Assists with creating the Buttons for this MainMenuScene.
+/// @brief Assists with creating the Buttons for this MainMenuScene.
 void MainMenuScene::CreateButtons()
 {
-    auto &window = WindowManager::Instance().GetWindow();
-    const auto windowSize = window.getSize();
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    const sf::Vector2f playPos{(windowSize.x - BUTTON_WIDTH) / 2.f, windowSize.y * 0.70f};
-    const sf::Vector2f settingsPos{playPos.x, playPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
-    const sf::Vector2f exitPos{settingsPos.x, settingsPos.y + BUTTON_HEIGHT + BUTTON_SPACING};
+    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(MAIN_MENU_BUTTON_WIDTH_PIXEL);
+    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL);
+    const float scaledSpacing = scaledButtonHeight * BASE_BUTTON_SPACING_PERCENT;
+    const float startY = winSize.y * 0.7f;
+    const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
 
-    // Play Button
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, playPos, "Play",
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Play button clicked!");
-                                                        m_hasPendingTransition = true;
-                                                        m_requestedScene = SceneID::Game;
-                                                    }));
+    const sf::Vector2f playPos{centerX, startY};
+    const sf::Vector2f settingsPos{centerX, playPos.y + scaledButtonHeight + scaledSpacing};
+    const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
-    // Settings Button
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, settingsPos, "Settings",
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Settings button clicked!");
-                                                        m_hasPendingTransition = true;
-                                                        m_requestedScene = SceneID::Settings;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        playPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Play",
+        [this]()
+        {
+            CT_LOG_INFO("Play button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::Game;
+        }));
 
-    // Exit Button
-    UIManager::Instance().AddElement(MakeMenuButton(ButtonType::Classic, exitPos, "Exit",
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Exit button clicked!");
-                                                        m_shouldExit = true;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        settingsPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Settings",
+        [this]()
+        {
+            CT_LOG_INFO("Settings button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::Settings;
+        }));
+
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
+        exitPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Exit",
+        [this]()
+        {
+            CT_LOG_INFO("Exit button clicked!");
+            m_shouldExit = true;
+        }));
 }
 
-// Loads the main background image for this MainMenuScene.
+/// @brief Loads the main background image for this MainMenuScene.
 void MainMenuScene::LoadBackground()
 {
-    if (!AssetManager::Instance().LoadTexture("menu_bg", "assets/sprites/TitleBackground.png"))
-    {
-        CT_LOG_WARN("Failed to load menu background. Using default.");
-        m_backgroundSprite = std::make_unique<sf::Sprite>(AssetManager::Instance().GetTexture("Default"));
-
-        return;
-    }
-
-    sf::Texture &bgTexture = AssetManager::Instance().GetTexture("menu_bg");
+    sf::Texture &bgTexture = AssetManager::Instance().GetTexture(MainMenuAssets::MenuBackground);
     m_backgroundSprite = std::make_unique<sf::Sprite>(bgTexture);
 
     // Scale to window size
@@ -255,26 +243,18 @@ void MainMenuScene::LoadBackground()
     CT_LOG_INFO("Menu background loaded and scaled.");
 }
 
-// Plays the background music for this MainMenuScene.
+/// @brief Plays the background music for this MainMenuScene.
 void MainMenuScene::PlayIntroMusic()
 {
-    const std::string menuMusic = m_settings->m_audioDirectory + "RootMenu.wav";
-
-    if (!AudioManager::Instance().IsMusicPlaying() || AudioManager::Instance().GetCurrentMusicName() != menuMusic)
+    if (!AudioManager::Instance().IsMusicPlaying() ||
+        AudioManager::Instance().GetCurrentMusicName() != MainMenuAssets::MenuSong)
     {
         CT_LOG_INFO("MainMenuScene: Starting or resuming menu music.");
-        AudioManager::Instance().PlayMusic(menuMusic, true);
+        AudioManager::Instance().PlayMusic(MainMenuAssets::MenuSong, true);
     }
 
     else
     {
         CT_LOG_INFO("MainMenuScene: Menu music already playing, no action needed.");
     }
-}
-
-// Just a simplistic helper method to help make a menu button.
-std::shared_ptr<UIElement> MainMenuScene::MakeMenuButton(ButtonType type, const sf::Vector2f &pos,
-                                                         const std::string &label, std::function<void()> onClick)
-{
-    return UIFactory::Instance().CreateButton(type, pos, {BUTTON_WIDTH, BUTTON_HEIGHT}, label, std::move(onClick));
 }

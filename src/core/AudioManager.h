@@ -48,15 +48,12 @@ class AudioManager
 
     void PlaySFX(const std::string &filename);
 
-    // Master Volume
     void SetMasterVolume(float volume);
     float GetMasterVolume() const;
 
-    // Music Volume
     void SetMusicVolume(float volume);
     float GetMusicVolume() const;
 
-    // SFX Volume
     void SetSFXVolume(float volume);
     float GetSFXVolume() const;
 
@@ -79,13 +76,12 @@ class AudioManager
     std::shared_ptr<Settings> m_settings;
     std::string m_currentTrack;
 
-    float m_masterVolume = 100.0f;
-    float m_musicVolume = 100.0f;
-    float m_sfxVolume = 100.0f;
+    float m_masterVolume;
+    float m_musicVolume;
+    float m_sfxVolume;
 
     std::vector<sf::Sound> m_activeSounds;
     size_t m_nextSoundIndex = 0;
-    const size_t MAX_SIMULTANEOUS_SOUNDS = 16;
 
     bool m_isMuted = false;
 

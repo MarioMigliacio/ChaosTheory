@@ -23,7 +23,7 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Returns SFML Render window, handles PollEvents,
-//                size adjustments, and rendering, and fullsize.
+//                size adjustments, rendering, and fullsize.
 //
 // ============================================================================
 class WindowManager
@@ -42,6 +42,8 @@ class WindowManager
 
     void Recreate(const unsigned int width, const unsigned int height, const std::string &title, sf::Uint32 style);
     void ApplySettings(sf::Uint32 style);
+    void ApplyResolution(ResolutionSetting res);
+    sf::Vector2u GetResolutionSize(ResolutionSetting res) const;
     void SetClearColor(const sf::Color &color);
     void ToggleFullscreen();
     bool PollEvent(sf::Event &event);

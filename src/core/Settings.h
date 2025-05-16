@@ -16,10 +16,59 @@
 #include <string>
 #include <unordered_map>
 
-// Settings structure to hold internal game configurable data points.
+/// @brief Simple enumeration type for window Resolution settings.
+enum class ResolutionSetting
+{
+    Res720p,
+    Res1080p,
+    Fullscreen
+};
+
+/// @brief Utility function to convert ResolutionSetting to string
+/// @param id which ResolutionSetting enumeration.
+/// @return readyonly string identifying the ResolutionSetting enum.
+inline std::string ResolutionSettingToString(ResolutionSetting setting)
+{
+    switch (setting)
+    {
+        case ResolutionSetting::Res720p:
+        default: // fallback
+            return "720p";
+        case ResolutionSetting::Res1080p:
+            return "1080p";
+        case ResolutionSetting::Fullscreen:
+            return "Fullscreen";
+    }
+}
+
+/// @brief Returns a ResultionSetting enumeration from a string.
+/// @param str input ResolutionSetting as a string representation.
+/// @return an Enumeration form of ResolutionSetting.
+inline ResolutionSetting FromStringToResolution(const std::string &str)
+{
+    if (str == "720p")
+    {
+        return ResolutionSetting::Res720p;
+    }
+
+    if (str == "1080p")
+    {
+        return ResolutionSetting::Res1080p;
+    }
+
+    if (str == "Fullscreen")
+    {
+        return ResolutionSetting::Fullscreen;
+    }
+
+    return ResolutionSetting::Res720p; // default fallback
+}
+
+/// @brief Settings structure to hold internal game configurable data points.
 struct Settings
 {
-    std::string m_windowTitle = "Chaos Theory";
+    std::string m_windowTitle = "ChaosTheory";
+    ResolutionSetting m_resolution = ResolutionSetting::Res720p;
     unsigned int m_windowWidth = 1280;
     unsigned int m_windowHeight = 720;
     unsigned int m_targetFramerate = 60;
@@ -38,7 +87,5 @@ struct Settings
     std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings = {{"MoveLeft", sf::Keyboard::A},
                                                                         {"MoveRight", sf::Keyboard::D},
                                                                         {"MoveUp", sf::Keyboard::W},
-                                                                        {"MoveDown", sf::Keyboard::S},
-                                                                        {"MenuSelectNext", sf::Keyboard::Enter},
-                                                                        {"MenuSelectBack", sf::Keyboard::Space}};
+                                                                        {"MoveDown", sf::Keyboard::S}};
 };

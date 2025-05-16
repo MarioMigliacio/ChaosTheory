@@ -41,7 +41,7 @@ class UIManager
     void AddElement(std::shared_ptr<UIElement> element);
     const std::vector<std::shared_ptr<UIElement>> &GetElements() const;
 
-    void Update(const sf::Vector2i &mousePos, bool isLeftClick);
+    void Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJustClicked, float dt);
     void Render(sf::RenderWindow &window);
     void Clear();
 
@@ -54,8 +54,8 @@ class UIManager
 
   private:
     std::vector<std::shared_ptr<UIElement>> m_elements;
-    bool m_isInitialized = false;
 
+    bool m_isInitialized = false;
     bool m_isUpdating = false;
     bool m_pendingClear = false;
 };

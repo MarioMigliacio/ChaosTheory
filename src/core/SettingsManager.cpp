@@ -16,13 +16,16 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
 
+/// @brief Get the current Instance for this SettingsManager singleton.
+/// @return reference to existing SettingsManager interface.
 SettingsManager &SettingsManager::Instance()
 {
     static SettingsManager instance;
     return instance;
 }
 
-// Initializes this SettingsManager, owning the Settings configurations.
+/// @brief Initializes this SettingsManager, owning the Settings configurations.
+/// @param settings Shared pointer to settings object.
 void SettingsManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -33,20 +36,23 @@ void SettingsManager::Init(std::shared_ptr<Settings> settings)
     CT_LOG_INFO("SettingsManager initialized.");
 }
 
-// Resets the internal states for the Settings Manager.
+/// @brief Resets the internal states for the SettingsManager.
 void SettingsManager::Shutdown()
 {
     m_settings.reset();
     m_isInitialized = false;
 }
 
-// Returns whether or not the SettingsManager has been initialized.
+/// @brief Returns whether or not the SettingsManager has been initialized.
+/// @return m_isInitialized.
 bool SettingsManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Loads in the essential default settings config file into this Settings object.
+/// @brief Loads in the essential default settings config file into this Settings object.
+/// @param filepath file path to config file.
+/// @return success = true / false.
 bool SettingsManager::LoadFromFile(const std::string &filepath)
 {
     if (!m_settings)
@@ -62,6 +68,9 @@ bool SettingsManager::LoadFromFile(const std::string &filepath)
     return result;
 }
 
+/// @brief Saves the settings object to file for future use.
+/// @param path file path to config file.
+/// @return success = true / false.
 bool SettingsManager::SaveToFile(const std::string &path) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SettingsManager", "SaveToFile", false);
@@ -71,45 +80,27 @@ bool SettingsManager::SaveToFile(const std::string &path) const
         return false;
     }
 
-    using json = nlohmann::json;
-
-    json j;
-
-    j["paths"]["font_dir"] = m_settings->m_fontDirectory;
-    j["paths"]["audio_dir"] = m_settings->m_audioDirectory;
-    j["paths"]["sprite_dir"] = m_settings->m_spriteDirectory;
-
-    j["audio"]["master_volume"] = m_settings->m_masterVolume;
-    j["audio"]["music_volume"] = m_settings->m_musicVolume;
-    j["audio"]["sfx_volume"] = m_settings->m_sfxVolume;
-    j["audio"]["is_muted"] = m_settings->m_isMuted;
-
-    std::ofstream out(path);
-
-    if (!out.is_open())
-    {
-        std::cerr << "Failed to open file for saving: " << path << "\\n";
-
-        return false;
-    }
-
-    out << j.dump(4); // Pretty print with indent
+    bool result = ConfigLoader::SaveAsJson(path, *m_settings);
 
     CT_LOG_INFO("SettingsManager saved to file: {}", path);
 
-    return true;
+    return result;
 }
 
-// Get the reference for the Settings object.
+/// @brief Returns the reference for the Settings object.
+/// @return m_settings.
 std::shared_ptr<Settings> SettingsManager::GetSettings()
 {
     return m_settings;
 }
 
+/// @brief Similar to == overload, but function form: Is parameter settings different then m_settings?
+/// @param other compare settings against.
+/// @return true = is different, false = is same.
 bool SettingsManager::IsDifferentFrom(const Settings &other) const
 {
     return m_settings->m_windowTitle != other.m_windowTitle || m_settings->m_windowWidth != other.m_windowWidth ||
-           m_settings->m_windowHeight != other.m_windowHeight ||
+           m_settings->m_windowHeight != other.m_windowHeight || m_settings->m_resolution != other.m_resolution ||
            m_settings->m_targetFramerate != other.m_targetFramerate ||
            m_settings->m_verticleSyncEnabled != other.m_verticleSyncEnabled ||
            m_settings->m_isFullscreen != other.m_isFullscreen || m_settings->m_masterVolume != other.m_masterVolume ||

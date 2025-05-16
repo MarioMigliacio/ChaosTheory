@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : Button.h
+//  File        : UIButton.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-18
@@ -13,26 +13,14 @@
 #pragma once
 
 #include "UIElement.h"
+#include "UIPresets.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <string>
 
-//
-// Default Colors for Button States
-//
-const sf::Color DEFAULT_IDLE_COLOR(200, 200, 200);
-const sf::Color DEFAULT_HOVER_COLOR(160, 160, 255);
-const sf::Color DEFAULT_ACTIVE_COLOR(100, 100, 255);
-const sf::Color DEFAULT_DISABLED_IDLE_COLOR(100, 100, 100);
-const sf::Color DEFAULT_DISABLED_HOVER_COLOR(100, 100, 100);
-const sf::Color DEFAULT_TEXT_COLOR(0, 0, 0);
-const sf::Color DEFAULT_SELECTED_COLOR(100, 180, 255);
-const sf::Color DEFAULT_SELECTED_TEXT_COLOR(255, 255, 255);
-const sf::Color DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
-
 // ============================================================================
-//  Class       : Button
-//  Purpose     : Manages this Button logic at the ui level.
+//  Class       : UIButton
+//  Purpose     : Manages this UIButton logic at the ui level.
 //
 //  Responsibilities:
 //      - Set button position
@@ -40,19 +28,19 @@ const sf::Color DEFAULT_DISABLED_TEXT_COLOR(200, 200, 200);
 //      - Display button specifics during render
 //
 // ============================================================================
-class Button : public UIElement
+class UIButton : public UIElement
 {
   public:
-    Button(const sf::Vector2f &position, const sf::Vector2f &size);
-    ~Button() override = default;
+    UIButton(const sf::Vector2f &position, const sf::Vector2f &size);
+    ~UIButton() override = default;
 
     // Disable copy
-    Button(const Button &) = delete;
-    Button &operator=(const Button &) = delete;
+    UIButton(const UIButton &) = delete;
+    UIButton &operator=(const UIButton &) = delete;
 
     // Allow move
-    Button(Button &&) noexcept = default;
-    Button &operator=(Button &&) noexcept = default;
+    UIButton(UIButton &&) noexcept = default;
+    UIButton &operator=(UIButton &&) noexcept = default;
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
     void SetCallback(std::function<void()> callback);
@@ -64,11 +52,14 @@ class Button : public UIElement
     void SetFontSize(unsigned int size);
     void SetHoverScale(float scale);
 
-    void Update(const sf::Vector2i &mousePosition, bool isMousePressed) override;
+    void Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;
+    sf::Vector2f GetPosition() const override;
+
     void SetSize(const sf::Vector2f &size) override;
+    sf::Vector2f GetSize() const override;
 
   private:
     void CenterLabel();
@@ -83,12 +74,12 @@ class Button : public UIElement
     sf::RectangleShape m_shape;
     sf::Text m_label;
 
-    sf::Color m_idleColor = DEFAULT_IDLE_COLOR;
-    sf::Color m_hoverColor = DEFAULT_HOVER_COLOR;
-    sf::Color m_activeColor = DEFAULT_ACTIVE_COLOR;
-    sf::Color m_textColor = DEFAULT_TEXT_COLOR;
+    sf::Color m_idleColor = BUTTON_DEFAULT_IDLE_COLOR;
+    sf::Color m_hoverColor = BUTTON_DEFAULT_HOVER_COLOR;
+    sf::Color m_activeColor = BUTTON_DEFAULT_ACTIVE_COLOR;
+    sf::Color m_textColor = BUTTON_DEFAULT_TEXT_COLOR;
 
-    unsigned int m_fontSize = 24;
+    unsigned int m_fontSize = BUTTON_DEFAULT_FONT_SIZE;
     float m_hoverScale = 1.05f;
 
     bool m_isHovered = false;

@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
-//  Description : Input Manager is the CT library dedicated manager of
+//  Description : InputManager is the CT library dedicated manager of
 //                user inputs from any source
 //
 //  License     : N/A Open source
@@ -13,13 +13,16 @@
 #include "InputManager.h"
 #include "Macros.h"
 
+/// @brief Get the current Instance for this InputManager singleton.
+/// @return reference to existing InputManager interface.
 InputManager &InputManager::Instance()
 {
     static InputManager instance;
     return instance;
 }
 
-// Initializes the Input manager using the provided settings.
+/// @brief Initializes the InputManager using the provided settings.
+/// @param settings Settings object to initalize with.
 void InputManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -32,7 +35,7 @@ void InputManager::Init(std::shared_ptr<Settings> settings)
     CT_LOG_INFO("InputManager initialized.");
 }
 
-// Shuts down the Input manager and resets internal state.
+/// @brief Shuts down the InputManager and resets internal state.
 void InputManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "Shutdown");
@@ -49,13 +52,15 @@ void InputManager::Shutdown()
     CT_LOG_INFO("InputManager shutdown.");
 }
 
-// Returns whether the Input manager has been initialized.
+/// @brief Returns whether the InputManager has been initialized.
+/// @return m_isInitialized.
 bool InputManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Performs internal state management during a single frame.
+/// @brief Performs internal state management during a single frame.
+/// @param event event to enact on.
 void InputManager::Update(const sf::Event &event)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "Update");
@@ -108,7 +113,7 @@ void InputManager::Update(const sf::Event &event)
     }
 }
 
-// Completes state management during the end of a frame.
+/// @brief Completes state management during the end of a frame.
 void InputManager::PostUpdate()
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "PostUpdate");
@@ -117,7 +122,9 @@ void InputManager::PostUpdate()
     m_mousePrevious = m_mouseCurrent;
 }
 
-// Returns the state of whether a key is still being pressed based on the input action.
+/// @brief Returns the state of whether a key is still being pressed based on the input action.
+/// @param action determine if the action is bound to key, and if it is being pressed.
+/// @return true / false
 bool InputManager::IsKeyPressed(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsKeyPressed", false);
@@ -132,7 +139,9 @@ bool InputManager::IsKeyPressed(const std::string &action) const
     return m_currentState.contains(key) ? m_currentState.at(key) : false;
 }
 
-// Returns the state of if a key has just been pressed, based on the input action.
+/// @brief Returns the state of if a key has just been pressed, based on the input action.
+/// @param action determine if the action is bound to key, and if it is just being pressed now.
+/// @return true / false
 bool InputManager::IsJustPressed(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsJustPressed", false);
@@ -150,7 +159,9 @@ bool InputManager::IsJustPressed(const std::string &action) const
     return curr && !prev;
 }
 
-// Returns the state of if a key has just been released, based on the input action.
+/// @brief Returns the state of if a key has just been released, based on the input action.
+/// @param action determine if the action is bound to key, and if it is just being released now.
+/// @return true / false
 bool InputManager::IsJustReleased(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsJustReleased", false);
@@ -168,7 +179,8 @@ bool InputManager::IsJustReleased(const std::string &action) const
     return !curr && prev;
 }
 
-// Returns the currently tracked position of the mouse.
+/// @brief Returns the currently tracked position of the mouse.
+/// @return m_mousePosition.
 sf::Vector2i InputManager::GetMousePosition() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "GetMousePosition", sf::Vector2i(0, 0));
@@ -176,7 +188,8 @@ sf::Vector2i InputManager::GetMousePosition() const
     return m_mousePosition;
 }
 
-// Internally updates the mouse position during event processing.
+/// @brief Internally updates the mouse position during event processing.
+/// @param position new m_mousePosition.
 void InputManager::SetMousePosition(const sf::Vector2i &position)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "SetMousePosition");
@@ -184,7 +197,9 @@ void InputManager::SetMousePosition(const sf::Vector2i &position)
     m_mousePosition = position;
 }
 
-// Updates internal for mouse button press
+/// @brief Updates internal for mouse button press, for testing.
+/// @param button which Button.
+/// @param isPressed IsPressed?
 void InputManager::SetMouseButtonState(sf::Mouse::Button button, bool isPressed)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "SetMouseButtonState");
@@ -192,7 +207,9 @@ void InputManager::SetMouseButtonState(sf::Mouse::Button button, bool isPressed)
     m_mouseCurrent[button] = isPressed;
 }
 
-// Returns whether or not the Mouse button identified as 'button' is being pressed.
+/// @brief Returns whether or not the Mouse button identified as 'button' is being pressed.
+/// @param button the Button to check.
+/// @return true / false
 bool InputManager::IsMouseButtonPressed(sf::Mouse::Button button) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsMouseButtonPressed", false);
@@ -200,7 +217,9 @@ bool InputManager::IsMouseButtonPressed(sf::Mouse::Button button) const
     return m_mouseCurrent.contains(button) ? m_mouseCurrent.at(button) : false;
 }
 
-// Returns whether or not the Mouse button identified as 'button' has just been pressed the first time.
+/// @brief Returns whether or not the Mouse button identified as 'button' has just been pressed the first time.
+/// @param button the Button to check.
+/// @return true / false
 bool InputManager::IsMouseButtonJustPressed(sf::Mouse::Button button) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsMouseButtonJustPressed", false);
@@ -211,7 +230,9 @@ bool InputManager::IsMouseButtonJustPressed(sf::Mouse::Button button) const
     return curr && !prev;
 }
 
-// Returns whether or not the Mouse button identified as 'button' has just been released.
+/// @brief Returns whether or not the Mouse button identified as 'button' has just been released.
+/// @param button the Button to check.
+/// @return true / false
 bool InputManager::IsMouseButtonJustReleased(sf::Mouse::Button button) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsMouseButtonJustReleased", false);
@@ -222,7 +243,9 @@ bool InputManager::IsMouseButtonJustReleased(sf::Mouse::Button button) const
     return !curr && prev;
 }
 
-// Internally updates the state when SFML events are received
+/// @brief Internally updates the state when SFML events are received
+/// @param button Button being updated.
+/// @param isDown State of Button to update.
 void InputManager::UpdateMouseButton(sf::Mouse::Button button, bool isDown)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "UpdateMouseButton");
@@ -235,7 +258,9 @@ void InputManager::UpdateMouseButton(sf::Mouse::Button button, bool isDown)
     m_mousePrevious[button] = isDown;
 }
 
-// Stores an input action and the matching SFML Key to an internal unordered map.
+/// @brief Stores an input action and the matching SFML Key to an internal unordered map.
+/// @param action The string representation for the action.
+/// @param key Button key to bind action to.
 void InputManager::BindKey(const std::string &action, sf::Keyboard::Key key)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "BindKey");
@@ -243,7 +268,8 @@ void InputManager::BindKey(const std::string &action, sf::Keyboard::Key key)
     m_keyBindings[action] = key;
 }
 
-// Removes an input action and the matching SFML Key from the internal unordered map.
+/// @brief Removes an input action and the matching SFML Key from the internal unordered map.
+/// @param action The string representation for the action.
 void InputManager::UnbindKey(const std::string &action)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "UnbindKey");
@@ -251,7 +277,9 @@ void InputManager::UnbindKey(const std::string &action)
     m_keyBindings.erase(action);
 }
 
-// Returns the matching SFML Key if the supplied action maps correctly to the internal unordered map.
+/// @brief Returns the matching SFML Key if the supplied action maps correctly to the internal unordered map.
+/// @param action The string representation for the action.
+/// @return The keyboard key which is mapped to the action.
 sf::Keyboard::Key InputManager::GetBoundKey(const std::string &action) const
 {
     CT_WARN_IF_UNINITIALIZED_RET("InputManager", "GetBoundKey", sf::Keyboard::Unknown);
@@ -264,7 +292,7 @@ sf::Keyboard::Key InputManager::GetBoundKey(const std::string &action) const
     return sf::Keyboard::Unknown;
 }
 
-// Applies synchronization between the manager settings of SFML Key bindings and the Settings object.
+/// @brief Applies synchronization between the manager settings of SFML Key bindings and the Settings object.
 void InputManager::LoadBindings()
 {
     // TODO, provide additional key bindings for various scenes. This merely loads some easy defaults.

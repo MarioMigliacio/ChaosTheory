@@ -25,7 +25,7 @@
 #include "WindowManager.h"
 #include "version.h"
 
-// Initializes the Application with all the Managers; holding final ownership over the provided settings.
+/// @brief Initializes the Application with all the Managers; holding final ownership over the provided settings.
 void Application::Init()
 {
 #if defined(_MSC_VER) && defined(_DEBUG)
@@ -61,7 +61,7 @@ void Application::Init()
     CT_LOG_INFO("ChaosTheory v{}", CT_VERSION_STRING);
 }
 
-// Begin the main game loop.
+/// @brief Begin the main game loop.
 void Application::Run()
 {
     sf::Clock clock;
@@ -83,7 +83,7 @@ void Application::Run()
     Shutdown();
 }
 
-// Shuts down the Application after shutting down any manager and resets internal state.
+/// @brief Shuts down the Application after shutting down any manager and resets internal state.
 void Application::Shutdown()
 {
     WindowManager::Instance().Shutdown();
@@ -100,7 +100,7 @@ void Application::Shutdown()
     m_isInitialized = false;
 }
 
-// Requests any event processing that needs to be finalized in a game frame.
+/// @brief Requests any event processing that needs to be finalized in a game frame.
 void Application::ProcessEvents()
 {
     sf::Event event;
@@ -152,7 +152,7 @@ void Application::ProcessEvents()
     }
 }
 
-// Renders any necessary finalized imagery in the game frame.
+/// @brief Renders any necessary finalized imagery in the game frame.
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();

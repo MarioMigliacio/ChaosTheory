@@ -17,13 +17,16 @@
 #include "SettingsScene.h"
 #include "SplashScene.h"
 
+/// @brief Get the current Instance for this SceneManager singleton.
+/// @return reference to existing SceneManager interface.
 SceneManager &SceneManager::Instance()
 {
     static SceneManager instance;
     return instance;
 }
 
-// Initializes the Scene Manager.
+/// @brief Initializes the SceneManager.
+/// @param settings Internal settings to initialize with.
 void SceneManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -33,11 +36,10 @@ void SceneManager::Init(std::shared_ptr<Settings> settings)
 
     RegisterAllDefaultScenes();
 
-    CT_LOG_INFO("SceneManager ready. Awaiting first scene push.");
-    CT_LOG_INFO("SceneManager Initialized.");
+    CT_LOG_INFO("SceneManager Initialized. Awaiting first scene push.");
 }
 
-// Shuts down the Scene manager and resets internal state, calling for all child scenes to exit and shutdown.
+/// @brief Shuts down the SceneManager and resets internal state, calling for all child scenes to exit and shutdown.
 void SceneManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "Shutdown");
@@ -60,13 +62,15 @@ void SceneManager::Shutdown()
     CT_LOG_INFO("SceneManager Shutdown.");
 }
 
-// Returns whether or not Scene Manager has been initialized.
+/// @brief Returns whether or not Scene Manager has been initialized.
+/// @return true / false
 bool SceneManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Performs internal state management during a single frame.
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update.
 void SceneManager::Update(float dt)
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "Update");
@@ -78,7 +82,8 @@ void SceneManager::Update(float dt)
     }
 }
 
-// Handle any internal logic that should be done relevant to the current scene.
+/// @brief Handle any internal logic that should be done relevant to the current scene.
+/// @param event bubbled down from caller, let individual scene determine if relevent.
 void SceneManager::HandleEvent(const sf::Event &event)
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "HandleEvent");
@@ -89,7 +94,7 @@ void SceneManager::HandleEvent(const sf::Event &event)
     }
 }
 
-// Render the necessary components to the current existing top Scene.
+/// @brief Render the necessary components to the current existing top Scene.
 void SceneManager::Render()
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "Render");
@@ -100,38 +105,24 @@ void SceneManager::Render()
     }
 }
 
-// Registers a callback function for a scene by ID.
+/// @brief Registers a callback function for a scene by ID.
+/// @param sceneId Key index to the scene registry collection.
+/// @param createFn Pointer to a function that will return smart pointer to a Scene type.
 void SceneManager::Register(SceneID sceneId, SceneCreateFunc createFn)
 {
     if (m_sceneRegistry.contains(sceneId))
     {
-        CT_LOG_WARN("SceneManager: Scene '{}' is already registered!", ToString(sceneId));
+        CT_LOG_WARN("SceneManager: Scene '{}' is already registered!", SceneIDToString(sceneId));
 
         return;
     }
 
     m_sceneRegistry[sceneId] = std::move(createFn);
 
-    CT_LOG_INFO("Scene '{}' registered with SceneManager.", ToString(sceneId));
+    CT_LOG_INFO("Scene '{}' registered with SceneManager.", SceneIDToString(sceneId));
 }
 
-// Return a safe pointer to a scene that is already registered by sceneId key, else nullptr.
-std::unique_ptr<Scene> SceneManager::Create(SceneID sceneId)
-{
-
-    if (m_sceneRegistry.contains(sceneId))
-    {
-        CT_LOG_INFO("SceneManager: Create '{}'.", ToString(sceneId));
-
-        return m_sceneRegistry[sceneId]();
-    }
-
-    CT_LOG_WARN("SceneManager::Create failed: '{}' is not registered.", ToString(sceneId));
-
-    return nullptr;
-}
-
-// Grow with application development. Easily register all the game scenes to be retrieved and updated.
+/// @brief Grow with application development. Easily register all the game scenes to be retrieved and updated.
 void SceneManager::RegisterAllDefaultScenes()
 {
     Register(SceneID::Splash, [this]() { return std::make_unique<SplashScene>(m_settings); });
@@ -142,7 +133,26 @@ void SceneManager::RegisterAllDefaultScenes()
     CT_LOG_INFO("All default scenes registered.");
 }
 
-// Initialize the requested scene, and place it on the top of the collection of scenes.
+/// @brief Return a smart pointer to a scene that is already registered by sceneId key, else nullptr.
+/// @param sceneId Key identifier to index into scene registry collection.
+/// @return Smart pointer to a Scene object.
+std::unique_ptr<Scene> SceneManager::Create(SceneID sceneId)
+{
+
+    if (m_sceneRegistry.contains(sceneId))
+    {
+        CT_LOG_INFO("SceneManager: Create '{}'.", SceneIDToString(sceneId));
+
+        return m_sceneRegistry[sceneId]();
+    }
+
+    CT_LOG_WARN("SceneManager::Create failed: '{}' is not registered.", SceneIDToString(sceneId));
+
+    return nullptr;
+}
+
+/// @brief Initialize the requested scene, and place it on the top of the collection of scenes.
+/// @param scene Scene to be pushed into collection of scenes.
 void SceneManager::PushScene(std::unique_ptr<Scene> scene)
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "PushScene");
@@ -155,7 +165,7 @@ void SceneManager::PushScene(std::unique_ptr<Scene> scene)
     }
 }
 
-// Remove the top scene from the collection of scenes.
+/// @brief Remove the top scene from the collection of scenes.
 void SceneManager::PopScene()
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "PopScene");
@@ -168,7 +178,8 @@ void SceneManager::PopScene()
     }
 }
 
-// Exposes a callback scenario where the current scene is removed, and then its new scene is added to the m_scenes list
+/// @brief Current scene is removed, and then newScene is added to the m_scenes list
+/// @param newScene Next Scene to be operated on.
 void SceneManager::ReplaceScene(std::unique_ptr<Scene> newScene)
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "ReplaceScene");
@@ -177,7 +188,7 @@ void SceneManager::ReplaceScene(std::unique_ptr<Scene> newScene)
     PushScene(std::move(newScene));
 }
 
-// Remove all the scenes from the collection.
+/// @brief Remove all the scenes from the collection.
 void SceneManager::ClearScenes()
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "ClearScenes");
@@ -192,7 +203,8 @@ void SceneManager::ClearScenes()
     CT_LOG_INFO("All scenes cleared.");
 }
 
-// Returns the state of whether the scene collection is empty or not.
+/// @brief Returns the state of whether the scene collection is empty or not.
+/// @return true / false
 bool SceneManager::IsEmpty() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "IsEmpty", false);
@@ -200,7 +212,8 @@ bool SceneManager::IsEmpty() const
     return m_scenes.empty();
 }
 
-// Returns whether or not there is a currently active scene.
+/// @brief Returns whether or not there is a currently active scene.
+/// @return true / false
 bool SceneManager::HasActiveScene() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "HasActiveScene", false);
@@ -208,7 +221,8 @@ bool SceneManager::HasActiveScene() const
     return !m_scenes.empty();
 }
 
-// Returns the collection size of the number of existing scenes.
+/// @brief Returns the collection size of the number of existing scenes.
+/// @return size of internal scene collection.
 std::size_t SceneManager::GetSceneCount() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "GetSceneCount", 0);
@@ -216,7 +230,8 @@ std::size_t SceneManager::GetSceneCount() const
     return m_scenes.size();
 }
 
-// Returns a pointer to the currently active scene.
+/// @brief Gets the currently active scene.
+/// @return Pointer to the currently active scene.
 Scene *SceneManager::GetActiveScene() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("SceneManager", "GetActiveScene", nullptr);
@@ -229,12 +244,14 @@ Scene *SceneManager::GetActiveScene() const
     return m_scenes.top().get();
 }
 
-// Request that a scene transition based on ID immediately take place.
+/// @brief Request that a scene transition based on ID immediately take place. Generally used by individual Scenes logic
+/// for scene transitions.
+/// @param id SceneID enumeration identifying a type of scene.
 void SceneManager::RequestSceneChange(SceneID id)
 {
     if (!m_sceneRegistry.contains(id))
     {
-        CT_LOG_WARN("SceneManager::RequestSceneChange: SceneID '{}' is not registered.", ToString(id));
+        CT_LOG_WARN("SceneManager::RequestSceneChange: SceneID '{}' is not registered.", SceneIDToString(id));
 
         return;
     }

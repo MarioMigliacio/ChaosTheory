@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
-//  Description : Log Manager is the CT library wrapper for the open source
+//  Description : LogManager is the CT library wrapper for the open source
 //                spd logger external logic
 //
 //  License     : N/A Open source
@@ -17,13 +17,15 @@
 #include <spdlog/sinks/msvc_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+/// @brief Get the current Instance for this LogManager singleton.
+/// @return reference to existing LogManager interface.
 LogManager &LogManager::Instance()
 {
     static LogManager instance;
     return instance;
 }
 
-// Initializes the spdlog logger and applies sinks for msvc, console, and file logging.
+/// @brief Initializes the spdlog logger and applies sinks for msvc, console, and file logging.
 void LogManager::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -50,7 +52,7 @@ void LogManager::Init()
     CT_LOG_INFO("Logger initialized.");
 }
 
-// Shuts down the Log manager and resets internal state.
+/// @brief Shuts down the LogManager and resets internal state.
 void LogManager::Shutdown()
 {
     CT_LOG_INFO("Logger shutdown.");
@@ -60,13 +62,15 @@ void LogManager::Shutdown()
     m_isInitialized = false;
 }
 
-// Returns whether the Log manager has been initialized.
+/// @brief Returns whether the LogManager has been initialized.
+/// @return true / false
 bool LogManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Returns a reference to the spd logger.
+/// @brief Returns a reference to the spd logger.
+/// @return m_logger.
 std::shared_ptr<spdlog::logger> LogManager::GetLogger()
 {
     return m_logger;

@@ -36,8 +36,8 @@ class Scene
     Scene &operator=(const Scene &) = delete;
 
     virtual void Init() = 0;
+    virtual void LoadRequiredAssets() = 0;
     virtual void Shutdown() = 0;
-
     virtual void OnExit() = 0;
 
     virtual void Update(float dt) = 0;
