@@ -16,22 +16,30 @@
 
 #include <filesystem>
 
-// These static references to certain sf objects are used for short circuit logic where the AssetManager might not yet
-// be initialized, so doing routine logic would be dangerous
+/// @brief These static references to certain sf objects are used for short circuit logic where the AssetManager might
+/// not yet be initialized, so doing routine logic would be dangerous.
 namespace
 {
+/// @brief An empty, but valid SoundBuffer.
 static sf::SoundBuffer dummySoundBuffer;
+
+/// @brief An empty, but valid Texture.
 static sf::Texture dummyTexture;
+
+/// @brief An empty, but valid Font.
 static sf::Font dummyFont;
 } // namespace
 
+/// @brief Get the current Instance for this AssetManager singleton.
+/// @return reference to existing AssetManager interface.
 AssetManager &AssetManager::Instance()
 {
     static AssetManager instance;
     return instance;
 }
 
-// Initializes the Asset manager using the provided settings.
+/// @brief Initializes the AssetManager using the provided settings.
+/// @param settings Settings needed for initializing.
 void AssetManager::Init(std::shared_ptr<const Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -47,7 +55,7 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
     CT_LOG_INFO("AssetManager initialized.");
 }
 
-// Shuts down the Asset manager and resets internal state.
+/// @brief Shuts down the AssetManager and resets internal state.
 void AssetManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("AssetManager", "Shutdown");
@@ -62,83 +70,17 @@ void AssetManager::Shutdown()
     CT_LOG_INFO("AssetManager shutdown.");
 }
 
-// Loads every asset relative to the assets folder. Potential to deprecate in future in favor of lazy loading.
-void AssetManager::LoadAllAssets()
-{
-    CT_LOG_INFO("Loading all assets from configured directories...");
-
-    namespace fs = std::filesystem;
-
-    // --------- FONTS ----------
-    for (const auto &entry : fs::directory_iterator(m_settings->m_fontDirectory))
-    {
-        if (entry.is_regular_file())
-        {
-            std::string filename = entry.path().filename().string();
-            std::string name = entry.path().stem().string(); // no extension
-            std::string fullPath = entry.path().string();
-
-            if (LoadFont(name, fullPath))
-            {
-                CT_LOG_TRACE("Loaded font '{}'", filename);
-            }
-            else
-            {
-                CT_LOG_WARN("Failed to load font '{}'", filename);
-            }
-        }
-    }
-
-    // --------- TEXTURES ----------
-    for (const auto &entry : fs::directory_iterator(m_settings->m_spriteDirectory))
-    {
-        if (entry.is_regular_file())
-        {
-            std::string filename = entry.path().filename().string();
-            std::string name = entry.path().stem().string();
-            std::string fullPath = entry.path().string();
-
-            if (LoadTexture(name, fullPath))
-            {
-                CT_LOG_TRACE("Loaded texture '{}'", filename);
-            }
-            else
-            {
-                CT_LOG_WARN("Failed to load texture '{}'", filename);
-            }
-        }
-    }
-
-    // --------- SOUNDS ----------
-    for (const auto &entry : fs::directory_iterator(m_settings->m_audioDirectory))
-    {
-        if (entry.is_regular_file())
-        {
-            std::string filename = entry.path().filename().string();
-            std::string name = entry.path().stem().string();
-            std::string fullPath = entry.path().string();
-
-            if (LoadSound(name, fullPath))
-            {
-                CT_LOG_TRACE("Loaded sound '{}'", filename);
-            }
-            else
-            {
-                CT_LOG_WARN("Failed to load sound '{}'", filename);
-            }
-        }
-    }
-
-    CT_LOG_INFO("Finished loading all assets.");
-}
-
-// Returns whether the Asset manager has been initialized.
+/// @brief Returns whether the Asset manager has been initialized.
+/// @return m_isInitialized.
 bool AssetManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Load the requested font into internal storage for later use by name index.
+/// @brief Load the requested font into internal storage for later use by name index.
+/// @param name index to store.
+/// @param filepath value to store.
+/// @return true / false
 bool AssetManager::LoadFont(const std::string &name, const std::string &filepath)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadFont", false);
@@ -161,7 +103,9 @@ bool AssetManager::LoadFont(const std::string &name, const std::string &filepath
     return true;
 }
 
-// Return a reference to the requested font if it exists in internal storage.
+/// @brief Return a reference to the requested font if it exists in internal storage.
+/// @param name index to fetch.
+/// @return m_fonts[index]
 sf::Font &AssetManager::GetFont(const std::string &name)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetFont", dummyFont);
@@ -176,7 +120,10 @@ sf::Font &AssetManager::GetFont(const std::string &name)
     return m_fonts[name];
 }
 
-// Load the requested texture into internal storage for later use by name index.
+/// @brief Load the requested texture into internal storage for later use by name index.
+/// @param name index to store.
+/// @param filepath value to store.
+/// @return true / false
 bool AssetManager::LoadTexture(const std::string &name, const std::string &filepath)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadTexture", false);
@@ -200,7 +147,9 @@ bool AssetManager::LoadTexture(const std::string &name, const std::string &filep
     return true;
 }
 
-// Return a reference to the requested texture if it exists in internal storage.
+/// @brief Return a reference to the requested texture if it exists in internal storage.
+/// @param name index to fetch.
+/// @return m_textures[index]
 sf::Texture &AssetManager::GetTexture(const std::string &name)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetTexture", dummyTexture);
@@ -215,7 +164,10 @@ sf::Texture &AssetManager::GetTexture(const std::string &name)
     return m_textures[name];
 }
 
-// Load the requested sound into internal storage for alter use by name index.
+/// @brief Load the requested sound into internal storage for later use by name index.
+/// @param name index to store.
+/// @param filepath value to store.
+/// @return true / false
 bool AssetManager::LoadSound(const std::string &name, const std::string &filepath)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "LoadSound", false);
@@ -239,7 +191,9 @@ bool AssetManager::LoadSound(const std::string &name, const std::string &filepat
     return true;
 }
 
-// Return a reference to the requested sound if it exists in internal storage.
+/// @brief Return a reference to the requested sound if it exists in internal storage.
+/// @param name index to fetch.
+/// @return m_sounds[index]
 sf::SoundBuffer &AssetManager::GetSound(const std::string &name)
 {
     CT_WARN_IF_UNINITIALIZED_RET("AssetManager", "GetSound", dummySoundBuffer);

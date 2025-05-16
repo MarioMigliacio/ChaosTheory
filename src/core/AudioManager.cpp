@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-12
-//  Description : Audio Manager is the CT library dedicated manager of
+//  Description : AudioManager is the CT library dedicated manager of
 //                sound and music buffers
 //
 //  License     : N/A Open source
@@ -15,13 +15,22 @@
 #include "Macros.h"
 #include "Settings.h"
 
+namespace
+{
+/// @brief Defines the max size of the sound effect ring buffer.
+const size_t MAX_SIMULTANEOUS_SOUNDS = 16;
+} // namespace
+
+/// @brief Get the current Instance for this AudioManager singleton.
+/// @return reference to existing AudioManager interface.
 AudioManager &AudioManager::Instance()
 {
     static AudioManager instance;
     return instance;
 }
 
-// Initializes the SFML audio entities using the provided settings.
+/// @brief Initializes the SFML audio entities using the provided settings.
+/// @param settings Settings to initialize with.
 void AudioManager::Init(std::shared_ptr<Settings> settings)
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -41,7 +50,8 @@ void AudioManager::Init(std::shared_ptr<Settings> settings)
                 m_musicVolume, m_sfxVolume, m_isMuted ? "Yes" : "No");
 }
 
-// Provides interface to reload settings and internal variable sync.
+/// @brief Provides interface to reload settings and internal variable sync.
+/// @param settings Settings to reload with.
 void AudioManager::HotReload(std::shared_ptr<Settings> settings)
 {
     m_settings = settings;
@@ -54,7 +64,7 @@ void AudioManager::HotReload(std::shared_ptr<Settings> settings)
     CT_LOG_INFO("AudioManager hot reloaded settings.");
 }
 
-// Shuts down the audio manager and resets internal state.
+/// @brief Shuts down the AudioManager and resets internal state.
 void AudioManager::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Shutdown");
@@ -71,13 +81,15 @@ void AudioManager::Shutdown()
     CT_LOG_INFO("AudioManager shutdown complete.");
 }
 
-// Returns whether or not the Audio manager has been initialized.
+/// @brief Returns whether or not the AudioManager has been initialized.
+/// @return m_isInitialized.
 bool AudioManager::IsInitialized() const
 {
     return m_isInitialized;
 }
 
-// Completes state management during a game frame.
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update.
 void AudioManager::Update(float dt)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Update");
@@ -115,7 +127,11 @@ void AudioManager::Update(float dt)
     }
 }
 
-// Request to begin playing a music file, with optional loop and fade features.
+/// @brief Request to begin playing a music file, with optional loop and fade features.
+/// @param filename Music file to play.
+/// @param loop Whether or not to loop.
+/// @param fadeIn IsFadingIn?
+/// @param fadeDuration How long to fade.
 void AudioManager::PlayMusic(const std::string &filename, bool loop, bool fadeIn, float fadeDuration)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "PlayMusic");
@@ -148,7 +164,9 @@ void AudioManager::PlayMusic(const std::string &filename, bool loop, bool fadeIn
     CT_LOG_INFO("Playing music: '{}' | Loop: {} | FadeIn: {}", filename, loop, fadeIn);
 }
 
-// Request to halt any playing music file, with optional fade feature.
+/// @brief Request to halt any playing music file, with optional fade feature.
+/// @param fadeOut Opt to slowly diminish volume on stop.
+/// @param fadeDuration Duration to fade if fadeOut true.
 void AudioManager::StopMusic(bool fadeOut, float fadeDuration)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "StopMusic");
@@ -167,7 +185,7 @@ void AudioManager::StopMusic(bool fadeOut, float fadeDuration)
     CT_LOG_INFO("Stopping music. FadeOut: {}", fadeOut);
 }
 
-// Request to pause any playing music file.
+/// @brief Request to pause any playing music file.
 void AudioManager::PauseMusic()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "PauseMusic");
@@ -179,7 +197,7 @@ void AudioManager::PauseMusic()
     }
 }
 
-// Request to continue playing any paused music file.
+/// @brief Request to continue playing any paused music file.
 void AudioManager::ResumeMusic()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "ResumeMusic");
@@ -191,7 +209,8 @@ void AudioManager::ResumeMusic()
     }
 }
 
-// Return the state of whether any music is currently playing.
+/// @brief Return the state of whether any music is currently playing.
+/// @return true / false
 bool AudioManager::IsMusicPlaying() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsMusicPlaying", false);
@@ -199,7 +218,8 @@ bool AudioManager::IsMusicPlaying() const
     return m_music->getStatus() == sf::Music::Playing;
 }
 
-// Return the state of whether any music file is currently in the process of fading out.
+/// @brief Return the state of whether any music file is currently in the process of fading out.
+/// @return true / false
 bool AudioManager::IsFadingOut() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsFadingOut", false);
@@ -207,7 +227,8 @@ bool AudioManager::IsFadingOut() const
     return m_isFadingOut;
 }
 
-// Return the state of whether any music file is currently in the process of fading in.
+/// @brief Return the state of whether any music file is currently in the process of fading in.
+/// @return true / false
 bool AudioManager::IsFadingIn() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsFadingIn", false);
@@ -215,7 +236,8 @@ bool AudioManager::IsFadingIn() const
     return m_isFadingIn;
 }
 
-// Request to play a sound effect from a ring buffer of SFML managed sound buffers.
+/// @brief Request to play a sound effect from a ring buffer of SFML managed sound buffers.
+/// @param filename Sound Effect file to add to ring buffer in support of up to 16 concurrent sfx files.
 void AudioManager::PlaySFX(const std::string &filename)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "PlaySFX");
@@ -230,7 +252,8 @@ void AudioManager::PlaySFX(const std::string &filename)
     m_nextSoundIndex = (m_nextSoundIndex + 1) % MAX_SIMULTANEOUS_SOUNDS;
 }
 
-// Synchronizes the Settings object with the internals of the Audio Manager volume controls.
+/// @brief Synchronizes the Settings object with the internals of the AudioManager volume controls.
+/// @param volume new masterVolume Settings to use.
 void AudioManager::SetMasterVolume(float volume)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "SetMasterVolume");
@@ -249,7 +272,8 @@ void AudioManager::SetMasterVolume(float volume)
     }
 }
 
-// Returns the Audio managers current master volume.
+/// @brief Returns the AudioManagers current master volume.
+/// @return m_masterVolume.
 float AudioManager::GetMasterVolume() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetMasterVolume", 0.f);
@@ -257,7 +281,8 @@ float AudioManager::GetMasterVolume() const
     return m_masterVolume;
 }
 
-// Synchronizes the Settings object with the internals of the Audio Manager volume controls.
+/// @brief Synchronizes the Settings object with the internals of the AudioManager volume controls.
+/// @param volume new m_musicVolume.
 void AudioManager::SetMusicVolume(float volume)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "SetMusicVolume");
@@ -275,14 +300,16 @@ void AudioManager::SetMusicVolume(float volume)
     }
 }
 
-// Returns the Audio managers current music volume.
+/// @brief Returns the AudioManagers current music volume.
+/// @return m_musicVolume.
 float AudioManager::GetMusicVolume() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetMusicVolume", 0.f);
     return m_musicVolume;
 }
 
-// Synchronizes the Settings object with the internals of the Audio Manager volume controls.
+/// @brief Synchronizes the Settings object with the internals of the AudioManager volume controls.
+/// @param volume new m_sfxVolume.
 void AudioManager::SetSFXVolume(float volume)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "SetSFXVolume");
@@ -295,7 +322,8 @@ void AudioManager::SetSFXVolume(float volume)
     }
 }
 
-// Returns the Audio managers current sfx volume.
+/// @brief Returns the AudioManagers current sfx volume.
+/// @return m_sfxVolume.
 float AudioManager::GetSFXVolume() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "GetSFXVolume", 0.f);
@@ -303,7 +331,7 @@ float AudioManager::GetSFXVolume() const
     return m_sfxVolume;
 }
 
-// Sets the current volume to zero (mute), synchronizes the Settings object.
+/// @brief Sets the current volume to zero (mute), synchronizes the Settings object.
 void AudioManager::Mute()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Mute");
@@ -323,7 +351,7 @@ void AudioManager::Mute()
     CT_LOG_INFO("AudioManager muted");
 }
 
-// Sets the current volume to the masterVolume previously set before mute. Synchronizes the Settings object.
+/// @brief Sets the current volume to the musicVolume previously set before mute. Synchronizes the Settings object.
 void AudioManager::Unmute()
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "Unmute");
@@ -343,7 +371,8 @@ void AudioManager::Unmute()
     CT_LOG_INFO("AudioManager unmuted");
 }
 
-// Returns the state of whether or not the audio manager is muted.
+/// @brief Returns the state of whether or not the AudioManager is muted.
+/// @return true / false
 bool AudioManager::IsMuted() const
 {
     CT_WARN_IF_UNINITIALIZED_RET("AudioManager", "IsMuted", false);
@@ -351,7 +380,9 @@ bool AudioManager::IsMuted() const
     return m_isMuted;
 }
 
-// Adjusts the currently playing sound track to the requested file with optional loop feature.
+/// @brief Adjusts the currently playing sound track to the requested file with optional loop feature.
+/// @param filename new File track to attempt to play.
+/// @param loop whether or not to loop the file.
 void AudioManager::SwitchTrack(const std::string &filename, bool loop)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "SwitchTrack");
@@ -367,6 +398,8 @@ void AudioManager::SwitchTrack(const std::string &filename, bool loop)
     PlayMusic(filename, loop, true);
 }
 
+/// @brief Returns the current music string name.
+/// @return m_currentTrack.
 const std::string &AudioManager::GetCurrentMusicName() const
 {
     return m_currentTrack;
