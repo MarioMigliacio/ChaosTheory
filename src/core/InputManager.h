@@ -46,7 +46,7 @@ class InputManager
 
     sf::Vector2i GetMousePosition() const;
     void SetMousePosition(const sf::Vector2i &position);
-    void SetMouseButtonState(sf::Mouse::Button button, bool isPressed); // for testing
+    void SetMouseButtonState(sf::Mouse::Button button, bool isPressed);
 
     bool IsMouseButtonPressed(sf::Mouse::Button button) const;
     bool IsMouseButtonJustPressed(sf::Mouse::Button button) const;

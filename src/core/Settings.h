@@ -16,7 +16,7 @@
 #include <string>
 #include <unordered_map>
 
-// Simple enumeration type for window Resolution settings.
+/// @brief Simple enumeration type for window Resolution settings.
 enum class ResolutionSetting
 {
     Res720p,
@@ -64,7 +64,7 @@ inline ResolutionSetting FromStringToResolution(const std::string &str)
     return ResolutionSetting::Res720p; // default fallback
 }
 
-// Settings structure to hold internal game configurable data points.
+/// @brief Settings structure to hold internal game configurable data points.
 struct Settings
 {
     std::string m_windowTitle = "ChaosTheory";
@@ -87,7 +87,5 @@ struct Settings
     std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings = {{"MoveLeft", sf::Keyboard::A},
                                                                         {"MoveRight", sf::Keyboard::D},
                                                                         {"MoveUp", sf::Keyboard::W},
-                                                                        {"MoveDown", sf::Keyboard::S},
-                                                                        {"MenuSelectNext", sf::Keyboard::Enter},
-                                                                        {"MenuSelectBack", sf::Keyboard::Space}};
+                                                                        {"MoveDown", sf::Keyboard::S}};
 };

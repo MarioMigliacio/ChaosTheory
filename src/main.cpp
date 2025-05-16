@@ -17,6 +17,8 @@
 #include <crtdbg.h>
 #endif
 
+/// @brief Entry point in the application.
+/// @return return value is mostly ignored.
 int main()
 {
     Application app;

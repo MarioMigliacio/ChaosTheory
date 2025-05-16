@@ -23,7 +23,7 @@
 //  Responsibilities:
 //      - Initializes and shuts down
 //      - Returns SFML Render window, handles PollEvents,
-//                size adjustments, and rendering, and fullsize.
+//                size adjustments, rendering, and fullsize.
 //
 // ============================================================================
 class WindowManager
