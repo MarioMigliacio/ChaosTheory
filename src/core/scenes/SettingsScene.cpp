@@ -454,7 +454,7 @@ void SettingsScene::CreateResolutionControls()
     UIManager::Instance().AddElement(groupBox);
 }
 
-/// @brief Generate the ui elements needed for the Key Bindings Settings page.
+/// @brief Generate the ui elements needed for the Difficulty Settings page.
 void SettingsScene::CreateDifficultyControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
