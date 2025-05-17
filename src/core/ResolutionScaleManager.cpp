@@ -118,3 +118,17 @@ unsigned int ResolutionScaleManager::ScaleFont(unsigned int size) const
 {
     return static_cast<unsigned int>(std::round(size * GetUniformScale()));
 }
+
+/// @brief Provides easy access to the reference resolutions width.
+/// @return m_referenceResolution.x
+unsigned int ResolutionScaleManager::ReferenceResolutionX() const
+{
+    return m_referenceResolution.x;
+}
+
+/// @brief Provides easy access to the reference resolution height.
+/// @return  m_referenceResolution.y
+unsigned int ResolutionScaleManager::ReferenceResolutionY() const
+{
+    return m_referenceResolution.y;
+}

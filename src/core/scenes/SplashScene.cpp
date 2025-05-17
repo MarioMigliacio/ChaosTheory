@@ -122,9 +122,11 @@ void SplashScene::Render()
 }
 
 /// @brief Loads the Splash texture background image from the SplashAssets namespace.
+/// @note SplashScene uses a very specific movement pattern on the sprite itself, so we
+/// do not use the Background class here.
 void SplashScene::LoadBackground()
 {
-    sf::Texture &bgTexture = AssetManager::Instance().GetTexture(SplashAssets::SplashBackground);
+    sf::Texture &bgTexture = *AssetManager::Instance().GetTexture(SplashAssets::SplashBackground);
 
     m_background = std::make_unique<sf::Sprite>(bgTexture);
 

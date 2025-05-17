@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
-//  Description : Main test for the Chaos Theory UI Manager class
+//  Description : Unit tests for the Chaos Theory UI Manager class
 //
 //  License     : N/A Open source
 // ============================================================================

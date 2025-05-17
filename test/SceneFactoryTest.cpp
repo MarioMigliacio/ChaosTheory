@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-28
-//  Description : Main test for the Chaos Theory Scene Factory class
+//  Description : Unit tests for the Chaos Theory Scene Factory class
 //
 //  License     : N/A Open source
 // ============================================================================

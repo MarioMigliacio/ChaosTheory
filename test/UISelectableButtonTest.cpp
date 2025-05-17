@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
-//  Description : Main test for the Chaos Theory UISelectableButton class
+//  Description : Unit tests for the Chaos Theory UISelectableButton class
 //
 //  License     : N/A Open source
 // ============================================================================
@@ -72,7 +72,7 @@ TEST_F(UISelectableButtonTest, CanToggleSelectedState)
 TEST_F(UISelectableButtonTest, CanSetTextAndFont)
 {
     UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
-    const auto &font = AssetManager::Instance().GetFont("Default.ttf");
+    const auto &font = *AssetManager::Instance().GetFont("Default.ttf");
 
     btn.SetText("Updated", font, 28);
     // No crash = pass; visual test only

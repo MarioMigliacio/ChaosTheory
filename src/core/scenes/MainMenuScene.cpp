@@ -111,6 +111,11 @@ void MainMenuScene::Update(float dt)
 
     UIManager::Instance().Update(mousePos, isPressed, isJustPressed, dt);
 
+    if (m_background)
+    {
+        m_background->Update(dt);
+    }
+
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
@@ -150,9 +155,9 @@ void MainMenuScene::Render()
     auto &window = WindowManager::Instance().GetWindow();
     window.clear();
 
-    if (m_backgroundSprite)
+    if (m_background)
     {
-        window.draw(*m_backgroundSprite);
+        m_background->Draw(window);
     }
 
     UIManager::Instance().Render(window);
@@ -224,21 +229,15 @@ void MainMenuScene::CreateButtons()
         }));
 }
 
-/// @brief Loads the main background image for this MainMenuScene.
+/// @brief Loads the main background images for this MainMenuScene.
 void MainMenuScene::LoadBackground()
 {
-    sf::Texture &bgTexture = AssetManager::Instance().GetTexture(MainMenuAssets::MenuBackground);
-    m_backgroundSprite = std::make_unique<sf::Sprite>(bgTexture);
+    m_background = std::make_unique<Background>();
+    m_background->InitParallax({{"GasPattern1", 2.f}, {"PlainStarBackground", 1.f}, {"GasPattern2", 4.f}});
 
-    // Scale to window size
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    const auto texSize = bgTexture.getSize();
-
-    const float scaleX = static_cast<float>(windowSize.x) / texSize.x;
-    const float scaleY = static_cast<float>(windowSize.y) / texSize.y;
-
-    m_backgroundSprite->setScale(scaleX, scaleY);
-    m_backgroundSprite->setPosition(0.f, 0.f);
+    m_background->SetLayerMotion("GasPattern1", {-1.f, 0.f});
+    m_background->SetLayerMotion("GasPattern2", {1.f, 0.f});
+    m_background->SetLayerMotion("PlainStarBackground", {1.f, .33f});
 
     CT_LOG_INFO("Menu background loaded and scaled.");
 }

@@ -242,7 +242,7 @@ void AudioManager::PlaySFX(const std::string &filename)
 {
     CT_WARN_IF_UNINITIALIZED("AudioManager", "PlaySFX");
 
-    sf::SoundBuffer &buffer = AssetManager::Instance().GetSound(filename);
+    sf::SoundBuffer &buffer = *AssetManager::Instance().GetSound(filename);
 
     sf::Sound &sound = m_activeSounds[m_nextSoundIndex];
     sound.setBuffer(buffer);

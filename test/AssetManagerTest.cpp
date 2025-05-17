@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
-//  Description : Main test for the Chaos Theory Asset Manager class
+//  Description : Unit tests for the Chaos Theory Asset Manager class
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -49,26 +49,26 @@ class AssetManagerTest : public ::testing::Test
 TEST_F(AssetManagerTest, CanLoadAndRetrieveTextureFontAndSounds)
 {
     AssetManager::Instance().LoadTexture("PlayerShip", "assets/sprites/playerShip.png");
-    const auto &texture = AssetManager::Instance().GetTexture("PlayerShip");
+    const auto &texture = *AssetManager::Instance().GetTexture("PlayerShip");
     EXPECT_NE(&texture, nullptr);
 
     AssetManager::Instance().LoadFont("Default", "assets/fonts/Default.ttf");
-    const auto &font = AssetManager::Instance().GetFont("Default");
+    const auto &font = *AssetManager::Instance().GetFont("Default");
     EXPECT_NE(&font, nullptr);
 
     AssetManager::Instance().LoadSound("Bomb", "assets/audio/Bomb.wav");
-    const auto &sound = AssetManager::Instance().GetSound("Bomb");
+    const auto &sound = *AssetManager::Instance().GetSound("Bomb");
     EXPECT_NE(&sound, nullptr);
 }
 
-TEST_F(AssetManagerTest, ReturnsFallbbackForMissingTexture)
+TEST_F(AssetManagerTest, ReturnsNullptrForMissingTexture)
 {
-    const auto &texture = AssetManager::Instance().GetTexture("nonexistent");
-    EXPECT_NE(&texture, nullptr);
+    const auto &texture = *AssetManager::Instance().GetTexture("nonexistent");
+    EXPECT_EQ(&texture, nullptr);
 
-    const auto &font = AssetManager::Instance().GetFont("nonexistent");
-    EXPECT_NE(&font, nullptr);
+    const auto &font = *AssetManager::Instance().GetFont("nonexistent");
+    EXPECT_EQ(&font, nullptr);
 
-    const auto &sound = AssetManager::Instance().GetSound("nonexistent");
-    EXPECT_NE(&sound, nullptr);
+    const auto &sound = *AssetManager::Instance().GetSound("nonexistent");
+    EXPECT_EQ(&sound, nullptr);
 }

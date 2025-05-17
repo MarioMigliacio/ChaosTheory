@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-22
-//  Description : Main test suite for the Chaos Theory SettingsManager class
+//  Description : Unit tests suite for the Chaos Theory SettingsManager class
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio

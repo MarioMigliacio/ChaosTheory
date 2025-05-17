@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Background.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
@@ -92,6 +93,6 @@ class SettingsScene : public Scene
     float m_toastTimer = 0.f;
 
     std::shared_ptr<UITextLabel> m_titleLabel;
-    std::unique_ptr<sf::Sprite> m_backgroundSprite;
+    std::unique_ptr<Background> m_background;
     sf::Text m_toastText;
 };

@@ -112,7 +112,7 @@ void GameScene::Render()
     text.setString("Game Scene - Press [Space] to return to Menu");
     text.setCharacterSize(24);
     text.setFillColor(sf::Color::Green);
-    text.setFont(AssetManager::Instance().GetFont("Default"));
+    text.setFont(*AssetManager::Instance().GetFont("Default"));
     text.setPosition(80.f, 80.f);
 
     window.draw(text);

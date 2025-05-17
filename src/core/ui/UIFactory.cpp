@@ -36,7 +36,7 @@ std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, 
 
     auto button = std::make_shared<UIButton>(position, scaledSize);
 
-    button->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
+    button->SetText(label, *AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
     button->SetCallback(std::move(onClick));
     button->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
     button->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
@@ -64,7 +64,7 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
 
     auto selectableButton = std::make_shared<UISelectableButton>(position, scaledSize);
 
-    selectableButton->SetText(label, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
+    selectableButton->SetText(label, *AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
     selectableButton->SetCallback(std::move(onClick));
     selectableButton->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
     selectableButton->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
@@ -95,7 +95,7 @@ std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, cons
     const auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(14);
 
     auto slider = std::make_shared<UISlider>(label, minValue, maxValue, initialValue, scaledPos, scaledSize, onChange);
-    slider->SetFont(AssetManager::Instance().GetFont("Default.ttf"));
+    slider->SetFont(*AssetManager::Instance().GetFont("Default.ttf"));
     slider->SetFontSize(scaledFontSize);
     slider->SetTitlePositionOffset(sf::Vector2f(0.f, -ResolutionScaleManager::Instance().ScaleY(24.f)));
 
@@ -135,7 +135,7 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
     const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
-    groupBox->SetTitle(title, AssetManager::Instance().GetFont("Default.ttf"),
+    groupBox->SetTitle(title, *AssetManager::Instance().GetFont("Default.ttf"),
                        scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE));
     groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
     groupBox->SetCenterChildren(true);             // safe default state
@@ -156,7 +156,7 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 {
     auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
     auto label =
-        std::make_shared<UITextLabel>(text, AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize, position);
+        std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize, position);
 
     if (!centerOrigin)
         label->SetPosition(position); // no auto-centering
@@ -172,7 +172,7 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string &text, const sf::Vector2f &position,
                                                               float duration)
 {
-    const auto &font = AssetManager::Instance().GetFont("Default.ttf");
+    const auto &font = *AssetManager::Instance().GetFont("Default.ttf");
     unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
     sf::Color color = sf::Color::White;
     bool centerOrigin = true;

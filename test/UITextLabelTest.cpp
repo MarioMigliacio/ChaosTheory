@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-05-07
-//  Description : Main test for the Chaos Theory UITextLabel class
+//  Description : Unit tests for the Chaos Theory UITextLabel class
 //
 //  License     : N/A Open source
 // ============================================================================
@@ -46,7 +46,7 @@ class UITextLabelTest : public ::testing::Test
 TEST_F(UITextLabelTest, CreationSetsCorrectPosition)
 {
     AssetManager::Instance().LoadFont("Default", "assets/fonts/Default.ttf");
-    const auto &font = AssetManager::Instance().GetFont("Default");
+    const auto &font = *AssetManager::Instance().GetFont("Default");
 
     UITextLabel label("Test", font, 24, {0.f, 0.f});
 
@@ -56,7 +56,7 @@ TEST_F(UITextLabelTest, CreationSetsCorrectPosition)
 TEST_F(UITextLabelTest, SetPositionUpdatesCorrectly)
 {
     AssetManager::Instance().LoadFont("Default", "assets/fonts/Default.ttf");
-    const auto &font = AssetManager::Instance().GetFont("Default");
+    const auto &font = *AssetManager::Instance().GetFont("Default");
 
     UITextLabel label("Test", font, 24, {0.f, 0.f});
     label.SetPosition({100.f, 100.f});

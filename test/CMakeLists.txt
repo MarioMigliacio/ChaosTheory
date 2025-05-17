@@ -6,6 +6,7 @@ enable_testing()
 add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AudioManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BackgroundTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp

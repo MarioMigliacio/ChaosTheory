@@ -113,6 +113,11 @@ void SettingsScene::Update(float dt)
 
     CheckForUnsavedChanges();
 
+    if (m_background)
+    {
+        m_background->Update(dt);
+    }
+
     if (m_applyButton)
     {
         m_applyButton->SetEnabled(m_hasUnsavedChanges);
@@ -172,9 +177,9 @@ void SettingsScene::Render()
     auto &window = WindowManager::Instance().GetWindow();
     window.clear();
 
-    if (m_backgroundSprite)
+    if (m_background)
     {
-        window.draw(*m_backgroundSprite);
+        m_background->Draw(window);
     }
 
     UIManager::Instance().Render(window);
@@ -246,18 +251,11 @@ void SettingsScene::CreateTitleText()
 /// @brief Loads the main background image for this SettingsScene.
 void SettingsScene::LoadBackground()
 {
-    sf::Texture &bgTexture = AssetManager::Instance().GetTexture(SettingsAssets::SettingsBackground);
-    m_backgroundSprite = std::make_unique<sf::Sprite>(bgTexture);
+    m_background = std::make_unique<Background>();
+    m_background->InitParallax({{"GasPattern3", 2.f}, {"PlainStarBackground", 1.f}});
 
-    // Scale to window size
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    const auto texSize = bgTexture.getSize();
-
-    const float scaleX = static_cast<float>(windowSize.x) / texSize.x;
-    const float scaleY = static_cast<float>(windowSize.y) / texSize.y;
-
-    m_backgroundSprite->setScale(scaleX, scaleY);
-    m_backgroundSprite->setPosition(0.f, 0.f);
+    m_background->SetLayerMotion("PlainStarBackground", {1.f, -0.33f});
+    m_background->SetLayerMotion("GasPattern3", {1.f, 0.f});
 
     CT_LOG_INFO("SettingsScene background loaded and scaled.");
 }

@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-27
-//  Description : Main test for the Chaos Theory UISlider class
+//  Description : Unit tests for the Chaos Theory UISlider class
 //
 //  License     : N/A Open source
 // ============================================================================

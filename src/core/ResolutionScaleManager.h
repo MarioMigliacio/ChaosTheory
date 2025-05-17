@@ -48,6 +48,9 @@ class ResolutionScaleManager
 
     unsigned int ScaleFont(unsigned int size) const;
 
+    unsigned int ReferenceResolutionX() const;
+    unsigned int ReferenceResolutionY() const;
+
   private:
     ResolutionScaleManager() = default;
     ~ResolutionScaleManager() = default;
