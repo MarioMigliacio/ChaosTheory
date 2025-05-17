@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-21
-//  Description : Main test for the Chaos Theory Audio Manager class
+//  Description : Unit tests for the Chaos Theory Audio Manager class
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio

@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-05-07
-//  Description : Main test for the Chaos Theory UIGroupBox class
+//  Description : Unit tests for the Chaos Theory UIGroupBox class
 //
 //  License     : N/A Open source
 // ============================================================================

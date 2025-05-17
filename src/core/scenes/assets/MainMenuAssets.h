@@ -15,20 +15,17 @@
 #include <string>
 #include <unordered_map>
 
+/// @brief Exposes Textures, Fonts, and Audio assets to the MainMenuAssets namespace.
 namespace MainMenuAssets
 {
 /// @brief Path for the MenuSong.
 constexpr auto MenuSong = "assets/audio/RootMenu.wav";
 
-/// @brief Key to the MenuFont Asset.
-constexpr auto MenuFont = "MenuFont";
-
-/// @brief Key to the MenuBackground Asset.
-constexpr auto MenuBackground = "MenuBackground";
-
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Textures = {
-    {"MenuBackground", "assets/backgrounds/NebulaBackground.png"},
+    {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
+    {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
+    {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
 };
 
 /// @brief Fonts contain a Key and Value pair collection of font assets

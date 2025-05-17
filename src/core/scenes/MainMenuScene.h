@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "Background.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
@@ -52,7 +53,6 @@ class MainMenuScene final : public Scene
     void Render() override;
 
   private:
-    // Setup helpers
     void SetupSceneComponents();
     void CreateTitleText();
     void CreateButtons();
@@ -61,8 +61,7 @@ class MainMenuScene final : public Scene
 
   private:
     std::shared_ptr<Settings> m_settings;
-
-    std::unique_ptr<sf::Sprite> m_backgroundSprite;
+    std::unique_ptr<Background> m_background;
     std::shared_ptr<UITextLabel> m_titleLabel;
     SceneID m_requestedScene = SceneID::Splash;
 };

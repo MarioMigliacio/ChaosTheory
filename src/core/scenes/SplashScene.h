@@ -55,9 +55,7 @@ class SplashScene final : public Scene
 
   private:
     std::shared_ptr<Settings> m_settings;
-
     std::unique_ptr<sf::Sprite> m_background;
-    std::unique_ptr<sf::Texture> m_backgroundTexture;
 
     bool m_fadingIn = false;
     bool m_fadingOut = false;

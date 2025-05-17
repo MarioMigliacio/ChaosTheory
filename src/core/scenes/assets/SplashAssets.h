@@ -15,6 +15,7 @@
 #include <string>
 #include <unordered_map>
 
+/// @brief Exposes Textures, Fonts, and Audio assets to the SplashAssets namespace.
 namespace SplashAssets
 {
 /// @brief Key to the SplashBackground Asset.

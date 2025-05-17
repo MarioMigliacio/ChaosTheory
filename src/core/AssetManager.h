@@ -35,17 +35,16 @@ class AssetManager
     void Init(std::shared_ptr<const Settings> settings);
     void Shutdown();
 
-    void LoadAllAssets();
     bool IsInitialized() const;
 
     bool LoadFont(const std::string &name, const std::string &filepath);
-    sf::Font &GetFont(const std::string &name);
+    sf::Font *GetFont(const std::string &name);
 
     bool LoadTexture(const std::string &name, const std::string &filepath);
-    sf::Texture &GetTexture(const std::string &name);
+    sf::Texture *GetTexture(const std::string &name);
 
     bool LoadSound(const std::string &name, const std::string &filepath);
-    sf::SoundBuffer &GetSound(const std::string &name);
+    sf::SoundBuffer *GetSound(const std::string &name);
 
   private:
     AssetManager() = default;

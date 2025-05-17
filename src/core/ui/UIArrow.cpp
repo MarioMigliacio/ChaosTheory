@@ -160,7 +160,7 @@ void UIArrow::LoadTexture()
 {
     const std::string textureName = "arrow_texture";
     AssetManager::Instance().LoadTexture(textureName, "assets/ui/arrow_texture.png");
-    m_texture = &AssetManager::Instance().GetTexture(textureName);
+    m_texture = AssetManager::Instance().GetTexture(textureName);
     m_sprite.setTexture(*m_texture);
 }
 

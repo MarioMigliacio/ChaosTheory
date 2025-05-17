@@ -15,20 +15,16 @@
 #include <string>
 #include <unordered_map>
 
+/// @brief Exposes Textures, Fonts, and Audio assets to the SettingsAssets namespace.
 namespace SettingsAssets
 {
-/// @brief Key to the SettingsBackground Asset.
-constexpr auto SettingsBackground = "SettingsBackground";
-
 /// @brief Key to the SettingsSound Asset.
 constexpr auto SettingsSound = "SettingsSound";
 
-/// @brief Key to the SettingsFont Asset.
-constexpr auto SettingsFont = "SettingsFont";
-
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Textures = {
-    {"SettingsBackground", "assets/backgrounds/DarkStarryBackground.png"},
+    {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
+    {"GasPattern3", "assets/backgrounds/GasPattern3.png"},
 };
 
 /// @brief Sounds contain a Key and Value pair collection of audio sfx assets
