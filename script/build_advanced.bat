@@ -77,6 +77,10 @@ if "%BUILD_TESTS%"=="true" (
     cmake --build . --config %CONFIG% --target CT_tests
 )
 
+:: ==== Copy config.json ====
+echo [INFO] Copying config file to %TARGET_DIR%...
+copy "%ROOT%\config.json" "%TARGET_DIR%" >nul
+
 :: ==== Copy SFML DLLs ====
 echo [INFO] Copying SFML DLLs to %TARGET_DIR%...
 xcopy /Y /Q "%SFML_BIN%\*.dll" "%TARGET_DIR%\" >nul

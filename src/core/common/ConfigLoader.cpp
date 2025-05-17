@@ -46,11 +46,11 @@ bool ConfigLoader::LoadFromJson(const std::string &filepath, Settings &settings)
         settings.m_sfxVolume = j["audio"]["sfx_volume"];
         settings.m_isMuted = j["audio"]["is_muted"];
 
-        // Resolution configs
-        if (j.contains("video") && j["video"].contains("resolution"))
-        {
-            settings.m_resolution = FromStringToResolution(j["video"]["resolution"]);
-        }
+        // Video Resolution
+        settings.m_resolution = FromStringToResolution(j["video"]["resolution"]);
+
+        // Game Difficulty
+        settings.m_gameDifficulty = FromStringToGameDifficulty(j["difficulty"]["mode"]);
     }
 
     catch (const json::exception &e)
@@ -82,6 +82,8 @@ bool ConfigLoader::SaveAsJson(const std::string &filepath, const Settings &setti
     j["audio"]["is_muted"] = settings.m_isMuted;
 
     j["video"]["resolution"] = ResolutionSettingToString(settings.m_resolution);
+
+    j["difficulty"]["mode"] = GameDifficultySettingToString(settings.m_gameDifficulty);
 
     std::ofstream out(filepath);
 
