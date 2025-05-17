@@ -226,7 +226,7 @@ void SettingsScene::CreateUI(SettingsPage page)
 
         case SettingsPage::KeyBindings:
         {
-            CreateKeyBindingControls();
+            CreateDifficultyControls();
 
             break;
         }
@@ -455,11 +455,11 @@ void SettingsScene::CreateResolutionControls()
 }
 
 /// @brief Generate the ui elements needed for the Key Bindings Settings page.
-void SettingsScene::CreateKeyBindingControls()
+void SettingsScene::CreateDifficultyControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string title = "Key Binding Settings";
+    const std::string title = "Difficulty Settings";
     const sf::Vector2f relativePos{0.375f, 0.33f};
     const sf::Vector2f relativeSize{0.25f, 0.33f};
 
@@ -468,18 +468,34 @@ void SettingsScene::CreateKeyBindingControls()
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.01f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.2f * relativeSize.y));
 
-    // Add some placeholder buttons for binding keys
-    groupBox->AddElement(UIFactory::Instance().CreateButton({0.f, 0.f},
-                                                            {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
-                                                            "Fire Bomb", []() { CT_LOG_INFO("Fire Bomb clicked"); }));
+    // Define the resolution options
+    std::vector<std::pair<std::string, GameDifficultySetting>> options = {{"Easy", GameDifficultySetting::Easy},
+                                                                          {"Normal", GameDifficultySetting::Normal},
+                                                                          {"Hard", GameDifficultySetting::Hard}};
 
-    groupBox->AddElement(UIFactory::Instance().CreateButton({0.f, 0.f},
-                                                            {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
-                                                            "Shoot", []() { CT_LOG_INFO("Shoot clicked"); }));
+    const sf::Vector2f buttonSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
-    groupBox->AddElement(UIFactory::Instance().CreateButton({0.f, 0.f},
-                                                            {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL},
-                                                            "Strafe", []() { CT_LOG_INFO("Strafe clicked"); }));
+    const auto current = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
+
+    for (const auto &[label, modeValue] : options)
+    {
+        auto selectableButton = UIFactory::Instance().CreateSelectableButton(
+            {0.f, 0.f}, buttonSize, label,
+            [this, modeValue, label, groupBox]()
+            {
+                for (auto &el : groupBox->GetChildren())
+                {
+                    if (auto sb = std::dynamic_pointer_cast<UISelectableButton>(el))
+                    {
+                        sb->SetSelected(sb->GetLabel() == label);
+                    }
+                }
+                SettingsManager::Instance().GetSettings()->m_gameDifficulty = modeValue;
+            });
+
+        selectableButton->SetSelected(modeValue == current);
+        groupBox->AddElement(selectableButton);
+    }
 
     UIManager::Instance().AddElement(groupBox);
 }
