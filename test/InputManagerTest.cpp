@@ -75,7 +75,7 @@ TEST_F(InputManagerTest, KeyPressTracking)
     InputManager::Instance().PostUpdate();
 
     EXPECT_TRUE(InputManager::Instance().IsKeyPressed("MoveLeft"));
-    EXPECT_FALSE(InputManager::Instance().IsJustPressed("MoveLeft")); // PostUpdate() clears just pressed
+    EXPECT_FALSE(InputManager::Instance().IsKeyJustPressed("MoveLeft")); // PostUpdate() clears just pressed
 }
 
 TEST_F(InputManagerTest, KeyJustPressedDetected)
@@ -85,10 +85,10 @@ TEST_F(InputManagerTest, KeyJustPressedDetected)
     event.key.code = sf::Keyboard::D;
 
     InputManager::Instance().Update(event);
-    EXPECT_TRUE(InputManager::Instance().IsJustPressed("MoveRight"));
+    EXPECT_TRUE(InputManager::Instance().IsKeyJustPressed("MoveRight"));
 
     InputManager::Instance().PostUpdate();
-    EXPECT_FALSE(InputManager::Instance().IsJustPressed("MoveRight")); // Only true on the first frame
+    EXPECT_FALSE(InputManager::Instance().IsKeyJustPressed("MoveRight")); // Only true on the first frame
 }
 
 TEST_F(InputManagerTest, KeyReleasedState)
@@ -104,7 +104,7 @@ TEST_F(InputManagerTest, KeyReleasedState)
     InputManager::Instance().Update(release);
 
     EXPECT_FALSE(InputManager::Instance().IsKeyPressed("MoveRight"));
-    EXPECT_FALSE(InputManager::Instance().IsJustPressed("MoveRight"));
+    EXPECT_FALSE(InputManager::Instance().IsKeyJustPressed("MoveRight"));
 }
 
 TEST_F(InputManagerTest, UnboundActionReturnsUnknownKey)

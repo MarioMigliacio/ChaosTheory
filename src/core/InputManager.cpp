@@ -142,9 +142,9 @@ bool InputManager::IsKeyPressed(const std::string &action) const
 /// @brief Returns the state of if a key has just been pressed, based on the input action.
 /// @param action determine if the action is bound to key, and if it is just being pressed now.
 /// @return true / false
-bool InputManager::IsJustPressed(const std::string &action) const
+bool InputManager::IsKeyJustPressed(const std::string &action) const
 {
-    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsJustPressed", false);
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsKeyJustPressed", false);
 
     if (!m_keyBindings.contains(action))
     {
@@ -162,9 +162,9 @@ bool InputManager::IsJustPressed(const std::string &action) const
 /// @brief Returns the state of if a key has just been released, based on the input action.
 /// @param action determine if the action is bound to key, and if it is just being released now.
 /// @return true / false
-bool InputManager::IsJustReleased(const std::string &action) const
+bool InputManager::IsKeyJustReleased(const std::string &action) const
 {
-    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsJustReleased", false);
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "IsKeyJustReleased", false);
 
     if (!m_keyBindings.contains(action))
     {

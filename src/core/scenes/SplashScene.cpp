@@ -86,7 +86,7 @@ void SplashScene::Update(float dt)
     UpdateFadeInOut(dt);
     ApplyShakeEffect(dt);
 
-    if (m_fadingOut && m_fadeTimer >= FADE_OUT_DURATION)
+    if (m_fadingOut && m_fadeTimer >= FADE_OUT_DURATION || m_hasPendingTransition)
     {
         CT_LOG_INFO("SplashScene requesting scene change.");
 
@@ -94,10 +94,20 @@ void SplashScene::Update(float dt)
     }
 }
 
-/// @brief Not used in SplashScene context.
+/// @brief Handle any quick cancelation requests if present.
 /// @param event bubbled down from caller, not needed.
 void SplashScene::HandleEvent(const sf::Event &event)
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::Escape || event.key.code == sf::Keyboard::Enter ||
+            event.key.code == sf::Keyboard::Space)
+        {
+            m_hasPendingTransition = true;
+
+            CT_LOG_INFO("SplashScene: skip event handled.");
+        }
+    }
 }
 
 /// @brief Not used in SplashScene context.

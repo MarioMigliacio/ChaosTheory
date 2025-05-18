@@ -135,10 +135,19 @@ void MainMenuScene::Update(float dt)
     return;
 }
 
-/// @brief Not used in MainMenuScene context.
+/// @brief Handle any quick cancelation requests if present.
 /// @param event bubbled down from caller, not needed.
 void MainMenuScene::HandleEvent(const sf::Event &event)
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::Escape)
+        {
+            m_shouldExit = true;
+
+            CT_LOG_INFO("MainMenuScene: Esc event handled.");
+        }
+    }
 }
 
 /// @brief Not used in MainMenuScene context.

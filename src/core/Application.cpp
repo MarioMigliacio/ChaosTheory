@@ -113,6 +113,12 @@ void Application::ProcessEvents()
         {
             SceneManager::Instance().GetActiveScene()->HandleEvent(event);
         }
+        else
+        {
+            m_isRunning = false;
+
+            return;
+        }
 
         switch (event.type)
         {
@@ -120,31 +126,6 @@ void Application::ProcessEvents()
                 m_isRunning = false;
                 CT_LOG_INFO("Application closing from window close event.");
                 break;
-
-            case sf::Event::KeyPressed:
-                if (event.key.code == sf::Keyboard::Escape)
-                {
-                    m_isRunning = false;
-                    CT_LOG_INFO("Application closing from escape key.");
-                }
-                break;
-
-            case sf::Event::Resized:
-            {
-                auto &window = WindowManager::Instance().GetWindow();
-                sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
-                window.setView(sf::View(visibleArea));
-
-                CT_LOG_INFO("Window resized to {}x{}", event.size.width, event.size.height);
-
-                // Optionally notify the scene to reposition UI
-                if (SceneManager::Instance().HasActiveScene())
-                {
-                    SceneManager::Instance().GetActiveScene()->OnResize({event.size.width, event.size.height});
-                }
-
-                break;
-            }
 
             default:
                 break;
