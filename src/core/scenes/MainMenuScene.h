@@ -63,5 +63,5 @@ class MainMenuScene final : public Scene
     std::shared_ptr<Settings> m_settings;
     std::unique_ptr<Background> m_background;
     std::shared_ptr<UITextLabel> m_titleLabel;
-    SceneID m_requestedScene = SceneID::Splash;
+    SceneID m_requestedScene;
 };

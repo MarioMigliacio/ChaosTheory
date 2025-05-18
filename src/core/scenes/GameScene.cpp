@@ -71,7 +71,7 @@ void GameScene::OnExit()
 // Performs internal state management during a single frame.
 void GameScene::Update(float dt)
 {
-    if (InputManager::Instance().IsJustReleased("MenuSelectBack"))
+    if (InputManager::Instance().IsKeyJustReleased("MenuSelectBack"))
     {
         AudioManager::Instance().StopMusic(true, 1.0f);
         m_shouldExit = true;

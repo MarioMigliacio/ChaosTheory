@@ -41,8 +41,8 @@ class InputManager
     void PostUpdate();
 
     bool IsKeyPressed(const std::string &action) const;
-    bool IsJustPressed(const std::string &action) const;
-    bool IsJustReleased(const std::string &action) const;
+    bool IsKeyJustPressed(const std::string &action) const;
+    bool IsKeyJustReleased(const std::string &action) const;
 
     sf::Vector2i GetMousePosition() const;
     void SetMousePosition(const sf::Vector2i &position);
