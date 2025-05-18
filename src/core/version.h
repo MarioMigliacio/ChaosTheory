@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : version.h
+//  File        : Version.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
@@ -11,8 +11,14 @@
 
 #pragma once
 
+/// @brief Major Version of Chaos Theory to date.
 #define CT_VERSION_MAJOR 1
-#define CT_VERSION_MINOR 0
-#define CT_VERSION_PATCH 0
 
-#define CT_VERSION_STRING "1.0.0"
+/// @brief Minor Version of Chaos Theory to date.
+#define CT_VERSION_MINOR 1
+
+/// @brief Patch Version of Chaos Theory to date.
+#define CT_VERSION_PATCH 7
+
+/// @brief String representation for Chaos Theory version.
+#define CT_VERSION_STRING "1.1.7"

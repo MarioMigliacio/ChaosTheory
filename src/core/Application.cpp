@@ -1,5 +1,5 @@
 // ============================================================================
-//  File        : application.cpp
+//  File        : Application.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
@@ -11,90 +11,135 @@
 
 #include "Application.h"
 #include "AssetManager.h"
+#include "AudioManager.h"
+#include "GameScene.h"
 #include "InputManager.h"
-#include "LogManager.h"
-#include "Settings.h"
+#include "Macros.h"
+#include "MainMenuScene.h"
+#include "SceneFactory.h"
+#include "SceneManager.h"
+#include "SceneTransitionManager.h"
+#include "SettingsManager.h"
+#include "SplashScene.h"
+#include "UIManager.h"
 #include "WindowManager.h"
 #include "version.h"
 
-#include <chrono>
-
-#if defined(_MSC_VER) && defined(_DEBUG)
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#endif
-
-Application::Application(Settings &sharedSettings) : settings(sharedSettings)
-{
-}
-
+/// @brief Initializes the Application with all the Managers; holding final ownership over the provided settings.
 void Application::Init()
 {
 #if defined(_MSC_VER) && defined(_DEBUG)
     _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
-    isRunning = true;
-    LogManager::Instance().Init(settings);
-    WindowManager::Instance().Init(settings);
-    InputManager::Instance().Init(settings);
-    AssetManager::Instance().Init(settings);
+    LogManager::Instance().Init();
+
+    std::shared_ptr<Settings> settings = std::make_shared<Settings>();
+    SettingsManager::Instance().LoadFromFile("config.json");
+
+    m_settings = SettingsManager::Instance().GetSettings();
+
+    UIManager::Instance().Init();
+    WindowManager::Instance().Init(m_settings, sf::Style::Titlebar);
+    InputManager::Instance().Init(m_settings);
+    AssetManager::Instance().Init(m_settings);
+    AudioManager::Instance().Init(m_settings);
+    SceneManager::Instance().Init(m_settings);
+
+    SceneManager::Instance().PushScene(SceneManager::Instance().Create(SceneID::Splash));
+
+    if (!WindowManager::Instance().IsOpen())
+    {
+        CT_LOG_ERROR("App::Init() - Window failed to open. Aborting.");
+        return;
+    }
+
+    m_isRunning = true;
+    m_isInitialized = true;
 
     CT_LOG_INFO("Application initialized.");
     CT_LOG_INFO("ChaosTheory v{}", CT_VERSION_STRING);
 }
 
+/// @brief Begin the main game loop.
 void Application::Run()
 {
-    Init();
+    sf::Clock clock;
 
-    std::chrono::high_resolution_clock::time_point lastTime =
-        std::chrono::high_resolution_clock::now();
-
-    if (!WindowManager::Instance().IsOpen())
+    while (m_isRunning && WindowManager::Instance().IsOpen() && SceneManager::Instance().HasActiveScene())
     {
-        CT_LOG_ERROR("Window failed to open. Aborting.");
-        return;
-    }
-
-    while (isRunning && WindowManager::Instance().IsOpen())
-    {
-        std::chrono::high_resolution_clock::time_point currentTime =
-            std::chrono::high_resolution_clock::now();
-        float dt = std::chrono::duration<float>(currentTime - lastTime).count();
-        lastTime = currentTime;
+        float dt = clock.restart().asSeconds();
 
         ProcessEvents();
-        Update(dt);
+        AudioManager::Instance().Update(dt);
+        SceneManager::Instance().Update(dt);
+        SceneTransitionManager::Instance().Update(dt);
+        InputManager::Instance().PostUpdate();
         Render();
     }
+
+    CT_LOG_INFO("No active scenes left. Shutting down application.");
 
     Shutdown();
 }
 
+/// @brief Shuts down the Application after shutting down any manager and resets internal state.
 void Application::Shutdown()
 {
     WindowManager::Instance().Shutdown();
     InputManager::Instance().Shutdown();
     AssetManager::Instance().Shutdown();
+    SceneManager::Instance().Shutdown();
+    AudioManager::Instance().Shutdown();
+    UIManager::Instance().Shutdown();
 
     CT_LOG_INFO("Application shutting down.");
     LogManager::Instance().Shutdown();
+
+    m_settings.reset();
+    m_isInitialized = false;
 }
 
+/// @brief Requests any event processing that needs to be finalized in a game frame.
 void Application::ProcessEvents()
 {
-    InputManager::Instance().Update();
-    WindowManager::Instance().Update();
+    sf::Event event;
+
+    while (WindowManager::Instance().PollEvent(event))
+    {
+        InputManager::Instance().Update(event);
+
+        if (SceneManager::Instance().HasActiveScene())
+        {
+            SceneManager::Instance().GetActiveScene()->HandleEvent(event);
+        }
+        else
+        {
+            m_isRunning = false;
+
+            return;
+        }
+
+        switch (event.type)
+        {
+            case sf::Event::Closed:
+                m_isRunning = false;
+                CT_LOG_INFO("Application closing from window close event.");
+                break;
+
+            default:
+                break;
+        }
+    }
 }
 
-void Application::Update(float dt)
-{
-}
-
+/// @brief Renders any necessary finalized imagery in the game frame.
 void Application::Render()
 {
     WindowManager::Instance().BeginDraw();
-    // TODO: draw game here
+
+    SceneManager::Instance().Render();
+    SceneTransitionManager::Instance().Render(WindowManager::Instance().GetWindow());
+
     WindowManager::Instance().EndDraw();
 }

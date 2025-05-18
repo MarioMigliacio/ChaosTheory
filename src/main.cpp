@@ -9,14 +9,22 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "Settings.h"
-#include "core/Application.h"
+#include "Application.h"
+#include <iostream>
 
+#if defined(_MSC_VER) && defined(_DEBUG)
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif
+
+/// @brief Entry point in the application.
+/// @return return value is mostly ignored.
 int main()
 {
-    Settings settings;
-    Application app(settings);
+    Application app;
+    app.Init();
     app.Run();
 
+    std::cout << "CT application successfully concluded." << std::endl;
     return 0;
 }
