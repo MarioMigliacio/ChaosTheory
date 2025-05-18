@@ -14,20 +14,40 @@
 
 #include "Settings.h"
 #include <SFML/Graphics.hpp>
+#include <memory>
 
+// ============================================================================
+//  Class       : WindowManager
+//  Purpose     : Singleton class that manages the application window.
+//
+//  Responsibilities:
+//      - Initializes and shuts down
+//      - Returns SFML Render window, handles PollEvents,
+//                size adjustments, rendering, and fullsize.
+//
+// ============================================================================
 class WindowManager
 {
   public:
     static WindowManager &Instance();
 
-    void Init(const Settings &settings);
+    void Init(std::shared_ptr<Settings> settings, sf::Uint32 style = sf::Style::Default);
     void Shutdown();
 
-    void Update();
+    bool IsInitialized() const;
+    bool IsOpen() const;
+
     void BeginDraw();
     void EndDraw();
 
-    bool IsOpen() const;
+    void Recreate(const unsigned int width, const unsigned int height, const std::string &title, sf::Uint32 style);
+    void ApplySettings(sf::Uint32 style);
+    void ApplyResolution(ResolutionSetting res);
+    sf::Vector2u GetResolutionSize(ResolutionSetting res) const;
+    void SetClearColor(const sf::Color &color);
+    void ToggleFullscreen();
+    bool PollEvent(sf::Event &event);
+
     sf::RenderWindow &GetWindow();
 
   private:
@@ -38,6 +58,14 @@ class WindowManager
     WindowManager &operator=(const WindowManager &) = delete;
 
   private:
-    sf::RenderWindow window;
-    const Settings *settings = nullptr;
+    std::unique_ptr<sf::RenderWindow> m_window;
+    std::shared_ptr<Settings> m_settings;
+
+    bool m_isFullscreen = false;
+    bool m_isInitialized = false;
+
+    std::string m_title;
+    sf::Uint32 m_style;
+
+    sf::Color m_clearColor = sf::Color::Black;
 };

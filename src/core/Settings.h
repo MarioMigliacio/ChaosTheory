@@ -12,23 +12,35 @@
 
 #pragma once
 
-#include <spdlog/common.h>
+#include "SettingModes.h"
+#include <SFML/Window/Keyboard.hpp>
 #include <string>
+#include <unordered_map>
 
-class Settings
+/// @brief Settings structure to hold internal game configurable data points.
+struct Settings
 {
-  public:
-    Settings() = default;
-    ~Settings() = default;
+    std::string m_windowTitle = "ChaosTheory";
+    ResolutionSetting m_resolution = ResolutionSetting::Res720p;
+    unsigned int m_windowWidth = 1280;
+    unsigned int m_windowHeight = 720;
+    unsigned int m_targetFramerate = 60;
+    bool m_verticleSyncEnabled = true;
+    bool m_isFullscreen = false;
 
-    Settings(const Settings &) = default;
-    Settings &operator=(const Settings &) = default;
+    float m_masterVolume = 100.0f;
+    float m_musicVolume = 100.0f;
+    float m_sfxVolume = 100.0f;
+    bool m_isMuted = false;
 
-    unsigned int screenWidth = 1280;
-    unsigned int screenHeight = 720;
-    bool fullscreen = false;
-    unsigned int framerateLimit = 60;
+    GameDifficultySetting m_gameDifficulty = GameDifficultySetting::Normal;
 
-    spdlog::level::level_enum logLevel = spdlog::level::debug;
-    std::string defaultFontPath = "assets/fonts/default.ttf";
+    std::string m_audioDirectory = "assets/audio/";
+    std::string m_fontDirectory = "assets/fonts/";
+    std::string m_spriteDirectory = "assets/sprites/";
+
+    std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings = {{"MoveLeft", sf::Keyboard::A},
+                                                                        {"MoveRight", sf::Keyboard::D},
+                                                                        {"MoveUp", sf::Keyboard::W},
+                                                                        {"MoveDown", sf::Keyboard::S}};
 };

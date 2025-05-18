@@ -10,10 +10,13 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
+#include "LogTestEnvironment.h"
 #include <gtest/gtest.h>
 
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);
+    ::testing::AddGlobalTestEnvironment(new LogTestEnvironment());
+
     return RUN_ALL_TESTS();
 }

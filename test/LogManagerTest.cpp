@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-04-11
-//  Description : Main test for the Chaos Theory Log Manager class
+//  Description : Unit tests for the Chaos Theory Log Manager class
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -24,10 +24,7 @@ TEST(LogManagerTest, SingletonInstanceIsConsistent)
 
 TEST(LogManagerTest, InitializationAndLogging)
 {
-    Settings testSettings;
-    testSettings.logLevel = spdlog::level::debug;
-
-    LogManager::Instance().Init(testSettings);
+    LogManager::Instance().Init();
 
     spdlog::info("This is a test log message from LogManagerTest.");
 

@@ -2,17 +2,31 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build",
+            "label": "build_ct",
             "type": "shell",
-            "command": "${workspaceFolder}\\script\\build.bat",
-            "args": [],
+            "command": "${workspaceFolder}\\script\\build_advanced.bat",
+            "args": ["/ct"],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
             "problemMatcher": [],
             "windows": {
-                "command": "${workspaceFolder}\\script\\build.bat"
+                "command": "${workspaceFolder}\\script\\build_advanced.bat"
+            }
+        },
+        {
+            "label": "build_test",
+            "type": "shell",
+            "command": "${workspaceFolder}\\script\\build_advanced.bat",
+            "args": ["/test"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "windows": {
+                "command": "${workspaceFolder}\\script\\build_advanced.bat"
             }
         }
     ]
