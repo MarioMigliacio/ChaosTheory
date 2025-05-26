@@ -30,6 +30,7 @@ class UIFactoryTest : public ::testing::Test
         if (!AssetManager::Instance().IsInitialized())
         {
             AssetManager::Instance().Init(CreateTestSettings());
+            AssetManager::Instance().LoadFont("Default", "assets/fonts/Default.ttf");
         }
     }
 
