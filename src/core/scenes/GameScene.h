@@ -11,8 +11,11 @@
 
 #pragma once
 
+#include "Background.h"
 #include "Scene.h"
+#include "SceneManager.h"
 #include "Settings.h"
+#include "UITextLabel.h"
 #include <memory>
 
 // ============================================================================
@@ -48,5 +51,17 @@ class GameScene final : public Scene
     void Render() override;
 
   private:
+    void SetupSceneComponents();
+    void LoadBackground();
+    void CreateTitleText();
+    void CreateButtons();
+    void PlayGameMusic();
+
+  private:
     std::shared_ptr<Settings> m_settings;
+    std::shared_ptr<UITextLabel> m_titleLabel;
+    std::unique_ptr<Background> m_background;
+    SceneID m_requestedScene;
+
+    bool m_toggler = true;
 };

@@ -64,6 +64,15 @@ const sf::Color BUTTON_DEFAULT_SELECTED_TEXT_COLOR = sf::Color(255, 255, 255);
 /// @brief Color impacts the buttons text color while in disabled state.
 const sf::Color BUTTON_DEFAULT_DISABLED_TEXT_COLOR = sf::Color(200, 200, 200);
 
+/// @brief Color impacts the disabled color state for the skinnable button.
+const sf::Color SKINNABLE_BUTTON_DISABLED_COLOR_MASK = sf::Color(100, 100, 100, 255);
+
+/// @brief Color impacts the color state for the skinnable button while not disabled.
+const sf::Color SKINNABLE_BUTTON_ENABLED_COLOR_MASK = sf::Color::White;
+
+/// @brief Default button scale size.
+constexpr float BUTTON_DEFAULT_SCALE_SIZE = 1.05f;
+
 /// @brief Default button font size.
 constexpr unsigned int BUTTON_DEFAULT_FONT_SIZE = 24;
 

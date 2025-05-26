@@ -12,6 +12,7 @@
 #include "UIArrow.h"
 #include "AssetManager.h"
 #include "ResolutionScaleManager.h"
+#include "UIAssets.h"
 
 namespace
 {
@@ -158,8 +159,10 @@ void UIArrow::draw(sf::RenderTarget &target, sf::RenderStates states) const
 /// @brief Load the texture into usable sprite for this UIArrow.
 void UIArrow::LoadTexture()
 {
-    const std::string textureName = "arrow_texture";
-    AssetManager::Instance().LoadTexture(textureName, "assets/ui/arrow_texture.png");
+    // NOTE: this is temporary hardcoded to always just use the namespace key/value for uiarrow texture.
+    // we may at the future wish to load based on parameter.
+    const std::string textureName = UIAssets::UIArrowTextureKey;
+    AssetManager::Instance().LoadTexture(textureName, UIAssets::Textures.at(textureName));
     m_texture = AssetManager::Instance().GetTexture(textureName);
     m_sprite.setTexture(*m_texture);
 }

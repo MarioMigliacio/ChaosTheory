@@ -173,6 +173,7 @@ void SceneManager::PopScene()
     if (!m_scenes.empty())
     {
         CT_LOG_INFO("Popping scene: {}", typeid(*m_scenes.top()).name());
+        m_scenes.top()->OnExit();
         m_scenes.top()->Shutdown();
         m_scenes.pop();
     }

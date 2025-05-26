@@ -47,6 +47,7 @@ class SplashScene final : public Scene
 
   private:
     void LoadBackground();
+    void PlaySoundClip();
     void StartFadeIn();
     void StartFadeOut();
     void UpdateFadeInOut(float dt);

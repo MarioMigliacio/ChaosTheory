@@ -80,7 +80,7 @@ class UIButton : public UIElement
     sf::Color m_textColor = BUTTON_DEFAULT_TEXT_COLOR;
 
     unsigned int m_fontSize = BUTTON_DEFAULT_FONT_SIZE;
-    float m_hoverScale = 1.05f;
+    float m_hoverScale = BUTTON_DEFAULT_SCALE_SIZE;
 
     bool m_isHovered = false;
     bool m_isPressed = false;

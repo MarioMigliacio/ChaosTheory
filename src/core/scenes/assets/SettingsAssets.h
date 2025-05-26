@@ -34,7 +34,7 @@ static const std::unordered_map<std::string, std::string> Sounds = {
 
 /// @brief Fonts contain a Key and Value pair collection of font assets
 static const std::unordered_map<std::string, std::string> Fonts = {
-    {"Default.ttf", "assets/fonts/Default.ttf"},
+    {"Default", "assets/fonts/Default.ttf"},
     {"SettingsFont", "assets/fonts/Default.ttf"},
 };
 } // namespace SettingsAssets
