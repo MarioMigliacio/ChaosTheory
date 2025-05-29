@@ -64,6 +64,24 @@ const sf::Color BUTTON_DEFAULT_SELECTED_TEXT_COLOR = sf::Color(255, 255, 255);
 /// @brief Color impacts the buttons text color while in disabled state.
 const sf::Color BUTTON_DEFAULT_DISABLED_TEXT_COLOR = sf::Color(200, 200, 200);
 
+/// @brief Generic color for the label text on a blue texture button (soft light blue-tinted white).
+const sf::Color TEX_BTN_BLUE_LABEL_TEXT_COLOR = sf::Color(240, 240, 255);
+
+/// @brief Generic color for the label text outline on a blue texture button (deep navy).
+const sf::Color TEX_BTN_BLUE_TEXT_OUTLINE_COLOR = sf::Color(30, 30, 60);
+
+/// @brief Generic color for the label text on a green texture button (off-white with a green tint).
+const sf::Color TEX_BTN_GREEN_LABEL_TEXT_COLOR = sf::Color(245, 255, 245);
+
+/// @brief Generic color for the label text outline on a green texture button (dark forest green).
+const sf::Color TEX_BTN_GREEN_TEXT_OUTLINE_COLOR = sf::Color(20, 60, 20);
+
+/// @brief Generic color for the label text on a red texture button (soft light blue-tinted white).
+const sf::Color TEX_BTN_RED_LABEL_TEXT_COLOR = sf::Color(255, 240, 240);
+
+/// @brief Generic color for the label text outline on a red texture button (dark burgundy).
+const sf::Color TEX_BTN_RED_TEXT_OUTLINE_COLOR = sf::Color(60, 20, 20);
+
 /// @brief Color impacts the disabled color state for the skinnable button.
 const sf::Color SKINNABLE_BUTTON_DISABLED_COLOR_MASK = sf::Color(100, 100, 100, 255);
 

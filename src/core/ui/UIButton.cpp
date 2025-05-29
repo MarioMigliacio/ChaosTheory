@@ -49,6 +49,13 @@ void UIButton::SetText(const std::string &text, const sf::Font &font, unsigned i
     CenterLabel();
 }
 
+/// @brief Return a reference to this UIButton text label field.
+/// @return m_label as string.
+const std::string UIButton::GetLabel() const
+{
+    return m_label.getString();
+}
+
 /// @brief Sets the internal callback function for this UIButton, which responds to onClick.
 /// @param callback new m_onClick.
 void UIButton::SetCallback(std::function<void()> callback)

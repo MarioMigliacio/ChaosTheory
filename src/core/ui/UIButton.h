@@ -43,6 +43,8 @@ class UIButton : public UIElement
     UIButton &operator=(UIButton &&) noexcept = default;
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
+    const std::string GetLabel() const;
+
     void SetCallback(std::function<void()> callback);
 
     void SetIdleColor(const sf::Color &color);

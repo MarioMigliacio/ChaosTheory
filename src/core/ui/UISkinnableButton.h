@@ -18,6 +18,14 @@
 #include <functional>
 #include <string>
 
+/// @brief Enumeration field which corresponds to a type of supported UISkinnnableButton texture pack.
+enum class UIButtonColorScheme
+{
+    Blue,
+    Green,
+    Red
+};
+
 // ============================================================================
 //  Class       : UISkinnableButton
 //  Purpose     : Manages this UISkinnableButton logic at the ui level.
@@ -46,6 +54,12 @@ class UISkinnableButton : public UIElement
     void SetCallback(std::function<void()> callback);
     void SetHoverScale(float scale);
 
+    void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
+    const std::string GetLabel() const;
+    void SetTextColor(const sf::Color &color);
+    void SetFontSize(unsigned int size);
+    void SetTextStyle(const sf::Color &textColor, const sf::Color &outlineColor, float outlineThickness);
+
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
 
@@ -56,11 +70,15 @@ class UISkinnableButton : public UIElement
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
-  protected:
+  private:
+    void CenterLabel();
+    void UpdateTextColor();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
     sf::Sprite m_sprite;
+    sf::Text m_label;
+
     std::string m_textureIdle;
     std::string m_textureHover;
 
@@ -69,6 +87,9 @@ class UISkinnableButton : public UIElement
 
     sf::Color m_enabledColorMask = SKINNABLE_BUTTON_ENABLED_COLOR_MASK;
     sf::Color m_disabledColorMask = SKINNABLE_BUTTON_DISABLED_COLOR_MASK;
+    sf::Color m_textColor;
+
+    unsigned int m_fontSize = BUTTON_DEFAULT_FONT_SIZE;
 
     float m_hoverScale = BUTTON_DEFAULT_SCALE_SIZE;
     bool m_isHovered = false;

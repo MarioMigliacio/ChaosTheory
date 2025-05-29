@@ -55,6 +55,68 @@ void UISkinnableButton::SetHoverScale(float scale)
     m_hoverScale = scale;
 }
 
+/// @brief Sets the internal text related members for this UISkinnableButton.
+/// @param text string contents of the text for UISkinnableButton.
+/// @param font font to be used for UISkinnableButton.
+/// @param size size of the text for the UISkinnableButton.
+void UISkinnableButton::SetText(const std::string &text, const sf::Font &font, unsigned int size)
+{
+    m_label.setFont(font);
+    m_label.setString(text);
+    m_fontSize = size;
+    m_label.setCharacterSize(m_fontSize);
+    m_label.setFillColor(m_textColor);
+
+    // Auto-fit text if too wide, nice to have!
+    const float maxWidth = m_size.x * 0.9f; // Leave a little margin
+    sf::FloatRect textRect = m_label.getLocalBounds();
+
+    while (textRect.width > maxWidth && m_fontSize > 8) // Don't go below readable size
+    {
+        m_fontSize -= 1;
+        m_label.setCharacterSize(m_fontSize);
+        textRect = m_label.getLocalBounds();
+    }
+
+    CenterLabel();
+}
+
+/// @brief Return a reference to this UISkinnableButton text label field.
+/// @return m_label as string.
+const std::string UISkinnableButton::GetLabel() const
+{
+    return m_label.getString();
+}
+
+/// @brief Sets the text color for this UISkinnableButton.
+/// @param color new m_textColor.
+void UISkinnableButton::SetTextColor(const sf::Color &color)
+{
+    m_textColor = color;
+    m_label.setFillColor(color);
+}
+
+/// @brief Sets the font size for this UISkinnableButton.
+/// @param size new fontSize.
+void UISkinnableButton::SetFontSize(unsigned int size)
+{
+    m_fontSize = size;
+    m_label.setCharacterSize(size);
+    CenterLabel();
+}
+
+/// @brief Allows the button to adjust its label text fill color, outline, and outline thickness.
+/// @param textColor  new color for label text.
+/// @param outlineColor new border color for label text.
+/// @param outlineThickness new thickness in pixels for label text border.
+void UISkinnableButton::SetTextStyle(const sf::Color &textColor, const sf::Color &outlineColor, float outlineThickness)
+{
+    m_textColor = textColor;
+    m_label.setFillColor(textColor);
+    m_label.setOutlineColor(outlineColor);
+    m_label.setOutlineThickness(outlineThickness);
+}
+
 /// @brief Sets the internal position for this UISkinnableButton.
 /// @param position new m_position.
 void UISkinnableButton::SetPosition(const sf::Vector2f &position)
@@ -115,6 +177,7 @@ void UISkinnableButton::ApplySpriteTransform()
 
     m_sprite.setScale(scaleX, scaleY);
     m_sprite.setPosition(m_position);
+    CenterLabel();
 }
 
 /// @brief Returns whether or not the point is within the bounds of this UISkinnableButton.
@@ -145,7 +208,7 @@ void UISkinnableButton::Update(const sf::Vector2i &mousePos, bool isMousePressed
     const bool wasHovered = m_isHovered;
     m_isHovered = Contains(mousePos);
 
-    if (m_isHovered)
+    if (m_isHovered && m_enabled)
     {
         m_sprite.setScale(m_hoverScale, m_hoverScale);
 
@@ -190,10 +253,34 @@ void UISkinnableButton::Update(const sf::Vector2i &mousePos, bool isMousePressed
     }
 }
 
+/// @brief Adjusts the text label for this UISkinnableButton.
+void UISkinnableButton::CenterLabel()
+{
+    sf::FloatRect bounds = m_label.getLocalBounds();
+
+    m_label.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    m_label.setPosition(m_position.x + m_size.x / 2.f, m_position.y + m_size.y / 2.f);
+}
+
+/// @brief Adjust the color for this UISkinnableButton text, based on enabled states.
+void UISkinnableButton::UpdateTextColor()
+{
+    if (m_enabled)
+    {
+        m_label.setFillColor(m_textColor);
+    }
+
+    else
+    {
+        m_label.setFillColor(m_disabledColorMask);
+    }
+}
+
 /// @brief Draw this UISkinnableButton to the Render target.
 /// @param target render target.
 /// @param states optional sf::RenderState
 void UISkinnableButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_sprite, states);
+    target.draw(m_label, states);
 }

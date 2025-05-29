@@ -34,17 +34,18 @@ std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, 
                             ResolutionScaleManager::Instance().ScaleY(size.y));
     unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
 
-    auto button = std::make_shared<UIButton>(position, scaledSize);
+    auto btn = std::make_shared<UIButton>(position, scaledSize);
 
-    button->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
-    button->SetCallback(std::move(onClick));
-    button->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
-    button->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
-    button->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
-    button->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
-    button->SetHoverScale(1.05f);
+    btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
+    btn->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+    btn->SetCallback(std::move(onClick));
+    btn->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
+    btn->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+    btn->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
 
-    return button;
+    btn->SetHoverScale(1.05f);
+
+    return btn;
 }
 
 /// @brief Creates a UI Selectable Button element, given the custom input parameters.
@@ -62,28 +63,34 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
                             ResolutionScaleManager::Instance().ScaleY(size.y));
     unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
 
-    auto selectableButton = std::make_shared<UISelectableButton>(position, scaledSize);
+    auto btn = std::make_shared<UISelectableButton>(position, scaledSize);
 
-    selectableButton->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
-    selectableButton->SetCallback(std::move(onClick));
-    selectableButton->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
-    selectableButton->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
-    selectableButton->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
+    btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
+    btn->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+    btn->SetCallback(std::move(onClick));
+    btn->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+    btn->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
 
-    return selectableButton;
+    return btn;
 }
 
 std::shared_ptr<UISkinnableButton> UIFactory::CreateSkinnableButton(const sf::Vector2f &pos, const sf::Vector2f &size,
-                                                                    const std::string &idle, const std::string &hover,
+                                                                    const std::string &label, const std::string &idle,
+                                                                    const std::string &hover,
+                                                                    UIButtonColorScheme scheme,
                                                                     std::function<void()> onClick)
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
 
     auto btn = std::make_shared<UISkinnableButton>(pos, scaledSize);
 
+    btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
     btn->SetTextureSkins(idle, hover);
     btn->SetCallback(onClick);
+
+    ApplySkinnableButtonTextStyle(*btn, scheme);
 
     return btn;
 }
@@ -196,4 +203,25 @@ std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string 
     toast->SetSize({0.f, 0.f}); // still required by interface
 
     return toast;
+}
+
+/// @brief A private helper method to utilize color themes for a SkinnableButton combo.
+/// @param button reference to the button to be changed.
+/// @param scheme enum field representing  the type of theme.
+void UIFactory::ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButtonColorScheme scheme)
+{
+    switch (scheme)
+    {
+        case UIButtonColorScheme::Blue:
+            button.SetTextStyle(TEX_BTN_BLUE_LABEL_TEXT_COLOR, TEX_BTN_BLUE_TEXT_OUTLINE_COLOR, 2.0f);
+            break;
+
+        case UIButtonColorScheme::Green:
+            button.SetTextStyle(TEX_BTN_GREEN_LABEL_TEXT_COLOR, TEX_BTN_GREEN_TEXT_OUTLINE_COLOR, 2.0f);
+            break;
+
+        case UIButtonColorScheme::Red:
+            button.SetTextStyle(TEX_BTN_RED_LABEL_TEXT_COLOR, TEX_BTN_RED_TEXT_OUTLINE_COLOR, 2.0f);
+            break;
+    }
 }
