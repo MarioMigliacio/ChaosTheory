@@ -217,7 +217,7 @@ void MainMenuScene::CreateButtons()
         {
             CT_LOG_INFO("Play button clicked!");
             m_hasPendingTransition = true;
-            m_requestedScene = SceneID::Game;
+            m_requestedScene = SceneID::SandBox;
         }));
 
     UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(

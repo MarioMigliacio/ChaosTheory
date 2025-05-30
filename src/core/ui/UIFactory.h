@@ -14,6 +14,7 @@
 #include "UIElement.h"
 #include "UIGroupBox.h"
 #include "UISelectableButton.h"
+#include "UISkinnableButton.h"
 #include "UISlider.h"
 #include "UITextLabel.h"
 #include "UIToastMessage.h"
@@ -42,6 +43,11 @@ class UIFactory
     std::shared_ptr<UISelectableButton> CreateSelectableButton(const sf::Vector2f &position, const sf::Vector2f &size,
                                                                const std::string &label, std::function<void()> onClick);
 
+    std::shared_ptr<UISkinnableButton> CreateSkinnableButton(const sf::Vector2f &pos, const sf::Vector2f &size,
+                                                             const std::string &label, const std::string &idle,
+                                                             const std::string &hover, UIButtonColorScheme scheme,
+                                                             std::function<void()> onClick);
+
     std::shared_ptr<UISlider> CreateSlider(const std::string &label, const sf::Vector2f &position,
                                            const sf::Vector2f &size, float minValue, float maxValue, float initialValue,
                                            std::function<void(float)> onChange);
@@ -56,6 +62,9 @@ class UIFactory
 
     std::shared_ptr<UIToastMessage> CreateToastMessage(const std::string &text, const sf::Vector2f &position,
                                                        float duration);
+
+  private:
+    void ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButtonColorScheme scheme);
 
   private:
     UIFactory() = default;

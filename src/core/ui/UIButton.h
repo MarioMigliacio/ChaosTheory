@@ -43,6 +43,8 @@ class UIButton : public UIElement
     UIButton &operator=(UIButton &&) noexcept = default;
 
     void SetText(const std::string &text, const sf::Font &font, unsigned int size = 24);
+    const std::string GetLabel() const;
+
     void SetCallback(std::function<void()> callback);
 
     void SetIdleColor(const sf::Color &color);
@@ -80,7 +82,7 @@ class UIButton : public UIElement
     sf::Color m_textColor = BUTTON_DEFAULT_TEXT_COLOR;
 
     unsigned int m_fontSize = BUTTON_DEFAULT_FONT_SIZE;
-    float m_hoverScale = 1.05f;
+    float m_hoverScale = BUTTON_DEFAULT_SCALE_SIZE;
 
     bool m_isHovered = false;
     bool m_isPressed = false;

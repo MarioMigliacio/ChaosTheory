@@ -14,6 +14,7 @@
 #include "GameScene.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
+#include "SandBoxScene.h"
 #include "SettingsScene.h"
 #include "SplashScene.h"
 
@@ -128,6 +129,7 @@ void SceneManager::RegisterAllDefaultScenes()
     Register(SceneID::Splash, [this]() { return std::make_unique<SplashScene>(m_settings); });
     Register(SceneID::MainMenu, [this]() { return std::make_unique<MainMenuScene>(m_settings); });
     Register(SceneID::Settings, [this]() { return std::make_unique<SettingsScene>(m_settings); });
+    Register(SceneID::SandBox, [this]() { return std::make_unique<SandBoxScene>(m_settings); });
     Register(SceneID::Game, [this]() { return std::make_unique<GameScene>(m_settings); });
 
     CT_LOG_INFO("All default scenes registered.");
@@ -173,6 +175,7 @@ void SceneManager::PopScene()
     if (!m_scenes.empty())
     {
         CT_LOG_INFO("Popping scene: {}", typeid(*m_scenes.top()).name());
+        m_scenes.top()->OnExit();
         m_scenes.top()->Shutdown();
         m_scenes.pop();
     }
