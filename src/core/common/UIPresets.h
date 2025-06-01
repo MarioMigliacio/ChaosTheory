@@ -18,14 +18,23 @@
 // Titles:
 // ============================================================================
 
-/// @brief Default Main Menu Title string.
-constexpr auto DEFAULT_TITLE_STR = "Chaos Theory";
-
-/// @brief Default Settings page title string.
-constexpr auto DEFAULT_SETTINGS_STR = "Settings";
-
 /// @brief Default Title string color.
 const sf::Color DEFAULT_TITLE_COLOR = sf::Color(102, 255, 102);
+
+/// @brief Deep muted green outline color.
+const sf::Color TITLE_OUTLINE_SOFT_SHADOW = sf::Color(30, 60, 30);
+
+/// @brief Neutral grey outline color.
+const sf::Color TITLE_OUTLINE_COOL_GREY = sf::Color(50, 50, 50);
+
+/// @brief Favored default title outline color. Deep violet.
+const sf::Color TITLE_OUTLINE_PURPLE_TINT = sf::Color(90, 0, 130);
+
+/// @brief Minty teal title outline color.
+const sf::Color TITLE_OUTLINE_TEAL_GLOW = sf::Color(0, 180, 150);
+
+/// @brief Default Title border padding.
+const float DEFAULT_TITLE_BORDER_THICKNESS = 2.f;
 
 /// @brief Default Title font size.
 constexpr unsigned int DEFAULT_TITLE_FONT_SIZE = 48;
@@ -94,17 +103,11 @@ constexpr float BUTTON_DEFAULT_SCALE_SIZE = 1.05f;
 /// @brief Default button font size.
 constexpr unsigned int BUTTON_DEFAULT_FONT_SIZE = 24;
 
-/// @brief Main Menu button width in pixels.
-constexpr float MAIN_MENU_BUTTON_WIDTH_PIXEL = 180.f;
-
-/// @brief Main Menu button height in pixels.
-constexpr float MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL = 45.f;
-
 /// @brief Generic button width in pixels.
-constexpr float BASE_BUTTON_WIDTH_PIXEL = 140.f;
+constexpr float BASE_BUTTON_WIDTH_PIXEL = 180.f;
 
 /// @brief Generic button height in pixels.
-constexpr float BASE_BUTTON_HEIGHT_PIXEL = 30.f;
+constexpr float BASE_BUTTON_HEIGHT_PIXEL = 45.f;
 
 /// @brief Generic button width in relative screen sizing, 20%.
 constexpr float BASE_BUTTON_WIDTH_20_PERCENT = .20f;
