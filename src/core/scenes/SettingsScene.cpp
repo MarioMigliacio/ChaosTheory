@@ -398,8 +398,7 @@ void SettingsScene::CreateButtonControls()
 
     const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
-    const float spacingPercent = 0.15f;
-    const float spacingFromCenter = scaledButtonWidth * (0.5f + spacingPercent);
+    const float spacingFromCenter = scaledButtonWidth * BASE_BUTTON_HORIZONTAL_SPACE;
 
     const sf::Vector2f applyPos{centerX - spacingFromCenter - scaledButtonWidth / 2.f, footerY};
     const sf::Vector2f backPos{centerX + spacingFromCenter - scaledButtonWidth / 2.f, footerY};

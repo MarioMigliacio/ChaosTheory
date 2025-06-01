@@ -118,6 +118,9 @@ constexpr float BASE_BUTTON_HEIGHT_5_PERCENT = .05f;
 /// @brief Generic button spacing in relative screen sizing, 25%.
 constexpr float BASE_BUTTON_SPACING_PERCENT = .25f;
 
+/// @brief Generic button spacing in relative screen sizing, 65%.
+constexpr float BASE_BUTTON_HORIZONTAL_SPACE = .65f;
+
 /// @brief Generic button spacing in pixels.
 constexpr float BASE_BUTTON_SPACING_PIXEL = 20.f;
 
