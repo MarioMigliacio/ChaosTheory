@@ -42,6 +42,5 @@ struct Settings
     std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings = {{"MoveLeft", sf::Keyboard::A},
                                                                         {"MoveRight", sf::Keyboard::D},
                                                                         {"MoveUp", sf::Keyboard::W},
-                                                                        {"MoveDown", sf::Keyboard::S},
-                                                                        {"MenuSelectBack", sf::Keyboard::Space}};
+                                                                        {"MoveDown", sf::Keyboard::S}};
 };
