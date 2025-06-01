@@ -20,6 +20,7 @@
 #include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <random>
 
 // ============================================================================
 //  Class       : MainMenuScene
@@ -58,10 +59,22 @@ class MainMenuScene final : public Scene
     void CreateButtons();
     void LoadBackground();
     void PlayIntroMusic();
+    void InitShip();
+    void UpdateShip(float dt);
 
   private:
     std::shared_ptr<Settings> m_settings;
     std::unique_ptr<Background> m_background;
     std::shared_ptr<UITextLabel> m_titleLabel;
+
+    sf::Sprite m_shipSprite;
+    sf::Vector2f m_shipVelocity;
+
+    std::default_random_engine m_rng;
+    std::uniform_real_distribution<float> m_yDist;
+
+    float m_shipSineTimer = 0.f;
+    bool m_shipActive = false;
+
     SceneID m_requestedScene;
 };

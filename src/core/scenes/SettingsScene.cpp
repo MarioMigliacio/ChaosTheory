@@ -19,12 +19,68 @@
 #include "SceneTransitionManager.h"
 #include "SettingsAssets.h"
 #include "SettingsManager.h"
+#include "UIAssets.h"
 #include "UIFactory.h"
 #include "UIGroupBox.h"
 #include "UIManager.h"
 #include "UIPresets.h"
 #include "UISelectableButton.h"
 #include "WindowManager.h"
+
+/// @brief Constants that can be adjusted throughout the SettingsScene.
+namespace
+{
+/// @brief Default Settings page title string label.
+constexpr auto DEFAULT_SETTINGS_STR = "Settings";
+
+/// @brief Fixed name constant for the Apply Settings button label.
+constexpr auto APPLY_BTN_LABEL = "Apply Settings";
+
+/// @brief Fixed name constant for the Go back button label.
+constexpr auto BACK_BTN_LABEL = "Go Back";
+
+/// @brief Fixed name constant for the Settings Toast message string.
+constexpr auto SETTINGS_TOAST_MSG = "Settings Applied";
+
+/// @brief Fixed name constant for the Difficulty Settings page Groupbox string label.
+constexpr auto DIFFICULTY_PAGE_LABEL = "Difficulty Settings";
+
+/// @brief Fixed name constant for the Easy difficulty string label.
+constexpr auto EASY_DIFFICULTY_LABEL = "Easy";
+
+/// @brief Fixed name constant for the Normal difficulty string label.
+constexpr auto NORMAL_DIFFICULTY_LABEL = "Normal";
+
+/// @brief Fixed name constant for the Hard difficulty string label.
+constexpr auto HARD_DIFFICULTY_LABEL = "Hard";
+
+/// @brief Fixed name constant for the Video Settings page Groupbox string label.
+constexpr auto VIDEO_PAGE_LABEL = "Video Settings";
+
+/// @brief Fixed name constant for the 720p resolution setting string label.
+constexpr auto RES_OPTION_720P = "720p";
+
+/// @brief Fixed name constant for the 1080p resolution setting string label.
+constexpr auto RES_OPTION_1080P = "1080p";
+
+/// @brief Fixed name constant for the fullscreen setting string label.
+constexpr auto RES_OPTION_FULL_SCREEN = "Fullscreen";
+
+/// @brief Fixed name constant for the Audio Settings page Groupbox string label.
+constexpr auto AUDIO_PAGE_LABEL = "Audio Settings";
+
+/// @brief Fixed name constant for the Master volume string label.
+constexpr auto MASTER_VOL_SLIDER_LABEL = "Master Volume";
+
+/// @brief Fixed name constant for the Music volume string label.
+constexpr auto MUSIC_VOL_SLIDER_LABEL = "Music Volume";
+
+/// @brief Fixed name constant for the Sound effects string label.
+constexpr auto SFX_VOL_SLIDER_LABEL = "SFX Volume";
+
+/// @brief Fixed constant for the max adjustable slider setting.
+constexpr float MAX_SLIDER_VALUE = 100.f;
+} // namespace
 
 /// @brief Constructor for the SettingsScene.
 /// @param settings Internal settings to initialize with.
@@ -56,6 +112,14 @@ void SettingsScene::Init()
 void SettingsScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
+
+    for (const auto &[key, path] : UIAssets::Textures)
+    {
+        if (!AssetManager::Instance().LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load asset: {}, {}", key, path);
+        }
+    }
 
     for (const auto &[key, path] : SettingsAssets::Textures)
     {
@@ -163,6 +227,16 @@ void SettingsScene::Update(float dt)
 /// @param event bubbled down from caller, not needed.
 void SettingsScene::HandleEvent(const sf::Event &event)
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::Escape)
+        {
+            m_requestedScene = SceneID::MainMenu;
+            m_hasPendingTransition = true;
+
+            CT_LOG_INFO("SettingsScene: Esc event handled.");
+        }
+    }
 }
 
 /// @brief Not used in SettingsScene context. We manually call for adjustResolution.
@@ -244,7 +318,7 @@ void SettingsScene::CreateTitleText()
                                     scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
 
     m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
-    m_titleLabel->SetColor(DEFAULT_TITLE_COLOR);
+
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
@@ -318,20 +392,21 @@ void SettingsScene::CreateButtonControls()
     auto winSize = WindowManager::Instance().GetWindow().getSize();
 
     const float footerY = winSize.y * BASE_FOOTER_HEIGHT_85_PERCENT;
+    const float centerX = winSize.x / 2.f;
 
-    const float buttonWidth = BASE_BUTTON_WIDTH_PIXEL;
-    const float buttonHeight = BASE_BUTTON_HEIGHT_PIXEL;
+    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH_PIXEL);
 
-    // Offset from center for symmetry
-    const float spacingFromCenter =
-        ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH_PIXEL / 2 + BASE_BUTTON_SPACING_PIXEL);
+    const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
-    const sf::Vector2f applyPos{winSize.x / 2.f - spacingFromCenter - buttonWidth / 2.f, footerY};
-    const sf::Vector2f backPos{winSize.x / 2.f + spacingFromCenter - buttonWidth / 2.f, footerY};
+    const float spacingFromCenter = scaledButtonWidth * BASE_BUTTON_HORIZONTAL_SPACE;
+
+    const sf::Vector2f applyPos{centerX - spacingFromCenter - scaledButtonWidth / 2.f, footerY};
+    const sf::Vector2f backPos{centerX + spacingFromCenter - scaledButtonWidth / 2.f, footerY};
 
     // Apply Changes UIButton
-    m_applyButton = UIFactory::Instance().CreateButton(
-        applyPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Apply Changes",
+    m_applyButton = UIFactory::Instance().CreateSkinnableButton(
+        applyPos, btnSize, APPLY_BTN_LABEL, UIAssets::UISkinButtonGreenIdleKey, UIAssets::UISkinButtonGreenHoverKey,
+        UIButtonColorScheme::Green,
         [this]()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
@@ -355,27 +430,27 @@ void SettingsScene::CreateButtonControls()
                 WindowManager::Instance().ApplyResolution(targetSetting);
                 ResolutionScaleManager::Instance().SetCurrentResolution(targetSize);
                 m_pendingPageChange = m_currentPage;
-                m_pendingToast = "Settings Applied"; // defer toast display
+                m_pendingToast = SETTINGS_TOAST_MSG; // defer toast display
             }
 
             else
             {
-                ShowToast("Settings Applied"); // no resolution change, show immediately
+                ShowToast(SETTINGS_TOAST_MSG); // no resolution change, show immediately
             }
         });
 
     UIManager::Instance().AddElement(m_applyButton);
 
-    // Go Back UIButton
     UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateButton(backPos, {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL}, "Go Back",
-                                           [this]()
-                                           {
-                                               CT_LOG_INFO("SettingsScene: Go Back clicked.");
-                                               *SettingsManager::Instance().GetSettings() = m_backupSettings;
-                                               m_requestedScene = SceneID::MainMenu;
-                                               m_hasPendingTransition = true;
-                                           }));
+        UIFactory::Instance().CreateSkinnableButton(backPos, btnSize, BACK_BTN_LABEL, UIAssets::UISkinButtonRedIdleKey,
+                                                    UIAssets::UISkinButtonRedHoverKey, UIButtonColorScheme::Red,
+                                                    [this]()
+                                                    {
+                                                        CT_LOG_INFO("SettingsScene: Go Back clicked.");
+                                                        *SettingsManager::Instance().GetSettings() = m_backupSettings;
+                                                        m_requestedScene = SceneID::MainMenu;
+                                                        m_hasPendingTransition = true;
+                                                    }));
 }
 
 /// @brief Generate the Audio Sliders needed for the Audio Settings Scene page.
@@ -383,7 +458,7 @@ void SettingsScene::CreateAudioControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string title = "Audio Settings";
+    const std::string title = AUDIO_PAGE_LABEL;
     const sf::Vector2f relativePos{0.25f, 0.25f};
     const sf::Vector2f relativeSize{0.5f, 0.5f};
 
@@ -393,17 +468,18 @@ void SettingsScene::CreateAudioControls()
     const float referenceSliderWidth = BASE_SLIDER_WIDTH_PERCENT; // 45% of reference width
     const float sliderHeight = scaleMgr.ScaleY(BASE_SLIDER_HEIGHT_PIXEL);
 
-    groupBox->AddElement(UIFactory::Instance().CreateSlider(
-        "Master Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_masterVolume,
-        [](float val) { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
+    groupBox->AddElement(
+        UIFactory::Instance().CreateSlider(MASTER_VOL_SLIDER_LABEL, {0.f, 0.f}, {referenceSliderWidth, sliderHeight},
+                                           0.f, MAX_SLIDER_VALUE, m_settings->m_masterVolume, [](float val)
+                                           { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
 
     groupBox->AddElement(UIFactory::Instance().CreateSlider(
-        "Music Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_musicVolume,
-        [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
+        MUSIC_VOL_SLIDER_LABEL, {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, MAX_SLIDER_VALUE,
+        m_settings->m_musicVolume, [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
 
     groupBox->AddElement(UIFactory::Instance().CreateSlider(
-        "SFX Volume", {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, 100.f, m_settings->m_sfxVolume,
-        [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
+        SFX_VOL_SLIDER_LABEL, {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, MAX_SLIDER_VALUE,
+        m_settings->m_sfxVolume, [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
 
     UIManager::Instance().AddElement(groupBox);
 }
@@ -413,19 +489,20 @@ void SettingsScene::CreateResolutionControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string title = "Video Settings";
-    const sf::Vector2f relativePos{0.375f, 0.33f};
-    const sf::Vector2f relativeSize{0.25f, 0.33f};
+    const std::string title = VIDEO_PAGE_LABEL;
+    const sf::Vector2f relativePos{0.375f, 0.30f};
+    const sf::Vector2f relativeSize{0.25f, 0.40f};
 
     // Create the group box using the centralized UIFactory
     auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
-    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.01f));
-    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.2f * relativeSize.y));
+    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
+    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.15f * relativeSize.y));
 
     // Define the resolution options
-    std::vector<std::pair<std::string, ResolutionSetting>> options = {{"720p", ResolutionSetting::Res720p},
-                                                                      {"1080p", ResolutionSetting::Res1080p},
-                                                                      {"Fullscreen", ResolutionSetting::Fullscreen}};
+    std::vector<std::pair<std::string, ResolutionSetting>> options = {
+        {RES_OPTION_720P, ResolutionSetting::Res720p},
+        {RES_OPTION_1080P, ResolutionSetting::Res1080p},
+        {RES_OPTION_FULL_SCREEN, ResolutionSetting::Fullscreen}};
 
     const sf::Vector2f buttonSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
@@ -459,19 +536,20 @@ void SettingsScene::CreateDifficultyControls()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string title = "Difficulty Settings";
-    const sf::Vector2f relativePos{0.375f, 0.33f};
-    const sf::Vector2f relativeSize{0.25f, 0.33f};
+    const std::string title = DIFFICULTY_PAGE_LABEL;
+    const sf::Vector2f relativePos{0.375f, 0.30f};
+    const sf::Vector2f relativeSize{0.25f, 0.40f};
 
     // Create the group box using the centralized UIFactory
     auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
-    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.01f));
-    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.2f * relativeSize.y));
+    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
+    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.15f * relativeSize.y));
 
     // Define the resolution options
-    std::vector<std::pair<std::string, GameDifficultySetting>> options = {{"Easy", GameDifficultySetting::Easy},
-                                                                          {"Normal", GameDifficultySetting::Normal},
-                                                                          {"Hard", GameDifficultySetting::Hard}};
+    std::vector<std::pair<std::string, GameDifficultySetting>> options = {
+        {EASY_DIFFICULTY_LABEL, GameDifficultySetting::Easy},
+        {NORMAL_DIFFICULTY_LABEL, GameDifficultySetting::Normal},
+        {HARD_DIFFICULTY_LABEL, GameDifficultySetting::Hard}};
 
     const sf::Vector2f buttonSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 

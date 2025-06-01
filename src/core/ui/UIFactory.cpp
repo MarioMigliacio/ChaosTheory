@@ -177,11 +177,17 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
                                                         unsigned int baseFontSize, bool centerOrigin)
 {
     auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
+    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TITLE_BORDER_THICKNESS);
+
     auto label =
         std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default"), scaledFontSize, position);
 
     if (!centerOrigin)
         label->SetPosition(position); // no auto-centering
+
+    // TODO - implement a color scheme enum like the UISkinnableButton.
+    label->SetColor(DEFAULT_TITLE_COLOR);
+    label->SetOutline(scaledOutline, TITLE_OUTLINE_PURPLE_TINT);
 
     return label;
 }

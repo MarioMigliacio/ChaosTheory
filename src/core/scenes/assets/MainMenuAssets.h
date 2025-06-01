@@ -26,6 +26,7 @@ static const std::unordered_map<std::string, std::string> Textures = {
     {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
     {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
     {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
+    {"PlayerShip", "assets/sprites/PlayerShip.png"},
 };
 
 /// @brief Fonts contain a Key and Value pair collection of font assets
