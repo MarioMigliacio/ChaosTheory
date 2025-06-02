@@ -55,11 +55,6 @@ class AssetManager
     AssetManager &operator=(const AssetManager &) = delete;
 
   private:
-    void ClearFontCache();
-    void ClearTextureCache();
-    void ClearSoundCache();
-
-  private:
     std::unordered_map<std::string, sf::Texture> m_textures;
     std::unordered_map<std::string, sf::SoundBuffer> m_sounds;
     std::unordered_map<std::string, sf::Font> m_fonts;
