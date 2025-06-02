@@ -53,8 +53,9 @@ class SandBoxScene final : public Scene
     void SetupSceneComponents();
     void LoadBackground();
     void CreateTitleText();
-    void CreateButtons();
     void PlayGameMusic();
+    void BindInputKeys();
+    void CheckActionsPressed();
 
   private:
     std::shared_ptr<Settings> m_settings;

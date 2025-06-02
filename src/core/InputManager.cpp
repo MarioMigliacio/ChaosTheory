@@ -266,6 +266,8 @@ void InputManager::BindKey(const std::string &action, sf::Keyboard::Key key)
     CT_WARN_IF_UNINITIALIZED("InputManager", "BindKey");
 
     m_keyBindings[action] = key;
+
+    CT_LOG_DEBUG("InputManager Bound key: {}.", action);
 }
 
 /// @brief Removes an input action and the matching SFML Key from the internal unordered map.
@@ -275,6 +277,8 @@ void InputManager::UnbindKey(const std::string &action)
     CT_WARN_IF_UNINITIALIZED("InputManager", "UnbindKey");
 
     m_keyBindings.erase(action);
+
+    CT_LOG_DEBUG("InputManager Unbound key: {}.", action);
 }
 
 /// @brief Returns the matching SFML Key if the supplied action maps correctly to the internal unordered map.

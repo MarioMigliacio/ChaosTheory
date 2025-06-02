@@ -11,20 +11,20 @@
 
 #include "SandBoxScene.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "AudioManager.h"
-#include "GameAssets.h"
 #include "InputManager.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
-#include "UIAssets.h"
 #include "UIFactory.h"
 #include "UIManager.h"
 #include "UIPresets.h"
 #include "WindowManager.h"
 
+/// @brief Constants that can be adjusted throughout the SandBoxScene.
 namespace
 {
 /// @brief Fixed name constant for the play button label.
@@ -35,6 +35,10 @@ constexpr auto SETTING_BTN_LABEL = "Settings";
 
 /// @brief Fixed name constant for the Quit button label.
 constexpr auto QUIT_BTN_LABEL = "Quit";
+
+constexpr auto TOGGLE_BUTTON_KEY = "Toggle";
+
+constexpr auto RETURN_BUTTON_KEY = "Return";
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -51,6 +55,7 @@ void SandBoxScene::Init()
     UIManager::Instance().Clear();
 
     LoadRequiredAssets();
+    BindInputKeys();
     SetupSceneComponents();
 
     SceneTransitionManager::Instance().StartFadeIn();
@@ -70,7 +75,7 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : GameAssets::Textures)
+    for (const auto &[key, path] : SandBoxAssets::Textures)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
@@ -78,7 +83,7 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : GameAssets::Fonts)
+    for (const auto &[key, path] : SandBoxAssets::Fonts)
     {
         if (!AssetManager::Instance().LoadFont(key, path))
         {
@@ -103,6 +108,9 @@ void SandBoxScene::Shutdown()
 /// @brief Handles the exit criteria for this scene.
 void SandBoxScene::OnExit()
 {
+    InputManager::Instance().UnbindKey(TOGGLE_BUTTON_KEY);
+    InputManager::Instance().UnbindKey(RETURN_BUTTON_KEY);
+
     CT_LOG_INFO("SandBoxScene OnExit.");
 }
 
@@ -114,17 +122,15 @@ void SandBoxScene::Update(float dt)
     const bool isPressed = InputManager::Instance().IsMouseButtonPressed(sf::Mouse::Left);
     const bool isJustPressed = InputManager::Instance().IsMouseButtonJustPressed(sf::Mouse::Left);
 
-    for (auto ele : UIManager::Instance().GetElements())
-    {
-        ele->SetEnabled(m_toggler);
-    }
-
     UIManager::Instance().Update(mousePos, isPressed, isJustPressed, dt);
 
     if (m_background)
     {
         m_background->Update(dt);
     }
+
+    // new
+    CheckActionsPressed();
 
     // Handle button scene request change
     if (m_hasPendingTransition)
@@ -136,27 +142,10 @@ void SandBoxScene::Update(float dt)
     }
 }
 
-/// @brief Handle any quick cancelation requests if present.
-/// @param event bubbled down from caller, not needed.
+/// @brief Handle any relevent events at this scene level if needed.
+/// @param event bubbled down from caller.
 void SandBoxScene::HandleEvent(const sf::Event &event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == sf::Keyboard::Enter)
-        {
-            m_hasPendingTransition = true;
-            m_requestedScene = SceneID::MainMenu;
-
-            CT_LOG_INFO("SandBoxScene: Enter event handled.");
-        }
-
-        else if (event.key.code == sf::Keyboard::Space)
-        {
-            m_toggler = !m_toggler;
-
-            CT_LOG_INFO("SandBoxScene: Toggle switch: {}", m_toggler);
-        }
-    }
 }
 
 /// @brief Not used in SandBoxScene context.
@@ -184,7 +173,6 @@ void SandBoxScene::SetupSceneComponents()
 {
     LoadBackground();
     CreateTitleText();
-    CreateButtons();
     PlayGameMusic();
 }
 
@@ -212,44 +200,33 @@ void SandBoxScene::CreateTitleText()
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
-/// @brief Helper method to create any necessary UI buttons in this scene.
-void SandBoxScene::CreateButtons()
-{
-    const float buttonWidth = BASE_BUTTON_WIDTH_PIXEL;
-    const float buttonHeight = BASE_BUTTON_HEIGHT_PIXEL;
-    const float spacing = BASE_BUTTON_SPACING_PIXEL;
-
-    const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    const float totalWidth = (buttonWidth * 3.f) + (spacing * 2.f);
-    const float startX = (winSize.x - totalWidth) / 2.f;
-    const float centerY = winSize.y * 0.55f; // slightly lower than center
-
-    const sf::Vector2f size{buttonWidth, buttonHeight};
-
-    std::vector<std::tuple<std::string, std::string>> skins = {
-        {UIAssets::UISkinButtonBlueIdleKey, UIAssets::UISkinButtonBlueHoverKey},
-        {UIAssets::UISkinButtonGreenIdleKey, UIAssets::UISkinButtonGreenHoverKey},
-        {UIAssets::UISkinButtonRedIdleKey, UIAssets::UISkinButtonRedHoverKey}};
-
-    std::vector<std::string> btn_labels = {PLAY_BTN_LABEL, SETTING_BTN_LABEL, QUIT_BTN_LABEL};
-
-    const std::vector<UIButtonColorScheme> schemes = {UIButtonColorScheme::Blue, UIButtonColorScheme::Green,
-                                                      UIButtonColorScheme::Red};
-
-    for (size_t i = 0; i < skins.size(); ++i)
-    {
-        const float x = startX + i * (size.x + spacing);
-        auto label = btn_labels[i];
-
-        auto button = UIFactory::Instance().CreateSkinnableButton(
-            {x, centerY}, size, btn_labels[i], std::get<0>(skins[i]), std::get<1>(skins[i]), schemes[i],
-            [label]() { CT_LOG_INFO("Skinnable button '{}' clicked!", label); });
-
-        UIManager::Instance().AddElement(button);
-    }
-}
-
 /// @brief Helper method to load and play the game music for this scene. (intentionally blank for now)
 void SandBoxScene::PlayGameMusic()
 {
+}
+
+void SandBoxScene::BindInputKeys()
+{
+    InputManager::Instance().BindKey(TOGGLE_BUTTON_KEY, sf::Keyboard::Key::Space);
+    InputManager::Instance().BindKey(RETURN_BUTTON_KEY, sf::Keyboard::Key::Enter);
+}
+
+void SandBoxScene::CheckActionsPressed()
+{
+    auto &input = InputManager::Instance();
+
+    if (input.IsKeyJustPressed(TOGGLE_BUTTON_KEY))
+    {
+        m_toggler = !m_toggler;
+
+        CT_LOG_INFO("SandBoxScene: Toggle switch: {}", m_toggler);
+    }
+
+    if (input.IsKeyJustPressed(RETURN_BUTTON_KEY))
+    {
+        m_hasPendingTransition = true;
+        m_requestedScene = SceneID::MainMenu;
+
+        CT_LOG_INFO("SandBoxScene: Enter event handled.");
+    }
 }

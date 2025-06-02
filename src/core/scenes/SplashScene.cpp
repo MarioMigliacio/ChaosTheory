@@ -11,14 +11,15 @@
 
 #include "SplashScene.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "AudioManager.h"
 #include "Macros.h"
 #include "SceneManager.h"
-#include "SplashAssets.h"
 #include "WindowManager.h"
 #include <filesystem>
 #include <random>
 
+/// @brief Constants that can be adjusted throughout the SplashScene.
 namespace
 {
 /// @brief Controls how far the texture image will shake during update.
