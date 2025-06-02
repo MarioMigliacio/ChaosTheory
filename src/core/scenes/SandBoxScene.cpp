@@ -11,20 +11,20 @@
 
 #include "SandBoxScene.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "AudioManager.h"
-#include "GameAssets.h"
 #include "InputManager.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
-#include "UIAssets.h"
 #include "UIFactory.h"
 #include "UIManager.h"
 #include "UIPresets.h"
 #include "WindowManager.h"
 
+/// @brief Constants that can be adjusted throughout the SandBoxScene.
 namespace
 {
 /// @brief Fixed name constant for the play button label.
@@ -75,7 +75,7 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : GameAssets::Textures)
+    for (const auto &[key, path] : SandBoxAssets::Textures)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
@@ -83,7 +83,7 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : GameAssets::Fonts)
+    for (const auto &[key, path] : SandBoxAssets::Fonts)
     {
         if (!AssetManager::Instance().LoadFont(key, path))
         {

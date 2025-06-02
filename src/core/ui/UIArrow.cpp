@@ -11,8 +11,8 @@
 
 #include "UIArrow.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "ResolutionScaleManager.h"
-#include "UIAssets.h"
 
 namespace
 {
