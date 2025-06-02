@@ -33,6 +33,7 @@ class AssetManager
     static AssetManager &Instance();
 
     void Init(std::shared_ptr<const Settings> settings);
+    void ClearCache();
     void Shutdown();
 
     bool IsInitialized() const;
@@ -52,6 +53,11 @@ class AssetManager
 
     AssetManager(const AssetManager &) = delete;
     AssetManager &operator=(const AssetManager &) = delete;
+
+  private:
+    void ClearFontCache();
+    void ClearTextureCache();
+    void ClearSoundCache();
 
   private:
     std::unordered_map<std::string, sf::Texture> m_textures;

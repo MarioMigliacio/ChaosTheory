@@ -51,6 +51,14 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
     CT_LOG_INFO("AssetManager initialized.");
 }
 
+/// @brief Exposes a reload capability for the AssetManager to easily start from clean on all collected assets.
+void AssetManager::ClearCache()
+{
+    ClearFontCache();
+    ClearTextureCache();
+    ClearSoundCache();
+}
+
 /// @brief Shuts down the AssetManager and resets internal state.
 void AssetManager::Shutdown()
 {
@@ -58,9 +66,7 @@ void AssetManager::Shutdown()
 
     CT_LOG_INFO("Clearing asset cache...");
 
-    m_textures.clear();
-    m_sounds.clear();
-    m_fonts.clear();
+    ClearCache();
     m_isInitialized = false;
 
     CT_LOG_INFO("AssetManager shutdown.");
@@ -209,4 +215,22 @@ sf::SoundBuffer *AssetManager::GetSound(const std::string &name)
     }
 
     return &it->second;
+}
+
+/// @brief Helper method to quickly clear m_fonts collection.
+void AssetManager::ClearFontCache()
+{
+    m_fonts.clear();
+}
+
+/// @brief Helper method to quickly clear m_textures collection.
+void AssetManager::ClearTextureCache()
+{
+    m_textures.clear();
+}
+
+/// @brief Helper method to quickly clear m_sounds collection.
+void AssetManager::ClearSoundCache()
+{
+    m_sounds.clear();
 }
