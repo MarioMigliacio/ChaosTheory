@@ -33,6 +33,7 @@ class AssetManager
     static AssetManager &Instance();
 
     void Init(std::shared_ptr<const Settings> settings);
+    void ClearCache();
     void Shutdown();
 
     bool IsInitialized() const;
