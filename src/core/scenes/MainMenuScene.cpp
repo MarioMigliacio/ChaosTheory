@@ -241,11 +241,12 @@ void MainMenuScene::CreateTitleText()
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
     const std::string titleText = DEFAULT_TITLE_STR;
-    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TITLE_FONT_SIZE);
+    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TEXT_LABEL_TITLE_FONT_SIZE);
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                    scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
+                                    scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
+    m_titleLabel =
+        UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true, UITextLabelScheme::DefaultScheme);
 
     UIManager::Instance().AddElement(m_titleLabel);
 }

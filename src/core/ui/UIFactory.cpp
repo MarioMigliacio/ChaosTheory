@@ -74,6 +74,15 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
     return btn;
 }
 
+/// @brief Generates a SkinnableButton ui element.
+/// @param pos Position to set button at.
+/// @param size Size to initialize button with.
+/// @param label Text to initialize button with.
+/// @param idle Path to Idle texture to be used for SkinnableButton
+/// @param hover Path to Hover texture to be used for SkinnableButton
+/// @param scheme Enum field representing the scheme for Button text layouts.
+/// @param onClick Pointer to callback function, when clicked.
+/// @return Smart pointer to a UISkinnableButton.
 std::shared_ptr<UISkinnableButton> UIFactory::CreateSkinnableButton(const sf::Vector2f &pos, const sf::Vector2f &size,
                                                                     const std::string &label, const std::string &idle,
                                                                     const std::string &hover,
@@ -177,24 +186,24 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
 /// @brief Creates a UI UITextLabel element, given the custom input parameters.
 /// @param text String representation for the element.
 /// @param position Position for text label.
-/// @param baseFontSize Font size for the text label.
+/// @param fontSize Size of the font for the Text.
 /// @param centerOrigin Used for centering the string contents around the position during construction.
-/// @return safe pointer to a UITextLabel.
+/// @param scheme Enum field representing the type of shceme.
+/// @return Safe pointer to a UITextLabel.
 std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text, const sf::Vector2f &position,
-                                                        unsigned int baseFontSize, bool centerOrigin)
+                                                        unsigned int fontSize, bool centerOrigin,
+                                                        UITextLabelScheme scheme)
 {
-    auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
-    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TITLE_BORDER_THICKNESS);
+    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
 
-    auto label =
-        std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default"), scaledFontSize, position);
+    auto label = std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default"), fontSize, position);
 
     if (!centerOrigin)
+    {
         label->SetPosition(position); // no auto-centering
+    }
 
-    // TODO - implement a color scheme enum like the UISkinnableButton.
-    label->SetColor(DEFAULT_TITLE_COLOR);
-    label->SetOutline(scaledOutline, TITLE_OUTLINE_PURPLE_TINT);
+    ApplyTextLabelStyle(*label, scheme, scaledOutline);
 
     return label;
 }
@@ -219,8 +228,8 @@ std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string 
 }
 
 /// @brief A private helper method to utilize color themes for a SkinnableButton combo.
-/// @param button reference to the button to be changed.
-/// @param scheme enum field representing  the type of theme.
+/// @param button Reference to the button to be changed.
+/// @param scheme Enum field representing  the type of scheme.
 void UIFactory::ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButtonColorScheme scheme)
 {
     switch (scheme)
@@ -235,6 +244,46 @@ void UIFactory::ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButto
 
         case UIButtonColorScheme::Red:
             button.SetTextStyle(TEX_BTN_RED_LABEL_TEXT_COLOR, TEX_BTN_RED_TEXT_OUTLINE_COLOR, 2.0f);
+            break;
+    }
+}
+
+/// @brief A private helper method to utilize color themes for a TextLabel string combo.
+/// @param label Reference to the UITextLabel to be changed.
+/// @param scheme Enum field representing the type of shceme.
+void UIFactory::ApplyTextLabelStyle(UITextLabel &label, UITextLabelScheme scheme, const float labelBorderSize)
+{
+    switch (scheme)
+    {
+        case UITextLabelScheme::DefaultScheme:
+        default:
+            // Default scheme is LimeGreen with Purple contrast border.
+            label.SetColor(TEXT_LABEL_COLOR_LIME_GREEN);
+            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_PURPLE_TINT);
+            break;
+
+        case UITextLabelScheme::CougarScheme:
+            // CougarScheme scheme is Crimson with Grey contrast border.
+            label.SetColor(TEXT_LABEL_COLOR_COUGAR_CRIMSON);
+            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_COUGAR_GREY);
+            break;
+
+        case UITextLabelScheme::HuskyScheme:
+            // HuskyScheme scheme is PurpleTint with MetallicGold contrast border.
+            label.SetColor(TEXT_LABEL_COLOR_PURPLE_TINT);
+            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_METALLIC_GOLD);
+            break;
+
+        case UITextLabelScheme::BlueSteelScheme:
+            // BlueSteelScheme scheme is BlueSteel with CoolGrey contrast border.
+            label.SetColor(TEXT_LABEL_COLOR_BLUE_STEEL);
+            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_COOL_GREY);
+            break;
+
+        case UITextLabelScheme::MintyHerbScheme:
+            // MintyHerbScheme scheme is TealMint with Dark Green contrast border.
+            label.SetColor(TEXT_LABEL_COLOR_TEAL_MINT);
+            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_MUTE_GREEN);
             break;
     }
 }

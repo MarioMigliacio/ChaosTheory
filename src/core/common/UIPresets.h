@@ -15,32 +15,44 @@
 #include <string>
 
 // ============================================================================
-// Titles:
+// Text Labels:
 // ============================================================================
 
-/// @brief Default Title string color.
-const sf::Color DEFAULT_TITLE_COLOR = sf::Color(102, 255, 102);
+/// @brief Lime green Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_LIME_GREEN = sf::Color(102, 255, 102);
 
-/// @brief Deep muted green outline color.
-const sf::Color TITLE_OUTLINE_SOFT_SHADOW = sf::Color(30, 60, 30);
+/// @brief Deep dark green Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_MUTE_GREEN = sf::Color(30, 60, 30);
 
-/// @brief Neutral grey outline color.
-const sf::Color TITLE_OUTLINE_COOL_GREY = sf::Color(50, 50, 50);
+/// @brief Neutral grey Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_COOL_GREY = sf::Color(50, 50, 50);
 
-/// @brief Favored default title outline color. Deep violet.
-const sf::Color TITLE_OUTLINE_PURPLE_TINT = sf::Color(90, 0, 130);
+/// @brief Color code for Cougar Grey Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_COUGAR_GREY = sf::Color(94, 106, 113);
 
-/// @brief Minty teal title outline color.
-const sf::Color TITLE_OUTLINE_TEAL_GLOW = sf::Color(0, 180, 150);
+/// @brief Color code for Cougar Crimson Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_COUGAR_CRIMSON = sf::Color(152, 30, 50);
 
-/// @brief Default Title border padding.
-const float DEFAULT_TITLE_BORDER_THICKNESS = 2.f;
+/// @brief Blue Steel Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_BLUE_STEEL = sf::Color(23, 157, 235);
 
-/// @brief Default Title font size.
-constexpr unsigned int DEFAULT_TITLE_FONT_SIZE = 48;
+/// @brief Deep Violet Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_PURPLE_TINT = sf::Color(90, 0, 130);
 
-/// @brief Default relative positioning for Title string.
-constexpr float DEFAULT_TITLE_HEIGHT_PERCENT = .1f;
+/// @brief Metallic Gold Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_METALLIC_GOLD = sf::Color(255, 215, 0);
+
+/// @brief Minty Teal Text Label string color.
+const sf::Color TEXT_LABEL_COLOR_TEAL_MINT = sf::Color(0, 180, 150);
+
+/// @brief Default Text Label string border padding.
+const float DEFAULT_TEXT_LABEL_BORDER_THICKNESS = 2.f;
+
+/// @brief Default Text Label Title string font size.
+constexpr unsigned int DEFAULT_TEXT_LABEL_TITLE_FONT_SIZE = 48;
+
+/// @brief Default relative positioning for Text Label Title string.
+constexpr float DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT = .1f;
 
 // ============================================================================
 // Generic Button uses:

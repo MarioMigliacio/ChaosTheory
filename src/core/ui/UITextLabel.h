@@ -16,6 +16,16 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+/// @brief Enumeration field which corresponds to a type of supported UITextLabel color scheme combination.
+enum class UITextLabelScheme
+{
+    DefaultScheme,
+    CougarScheme,
+    HuskyScheme,
+    BlueSteelScheme,
+    MintyHerbScheme
+};
+
 // ============================================================================
 //  Class       : UITextLabel
 //  Purpose     : Manages this UITextLabel logic at the ui level.
