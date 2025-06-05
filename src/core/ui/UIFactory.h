@@ -60,13 +60,15 @@ class UIFactory
                                                const sf::Vector2f &relativeSize);
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
-                                                 unsigned int baseFontSize, bool centerOrigin);
+                                                 unsigned int baseFontSize, bool centerOrigin,
+                                                 UITextLabelScheme scheme);
 
     std::shared_ptr<UIToastMessage> CreateToastMessage(const std::string &text, const sf::Vector2f &position,
                                                        float duration);
 
   private:
     void ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButtonColorScheme scheme);
+    void ApplyTextLabelStyle(UITextLabel &label, UITextLabelScheme scheme, const float labelBorderSize);
 
   private:
     UIFactory() = default;

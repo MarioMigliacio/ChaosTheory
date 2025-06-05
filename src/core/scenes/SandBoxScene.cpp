@@ -196,7 +196,8 @@ void SandBoxScene::CreateTitleText()
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(0.08f)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(title, centerPos, fontSize, true);
+    m_titleLabel =
+        UIFactory::Instance().CreateTextLabel(title, centerPos, fontSize, true, UITextLabelScheme::MintyHerbScheme);
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
