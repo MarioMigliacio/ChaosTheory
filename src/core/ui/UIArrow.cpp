@@ -13,6 +13,7 @@
 #include "AssetManager.h"
 #include "Assets.h"
 #include "ResolutionScaleManager.h"
+#include <cmath>
 
 namespace
 {
@@ -30,16 +31,21 @@ constexpr float MAX_SCALE = 1.5f;
 
 /// @brief Base scale for this UIArrow.
 constexpr float BASE_SCALE = 1.0f;
+
+/// @brief Frequency in oscillations per second
+constexpr float PULSE_SPEED = 4.0f;
+
+/// @brief How much bigger/smaller than base
+constexpr float PULSE_AMPLITUDE = 0.5f;
 } // namespace
 
 /// @brief Constructor for the UIArrow.
 /// @param position Position to emplace.
+/// @param size Size to initialize with.
 /// @param direction Direction to face.
-UIArrow::UIArrow(const sf::Vector2f &position, ArrowDirection direction)
-    : m_direction(direction), m_position(position), m_size(64.f, 64.f)
+UIArrow::UIArrow(const sf::Vector2f &position, const sf::Vector2f &size, ArrowDirection direction)
+    : m_direction(direction), m_position(position), m_size(size)
 {
-    LoadTexture();
-    UpdateSprite();
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -49,27 +55,43 @@ UIArrow::UIArrow(const sf::Vector2f &position, ArrowDirection direction)
 /// @param dt delta time
 void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt)
 {
-    m_hovered = m_sprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
+    m_hovered = Contains(mousePos);
 
     if (m_opacity < MAX_OPACITY)
     {
-        m_opacity = std::min(MAX_OPACITY, m_opacity + FADE_SPEED * 0.016f);
+        m_opacity = std::min(MAX_OPACITY, m_opacity + FADE_SPEED * dt);
     }
 
-    float targetScale = m_hovered ? MAX_SCALE : BASE_SCALE;
-
-    if (m_scale < targetScale)
+    if (!m_hovered)
     {
-        m_scale = std::min(targetScale, m_scale + SCALE_SPEED * 0.016f);
+        m_animationTime += dt;
+
+        float pulse = std::sin(m_animationTime * PULSE_SPEED);
+        float dynamicScale = BASE_SCALE + PULSE_AMPLITUDE * pulse;
+
+        m_sprite.setScale(m_baseScale.x * dynamicScale, m_baseScale.y * dynamicScale);
     }
 
-    else if (m_scale > targetScale)
+    else
     {
-        m_scale = std::max(targetScale, m_scale - SCALE_SPEED * 0.016f);
+        // Smoothly return to BASE_SCALE multiplier
+        float targetScale = BASE_SCALE;
+        float delta = SCALE_SPEED * dt;
+
+        if (m_scale < targetScale)
+        {
+            m_scale = std::min(targetScale, m_scale + delta);
+        }
+
+        else if (m_scale > targetScale)
+        {
+            m_scale = std::max(targetScale, m_scale - delta);
+        }
+
+        m_sprite.setScale(m_baseScale.x * m_scale, m_baseScale.y * m_scale);
     }
 
     m_sprite.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(m_opacity)));
-    m_sprite.setScale(m_scale, m_scale);
 
     if (m_hovered && isMouseJustPressed)
     {
@@ -77,32 +99,48 @@ void UIArrow::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isM
     }
 }
 
-/// @brief Determines if the point is bound in the texture.
+/// @brief Determines if the point is bound in the texture. Using a more complex algorithm for a per-pixel computation.
 /// @param point Point to compair against us.
 /// @return true / false
 bool UIArrow::Contains(const sf::Vector2i &point) const
 {
-    if (!m_texture)
+    if (!m_sprite.getTexture())
     {
         return false;
     }
 
-    // Convert from screen coordinates to local sprite coordinates
+    // Step 1: Check bounding box
+    if (!m_sprite.getGlobalBounds().contains(static_cast<sf::Vector2f>(point)))
+    {
+        return false;
+    }
+
+    // Step 2: Convert to local coordinates
     sf::Vector2f local = m_sprite.getInverseTransform().transformPoint(static_cast<sf::Vector2f>(point));
 
-    // Ensure the point is within the texture bounds
-    const sf::IntRect texRect(0, 0, m_texture->getSize().x, m_texture->getSize().y);
+    const sf::Texture *tex = m_sprite.getTexture();
 
-    if (!texRect.contains(static_cast<sf::Vector2i>(local)))
+    if (!tex)
     {
         return false;
     }
 
-    // Get the pixel data
-    const sf::Image &image = m_texture->copyToImage();
-    sf::Color pixel = image.getPixel(static_cast<unsigned>(local.x), static_cast<unsigned>(local.y));
+    // Step 3: Get texture image
+    const sf::Image &image = tex->copyToImage();
 
-    return pixel.a > 32; // Consider hover only if mostly opaque
+    // Step 4: Convert to pixel coordinates in image space
+    unsigned int x = static_cast<unsigned int>(local.x);
+    unsigned int y = static_cast<unsigned int>(local.y);
+
+    if (x >= image.getSize().x || y >= image.getSize().y)
+    {
+        return false;
+    }
+
+    // Step 5: Check alpha
+    const sf::Color pixel = image.getPixel(x, y);
+
+    return pixel.a > 32; // Only consider "solid" pixels as interactive
 }
 
 /// @brief Sets the position for this UI Arrow.
@@ -120,11 +158,27 @@ sf::Vector2f UIArrow::GetPosition() const
     return m_position;
 }
 
+/// @brief Sets the internal sprite image for this UIArrow.
+/// @param texture Path to the texture asset.
+void UIArrow::SetTextureSkin(const std::string &texture)
+{
+    m_texture = texture;
+
+    auto tex = AssetManager::Instance().GetTexture(texture);
+
+    if (tex)
+    {
+        m_sprite.setTexture(*tex, true);
+        SetDirection(m_direction);
+    }
+}
+
 /// @brief Sets the size for this UIArrow.
 /// @param size new m_size.
 void UIArrow::SetSize(const sf::Vector2f &size)
 {
-    m_size = size; // unused since texture controls sizing, but kept for API consistency
+    m_size = size;
+    UpdateSprite();
 }
 
 /// @brief Returns the size for this UIArrow.
@@ -156,39 +210,45 @@ void UIArrow::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(m_sprite, states);
 }
 
-/// @brief Load the texture into usable sprite for this UIArrow.
-void UIArrow::LoadTexture()
+/// @brief Sets the internal direction the arrow texture should face.
+/// @param dir new m_direction.
+void UIArrow::SetDirection(ArrowDirection dir)
 {
-    // NOTE: this is temporary hardcoded to always just use the namespace key/value for uiarrow texture.
-    // we may at the future wish to load based on parameter.
-    const std::string textureName = UIAssets::UIArrowTextureKey;
-    AssetManager::Instance().LoadTexture(textureName, UIAssets::Textures.at(textureName));
-    m_texture = AssetManager::Instance().GetTexture(textureName);
-    m_sprite.setTexture(*m_texture);
+    if (m_sprite.getTexture())
+    {
+        // Rotate based on direction
+        switch (m_direction)
+        {
+            case ArrowDirection::Left:
+                m_sprite.setRotation(0.f);
+                break;
+            case ArrowDirection::Right:
+                m_sprite.setRotation(180.f);
+                break;
+            case ArrowDirection::Up:
+                m_sprite.setRotation(90.f);
+                break;
+            case ArrowDirection::Down:
+                m_sprite.setRotation(270.f);
+                break;
+        }
+
+        UpdateSprite();
+    }
 }
 
 /// @brief Correct the texture sprites position and orientation.
 void UIArrow::UpdateSprite()
 {
-    m_sprite.setPosition(m_position);
-    m_sprite.setOrigin(m_sprite.getLocalBounds().width / 2.f, m_sprite.getLocalBounds().height / 2.f);
-
-    // Rotate based on direction
-    switch (m_direction)
+    if (m_sprite.getTexture())
     {
-        case ArrowDirection::Left:
-            m_sprite.setRotation(0.f);
-            break;
-        case ArrowDirection::Right:
-            m_sprite.setRotation(180.f);
-            break;
-        case ArrowDirection::Up:
-            m_sprite.setRotation(90.f);
-            break;
-        case ArrowDirection::Down:
-            m_sprite.setRotation(270.f);
-            break;
-    }
+        const sf::Vector2u texSize = m_sprite.getTexture()->getSize();
 
-    m_sprite.setScale(m_scale, m_scale);
+        m_baseScale.x = m_size.x / static_cast<float>(texSize.x);
+        m_baseScale.y = m_size.y / static_cast<float>(texSize.y);
+
+        m_sprite.setPosition(m_position);
+        m_sprite.setOrigin(m_sprite.getLocalBounds().width / 2.f, m_sprite.getLocalBounds().height / 2.f);
+        m_sprite.setScale(m_baseScale.x, m_baseScale.y);
+    }
 }

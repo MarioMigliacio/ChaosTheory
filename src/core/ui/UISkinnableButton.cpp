@@ -18,10 +18,9 @@
 /// @brief Constructs a UISkinnableButton.
 /// @param position Sets internal position.
 /// @param size Sets internal size.
-UISkinnableButton::UISkinnableButton(const sf::Vector2f &position, const sf::Vector2f &size) : m_size(size)
+UISkinnableButton::UISkinnableButton(const sf::Vector2f &position, const sf::Vector2f &size)
+    : m_size(size), m_position(position)
 {
-    SetPosition(position);
-    SetSize(size);
 }
 
 /// @brief Sets the internal idle and hover textures for this UISkinnableButton.

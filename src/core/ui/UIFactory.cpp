@@ -125,16 +125,23 @@ std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, cons
 }
 
 /// @brief Creates a UI Arrow element, given the custom input parameters.
-/// @param x X coordinate for position to be set.
-/// @param y Y coordinate for position to be set.
+/// @param position Position to emplace.
+/// @param size Size to initialize with.
+/// @param texture Loadable texture path.
 /// @param direction Arrow direction L, R, U, D.
 /// @param onClick Pointer to callback function, when clicked.
-/// @return safe pointer to a UIArrow.
-std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction,
+/// @return Safe pointer to a UIArrow.
+std::shared_ptr<UIArrow> UIFactory::CreateArrow(const sf::Vector2f &position, const sf::Vector2f &size,
+                                                const std::string &texture, ArrowDirection direction,
                                                 std::function<void()> onClick)
 {
-    auto arrow = std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
+    sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
+                            ResolutionScaleManager::Instance().ScaleY(size.y));
+
+    auto arrow = std::make_shared<UIArrow>(position, scaledSize, direction);
     arrow->SetOnClick(onClick);
+    arrow->SetTextureSkin(texture);
+    arrow->SetSize(scaledSize);
 
     return arrow;
 }
