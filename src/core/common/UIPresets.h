@@ -209,6 +209,9 @@ const sf::Color TOAST_DEFAULT_COLOR(102, 255, 102);
 // Generic Arrow uses:
 // ============================================================================
 
+/// @brief Default fixed pixel size for game to display Arrow.
+constexpr float DEFAULT_ARROW_SIZE_PIXEL = 64.f;
+
 /// @brief Default relative space from left boundary for an Arrow, 5%.
 constexpr float DEFAULT_ARROW_LEFT_CENTER_PERCENT = .05f;
 

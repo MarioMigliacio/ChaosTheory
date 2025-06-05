@@ -52,7 +52,9 @@ class UIFactory
                                            const sf::Vector2f &size, float minValue, float maxValue, float initialValue,
                                            std::function<void(float)> onChange);
 
-    std::shared_ptr<UIArrow> CreateArrow(float x, float y, ArrowDirection direction, std::function<void()> onClick);
+    std::shared_ptr<UIArrow> CreateArrow(const sf::Vector2f &position, const sf::Vector2f &size,
+                                         const std::string &texture, ArrowDirection direction,
+                                         std::function<void()> onClick);
 
     std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
                                                const sf::Vector2f &relativeSize);

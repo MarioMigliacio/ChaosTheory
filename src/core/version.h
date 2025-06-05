@@ -18,7 +18,7 @@
 #define CT_VERSION_MINOR 2
 
 /// @brief Patch Version of Chaos Theory to date.
-#define CT_VERSION_PATCH 4
+#define CT_VERSION_PATCH 5
 
 /// @brief String representation for Chaos Theory version.
-#define CT_VERSION_STRING "1.2.4"
+#define CT_VERSION_STRING "1.2.5"

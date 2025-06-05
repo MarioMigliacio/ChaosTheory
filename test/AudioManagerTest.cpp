@@ -86,13 +86,13 @@ TEST_F(AudioManagerTest, SetVolumeSynchronizesWithSettings)
 
 TEST_F(AudioManagerTest, PlayMusicSetsState)
 {
-    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Default.wav", false);
+    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "RootMenu.wav", false);
     EXPECT_TRUE(AudioManager::Instance().IsMusicPlaying());
 }
 
 TEST_F(AudioManagerTest, SwitchTrackUpdatesState)
 {
-    std::string track = m_settings->m_audioDirectory + "Default.wav";
+    std::string track = m_settings->m_audioDirectory + "IntroClip.wav";
 
     AudioManager::Instance().PlayMusic(track);
     EXPECT_TRUE(AudioManager::Instance().IsMusicPlaying());
