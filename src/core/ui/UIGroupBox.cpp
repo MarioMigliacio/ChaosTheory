@@ -11,6 +11,18 @@
 
 #include "UIGroupBox.h"
 #include "Macros.h"
+#include "ResolutionScaleManager.h"
+#include "UIFactory.h"
+
+/// @brief Constants that can be adjusted throughout the UIGroupBox.
+namespace
+{
+/// @brief Default alignment padding for UITextlabel.
+constexpr float TITLE_PAD_X = 10.f;
+
+/// @brief Default alignment padding for UITextLabel.
+constexpr float TITLE_PAD_Y = 5.f;
+} // namespace
 
 /// @brief Constructor for the UIGroupBox.
 /// @param position Position to set this GroupBox.
@@ -30,18 +42,33 @@ UIGroupBox::UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size)
 /// @param title String title.
 /// @param font Font loaded.
 /// @param fontSize Font size.
-void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize)
+/// @param scheme Supported Color Scheme for UITextLabel.
+void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize,
+                          UITextLabelScheme scheme)
 {
-    m_title.setFont(font);
-    m_title.setString(title);
-    m_title.setCharacterSize(fontSize);
-    m_title.setFillColor(sf::Color::White);
+    // Compute default title position just above box
+    const sf::Vector2f groupBoxPos = m_background.getPosition();
+    const float paddingX = ResolutionScaleManager::Instance().ScaleX(TITLE_PAD_X);
+    const float paddingY = ResolutionScaleManager::Instance().ScaleY(TITLE_PAD_Y);
 
-    const auto bounds = m_title.getLocalBounds();
-    m_title.setOrigin(bounds.left, bounds.top);
-    m_title.setPosition(m_background.getPosition().x + 10.f, m_background.getPosition().y - bounds.height - 5.f);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(title, {0.f, 0.f}, fontSize, false, scheme);
+    sf::Vector2f textSize = m_titleLabel->GetSize();
+
+    const float anchorX = groupBoxPos.x + (textSize.x / 2.f);
+    const float aboveY = groupBoxPos.y - textSize.y - paddingY;
+
+    m_titleLabel->SetPosition(sf::Vector2f{anchorX, aboveY});
 
     CT_LOG_INFO("UIGroupBox SetTitle: {}.", title);
+}
+
+/// @brief Provides access to the UITextLabel for altering its color scheme.
+/// @param scheme Enum field for the type of label layout.
+void UIGroupBox::SetTitleScheme(UITextLabelScheme scheme)
+{
+    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
+
+    m_titleLabel->ApplyTextLabelStyle(scheme, scaledOutline);
 }
 
 /// @brief Add the UIElement to the container owned by this GroupBox.
@@ -122,7 +149,11 @@ void UIGroupBox::SetPosition(const sf::Vector2f &position)
 {
     sf::Vector2f offset = position - m_background.getPosition();
     m_background.setPosition(position);
-    m_title.move(offset);
+
+    if (m_titleLabel)
+    {
+        m_titleLabel->SetPosition(m_titleLabel->GetPosition() + offset);
+    }
 
     for (auto &child : m_children)
     {
@@ -210,7 +241,11 @@ void UIGroupBox::SetEdgePadding(float padding)
 void UIGroupBox::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_background, states);
-    target.draw(m_title, states);
+
+    if (m_titleLabel)
+    {
+        target.draw(*m_titleLabel, states);
+    }
 
     for (const auto &child : m_children)
     {

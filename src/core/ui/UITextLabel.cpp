@@ -11,6 +11,7 @@
 // ============================================================================
 
 #include "UITextLabel.h"
+#include "UIPresets.h"
 
 /// @brief Constructor for the UITextLabel.
 /// @param text String representation for this UITextLabel.
@@ -80,6 +81,51 @@ void UITextLabel::SetPosition(const sf::Vector2f &position)
 sf::Vector2f UITextLabel::GetPosition() const
 {
     return m_text.getPosition();
+}
+
+/// @brief Helper method to utilize color themes for a TextLabel string combo.
+/// @param scheme Enum field representing the type of shceme.
+/// @param labelBorderSize Size to adjust text border witdth.
+void UITextLabel::ApplyTextLabelStyle(UITextLabelScheme scheme, const float labelBorderSize)
+{
+    switch (scheme)
+    {
+        case UITextLabelScheme::DefaultScheme:
+        default:
+            // Default scheme is LimeGreen with Purple contrast border.
+            m_text.setColor(TEXT_LABEL_COLOR_LIME_GREEN);
+            m_text.setOutlineColor(TEXT_LABEL_COLOR_PURPLE_TINT);
+            m_text.setOutlineThickness(labelBorderSize);
+            break;
+
+        case UITextLabelScheme::CougarScheme:
+            // CougarScheme scheme is Crimson with Grey contrast border.
+            m_text.setColor(TEXT_LABEL_COLOR_COUGAR_CRIMSON);
+            m_text.setOutlineColor(TEXT_LABEL_COLOR_COUGAR_GREY);
+            m_text.setOutlineThickness(labelBorderSize);
+            break;
+
+        case UITextLabelScheme::HuskyScheme:
+            // HuskyScheme scheme is PurpleTint with MetallicGold contrast border.
+            m_text.setColor(TEXT_LABEL_COLOR_PURPLE_TINT);
+            m_text.setOutlineColor(TEXT_LABEL_COLOR_METALLIC_GOLD);
+            m_text.setOutlineThickness(labelBorderSize);
+            break;
+
+        case UITextLabelScheme::BlueSteelScheme:
+            // BlueSteelScheme scheme is BlueSteel with CoolGrey contrast border.
+            m_text.setColor(TEXT_LABEL_COLOR_BLUE_STEEL);
+            m_text.setOutlineColor(TEXT_LABEL_COLOR_COOL_GREY);
+            m_text.setOutlineThickness(labelBorderSize);
+            break;
+
+        case UITextLabelScheme::MintyHerbScheme:
+            // MintyHerbScheme scheme is TealMint with Dark Green contrast border.
+            m_text.setColor(TEXT_LABEL_COLOR_TEAL_MINT);
+            m_text.setOutlineColor(TEXT_LABEL_COLOR_MUTE_GREEN);
+            m_text.setOutlineThickness(labelBorderSize);
+            break;
+    }
 }
 
 /// @brief Unused for this UITextLabel currently, just for interface consistency.

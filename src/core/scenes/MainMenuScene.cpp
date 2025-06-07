@@ -245,8 +245,7 @@ void MainMenuScene::CreateTitleText()
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel =
-        UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true, UITextLabelScheme::DefaultScheme);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
 
     UIManager::Instance().AddElement(m_titleLabel);
 }

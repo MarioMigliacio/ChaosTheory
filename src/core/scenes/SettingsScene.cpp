@@ -316,8 +316,7 @@ void SettingsScene::CreateTitleText()
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel =
-        UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true, UITextLabelScheme::DefaultScheme);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
 
     UIManager::Instance().AddElement(m_titleLabel);
 }
@@ -469,7 +468,8 @@ void SettingsScene::CreateAudioControls()
     const sf::Vector2f relativeSize{0.5f, 0.5f};
 
     // Create a 50% screen width, 50% screen height UIGroupBox for UI elements as children.
-    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+    auto groupBox =
+        UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize, UITextLabelScheme::BlueSteelScheme);
 
     const float referenceSliderWidth = BASE_SLIDER_WIDTH_PERCENT; // 45% of reference width
     const float sliderHeight = scaleMgr.ScaleY(BASE_SLIDER_HEIGHT_PIXEL);
@@ -500,7 +500,8 @@ void SettingsScene::CreateResolutionControls()
     const sf::Vector2f relativeSize{0.25f, 0.40f};
 
     // Create the group box using the centralized UIFactory
-    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+    auto groupBox =
+        UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize, UITextLabelScheme::BlueSteelScheme);
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.15f * relativeSize.y));
 
@@ -547,7 +548,8 @@ void SettingsScene::CreateDifficultyControls()
     const sf::Vector2f relativeSize{0.25f, 0.40f};
 
     // Create the group box using the centralized UIFactory
-    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+    auto groupBox =
+        UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize, UITextLabelScheme::BlueSteelScheme);
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.15f * relativeSize.y));
 

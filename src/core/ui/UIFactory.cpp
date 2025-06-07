@@ -161,7 +161,7 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(const sf::Vector2f &position, co
 /// @param relativeSize Screen relative size to occupy.
 /// @return safe pointer to a UIGroupBox.
 std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                                      const sf::Vector2f &relativeSize)
+                                                      const sf::Vector2f &relativeSize, UITextLabelScheme scheme)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -173,8 +173,8 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
     const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
-    groupBox->SetTitle(title, *AssetManager::Instance().GetFont("Default"),
-                       scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE));
+    groupBox->SetTitle(title, *AssetManager::Instance().GetFont("Default"), scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE),
+                       scheme);
     groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
     groupBox->SetCenterChildren(true);             // safe default state
     groupBox->SetInternalPadding(internalPadding);
@@ -203,7 +203,7 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
         label->SetPosition(position); // no auto-centering
     }
 
-    ApplyTextLabelStyle(*label, scheme, scaledOutline);
+    label->ApplyTextLabelStyle(scheme, scaledOutline);
 
     return label;
 }
@@ -244,46 +244,6 @@ void UIFactory::ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButto
 
         case UIButtonColorScheme::Red:
             button.SetTextStyle(TEX_BTN_RED_LABEL_TEXT_COLOR, TEX_BTN_RED_TEXT_OUTLINE_COLOR, 2.0f);
-            break;
-    }
-}
-
-/// @brief A private helper method to utilize color themes for a TextLabel string combo.
-/// @param label Reference to the UITextLabel to be changed.
-/// @param scheme Enum field representing the type of shceme.
-void UIFactory::ApplyTextLabelStyle(UITextLabel &label, UITextLabelScheme scheme, const float labelBorderSize)
-{
-    switch (scheme)
-    {
-        case UITextLabelScheme::DefaultScheme:
-        default:
-            // Default scheme is LimeGreen with Purple contrast border.
-            label.SetColor(TEXT_LABEL_COLOR_LIME_GREEN);
-            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_PURPLE_TINT);
-            break;
-
-        case UITextLabelScheme::CougarScheme:
-            // CougarScheme scheme is Crimson with Grey contrast border.
-            label.SetColor(TEXT_LABEL_COLOR_COUGAR_CRIMSON);
-            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_COUGAR_GREY);
-            break;
-
-        case UITextLabelScheme::HuskyScheme:
-            // HuskyScheme scheme is PurpleTint with MetallicGold contrast border.
-            label.SetColor(TEXT_LABEL_COLOR_PURPLE_TINT);
-            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_METALLIC_GOLD);
-            break;
-
-        case UITextLabelScheme::BlueSteelScheme:
-            // BlueSteelScheme scheme is BlueSteel with CoolGrey contrast border.
-            label.SetColor(TEXT_LABEL_COLOR_BLUE_STEEL);
-            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_COOL_GREY);
-            break;
-
-        case UITextLabelScheme::MintyHerbScheme:
-            // MintyHerbScheme scheme is TealMint with Dark Green contrast border.
-            label.SetColor(TEXT_LABEL_COLOR_TEAL_MINT);
-            label.SetOutline(labelBorderSize, TEXT_LABEL_COLOR_MUTE_GREEN);
             break;
     }
 }
