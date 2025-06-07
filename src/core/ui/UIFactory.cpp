@@ -158,9 +158,12 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(const sf::Vector2f &position, co
 /// @param title String representation for GroupBox.
 /// @param relativePosition Screen relative position to be centered around.
 /// @param relativeSize Screen relative size to occupy.
+/// @param centerOrigin Whether or not to center title text for groupbox around position.
+/// @param scheme Type of ui text label color themes.
 /// @return safe pointer to a UIGroupBox.
 std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                                      const sf::Vector2f &relativeSize, UITextLabelScheme scheme)
+                                                      const sf::Vector2f &relativeSize, bool centerOrigin,
+                                                      UITextLabelScheme scheme)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -173,7 +176,7 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
     groupBox->SetTitle(title, *AssetManager::Instance().GetFont("Default"), scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE),
-                       scheme);
+                       centerOrigin, scheme);
     groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
     groupBox->SetCenterChildren(true);             // safe default state
     groupBox->SetInternalPadding(internalPadding);
@@ -195,13 +198,8 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 {
     const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
 
-    auto label = std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default"), fontSize, position);
-
-    if (!centerOrigin)
-    {
-        label->SetPosition(position); // no auto-centering
-    }
-
+    auto label = std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default"), fontSize, position,
+                                               centerOrigin);
     label->ApplyTextLabelStyle(scheme, scaledOutline);
 
     return label;

@@ -50,7 +50,7 @@ class UIGroupBox : public UIElement
     UIGroupBox(UIGroupBox &&) noexcept = default;
     UIGroupBox &operator=(UIGroupBox &&) noexcept = default;
 
-    void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18,
+    void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18, bool centerOrigin = true,
                   UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
     void SetTitleScheme(UITextLabelScheme scheme);
     void AddElement(std::shared_ptr<UIElement> element);

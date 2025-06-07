@@ -18,15 +18,20 @@
 /// @param font Font to be used.
 /// @param fontSize Font size for label.
 /// @param position Position for label.
+/// @param centerOrigin Whether or not to center the Text around the position or not.
 UITextLabel::UITextLabel(const std::string &text, const sf::Font &font, unsigned int fontSize,
-                         const sf::Vector2f &position)
+                         const sf::Vector2f &position, bool centerOrigin)
 {
     m_text.setFont(font);
     m_text.setString(text);
     m_text.setCharacterSize(fontSize);
     m_text.setFillColor(sf::Color::White);
     m_text.setPosition(position);
-    CenterOrigin();
+
+    if (centerOrigin)
+    {
+        CenterOrigin();
+    }
 }
 
 /// @brief Sets the text for this UITextLabel.
@@ -67,6 +72,13 @@ void UITextLabel::SetOutline(float thickness, const sf::Color &color)
 {
     m_text.setOutlineThickness(thickness);
     m_text.setOutlineColor(color);
+}
+
+/// @brief Useful helper for centering the UITextLabel on the localBounds.
+void UITextLabel::CenterOrigin()
+{
+    auto bounds = m_text.getLocalBounds();
+    m_text.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 }
 
 /// @brief Sets the position for this UITextLabel.
@@ -140,13 +152,6 @@ sf::Vector2f UITextLabel::GetSize() const
 {
     auto bounds = m_text.getLocalBounds();
     return {bounds.width, bounds.height};
-}
-
-/// @brief Useful helper for centering the UITextLabel on the localBounds.
-void UITextLabel::CenterOrigin()
-{
-    auto bounds = m_text.getLocalBounds();
-    m_text.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
 }
 
 /// @brief Draw this UITextLabel to the Renderable Target.

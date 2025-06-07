@@ -42,22 +42,28 @@ UIGroupBox::UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size)
 /// @param title String title.
 /// @param font Font loaded.
 /// @param fontSize Font size.
+/// @param centerOrigin Whether or not to center the label text around position.
 /// @param scheme Supported Color Scheme for UITextLabel.
-void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize,
+void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize, bool centerOrigin,
                           UITextLabelScheme scheme)
 {
     // Compute default title position just above box
     const sf::Vector2f groupBoxPos = m_background.getPosition();
-    const float paddingX = ResolutionScaleManager::Instance().ScaleX(TITLE_PAD_X);
     const float paddingY = ResolutionScaleManager::Instance().ScaleY(TITLE_PAD_Y);
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(title, {0.f, 0.f}, fontSize, false, scheme);
+    // We will adjust the positioning after we determine the length the text field will occupy.
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(title, {0.f, 0.f}, fontSize, centerOrigin, scheme);
     sf::Vector2f textSize = m_titleLabel->GetSize();
 
-    const float anchorX = groupBoxPos.x + (textSize.x / 2.f);
-    const float aboveY = groupBoxPos.y - textSize.y - paddingY;
+    const float anchorX = groupBoxPos.x + (m_background.getSize().x / 2);
+    const float anchorY = groupBoxPos.y - textSize.y - paddingY;
 
-    m_titleLabel->SetPosition(sf::Vector2f{anchorX, aboveY});
+    m_titleLabel->SetPosition(sf::Vector2f{anchorX, anchorY});
+
+    if (centerOrigin)
+    {
+        m_titleLabel->CenterOrigin();
+    }
 
     CT_LOG_INFO("UIGroupBox SetTitle: {}.", title);
 }

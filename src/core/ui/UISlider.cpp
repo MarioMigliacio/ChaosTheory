@@ -32,7 +32,7 @@ UISlider::UISlider(const std::string &label, float minValue, float maxValue, flo
     SetupGraphics();
 }
 
-/// @brief Establishes thhe necessary components that define a UISlider.
+/// @brief Establishes the necessary components that define a UISlider.
 void UISlider::SetupGraphics()
 {
     // Background bar

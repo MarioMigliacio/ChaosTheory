@@ -39,7 +39,7 @@ class UITextLabel : public UIElement
 {
   public:
     UITextLabel(const std::string &text, const sf::Font &font, unsigned int fontSize,
-                const sf::Vector2f &position = {0.f, 0.f});
+                const sf::Vector2f &position = {0.f, 0.f}, bool centerOrigin = true);
     ~UITextLabel() = default;
 
     // Disable copy
@@ -56,6 +56,7 @@ class UITextLabel : public UIElement
     void SetColor(const sf::Color &color);
     void SetOutline(float thickness, const sf::Color &color);
 
+    void CenterOrigin();
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
 
@@ -78,7 +79,5 @@ class UITextLabel : public UIElement
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    void CenterOrigin();
-
-    sf::Text m_text;
+        sf::Text m_text;
 };
