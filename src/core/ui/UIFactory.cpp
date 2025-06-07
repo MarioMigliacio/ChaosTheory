@@ -97,9 +97,8 @@ std::shared_ptr<UISkinnableButton> UIFactory::CreateSkinnableButton(const sf::Ve
 
     btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
     btn->SetTextureSkins(idle, hover);
+    btn->ApplySkinnableButtonTextStyle(scheme);
     btn->SetCallback(onClick);
-
-    ApplySkinnableButtonTextStyle(*btn, scheme);
 
     return btn;
 }
@@ -225,25 +224,4 @@ std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string 
     toast->SetSize({0.f, 0.f}); // still required by interface
 
     return toast;
-}
-
-/// @brief A private helper method to utilize color themes for a SkinnableButton combo.
-/// @param button Reference to the button to be changed.
-/// @param scheme Enum field representing  the type of scheme.
-void UIFactory::ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButtonColorScheme scheme)
-{
-    switch (scheme)
-    {
-        case UIButtonColorScheme::Blue:
-            button.SetTextStyle(TEX_BTN_BLUE_LABEL_TEXT_COLOR, TEX_BTN_BLUE_TEXT_OUTLINE_COLOR, 2.0f);
-            break;
-
-        case UIButtonColorScheme::Green:
-            button.SetTextStyle(TEX_BTN_GREEN_LABEL_TEXT_COLOR, TEX_BTN_GREEN_TEXT_OUTLINE_COLOR, 2.0f);
-            break;
-
-        case UIButtonColorScheme::Red:
-            button.SetTextStyle(TEX_BTN_RED_LABEL_TEXT_COLOR, TEX_BTN_RED_TEXT_OUTLINE_COLOR, 2.0f);
-            break;
-    }
 }

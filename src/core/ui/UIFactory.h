@@ -68,9 +68,6 @@ class UIFactory
                                                        float duration);
 
   private:
-    void ApplySkinnableButtonTextStyle(UISkinnableButton &button, UIButtonColorScheme scheme);
-
-  private:
     UIFactory() = default;
     ~UIFactory() = default;
 

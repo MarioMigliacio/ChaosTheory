@@ -66,6 +66,7 @@ class UISkinnableButton : public UIElement
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
     void ApplySpriteTransform();
+    void ApplySkinnableButtonTextStyle(UIButtonColorScheme scheme);
 
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
