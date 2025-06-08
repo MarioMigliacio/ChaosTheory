@@ -79,5 +79,6 @@ class UITextLabel : public UIElement
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-        sf::Text m_text;
+    sf::Text m_text;
+    bool m_centerOrigin;
 };

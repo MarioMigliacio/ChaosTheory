@@ -11,9 +11,17 @@
 
 #include "UISlider.h"
 #include "Macros.h"
+#include "UIFactory.h"
 #include "UIPresets.h"
 #include <algorithm>
 #include <sstream>
+
+/// @brief Constants that can be adjusted throughout the UISlider.
+namespace
+{
+/// @brief Constant for UI TextLabel font size.
+constexpr unsigned int TEXT_LABEL_FONT_SIZE = 14;
+} // namespace
 
 /// @brief Constructor for the UISlider.
 /// @param label String representation for this UISlider.
@@ -56,10 +64,9 @@ void UISlider::SetupGraphics()
     // Label
     std::stringstream ss;
     ss << m_label << ": " << static_cast<int>(m_value);
-    m_labelText.setString(ss.str());
-    m_labelText.setCharacterSize(14);
-    m_labelText.setFillColor(sf::Color::White);
-    m_labelText.setPosition(m_position.x, m_position.y - 20);
+
+    m_labelText =
+        UIFactory::Instance().CreateTextLabel(ss.str(), m_position + m_labelOffset, TEXT_LABEL_FONT_SIZE, false);
 }
 
 /// @brief Returns a normalized value to be bound in min / max and value ratio.
@@ -98,7 +105,11 @@ void UISlider::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool is
 
         std::stringstream ss;
         ss << m_label << ": " << static_cast<int>(m_value);
-        m_labelText.setString(ss.str());
+
+        if (m_labelText)
+        {
+            m_labelText->SetText(ss.str());
+        }
 
         if (m_onChange)
         {
@@ -128,7 +139,10 @@ void UISlider::SetPosition(const sf::Vector2f &position)
     float normalized = GetNormalizedValue();
     m_knob.setPosition(m_position.x + m_size.x * normalized, m_position.y + m_size.y / 2.f);
 
-    m_labelText.setPosition(position + m_labelOffset);
+    if (m_labelText)
+    {
+        m_labelText->SetPosition(position + m_labelOffset);
+    }
 }
 
 /// @brief Returns the position of this UISlider.
@@ -170,21 +184,31 @@ void UISlider::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(m_barBackground, states);
     target.draw(m_barForeground, states);
     target.draw(m_knob, states);
-    target.draw(m_labelText, states);
+
+    if (m_labelText)
+    {
+        target.draw(*m_labelText, states);
+    }
 }
 
 /// @brief Sets the internal font for this UISlider.
 /// @param font new m_labeltext.font.
 void UISlider::SetFont(const sf::Font &font)
 {
-    m_labelText.setFont(font);
+    if (m_labelText)
+    {
+        m_labelText->SetFont(font);
+    }
 }
 
 /// @brief Sets the internal font size for this UISlider.
 /// @param size new m_labelText.size.
 void UISlider::SetFontSize(unsigned int size)
 {
-    m_labelText.setCharacterSize(size);
+    if (m_labelText)
+    {
+        m_labelText->SetFontSize(size);
+    }
 }
 
 /// @brief Sets the position for the Title on this UISlider.
@@ -192,7 +216,11 @@ void UISlider::SetFontSize(unsigned int size)
 void UISlider::SetTitlePositionOffset(const sf::Vector2f &offset)
 {
     m_labelOffset = offset;
-    m_labelText.setPosition(m_position + m_labelOffset);
+
+    if (m_labelText)
+    {
+        m_labelText->SetPosition(m_position + m_labelOffset);
+    }
 }
 
 /// @brief Sets the foreground and knob color for  this UISlider.
@@ -216,7 +244,11 @@ void UISlider::SetValue(float value)
 
     std::stringstream ss;
     ss << m_label << ": " << static_cast<int>(m_value);
-    m_labelText.setString(ss.str());
+
+    if (m_labelText)
+    {
+        m_labelText->SetText(ss.str());
+    }
 }
 
 /// @brief Gets the value for this UISlider.

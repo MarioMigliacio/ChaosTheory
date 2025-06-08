@@ -155,6 +155,12 @@ constexpr float BASE_SLIDER_HEIGHT_PIXEL = 20.f;
 /// @brief Generic slider spacing in pixels.
 constexpr float BASE_SLIDER_SPACING_PIXEL = 50.f;
 
+/// @brief Generic slider Y offset for the UITextLabel title.
+constexpr float BASE_SLIDER_OFFSET_Y = 24.f;
+
+/// @brief Generic slider UITextLabel expected font size.
+constexpr unsigned int BASE_SLIDER_TITLE_FONT_SIZE = 14;
+
 /// @brief Generic slider spacing in relative screen sizing, 5%.
 constexpr float BASE_SLIDER_SPACING_PERCENT = .05f;
 

@@ -9,6 +9,7 @@
 
 #include "UIFactory.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
@@ -36,7 +37,7 @@ std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, 
 
     auto btn = std::make_shared<UIButton>(position, scaledSize);
 
-    btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
+    btn->SetText(label, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey), scaledFontSize);
     btn->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
     btn->SetCallback(std::move(onClick));
     btn->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
@@ -65,7 +66,7 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
 
     auto btn = std::make_shared<UISelectableButton>(position, scaledSize);
 
-    btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
+    btn->SetText(label, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey), scaledFontSize);
     btn->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
     btn->SetCallback(std::move(onClick));
     btn->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
@@ -95,7 +96,7 @@ std::shared_ptr<UISkinnableButton> UIFactory::CreateSkinnableButton(const sf::Ve
 
     auto btn = std::make_shared<UISkinnableButton>(pos, scaledSize);
 
-    btn->SetText(label, *AssetManager::Instance().GetFont("Default"), scaledFontSize);
+    btn->SetText(label, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey), scaledFontSize);
     btn->SetTextureSkins(idle, hover);
     btn->ApplySkinnableButtonTextStyle(scheme);
     btn->SetCallback(onClick);
@@ -122,12 +123,12 @@ std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, cons
     const sf::Vector2f scaledPos = {scaleMgr.ScaledReferenceX(position.x), scaleMgr.ScaledReferenceY(position.y)};
 
     const auto scaledSize = sf::Vector2f(scaleMgr.ScaledReferenceX(size.x), scaleMgr.ScaleY(size.y));
-    const auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(14);
+    const auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(BASE_SLIDER_TITLE_FONT_SIZE);
 
     auto slider = std::make_shared<UISlider>(label, minValue, maxValue, initialValue, scaledPos, scaledSize, onChange);
-    slider->SetFont(*AssetManager::Instance().GetFont("Default"));
+    slider->SetFont(*AssetManager::Instance().GetFont(FontAssets::DefaultFontKey));
     slider->SetFontSize(scaledFontSize);
-    slider->SetTitlePositionOffset(sf::Vector2f(0.f, -ResolutionScaleManager::Instance().ScaleY(24.f)));
+    slider->SetTitlePositionOffset(sf::Vector2f(0.f, -ResolutionScaleManager::Instance().ScaleY(BASE_SLIDER_OFFSET_Y)));
 
     return slider;
 }
@@ -175,8 +176,8 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
     const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
-    groupBox->SetTitle(title, *AssetManager::Instance().GetFont("Default"), scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE),
-                       centerOrigin, scheme);
+    groupBox->SetTitle(title, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                       scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE), centerOrigin, scheme);
     groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
     groupBox->SetCenterChildren(true);             // safe default state
     groupBox->SetInternalPadding(internalPadding);
@@ -198,8 +199,8 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 {
     const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
 
-    auto label = std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default"), fontSize, position,
-                                               centerOrigin);
+    auto label = std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                                               fontSize, position, centerOrigin);
     label->ApplyTextLabelStyle(scheme, scaledOutline);
 
     return label;
@@ -213,7 +214,7 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string &text, const sf::Vector2f &position,
                                                               float duration)
 {
-    const auto &font = *AssetManager::Instance().GetFont("Default");
+    const auto &font = *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey);
     unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
     sf::Color color = sf::Color::White;
     bool centerOrigin = true;
