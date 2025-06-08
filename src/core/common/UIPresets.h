@@ -115,6 +115,12 @@ constexpr float BUTTON_DEFAULT_SCALE_SIZE = 1.05f;
 /// @brief Default button font size.
 constexpr unsigned int BUTTON_DEFAULT_FONT_SIZE = 24;
 
+/// @brief Default skinnable button font size.
+constexpr unsigned int SKINNABLE_BUTTON_DEFAULT_FONT_SIZE = 18;
+
+/// @brief Default selectable button font size.
+constexpr unsigned int SELECTABLE_BUTTON_DEFAULT_FONT_SIZE = 18;
+
 /// @brief Generic button width in pixels.
 constexpr float BASE_BUTTON_WIDTH_PIXEL = 180.f;
 

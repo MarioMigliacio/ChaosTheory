@@ -33,7 +33,7 @@ std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, 
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
-    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(BUTTON_DEFAULT_FONT_SIZE);
 
     auto btn = std::make_shared<UIButton>(position, scaledSize);
 
@@ -62,7 +62,7 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
-    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(SELECTABLE_BUTTON_DEFAULT_FONT_SIZE);
 
     auto btn = std::make_shared<UISelectableButton>(position, scaledSize);
 
@@ -92,7 +92,7 @@ std::shared_ptr<UISkinnableButton> UIFactory::CreateSkinnableButton(const sf::Ve
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
-    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(SKINNABLE_BUTTON_DEFAULT_FONT_SIZE);
 
     auto btn = std::make_shared<UISkinnableButton>(pos, scaledSize);
 
