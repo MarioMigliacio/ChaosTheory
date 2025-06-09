@@ -16,6 +16,16 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 
+/// @brief Enumeration field which corresponds to a type of supported UITextLabel color scheme combination.
+enum class UITextLabelScheme
+{
+    DefaultScheme,
+    CougarScheme,
+    HuskyScheme,
+    BlueSteelScheme,
+    MintyHerbScheme
+};
+
 // ============================================================================
 //  Class       : UITextLabel
 //  Purpose     : Manages this UITextLabel logic at the ui level.
@@ -29,7 +39,7 @@ class UITextLabel : public UIElement
 {
   public:
     UITextLabel(const std::string &text, const sf::Font &font, unsigned int fontSize,
-                const sf::Vector2f &position = {0.f, 0.f});
+                const sf::Vector2f &position = {0.f, 0.f}, bool centerOrigin = true);
     ~UITextLabel() = default;
 
     // Disable copy
@@ -41,13 +51,22 @@ class UITextLabel : public UIElement
     UITextLabel &operator=(UITextLabel &&) noexcept = default;
 
     void SetText(const std::string &text);
+    const std::string GetText() const;
+
     void SetFont(const sf::Font &font);
     void SetFontSize(unsigned int size);
-    void SetColor(const sf::Color &color);
-    void SetOutline(float thickness, const sf::Color &color);
 
+    void SetColor(const sf::Color &color);
+    const sf::Color GetFillColor() const;
+    void SetOutline(float thickness, const sf::Color &color);
+    const sf::Color GetOutlineColor() const;
+    const float GetOutlineThickness() const;
+
+    void CenterOrigin();
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
+
+    void ApplyTextLabelStyle(UITextLabelScheme scheme, const float labelBorderSize);
 
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
@@ -66,7 +85,6 @@ class UITextLabel : public UIElement
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    void CenterOrigin();
-
     sf::Text m_text;
+    bool m_centerOrigin;
 };

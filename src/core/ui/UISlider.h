@@ -13,6 +13,7 @@
 #pragma once
 
 #include "UIElement.h"
+#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <string>
@@ -72,11 +73,11 @@ class UISlider : public UIElement
     sf::RectangleShape m_barBackground;
     sf::RectangleShape m_barForeground;
     sf::CircleShape m_knob;
-
-    sf::Text m_labelText;
     std::string m_label;
 
-    sf::Vector2f m_labelOffset{0.f, -20.f};
+    std::shared_ptr<UITextLabel> m_labelText;
+
+    sf::Vector2f m_labelOffset;
     sf::Vector2f m_position;
     sf::Vector2f m_size;
 

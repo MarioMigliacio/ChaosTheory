@@ -72,7 +72,7 @@ TEST_F(UISelectableButtonTest, CanToggleSelectedState)
 TEST_F(UISelectableButtonTest, CanSetTextAndFont)
 {
     UISelectableButton btn({100.f, 100.f}, {180.f, 40.f});
-    const auto &font = *AssetManager::Instance().GetFont("Default.ttf");
+    const auto &font = *AssetManager::Instance().GetFont("Default");
 
     btn.SetText("Updated", font, 28);
     // No crash = pass; visual test only

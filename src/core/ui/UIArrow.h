@@ -37,7 +37,7 @@ enum class ArrowDirection
 class UIArrow : public UIElement
 {
   public:
-    UIArrow(const sf::Vector2f &position, ArrowDirection direction);
+    UIArrow(const sf::Vector2f &position, const sf::Vector2f &size, ArrowDirection direction);
     ~UIArrow() override = default;
 
     // Disable copy
@@ -54,28 +54,34 @@ class UIArrow : public UIElement
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
 
+    void SetTextureSkin(const std::string &texture);
+
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
     void SetOnClick(std::function<void()> callback);
+
     const ArrowDirection GetDirection() const;
 
   protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    void LoadTexture();
+    void SetDirection(ArrowDirection dir);
     void UpdateSprite();
 
   private:
     ArrowDirection m_direction;
     sf::Sprite m_sprite;
-    sf::Texture *m_texture = nullptr;
+    sf::String m_texture;
     sf::Vector2f m_position;
     sf::Vector2f m_size;
+    sf::Vector2f m_baseScale;
 
     float m_opacity = 0.f;
     float m_scale = 1.0f;
+    float m_animationTime = 0.f;
+
     bool m_hovered = false;
     bool m_pressedLastFrame = false;
 
