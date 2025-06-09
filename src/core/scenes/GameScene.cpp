@@ -11,37 +11,47 @@
 
 #include "GameScene.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
+#include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
-#include "SceneManager.h"
+#include "SceneTransitionManager.h"
+#include "UIFactory.h"
+#include "UIManager.h"
+#include "UIPresets.h"
 #include "WindowManager.h"
 
+/// @brief Constructor for the GameScene.
+/// @param settings Internal settings to initialize with.
 GameScene::GameScene(std::shared_ptr<Settings> settings) : m_settings(settings)
 {
 }
 
-// Initializes the GameScene.
+/// @brief  Initializes the GameScene.
 void GameScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
-    // Load assets, music, and scene-specific setup
-    AudioManager::Instance().SetMasterVolume(50.f);
-    AudioManager::Instance().PlayMusic(m_settings->m_audioDirectory + "Gametrack.wav", true);
-    InputManager::Instance().BindKey("MenuSelectBack", m_settings->m_keyBindings["MenuSelectBack"]);
+    UIManager::Instance().Clear();
 
+    LoadRequiredAssets();
+
+    SceneTransitionManager::Instance().StartFadeIn();
     m_isInitialized = true;
+
     CT_LOG_INFO("GameScene initialized.");
 }
 
+/// @brief Load any required assets listed in the GameAssets namespace.
 void GameScene::LoadRequiredAssets()
 {
+    CT_LOG_INFO("GameScene finished LoadRequiredAssets.");
 }
 
-// Shuts down this scene and resets internal state.
+/// @brief Shuts down this scene and resets internal state.
 void GameScene::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("GameScene", "Shutdown");
@@ -52,68 +62,31 @@ void GameScene::Shutdown()
     CT_LOG_INFO("GameScene shutdown.");
 }
 
-// Handles the exit criteria for this scene.
+/// @brief Handles the exit criteria for this scene.
 void GameScene::OnExit()
 {
-    if (AudioManager::Instance().IsInitialized())
-    {
-        AudioManager::Instance().StopMusic();
-    }
-
-    if (AssetManager::Instance().IsInitialized())
-    {
-        InputManager::Instance().UnbindKey("MenuSelectBack");
-    }
-
     CT_LOG_INFO("GameScene OnExit.");
 }
 
-// Performs internal state management during a single frame.
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update.
 void GameScene::Update(float dt)
 {
-    if (InputManager::Instance().IsKeyJustReleased("MenuSelectBack"))
-    {
-        AudioManager::Instance().StopMusic(true, 1.0f);
-        m_shouldExit = true;
-
-        CT_LOG_INFO("GameScene Transition triggered.");
-    }
-
-    if (m_shouldExit)
-    {
-        if (!AudioManager::Instance().IsFadingOut())
-        {
-            SceneManager::Instance().RequestSceneChange(SceneID::MainMenu);
-
-            CT_LOG_INFO(" invoked from GameScene - and callback .");
-        }
-    }
 }
 
-// Handle any internal logic that should be done relevant to this scene.
+/// @brief Handle any quick cancelation requests if present.
+/// @param event bubbled down from caller, not needed.
 void GameScene::HandleEvent(const sf::Event &event)
 {
-    // Only if you want to catch window resize, close, etc.
 }
 
+/// @brief Not used in GameScene context.
+/// @param newSize bubbled down from caller, not needed.
 void GameScene::OnResize(const sf::Vector2u &newSize)
 {
-    // intentionally blank for now.
 }
 
-// While this scene is active, render the necessary components to the Game Scene.
+/// @brief While this scene is active, render the necessary components.
 void GameScene::Render()
 {
-    CT_WARN_IF_UNINITIALIZED("GameScene", "Render");
-
-    sf::RenderWindow &window = WindowManager::Instance().GetWindow();
-
-    sf::Text text;
-    text.setString("Game Scene - Press [Space] to return to Menu");
-    text.setCharacterSize(24);
-    text.setFillColor(sf::Color::Green);
-    text.setFont(*AssetManager::Instance().GetFont("Default"));
-    text.setPosition(80.f, 80.f);
-
-    window.draw(text);
 }

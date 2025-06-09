@@ -11,16 +11,48 @@
 
 #include "MainMenuScene.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "Macros.h"
-#include "MainMenuAssets.h"
 #include "ResolutionScaleManager.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
 #include "UIFactory.h"
 #include "UIManager.h"
+#include "UIPresets.h"
 #include "WindowManager.h"
+
+/// @brief Constants that can be adjusted throughout the MainMenuScene.
+namespace
+{
+/// @brief Default Main Menu Title string.
+constexpr auto DEFAULT_TITLE_STR = "Chaos Theory";
+
+/// @brief Fixed name constant for the play button label.
+constexpr auto PLAY_BTN_LABEL = "Play";
+
+/// @brief Fixed name constant for the Settings button label.
+constexpr auto SETTING_BTN_LABEL = "Settings";
+
+/// @brief Fixed name constant for the Exit button label.
+constexpr auto EXIT_BTN_LABEL = "Exit";
+
+/// @brief Simple math constant for PI.
+constexpr float PI = 3.14159f;
+
+/// @brief Height of amplitude/trough for sinusoidal ship movement.
+constexpr float SINE_WAVE_AMP = 50.f;
+
+/// @brief Oscillations per second during ship update.
+constexpr float WAVE_FREQ = 2.f;
+
+/// @brief Wrap around padding for ship.
+constexpr float SHIP_BOUNDARY = 50.f;
+
+/// @brief Adjust the ship movement speed across the screen.
+constexpr float SHIP_VELOCITY = 150.f;
+} // namespace
 
 /// @brief Constructor for the MainMenuScene.
 /// @param settings Internal settings to initialize with.
@@ -60,6 +92,14 @@ void MainMenuScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
 
+    for (const auto &[key, path] : UIAssets::Textures)
+    {
+        if (!AssetManager::Instance().LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load asset: {}, {}", key, path);
+        }
+    }
+
     for (const auto &[key, path] : MainMenuAssets::Textures)
     {
         if (!assets.LoadTexture(key, path))
@@ -93,11 +133,6 @@ void MainMenuScene::Shutdown()
 /// @brief Handles the exit criteria for this scene.
 void MainMenuScene::OnExit()
 {
-    if (AudioManager::Instance().IsInitialized())
-    {
-        AudioManager::Instance().StopMusic();
-    }
-
     CT_LOG_INFO("MainMenuScene OnExit.");
 }
 
@@ -116,11 +151,26 @@ void MainMenuScene::Update(float dt)
         m_background->Update(dt);
     }
 
+    if (m_shipActive)
+    {
+        UpdateShip(dt);
+    }
+
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
         CT_LOG_INFO("MainMenuScene Requesting Scene Change to '{}'", SceneIDToString(m_requestedScene));
         m_hasPendingTransition = false;
+
+        // Game mode will have its own dedicated sound track, but the Settings page can share the track.
+        if (m_requestedScene == SceneID::Game || m_requestedScene == SceneID::SandBox)
+        {
+            if (AudioManager::Instance().IsInitialized())
+            {
+                AudioManager::Instance().StopMusic();
+            }
+        }
+
         SceneTransitionManager::Instance().ForceFullyOpaque();
         SceneManager::Instance().RequestSceneChange(m_requestedScene);
     }
@@ -131,8 +181,6 @@ void MainMenuScene::Update(float dt)
         CT_LOG_INFO("MainMenuScene requested exit. Popping scene...");
         SceneManager::Instance().PopScene();
     }
-
-    return;
 }
 
 /// @brief Handle any quick cancelation requests if present.
@@ -169,6 +217,11 @@ void MainMenuScene::Render()
         m_background->Draw(window);
     }
 
+    if (m_shipActive)
+    {
+        window.draw(m_shipSprite);
+    }
+
     UIManager::Instance().Render(window);
 }
 
@@ -178,6 +231,7 @@ void MainMenuScene::SetupSceneComponents()
     CreateTitleText();
     CreateButtons();
     LoadBackground();
+    InitShip();
     PlayIntroMusic();
 }
 
@@ -187,12 +241,12 @@ void MainMenuScene::CreateTitleText()
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
     const std::string titleText = DEFAULT_TITLE_STR;
-    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TITLE_FONT_SIZE);
+    const unsigned int fontSize = scaleMgr.ScaleFont(DEFAULT_TEXT_LABEL_TITLE_FONT_SIZE);
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                    scaleMgr.ScaledReferenceY(DEFAULT_TITLE_HEIGHT_PERCENT)};
+                                    scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize, true);
-    m_titleLabel->SetColor(DEFAULT_TITLE_COLOR);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize);
+
     UIManager::Instance().AddElement(m_titleLabel);
 }
 
@@ -201,8 +255,8 @@ void MainMenuScene::CreateButtons()
 {
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(MAIN_MENU_BUTTON_WIDTH_PIXEL);
-    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL);
+    const float scaledButtonWidth = ResolutionScaleManager::Instance().ScaleX(BASE_BUTTON_WIDTH_PIXEL);
+    const float scaledButtonHeight = ResolutionScaleManager::Instance().ScaleY(BASE_BUTTON_HEIGHT_PIXEL);
     const float scaledSpacing = scaledButtonHeight * BASE_BUTTON_SPACING_PERCENT;
     const float startY = winSize.y * 0.7f;
     const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
@@ -211,17 +265,21 @@ void MainMenuScene::CreateButtons()
     const sf::Vector2f settingsPos{centerX, playPos.y + scaledButtonHeight + scaledSpacing};
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
-        playPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Play",
-        [this]()
-        {
-            CT_LOG_INFO("Play button clicked!");
-            m_hasPendingTransition = true;
-            m_requestedScene = SceneID::Game;
-        }));
+    const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
-        settingsPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Settings",
+    UIManager::Instance().AddElement(
+        UIFactory::Instance().CreateSkinnableButton(playPos, btnSize, PLAY_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
+                                                    UIAssets::UISkinButtonBlueHoverKey, UIButtonColorScheme::Blue,
+                                                    [this]()
+                                                    {
+                                                        CT_LOG_INFO("Play button clicked!");
+                                                        m_hasPendingTransition = true;
+                                                        m_requestedScene = SceneID::SandBox;
+                                                    }));
+
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
+        settingsPos, btnSize, SETTING_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey, UIAssets::UISkinButtonBlueHoverKey,
+        UIButtonColorScheme::Blue,
         [this]()
         {
             CT_LOG_INFO("Settings button clicked!");
@@ -229,13 +287,14 @@ void MainMenuScene::CreateButtons()
             m_requestedScene = SceneID::Settings;
         }));
 
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateButton(
-        exitPos, {MAIN_MENU_BUTTON_WIDTH_PIXEL, MAIN_MENU_BASE_BUTTON_HEIGHT_PIXEL}, "Exit",
-        [this]()
-        {
-            CT_LOG_INFO("Exit button clicked!");
-            m_shouldExit = true;
-        }));
+    UIManager::Instance().AddElement(
+        UIFactory::Instance().CreateSkinnableButton(exitPos, btnSize, EXIT_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
+                                                    UIAssets::UISkinButtonBlueHoverKey, UIButtonColorScheme::Blue,
+                                                    [this]()
+                                                    {
+                                                        CT_LOG_INFO("Exit button clicked!");
+                                                        m_shouldExit = true;
+                                                    }));
 }
 
 /// @brief Loads the main background images for this MainMenuScene.
@@ -265,4 +324,63 @@ void MainMenuScene::PlayIntroMusic()
     {
         CT_LOG_INFO("MainMenuScene: Menu music already playing, no action needed.");
     }
+}
+
+/// @brief Helper method for setting up the travelling spaceship.
+void MainMenuScene::InitShip()
+{
+    auto tex = AssetManager::Instance().GetTexture("PlayerShip");
+
+    if (!tex)
+    {
+        CT_LOG_ERROR("MainMenuScene: InitShip Failed to load PlayerShip texture.");
+        return;
+    }
+
+    m_shipSprite.setTexture(*tex);
+    m_shipSprite.setOrigin(tex->getSize().x / 2.f, tex->getSize().y / 2.f);
+    m_shipSprite.setRotation(90.f);
+
+    const float baseSize = tex->getSize().x; // the ship is even in width and height, just need one.
+    float scale = ResolutionScaleManager::Instance().ScaleX(baseSize) / baseSize;
+    m_shipSprite.setScale(scale, scale);
+
+    auto winSize = WindowManager::Instance().GetWindow().getSize();
+    m_yDist = std::uniform_real_distribution<float>(winSize.y * 0.2f, winSize.y * 0.8f); // avoid top/bottom edges
+    m_rng.seed(static_cast<unsigned>(time(nullptr)));
+
+    const float startY = m_yDist(m_rng);
+    m_shipSprite.setPosition(0.f, startY);
+
+    m_shipVelocity = {SHIP_VELOCITY, 0.f};
+    m_shipSineTimer = 0.f;
+    m_shipActive = true;
+}
+
+/// @brief Helper method to update the travelling spaceship.
+/// @param dt delta time since last update.
+void MainMenuScene::UpdateShip(float dt)
+{
+    m_shipSineTimer += dt;
+
+    sf::Vector2f pos = m_shipSprite.getPosition();
+    pos.x += m_shipVelocity.x * dt;
+
+    // Wave motion: sine-based Y offset
+    float waveAmplitude = SINE_WAVE_AMP; // pixels
+    float waveFrequency = WAVE_FREQ;     // oscillations per second
+    float waveOffset = std::sin(m_shipSineTimer * waveFrequency * 2 * PI) * waveAmplitude;
+
+    pos.y += waveOffset * dt; // apply offset gradually
+
+    float windowWidth = WindowManager::Instance().GetWindow().getSize().x;
+
+    if (pos.x > windowWidth + SHIP_BOUNDARY) // Wrap around logic
+    {
+        pos.x = -SHIP_BOUNDARY;
+        pos.y = m_yDist(m_rng); // new randomized Y
+        m_shipSineTimer = 0.f;  // reset wave cycle
+    }
+
+    m_shipSprite.setPosition(pos);
 }

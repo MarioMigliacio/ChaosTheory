@@ -9,6 +9,7 @@
 
 #include "UIFactory.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
@@ -32,19 +33,20 @@ std::shared_ptr<UIButton> UIFactory::CreateButton(const sf::Vector2f &position, 
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
-    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(BUTTON_DEFAULT_FONT_SIZE);
 
-    auto button = std::make_shared<UIButton>(position, scaledSize);
+    auto btn = std::make_shared<UIButton>(position, scaledSize);
 
-    button->SetText(label, *AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
-    button->SetCallback(std::move(onClick));
-    button->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
-    button->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
-    button->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
-    button->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
-    button->SetHoverScale(1.05f);
+    btn->SetText(label, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey), scaledFontSize);
+    btn->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+    btn->SetCallback(std::move(onClick));
+    btn->SetIdleColor(BUTTON_DEFAULT_IDLE_COLOR);
+    btn->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+    btn->SetActiveColor(BUTTON_DEFAULT_ACTIVE_COLOR);
 
-    return button;
+    btn->SetHoverScale(1.05f);
+
+    return btn;
 }
 
 /// @brief Creates a UI Selectable Button element, given the custom input parameters.
@@ -60,17 +62,46 @@ std::shared_ptr<UISelectableButton> UIFactory::CreateSelectableButton(const sf::
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
-    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(SELECTABLE_BUTTON_DEFAULT_FONT_SIZE);
 
-    auto selectableButton = std::make_shared<UISelectableButton>(position, scaledSize);
+    auto btn = std::make_shared<UISelectableButton>(position, scaledSize);
 
-    selectableButton->SetText(label, *AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize);
-    selectableButton->SetCallback(std::move(onClick));
-    selectableButton->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
-    selectableButton->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
-    selectableButton->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
+    btn->SetText(label, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey), scaledFontSize);
+    btn->SetTextColor(BUTTON_DEFAULT_TEXT_COLOR);
+    btn->SetCallback(std::move(onClick));
+    btn->SetHoverColor(BUTTON_DEFAULT_HOVER_COLOR);
+    btn->SetSelectedColor(BUTTON_DEFAULT_SELECTED_COLOR, BUTTON_DEFAULT_SELECTED_TEXT_COLOR);
 
-    return selectableButton;
+    return btn;
+}
+
+/// @brief Generates a SkinnableButton ui element.
+/// @param pos Position to set button at.
+/// @param size Size to initialize button with.
+/// @param label Text to initialize button with.
+/// @param idle Path to Idle texture to be used for SkinnableButton
+/// @param hover Path to Hover texture to be used for SkinnableButton
+/// @param scheme Enum field representing the scheme for Button text layouts.
+/// @param onClick Pointer to callback function, when clicked.
+/// @return Smart pointer to a UISkinnableButton.
+std::shared_ptr<UISkinnableButton> UIFactory::CreateSkinnableButton(const sf::Vector2f &pos, const sf::Vector2f &size,
+                                                                    const std::string &label, const std::string &idle,
+                                                                    const std::string &hover,
+                                                                    UIButtonColorScheme scheme,
+                                                                    std::function<void()> onClick)
+{
+    sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
+                            ResolutionScaleManager::Instance().ScaleY(size.y));
+    unsigned int scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(SKINNABLE_BUTTON_DEFAULT_FONT_SIZE);
+
+    auto btn = std::make_shared<UISkinnableButton>(pos, scaledSize);
+
+    btn->SetText(label, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey), scaledFontSize);
+    btn->SetTextureSkins(idle, hover);
+    btn->ApplySkinnableButtonTextStyle(scheme);
+    btn->SetCallback(onClick);
+
+    return btn;
 }
 
 /// @brief Creates a UI Slider element, given the custom input parameters.
@@ -92,27 +123,34 @@ std::shared_ptr<UISlider> UIFactory::CreateSlider(const std::string &label, cons
     const sf::Vector2f scaledPos = {scaleMgr.ScaledReferenceX(position.x), scaleMgr.ScaledReferenceY(position.y)};
 
     const auto scaledSize = sf::Vector2f(scaleMgr.ScaledReferenceX(size.x), scaleMgr.ScaleY(size.y));
-    const auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(14);
+    const auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(BASE_SLIDER_TITLE_FONT_SIZE);
 
     auto slider = std::make_shared<UISlider>(label, minValue, maxValue, initialValue, scaledPos, scaledSize, onChange);
-    slider->SetFont(*AssetManager::Instance().GetFont("Default.ttf"));
+    slider->SetFont(*AssetManager::Instance().GetFont(FontAssets::DefaultFontKey));
     slider->SetFontSize(scaledFontSize);
-    slider->SetTitlePositionOffset(sf::Vector2f(0.f, -ResolutionScaleManager::Instance().ScaleY(24.f)));
+    slider->SetTitlePositionOffset(sf::Vector2f(0.f, -ResolutionScaleManager::Instance().ScaleY(BASE_SLIDER_OFFSET_Y)));
 
     return slider;
 }
 
 /// @brief Creates a UI Arrow element, given the custom input parameters.
-/// @param x X coordinate for position to be set.
-/// @param y Y coordinate for position to be set.
+/// @param position Position to emplace.
+/// @param size Size to initialize with.
+/// @param texture Loadable texture path.
 /// @param direction Arrow direction L, R, U, D.
 /// @param onClick Pointer to callback function, when clicked.
-/// @return safe pointer to a UIArrow.
-std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection direction,
+/// @return Safe pointer to a UIArrow.
+std::shared_ptr<UIArrow> UIFactory::CreateArrow(const sf::Vector2f &position, const sf::Vector2f &size,
+                                                const std::string &texture, ArrowDirection direction,
                                                 std::function<void()> onClick)
 {
-    auto arrow = std::make_shared<UIArrow>(sf::Vector2f{x, y}, direction);
+    sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
+                            ResolutionScaleManager::Instance().ScaleY(size.y));
+
+    auto arrow = std::make_shared<UIArrow>(position, scaledSize, direction);
     arrow->SetOnClick(onClick);
+    arrow->SetTextureSkin(texture);
+    arrow->SetSize(scaledSize);
 
     return arrow;
 }
@@ -121,9 +159,12 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(float x, float y, ArrowDirection
 /// @param title String representation for GroupBox.
 /// @param relativePosition Screen relative position to be centered around.
 /// @param relativeSize Screen relative size to occupy.
+/// @param centerOrigin Whether or not to center title text for groupbox around position.
+/// @param scheme Type of ui text label color themes.
 /// @return safe pointer to a UIGroupBox.
 std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                                      const sf::Vector2f &relativeSize)
+                                                      const sf::Vector2f &relativeSize, bool centerOrigin,
+                                                      UITextLabelScheme scheme)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -135,8 +176,8 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
     const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
-    groupBox->SetTitle(title, *AssetManager::Instance().GetFont("Default.ttf"),
-                       scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE));
+    groupBox->SetTitle(title, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                       scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE), centerOrigin, scheme);
     groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
     groupBox->SetCenterChildren(true);             // safe default state
     groupBox->SetInternalPadding(internalPadding);
@@ -148,18 +189,19 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
 /// @brief Creates a UI UITextLabel element, given the custom input parameters.
 /// @param text String representation for the element.
 /// @param position Position for text label.
-/// @param baseFontSize Font size for the text label.
+/// @param fontSize Size of the font for the Text.
 /// @param centerOrigin Used for centering the string contents around the position during construction.
-/// @return safe pointer to a UITextLabel.
+/// @param scheme Enum field representing the type of shceme.
+/// @return Safe pointer to a UITextLabel.
 std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text, const sf::Vector2f &position,
-                                                        unsigned int baseFontSize, bool centerOrigin)
+                                                        unsigned int fontSize, bool centerOrigin,
+                                                        UITextLabelScheme scheme)
 {
-    auto scaledFontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
-    auto label =
-        std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont("Default.ttf"), scaledFontSize, position);
+    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
 
-    if (!centerOrigin)
-        label->SetPosition(position); // no auto-centering
+    auto label = std::make_shared<UITextLabel>(text, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                                               fontSize, position, centerOrigin);
+    label->ApplyTextLabelStyle(scheme, scaledOutline);
 
     return label;
 }
@@ -168,17 +210,19 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 /// @param text String representation for the toast message.
 /// @param position Position for the toast message.
 /// @param duration Duration for how long the toast message will exist.
+/// @param baseFontSize Font size to initialize with.
+/// @param centerOrigin Whether or not the center text around origin.
+/// @param scheme Enum field representing the type of shceme.
 /// @return safe pointer to a UIToastMessage.
 std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string &text, const sf::Vector2f &position,
-                                                              float duration)
+                                                              float duration, unsigned int baseFontSize,
+                                                              bool centerOrigin, UITextLabelScheme scheme)
 {
-    const auto &font = *AssetManager::Instance().GetFont("Default.ttf");
-    unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
-    sf::Color color = sf::Color::White;
-    bool centerOrigin = true;
+    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
+    const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
 
-    auto toast = std::make_shared<UIToastMessage>(text, position, duration, font, fontSize, color, centerOrigin);
-    toast->SetSize({0.f, 0.f}); // still required by interface
+    auto toast = std::make_shared<UIToastMessage>(text, position, fontSize, duration, centerOrigin, scheme);
+    toast->ApplyStyle(scheme, scaledOutline);
 
     return toast;
 }

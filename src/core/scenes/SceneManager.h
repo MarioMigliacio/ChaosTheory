@@ -23,6 +23,7 @@ enum class SceneID
     Splash,
     MainMenu,
     Settings,
+    SandBox,
     Game,
 };
 
@@ -39,6 +40,8 @@ inline const char *SceneIDToString(SceneID id)
             return "MainMenu";
         case SceneID::Settings:
             return "Settings";
+        case SceneID::SandBox:
+            return "SandBox";
         case SceneID::Game:
             return "Game";
         default:

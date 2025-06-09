@@ -11,23 +11,25 @@
 
 #include "SplashScene.h"
 #include "AssetManager.h"
+#include "Assets.h"
+#include "AudioManager.h"
 #include "Macros.h"
 #include "SceneManager.h"
-#include "SplashAssets.h"
 #include "WindowManager.h"
 #include <filesystem>
 #include <random>
 
+/// @brief Constants that can be adjusted throughout the SplashScene.
 namespace
 {
 /// @brief Controls how far the texture image will shake during update.
 constexpr float SHAKE_AMPLITUDE = 4.f;
 
 /// @brief Controls how long the SplashScene will fade in.
-constexpr float FADE_IN_DURATION = 2.0f;
+constexpr float FADE_IN_DURATION = 3.0f;
 
 /// @brief Controls how long the SplashScene will fade out.
-constexpr float FADE_OUT_DURATION = 2.0f;
+constexpr float FADE_OUT_DURATION = 3.0f;
 } // namespace
 
 /// @brief Constructor for the SplashScene.
@@ -43,6 +45,7 @@ void SplashScene::Init()
 
     LockWindow();
     LoadRequiredAssets();
+    PlaySoundClip();
     LoadBackground();
     StartFadeIn();
 
@@ -54,12 +57,22 @@ void SplashScene::Init()
 /// @brief Load any required assets listed in the SplashAssets namespace.
 void SplashScene::LoadRequiredAssets()
 {
-    const std::string key = SplashAssets::SplashBackground;
-    const std::string path = SplashAssets::Textures.at(key);
+    auto &assets = AssetManager::Instance();
 
-    if (!AssetManager::Instance().LoadTexture(key, path))
+    for (const auto &[key, path] : SplashAssets::Fonts)
     {
-        CT_LOG_ERROR("SplashScene: Failed to load splash background.");
+        if (!assets.LoadFont(key, path))
+        {
+            CT_LOG_ERROR("SplashScene::LoadRequiredAssets::LoadFont failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : SplashAssets::Textures)
+    {
+        if (!assets.LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("SplashScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+        }
     }
 
     CT_LOG_INFO("SplashScene finished LoadRequiredAssets.");
@@ -76,6 +89,8 @@ void SplashScene::Shutdown()
 /// @brief Handles the exit criteria for this scene.
 void SplashScene::OnExit()
 {
+    AudioManager::Instance().StopMusic();
+
     CT_LOG_INFO("SplashScene OnExit.");
 }
 
@@ -150,6 +165,13 @@ void SplashScene::LoadBackground()
     m_background->setPosition(0.f, 0.f);
 
     CT_LOG_INFO("Splash background scaled to window.");
+}
+
+void SplashScene::PlaySoundClip()
+{
+    AudioManager::Instance().PlayMusic(SplashAssets::SplashIntroSound, false, false);
+
+    CT_LOG_INFO("SplashScene: Playing SplashScene Sound clip.");
 }
 
 /// @brief Begin the fading in timer and boolean logic.

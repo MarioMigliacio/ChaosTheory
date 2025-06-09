@@ -51,6 +51,14 @@ void AssetManager::Init(std::shared_ptr<const Settings> settings)
     CT_LOG_INFO("AssetManager initialized.");
 }
 
+/// @brief Exposes a reload capability for the AssetManager to easily start from clean on all collected assets.
+void AssetManager::ClearCache()
+{
+    m_textures.clear();
+    m_sounds.clear();
+    m_fonts.clear();
+}
+
 /// @brief Shuts down the AssetManager and resets internal state.
 void AssetManager::Shutdown()
 {
@@ -58,9 +66,7 @@ void AssetManager::Shutdown()
 
     CT_LOG_INFO("Clearing asset cache...");
 
-    m_textures.clear();
-    m_sounds.clear();
-    m_fonts.clear();
+    ClearCache();
     m_isInitialized = false;
 
     CT_LOG_INFO("AssetManager shutdown.");
