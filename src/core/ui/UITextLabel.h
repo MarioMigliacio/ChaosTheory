@@ -51,10 +51,16 @@ class UITextLabel : public UIElement
     UITextLabel &operator=(UITextLabel &&) noexcept = default;
 
     void SetText(const std::string &text);
+    const std::string GetText() const;
+
     void SetFont(const sf::Font &font);
     void SetFontSize(unsigned int size);
+
     void SetColor(const sf::Color &color);
+    const sf::Color GetFillColor() const;
     void SetOutline(float thickness, const sf::Color &color);
+    const sf::Color GetOutlineColor() const;
+    const float GetOutlineThickness() const;
 
     void CenterOrigin();
     void SetPosition(const sf::Vector2f &position) override;

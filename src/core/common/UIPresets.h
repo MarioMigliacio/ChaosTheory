@@ -182,7 +182,7 @@ const sf::Color BASE_SLIDER_FILL_COLOR = sf::Color(200, 200, 200);
 /// @brief Generic color for the background for default constructing.
 const sf::Color BASE_SLIDER_BACK_COLOR = sf::Color(100, 100, 100);
 
-/// @brief Generic color for the knob for default constructing.
+/// @brief Lime green color for the knob for default constructing.
 const sf::Color BASE_SLIDER_KNOB_COLOR = sf::Color(102, 255, 102);
 
 // ============================================================================
@@ -217,6 +217,9 @@ constexpr unsigned int BASE_GROUPBOX_FONT_SIZE = 24;
 // Generic Toast uses:
 // ============================================================================
 
+/// @brief General use default font size for the Toast message.
+constexpr unsigned int TOAST_DEFAULT_FONT_SIZE = 18;
+
 /// @brief General use default time for a toast message to expire.
 constexpr float TOAST_DEFAULT_DURATION = 2.f;
 
@@ -226,7 +229,7 @@ constexpr float TOAST_DEFAULT_FADE_DURATION = 1.f;
 /// @brief General use distance a toast message will travel while active.
 constexpr float TOAST_DEFAULT_DRIFT_PERCENTAGE = .05f;
 
-/// @brief General use default color for a toast message.
+/// @brief Lime green color for a toast message.
 const sf::Color TOAST_DEFAULT_COLOR(102, 255, 102);
 
 // ============================================================================

@@ -65,7 +65,9 @@ class UIFactory
                                                  UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
     std::shared_ptr<UIToastMessage> CreateToastMessage(const std::string &text, const sf::Vector2f &position,
-                                                       float duration);
+                                                       float duration, unsigned int baseFontSize,
+                                                       bool centerOrigin = true,
+                                                       UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
   private:
     UIFactory() = default;

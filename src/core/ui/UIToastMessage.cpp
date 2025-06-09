@@ -11,27 +11,37 @@
 
 #include "UIToastMessage.h"
 #include "ResolutionScaleManager.h"
+#include "UIFactory.h"
 #include "WindowManager.h"
 
 /// @brief Constructor for the UIToastMessage.
 /// @param text String representation for this UIToastMessage.
 /// @param position Position for this UIToastMessage.
+/// @param fontSize Font size to initialize the UITextLabel with.
 /// @param durationSeconds Lifespan in delta time for this UIToastMessage.
-/// @param font Font to be used.
-/// @param fontSize Font size.
-/// @param textColor Color for the text fill color.
 /// @param centerOrigin Positional origin for the UIToastMessage.
-UIToastMessage::UIToastMessage(const std::string &text, const sf::Vector2f &position, float durationSeconds,
-                               const sf::Font &font, unsigned int fontSize, const sf::Color &textColor,
-                               bool centerOrigin)
+/// @param scheme Style of UITextLabel to apply to ToastMessage.
+UIToastMessage::UIToastMessage(const std::string &text, const sf::Vector2f &position, unsigned int fontSize,
+                               float durationSeconds, bool centerOrigin, UITextLabelScheme scheme)
     : m_duration(durationSeconds), m_centerOrigin(centerOrigin)
 {
-    m_text.setFont(font);
-    m_text.setString(text);
-    m_text.setCharacterSize(fontSize);
-    m_text.setFillColor(textColor);
+    m_startY = 0.f;
+    m_targetY = 0.f;
 
+    InitTextLabel(text, position, fontSize, centerOrigin, scheme);
     SetPosition(position);
+}
+
+/// @brief Initializes this Toast message with the appropriate UITextLabel style.
+/// @param text String to initialize with.
+/// @param position Position to initialize with.
+/// @param fontSize Font size to initialize with.
+/// @param centerOrigin Whether or not the center the UITextLabel about the origin.
+/// @param scheme Color scheme pattern to initialize the UITextLabel with.
+void UIToastMessage::InitTextLabel(const std::string &text, const sf::Vector2f &position, unsigned int fontSize,
+                                   bool centerOrigin, UITextLabelScheme scheme)
+{
+    m_label = UIFactory::Instance().CreateTextLabel(text, position, fontSize, centerOrigin, scheme);
 }
 
 /// @brief Performs internal state management during a single frame. Note the default update signature is in line with
@@ -52,17 +62,21 @@ void UIToastMessage::Update(const sf::Vector2i &, bool, bool, float dt)
     // Slide animation: interpolate Y position upward (toast rise)
     float t = std::min(1.f, m_elapsed / m_duration);
     float newY = m_startY + (m_targetY - m_startY) * t;
-    auto pos = m_text.getPosition();
-    m_text.setPosition(pos.x, newY);
+    auto pos = m_label->GetPosition();
+    m_label->SetPosition({pos.x, newY});
 
     // Fade out near end
     if (m_elapsed >= m_duration - m_fadeOutDuration)
     {
         float fadeT = (m_duration - m_elapsed) / m_fadeOutDuration;
         m_alpha = 255.f * std::clamp(fadeT, 0.f, 1.f);
-        auto color = m_text.getFillColor();
-        color.a = static_cast<sf::Uint8>(m_alpha);
-        m_text.setFillColor(color);
+        auto fillColor = m_label->GetFillColor();
+        auto outlineColor = m_label->GetOutlineColor();
+        float thickness = m_label->GetOutlineThickness();
+        fillColor.a = static_cast<sf::Uint8>(m_alpha);
+        outlineColor.a = static_cast<sf::Uint8>(m_alpha);
+        m_label->SetColor(fillColor);
+        m_label->SetOutline(thickness, outlineColor);
     }
 }
 
@@ -71,24 +85,13 @@ void UIToastMessage::Update(const sf::Vector2i &, bool, bool, float dt)
 /// @return true / false
 bool UIToastMessage::Contains(const sf::Vector2i &point) const
 {
-    return m_text.getGlobalBounds().contains(static_cast<sf::Vector2f>(point));
+    return m_label->Contains(point);
 }
 
 /// @brief Sets the position for this UIToastMessage.
 /// @param position new text.position.
 void UIToastMessage::SetPosition(const sf::Vector2f &position)
 {
-    if (m_centerOrigin)
-    {
-        const auto bounds = m_text.getLocalBounds();
-        m_text.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
-    }
-
-    else
-    {
-        m_text.setOrigin(0.f, 0.f);
-    }
-
     // Calculate Y drift
     float drift = ResolutionScaleManager::Instance().ScaledReferenceY(TOAST_DEFAULT_DRIFT_PERCENTAGE);
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
@@ -97,14 +100,14 @@ void UIToastMessage::SetPosition(const sf::Vector2f &position)
     m_targetY = std::min(position.y, winSize.y - drift);        // target must remain on-screen
     m_startY = std::min(position.y + drift, winSize.y - drift); // drift downward but within screen
 
-    m_text.setPosition(position.x, m_startY);
+    m_label->SetPosition({position.x, m_startY});
 }
 
 /// @brief Returns the current position for this UIToastMessage.
-/// @return m_text.position.
+/// @return m_label->position.
 sf::Vector2f UIToastMessage::GetPosition() const
 {
-    return m_text.getPosition();
+    return m_label->GetPosition();
 }
 
 /// @brief Not relevant for this UIToastMessage, but consistent with interface.
@@ -118,32 +121,29 @@ void UIToastMessage::SetSize(const sf::Vector2f &)
 /// @return size.
 sf::Vector2f UIToastMessage::GetSize() const
 {
-    const auto bounds = m_text.getGlobalBounds();
-    return {bounds.width, bounds.height};
+    return m_label->GetSize();
 }
 
 /// @brief Sets the font for this UIToastMessage.
-/// @param font new m_text.font.
+/// @param font new m_label->font.
 void UIToastMessage::SetFont(const sf::Font &font)
 {
-    m_text.setFont(font);
+    m_label->SetFont(font);
 }
 
 /// @brief Sets the font for this UIToastMessage.
-/// @param size new m_text.size.
+/// @param size new m_label->size.
 void UIToastMessage::SetFontSize(unsigned int size)
 {
-    m_text.setCharacterSize(size);
-    // Optional: Re-center origin if needed
-    sf::FloatRect bounds = m_text.getLocalBounds();
-    m_text.setOrigin(bounds.left + bounds.width / 2.f, bounds.top + bounds.height / 2.f);
+    m_label->SetFontSize(size);
 }
 
-/// @brief Sets the text fill color for this UIToastMessage.
-/// @param color new m_text.color.
-void UIToastMessage::SetColor(const sf::Color &color)
+/// @brief Calls the ApplyTextLabelStyle method of the internal UITextLabel.
+/// @param scheme The scheme or color pattern to apply.
+/// @param labelBorderSize The border thickness to utilize for the label.
+void UIToastMessage::ApplyStyle(UITextLabelScheme scheme, const float labelBorderSize)
 {
-    m_text.setFillColor(color);
+    m_label->ApplyTextLabelStyle(scheme, labelBorderSize);
 }
 
 /// @brief Returns whether or not this UIToastMessage lifespan is expired.
@@ -160,6 +160,6 @@ void UIToastMessage::draw(sf::RenderTarget &target, sf::RenderStates states) con
 {
     if (IsEnabled() && !IsExpired())
     {
-        target.draw(m_text, states);
+        target.draw(*m_label, states);
     }
 }

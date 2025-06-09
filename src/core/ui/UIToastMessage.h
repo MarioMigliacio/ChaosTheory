@@ -13,6 +13,7 @@
 
 #include "UIElement.h"
 #include "UIPresets.h"
+#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <string>
 
@@ -28,8 +29,8 @@
 class UIToastMessage : public UIElement
 {
   public:
-    UIToastMessage(const std::string &text, const sf::Vector2f &position, float durationSeconds, const sf::Font &font,
-                   unsigned int fontSize = 20, const sf::Color &textColor = sf::Color::White, bool centerOrigin = true);
+    UIToastMessage(const std::string &text, const sf::Vector2f &position, unsigned int fontSize, float durationSeconds,
+                   bool centerOrigin = true, UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
     ~UIToastMessage() override = default;
 
@@ -40,6 +41,9 @@ class UIToastMessage : public UIElement
     // Enable move
     UIToastMessage(UIToastMessage &&) noexcept = default;
     UIToastMessage &operator=(UIToastMessage &&) noexcept = default;
+
+    void InitTextLabel(const std::string &text, const sf::Vector2f &position, unsigned int fontSize,
+                       bool centerOrigin = true, UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
     virtual void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
@@ -52,7 +56,7 @@ class UIToastMessage : public UIElement
 
     void SetFont(const sf::Font &font);
     void SetFontSize(unsigned int size);
-    void SetColor(const sf::Color &color);
+    void ApplyStyle(UITextLabelScheme scheme, const float labelBorderSize);
 
     bool IsExpired() const;
 
@@ -60,7 +64,7 @@ class UIToastMessage : public UIElement
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    sf::Text m_text;
+    std::shared_ptr<UITextLabel> m_label;
 
     float m_duration = TOAST_DEFAULT_DURATION;
     float m_elapsed = 0.0f;

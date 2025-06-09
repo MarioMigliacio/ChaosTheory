@@ -210,17 +210,19 @@ std::shared_ptr<UITextLabel> UIFactory::CreateTextLabel(const std::string &text,
 /// @param text String representation for the toast message.
 /// @param position Position for the toast message.
 /// @param duration Duration for how long the toast message will exist.
+/// @param baseFontSize Font size to initialize with.
+/// @param centerOrigin Whether or not the center text around origin.
+/// @param scheme Enum field representing the type of shceme.
 /// @return safe pointer to a UIToastMessage.
 std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string &text, const sf::Vector2f &position,
-                                                              float duration)
+                                                              float duration, unsigned int baseFontSize,
+                                                              bool centerOrigin, UITextLabelScheme scheme)
 {
-    const auto &font = *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey);
-    unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
-    sf::Color color = sf::Color::White;
-    bool centerOrigin = true;
+    const float scaledOutline = ResolutionScaleManager::Instance().ScaleX(DEFAULT_TEXT_LABEL_BORDER_THICKNESS);
+    const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(baseFontSize);
 
-    auto toast = std::make_shared<UIToastMessage>(text, position, duration, font, fontSize, color, centerOrigin);
-    toast->SetSize({0.f, 0.f}); // still required by interface
+    auto toast = std::make_shared<UIToastMessage>(text, position, fontSize, duration, centerOrigin, scheme);
+    toast->ApplyStyle(scheme, scaledOutline);
 
     return toast;
 }

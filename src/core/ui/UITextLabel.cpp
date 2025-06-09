@@ -43,6 +43,13 @@ void UITextLabel::SetText(const std::string &text)
     CenterOrigin();
 }
 
+/// @brief Simple getter for this UITextLabels string content.
+/// @return m_texts string representation.
+const std::string UITextLabel::GetText() const
+{
+    return m_text.getString();
+}
+
 /// @brief Sets the font for this UITextLabel.
 /// @param font new m_text.font.
 void UITextLabel::SetFont(const sf::Font &font)
@@ -66,6 +73,13 @@ void UITextLabel::SetColor(const sf::Color &color)
     m_text.setFillColor(color);
 }
 
+/// @brief Simple getter for this UITextLabels fill color.
+/// @return m_texts fill color.
+const sf::Color UITextLabel::GetFillColor() const
+{
+    return m_text.getFillColor();
+}
+
 /// @brief Sets the outline thickness for this UITextLabel.
 /// @param thickness new outline thickness.
 /// @param color new outline color.
@@ -73,6 +87,20 @@ void UITextLabel::SetOutline(float thickness, const sf::Color &color)
 {
     m_text.setOutlineThickness(thickness);
     m_text.setOutlineColor(color);
+}
+
+/// @brief Simple getter for this UITextLabels outline color.
+/// @return m_texts outline color.
+const sf::Color UITextLabel::GetOutlineColor() const
+{
+    return m_text.getOutlineColor();
+}
+
+/// @brief Simple getter for this UITextLabels outline thickness.
+/// @return m_texts outline thickness.
+const float UITextLabel::GetOutlineThickness() const
+{
+    return m_text.getOutlineThickness();
 }
 
 /// @brief Useful helper for centering the UITextLabel on the localBounds.

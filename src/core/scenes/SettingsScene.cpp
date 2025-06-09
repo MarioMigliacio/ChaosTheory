@@ -599,8 +599,8 @@ void SettingsScene::ShowToast(const std::string &message)
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
     sf::Vector2f pos{winSize.x * BASE_FOOTER_WIDTH_75_PERCENT, winSize.y * BASE_FOOTER_HEIGHT_85_PERCENT};
 
-    auto toast = UIFactory::Instance().CreateToastMessage(message, pos, TOAST_DEFAULT_DURATION);
-    toast->SetColor(TOAST_DEFAULT_COLOR);
+    auto toast =
+        UIFactory::Instance().CreateToastMessage(message, pos, TOAST_DEFAULT_DURATION, TOAST_DEFAULT_FONT_SIZE);
     UIManager::Instance().AddElement(toast);
 }
 
