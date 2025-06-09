@@ -13,6 +13,7 @@
 
 #include "UIElement.h"
 #include "UIPresets.h"
+#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <string>
@@ -49,7 +50,9 @@ class UIGroupBox : public UIElement
     UIGroupBox(UIGroupBox &&) noexcept = default;
     UIGroupBox &operator=(UIGroupBox &&) noexcept = default;
 
-    void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18);
+    void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18, bool centerOrigin = true,
+                  UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
+    void SetTitleScheme(UITextLabelScheme scheme);
     void AddElement(std::shared_ptr<UIElement> element);
     void RealignChildren();
 
@@ -76,8 +79,8 @@ class UIGroupBox : public UIElement
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
+    std::shared_ptr<UITextLabel> m_titleLabel;
     sf::RectangleShape m_background;
-    sf::Text m_title;
 
     std::vector<std::shared_ptr<UIElement>> m_children;
     LayoutMode m_layoutMode = LayoutMode::Vertical;
