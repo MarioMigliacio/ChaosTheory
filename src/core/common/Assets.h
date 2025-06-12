@@ -264,10 +264,13 @@ static const std::unordered_map<std::string, std::string> Sounds = {
     {"SettingsSound", "assets/audio/Ping.wav"},
 };
 
-/// @brief Fonts contain a Key and Value pair collection of font assets
-static const std::unordered_map<std::string, std::string> Fonts = {
-    {"Default", "assets/fonts/Default.ttf"},
-    {"SettingsFont", "assets/fonts/Default.ttf"},
+/// @brief UI contain a Key and Value pair collection of ui assets
+static const std::unordered_map<std::string, std::string> UI = {
+    {"UIArrow", "assets/ui/arrow/UIArrow.png"},
+    {"GreenButtonIdle", "assets/ui/button/green/GreenButtonIdle.png"},
+    {"GreenButtonHover", "assets/ui/button/green/GreenButtonHover.png"},
+    {"RedButtonIdle", "assets/ui/button/red/RedButtonIdle.png"},
+    {"RedButtonHover", "assets/ui/button/red/RedButtonHover.png"},
 };
 } // namespace SettingsAssets
 
@@ -275,7 +278,7 @@ static const std::unordered_map<std::string, std::string> Fonts = {
 // MainMenuScene Preconfigurable Assets for quick loading
 // ============================================================================
 
-/// @brief Exposes Textures, Fonts, and Audio assets to the MainMenuAssets namespace.
+/// @brief Exposes Textures, UI, and Audio assets to the MainMenuAssets namespace.
 namespace MainMenuAssets
 {
 /// @brief Path for the MenuSong.
@@ -289,10 +292,10 @@ static const std::unordered_map<std::string, std::string> Textures = {
     {"PlayerShip", "assets/sprites/PlayerShip.png"},
 };
 
-/// @brief Fonts contain a Key and Value pair collection of font assets
-static const std::unordered_map<std::string, std::string> Fonts = {
-    {"Default", "assets/fonts/Default.ttf"},
-    {"MenuFont", "assets/fonts/Default.ttf"},
+/// @brief UI contain a Key and Value pair collection of ui assets
+static const std::unordered_map<std::string, std::string> UI = {
+    {"BlueButtonIdle", "assets/ui/button/blue/BlueButtonIdle.png"},
+    {"BlueButtonHover", "assets/ui/button/blue/BlueButtonHover.png"},
 };
 } // namespace MainMenuAssets
 
@@ -300,7 +303,7 @@ static const std::unordered_map<std::string, std::string> Fonts = {
 // SplashScene Preconfigurable Assets for quick loading
 // ============================================================================
 
-/// @brief Exposes Textures, Fonts, and Audio assets to the SplashAssets namespace.
+/// @brief Exposes Textures, and Audio assets to the SplashAssets namespace.
 namespace SplashAssets
 {
 /// @brief Key to the Splash intro sound asset.
@@ -313,32 +316,23 @@ static auto SplashBackground = "SplashBackground";
 static const std::unordered_map<std::string, std::string> Textures = {
     {"SplashBackground", "assets/backgrounds/ChaosTheorySplash.png"},
 };
-
-/// @brief Fonts contain a Key and Value pair collection of font assets
-static const std::unordered_map<std::string, std::string> Fonts = {
-    {"Default", "assets/fonts/Default.ttf"},
-    {"SplashFont", "assets/fonts/Default.ttf"},
-};
 } // namespace SplashAssets
 
 // ============================================================================
 // SandBoxScene Preconfigurable Assets for quick loading
 // ============================================================================
 
-/// @brief Exposes Textures, Fonts, and Audio assets to the GameAssets namespace.
+/// @brief Exposes Audio, and Texture assets to the SandBoxAssets namespace.
 namespace SandBoxAssets
 {
+/// @brief Path for the GameTrack.
+constexpr auto GameTrack = "assets/audio/RootMenu.wav";
+
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Textures = {
     {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
     {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
     {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
-};
-
-/// @brief Fonts contain a Key and Value pair collection of font assets
-static const std::unordered_map<std::string, std::string> Fonts = {
-    {"Default", "assets/fonts/Default.ttf"},
-    {"GameFont", "assets/fonts/Default.ttf"},
 };
 } // namespace SandBoxAssets
 
@@ -346,7 +340,7 @@ static const std::unordered_map<std::string, std::string> Fonts = {
 // GameScene Preconfigurable Assets for quick loading
 // ============================================================================
 
-/// @brief Exposes Textures, Fonts, and Audio assets to the GameAssets namespace.
+/// @brief Exposes Texture assets to the GameAssets namespace.
 namespace GameAssets
 {
 /// @brief Textures contain a Key and Value pair collection of image assets
@@ -355,10 +349,22 @@ static const std::unordered_map<std::string, std::string> Textures = {
     {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
     {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
 };
-
-/// @brief Fonts contain a Key and Value pair collection of font assets
-static const std::unordered_map<std::string, std::string> Fonts = {
-    {"Default", "assets/fonts/Default.ttf"},
-    {"GameFont", "assets/fonts/Default.ttf"},
-};
 } // namespace GameAssets
+
+// ============================================================================
+// PauseScene Preconfigurable Assets for quick loading
+// ============================================================================
+
+/// @brief Exposes UI assets to the PauseAssets namespace.
+namespace PauseAssets
+{
+/// @brief UI contain a Key and Value pair collection of ui assets
+static const std::unordered_map<std::string, std::string> UI = {
+    {"BlueButtonIdle", "assets/ui/button/blue/BlueButtonIdle.png"},
+    {"BlueButtonHover", "assets/ui/button/blue/BlueButtonHover.png"},
+    {"GreenButtonIdle", "assets/ui/button/green/GreenButtonIdle.png"},
+    {"GreenButtonHover", "assets/ui/button/green/GreenButtonHover.png"},
+    {"RedButtonIdle", "assets/ui/button/red/RedButtonIdle.png"},
+    {"RedButtonHover", "assets/ui/button/red/RedButtonHover.png"},
+};
+} // namespace PauseAssets

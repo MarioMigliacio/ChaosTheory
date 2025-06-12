@@ -16,6 +16,7 @@
 #include "InputManager.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
+#include "PauseScene.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
@@ -27,18 +28,14 @@
 /// @brief Constants that can be adjusted throughout the SandBoxScene.
 namespace
 {
-/// @brief Fixed name constant for the play button label.
-constexpr auto PLAY_BTN_LABEL = "Play";
+/// @brief Fixed name constant for the title of the Sandbox Scene.
+constexpr auto TITLE_SCREEN_LABEL = "Sandbox Scene";
 
-/// @brief Fixed name constant for the Settings button label.
-constexpr auto SETTING_BTN_LABEL = "Settings";
+/// @brief Fixed name constant for a helpful placeholder to pause the game.
+constexpr auto PAUSE_GAME_LABEL = "Press Spacebar to Pause";
 
-/// @brief Fixed name constant for the Quit button label.
-constexpr auto QUIT_BTN_LABEL = "Quit";
-
-constexpr auto TOGGLE_BUTTON_KEY = "Toggle";
-
-constexpr auto RETURN_BUTTON_KEY = "Return";
+/// @brief Fixed name constant to be used with BindActionKey to setup a pause key.
+constexpr auto PAUSE_BUTTON_KEY = "Pause";
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -47,7 +44,7 @@ SandBoxScene::SandBoxScene(std::shared_ptr<Settings> settings) : m_settings(sett
 {
 }
 
-/// @brief  Initializes the SandBoxScene.
+/// @brief Initializes the SandBoxScene.
 void SandBoxScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -56,6 +53,7 @@ void SandBoxScene::Init()
 
     LoadRequiredAssets();
     BindInputKeys();
+    LoadBackground();
     SetupSceneComponents();
 
     SceneTransitionManager::Instance().StartFadeIn();
@@ -67,14 +65,6 @@ void SandBoxScene::Init()
 /// @brief Load any required assets relevant to the SandBoxScene.
 void SandBoxScene::LoadRequiredAssets()
 {
-    for (const auto &[key, path] : UIAssets::Textures)
-    {
-        if (!AssetManager::Instance().LoadTexture(key, path))
-        {
-            CT_LOG_ERROR("SandBoxScene failed to load texture asset: {} -> {}", key, path);
-        }
-    }
-
     for (const auto &[key, path] : SandBoxAssets::Textures)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
@@ -83,7 +73,7 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : SandBoxAssets::Fonts)
+    for (const auto &[key, path] : FontAssets::Fonts)
     {
         if (!AssetManager::Instance().LoadFont(key, path))
         {
@@ -108,10 +98,18 @@ void SandBoxScene::Shutdown()
 /// @brief Handles the exit criteria for this scene.
 void SandBoxScene::OnExit()
 {
-    InputManager::Instance().UnbindKey(TOGGLE_BUTTON_KEY);
-    InputManager::Instance().UnbindKey(RETURN_BUTTON_KEY);
+    InputManager::Instance().UnbindKey(PAUSE_BUTTON_KEY);
 
     CT_LOG_INFO("SandBoxScene OnExit.");
+}
+
+/// @brief Resumes Scene in event of a Pause.
+void SandBoxScene::OnResume()
+{
+    UIManager::Instance().Clear();
+    SetupSceneComponents();
+
+    CT_LOG_INFO("SandBoxScene resumed and UI restored.");
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -129,16 +127,18 @@ void SandBoxScene::Update(float dt)
         m_background->Update(dt);
     }
 
-    // new
     CheckActionsPressed();
 
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
-        CT_LOG_INFO("SandBoxScene Requesting Scene Change to '{}'", SceneIDToString(m_requestedScene));
-        m_hasPendingTransition = false;
-        SceneTransitionManager::Instance().ForceFullyOpaque();
-        SceneManager::Instance().RequestSceneChange(m_requestedScene);
+        if (m_requestedScene == SceneID::Pause)
+        {
+            CT_LOG_INFO("SandBoxScene Pause Event Requested.");
+
+            m_hasPendingTransition = false;
+            SceneManager::Instance().PushScene(std::make_unique<PauseScene>(m_settings));
+        }
     }
 }
 
@@ -171,7 +171,6 @@ void SandBoxScene::Render()
 /// @brief Helper method to initialize necessary Scene components.
 void SandBoxScene::SetupSceneComponents()
 {
-    LoadBackground();
     CreateTitleText();
     PlayGameMusic();
 }
@@ -180,10 +179,11 @@ void SandBoxScene::SetupSceneComponents()
 void SandBoxScene::LoadBackground()
 {
     m_background = std::make_unique<Background>();
-    m_background->InitParallax({{"GasPattern1", 2.f}, {"PlainStarBackground", 1.f}});
+    m_background->InitParallax(
+        {{BackgroundAssets::GasPattern1BackgroundKey, 2.f}, {BackgroundAssets::PlainStarBackgroundKey, 1.f}});
 
-    m_background->SetLayerMotion("PlainStarBackground", {0.2f, -0.5f});
-    m_background->SetLayerMotion("GasPattern1", {0.f, -0.1f});
+    m_background->SetLayerMotion(BackgroundAssets::PlainStarBackgroundKey, {0.2f, -0.5f});
+    m_background->SetLayerMotion(BackgroundAssets::GasPattern1BackgroundKey, {0.f, -0.1f});
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -191,43 +191,58 @@ void SandBoxScene::CreateTitleText()
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    const std::string title = "Sandbox Scene";
-    const unsigned int fontSize = scaleMgr.ScaleFont(48);
-    const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                    scaleMgr.ScaledReferenceY(0.08f)};
+    const std::string titleLabel = TITLE_SCREEN_LABEL;
+    const unsigned int titleFontSize = scaleMgr.ScaleFont(48);
+    const sf::Vector2f titlePos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                   scaleMgr.ScaledReferenceY(0.08f)};
 
-    m_titleLabel =
-        UIFactory::Instance().CreateTextLabel(title, centerPos, fontSize, true, UITextLabelScheme::MintyHerbScheme);
+    const std::string helpLabel = PAUSE_GAME_LABEL;
+    const unsigned int helpFontSize = scaleMgr.ScaleFont(20);
+    const sf::Vector2f helpPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                  scaleMgr.ScaledReferenceY(0.20f)};
+
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleLabel, titlePos, titleFontSize, true,
+                                                         UITextLabelScheme::MintyHerbScheme);
+
+    m_helpLabel = UIFactory::Instance().CreateTextLabel(helpLabel, helpPos, helpFontSize, true,
+                                                        UITextLabelScheme::MintyHerbScheme);
+
     UIManager::Instance().AddElement(m_titleLabel);
+    UIManager::Instance().AddElement(m_helpLabel);
 }
 
-/// @brief Helper method to load and play the game music for this scene. (intentionally blank for now)
+/// @brief Helper method to load and play the game music for this scene.
 void SandBoxScene::PlayGameMusic()
 {
+    if (!AudioManager::Instance().IsMusicPlaying() ||
+        AudioManager::Instance().GetCurrentMusicName() != SandBoxAssets::GameTrack)
+    {
+        CT_LOG_INFO("SandBoxScene: Starting or resuming menu music.");
+        AudioManager::Instance().PlayMusic(SandBoxAssets::GameTrack, true);
+    }
+
+    else
+    {
+        CT_LOG_INFO("SandBoxScene: Menu music already playing, no action needed.");
+    }
 }
 
+/// @brief Sets up keyboard inputs that can be picked up during scene lifetime.
 void SandBoxScene::BindInputKeys()
 {
-    InputManager::Instance().BindKey(TOGGLE_BUTTON_KEY, sf::Keyboard::Key::Space);
-    InputManager::Instance().BindKey(RETURN_BUTTON_KEY, sf::Keyboard::Key::Enter);
+    InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Space);
 }
 
+/// @brief Determines if any configured keyboard input has been pressed during scene update.
 void SandBoxScene::CheckActionsPressed()
 {
     auto &input = InputManager::Instance();
 
-    if (input.IsKeyJustPressed(TOGGLE_BUTTON_KEY))
+    if (input.IsKeyJustPressed(PAUSE_BUTTON_KEY))
     {
-        m_toggler = !m_toggler;
+        CT_LOG_INFO("SandBoxScene: Toggle Button Pressed.");
 
-        CT_LOG_INFO("SandBoxScene: Toggle switch: {}", m_toggler);
-    }
-
-    if (input.IsKeyJustPressed(RETURN_BUTTON_KEY))
-    {
         m_hasPendingTransition = true;
-        m_requestedScene = SceneID::MainMenu;
-
-        CT_LOG_INFO("SandBoxScene: Enter event handled.");
+        m_requestedScene = SceneID::Pause;
     }
 }
