@@ -39,6 +39,9 @@ class Scene
     virtual void LoadRequiredAssets() = 0;
     virtual void Shutdown() = 0;
     virtual void OnExit() = 0;
+    virtual void OnResume()
+    {
+    }
 
     virtual void Update(float dt) = 0;
     virtual void HandleEvent(const sf::Event &event) = 0;

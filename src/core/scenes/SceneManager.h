@@ -15,7 +15,7 @@
 #include "Scene.h"
 #include "Settings.h"
 #include <memory>
-#include <stack>
+#include <vector>
 
 /// @brief Simple enumeration field to represent a type of scene.
 enum class SceneID
@@ -25,6 +25,7 @@ enum class SceneID
     Settings,
     SandBox,
     Game,
+    Pause
 };
 
 /// @brief Utility function to convert SceneID to string
@@ -44,6 +45,8 @@ inline const char *SceneIDToString(SceneID id)
             return "SandBox";
         case SceneID::Game:
             return "Game";
+        case SceneID::Pause:
+            return "Pause";
         default:
             return "Unknown";
     }
@@ -79,6 +82,7 @@ class SceneManager
 
     void PushScene(std::unique_ptr<Scene> scene);
     void PopScene();
+    void DeferPopScene();
     void ReplaceScene(std::unique_ptr<Scene> newScene);
     void ClearScenes();
 
@@ -98,7 +102,9 @@ class SceneManager
 
   private:
     std::unordered_map<SceneID, SceneCreateFunc> m_sceneRegistry;
-    std::stack<std::unique_ptr<Scene>> m_scenes;
+    std::vector<std::unique_ptr<Scene>> m_scenes;
     std::shared_ptr<Settings> m_settings;
+
     bool m_isInitialized = false;
+    bool m_deferredPop = false;
 };

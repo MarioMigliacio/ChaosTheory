@@ -82,8 +82,11 @@ constexpr float MAX_SLIDER_VALUE = 100.f;
 } // namespace
 
 /// @brief Constructor for the SettingsScene.
-/// @param settings Internal settings to initialize with.
-SettingsScene::SettingsScene(std::shared_ptr<Settings> settings) : m_settings(settings)
+/// @param settings Settings to initialize with.
+/// @param includeDifficulty Optional difficulty page displayed on this settingsScene or disabled?
+/// @param onReturn Optional function callback  to embed into this scene for management flow.
+SettingsScene::SettingsScene(std::shared_ptr<Settings> settings, bool includeDifficulty, ReturnCallback onReturn)
+    : m_settings(settings), m_onReturn(std::move(onReturn)), m_includeDifficultyPage(includeDifficulty)
 {
 }
 
@@ -107,16 +110,16 @@ void SettingsScene::Init()
     CT_LOG_INFO("SettingsScene initialized.");
 }
 
-/// @brief Load any required assets listed in the SettingsAssets namespace.
+/// @brief Load any required assets relevant to the SettingsScene.
 void SettingsScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
 
-    for (const auto &[key, path] : UIAssets::Textures)
+    for (const auto &[key, path] : SettingsAssets::UI)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
-            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load asset: {}, {}", key, path);
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadTexture failed to load asset: {}, {}", key, path);
         }
     }
 
@@ -136,7 +139,7 @@ void SettingsScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : SettingsAssets::Fonts)
+    for (const auto &[key, path] : FontAssets::Fonts)
     {
         if (!assets.LoadFont(key, path))
         {
@@ -230,10 +233,8 @@ void SettingsScene::HandleEvent(const sf::Event &event)
     {
         if (event.key.code == sf::Keyboard::Escape)
         {
-            m_requestedScene = SceneID::MainMenu;
-            m_hasPendingTransition = true;
-
             CT_LOG_INFO("SettingsScene: Esc event handled.");
+            OnGoBack();
         }
     }
 }
@@ -297,9 +298,12 @@ void SettingsScene::CreateUI(SettingsPage page)
             break;
         }
 
-        case SettingsPage::KeyBindings:
+        case SettingsPage::Difficulty:
         {
-            CreateDifficultyControls();
+            if (m_includeDifficultyPage)
+            {
+                CreateDifficultyControls();
+            }
 
             break;
         }
@@ -344,7 +348,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
 
     const sf::Vector2f arrowSize = {DEFAULT_ARROW_SIZE_PIXEL, DEFAULT_ARROW_SIZE_PIXEL};
 
-    if (page == SettingsPage::Audio || page == SettingsPage::KeyBindings)
+    if (page == SettingsPage::Audio || page == SettingsPage::Difficulty && m_includeDifficultyPage)
     {
         // LEFT ARROW
         const sf::Vector2f pos = {scaleMgr.ScaledReferenceX(DEFAULT_ARROW_LEFT_CENTER_PERCENT), centerY};
@@ -353,7 +357,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
             UIFactory::Instance().CreateArrow(pos, arrowSize, UIAssets::UIArrowTextureKey, ArrowDirection::Left,
                                               [this, page]()
                                               {
-                                                  if (page == SettingsPage::KeyBindings)
+                                                  if (page == SettingsPage::Difficulty)
                                                   {
                                                       SwitchToPage(SettingsPage::Audio);
                                                   }
@@ -367,7 +371,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
         UIManager::Instance().AddElement(leftArrow);
     }
 
-    if (page == SettingsPage::Audio || page == SettingsPage::Video)
+    if (page == SettingsPage::Audio && m_includeDifficultyPage || page == SettingsPage::Video)
     {
         // RIGHT ARROW
         const sf::Vector2f pos = {scaleMgr.ScaledReferenceX(DEFAULT_ARROW_RIGHT_CENTER_PERCENT), centerY};
@@ -378,7 +382,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
                                               {
                                                   if (page == SettingsPage::Audio)
                                                   {
-                                                      SwitchToPage(SettingsPage::KeyBindings);
+                                                      SwitchToPage(SettingsPage::Difficulty);
                                                   }
 
                                                   else if (page == SettingsPage::Video)
@@ -452,9 +456,7 @@ void SettingsScene::CreateButtonControls()
                                                     [this]()
                                                     {
                                                         CT_LOG_INFO("SettingsScene: Go Back clicked.");
-                                                        *SettingsManager::Instance().GetSettings() = m_backupSettings;
-                                                        m_requestedScene = SceneID::MainMenu;
-                                                        m_hasPendingTransition = true;
+                                                        OnGoBack();
                                                     }));
 }
 
@@ -618,4 +620,21 @@ void SettingsScene::SwitchToPage(SettingsPage page)
 
     // Don't switch immediately — set for safe deferred swap
     m_pendingPageChange = page;
+}
+
+/// @brief Helper method for handling the returning logic from SettingsScene.
+void SettingsScene::OnGoBack()
+{
+    if (m_onReturn)
+    {
+        m_onReturn(); // e.g. returns to PauseScene
+    }
+
+    else
+    {
+        CT_LOG_INFO("SettingsScene: OnGoBack Event.");
+        *SettingsManager::Instance().GetSettings() = m_backupSettings;
+        m_requestedScene = SceneID::MainMenu;
+        m_hasPendingTransition = true;
+    }
 }

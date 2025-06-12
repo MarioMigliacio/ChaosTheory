@@ -18,6 +18,7 @@
 #include "UIElement.h"
 #include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -27,7 +28,7 @@ enum class SettingsPage
 {
     Audio,
     Video,
-    KeyBindings
+    Difficulty
 };
 
 // ============================================================================
@@ -44,7 +45,9 @@ enum class SettingsPage
 class SettingsScene : public Scene
 {
   public:
-    SettingsScene(std::shared_ptr<Settings> settings);
+    using ReturnCallback = std::function<void()>;
+
+    SettingsScene(std::shared_ptr<Settings> settings, bool includeDifficulty = true, ReturnCallback onReturn = nullptr);
     ~SettingsScene() = default;
 
     SettingsScene(const SettingsScene &) = delete;
@@ -76,18 +79,21 @@ class SettingsScene : public Scene
     void ShowToast(const std::string &message);
 
     void SwitchToPage(SettingsPage page);
+    void OnGoBack();
 
   private:
     std::shared_ptr<Settings> m_settings;
+    ReturnCallback m_onReturn;
     Settings m_backupSettings;
 
-    SettingsPage m_currentPage = SettingsPage::Audio;
+    SettingsPage m_currentPage;
     std::optional<SettingsPage> m_pendingPageChange;
     std::optional<std::string> m_pendingToast;
 
     std::shared_ptr<UIElement> m_applyButton;
-    SceneID m_requestedScene = SceneID::MainMenu;
+    SceneID m_requestedScene;
 
+    bool m_includeDifficultyPage = true;
     bool m_hasUnsavedChanges = false;
     bool m_showToast = false;
     float m_toastTimer = 0.f;
