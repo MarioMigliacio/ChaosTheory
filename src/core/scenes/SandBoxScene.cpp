@@ -22,7 +22,6 @@
 #include "SceneTransitionManager.h"
 #include "UIFactory.h"
 #include "UIManager.h"
-#include "UIPresets.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout the SandBoxScene.
@@ -128,6 +127,7 @@ void SandBoxScene::Update(float dt)
     }
 
     CheckActionsPressed();
+    UpdateHUD(dt);
 
     // Handle button scene request change
     if (m_hasPendingTransition)
@@ -173,6 +173,7 @@ void SandBoxScene::SetupSceneComponents()
 {
     CreateTitleText();
     PlayGameMusic();
+    CreateHUDPanel();
 }
 
 /// @brief Helper method to load the Background for this Scene.
@@ -211,6 +212,38 @@ void SandBoxScene::CreateTitleText()
     UIManager::Instance().AddElement(m_helpLabel);
 }
 
+/// @brief Initializes the HUD Panel ui component.
+void SandBoxScene::CreateHUDPanel()
+{
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    // Relative position and size (top bar)
+    const sf::Vector2f relativePos{0.f, 0.f};
+    const sf::Vector2f relativeSize{1.0f, 0.05f}; // Full width, 8% height
+
+    auto hudPanel = UIFactory::Instance().CreateHUDPanel(relativePos, relativeSize);
+    hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.2f)); // Space between labels
+    hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));    // Padding around edges
+    hudPanel->SetLayoutMode(LayoutMode::Horizontal);
+    hudPanel->SetCenterChildren(false);
+
+    const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+
+    m_healthLabel = UIFactory::Instance().CreateTextLabel(HUD_HEALTH_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
+    m_scoreLabel = UIFactory::Instance().CreateTextLabel(HUD_SCORE_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
+    m_timerLabel = UIFactory::Instance().CreateTextLabel(HUD_TIMER_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
+
+    hudPanel->AddElement(m_healthLabel, HUDSlotAlignment::Left);
+    hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
+    hudPanel->AddElement(m_scoreLabel, HUDSlotAlignment::Right);
+
+    m_healthLabel->SetText(HUD_HEALTH_TAG + std::to_string(HUD_HEALTH_LABEL_START_VALUE));
+    m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(HUD_SCORE_LABEL_START_VALUE));
+    m_timerLabel->SetText(HUD_TIMER_START_VALUE);
+
+    UIManager::Instance().AddElement(hudPanel);
+}
+
 /// @brief Helper method to load and play the game music for this scene.
 void SandBoxScene::PlayGameMusic()
 {
@@ -244,5 +277,45 @@ void SandBoxScene::CheckActionsPressed()
 
         m_hasPendingTransition = true;
         m_requestedScene = SceneID::Pause;
+    }
+}
+
+/// @brief Updates the HUD Panel and all children entities.
+/// @param dt Delta time since last update.
+void SandBoxScene::UpdateHUD(float dt)
+{
+    // Update HUD timers and simulate game state
+    m_elapsedTime += dt;
+
+    if (m_elapsedTime >= 1.f)
+    {
+        m_secondsPassed += 1;
+        m_elapsedTime = 0.f;
+
+        // Update timer display
+        int minutes = m_secondsPassed / 60;
+        int seconds = m_secondsPassed % 60;
+
+        // place a cap on timer
+        if (minutes > 99)
+        {
+            minutes = 99;
+            seconds = 0;
+        }
+
+        std::stringstream ss;
+        ss << HUD_TIMER_TAG << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0')
+           << seconds;
+        m_timerLabel->SetText(ss.str());
+
+        // Every 5 seconds, reduce HP and increase score
+        if (m_secondsPassed % 5 == 0)
+        {
+            m_currentHealth = std::max(0, m_currentHealth - 1);
+            m_currentScore += 100;
+
+            m_healthLabel->SetText(HUD_HEALTH_TAG + std::to_string(m_currentHealth));
+            m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
+        }
     }
 }

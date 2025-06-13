@@ -1,9 +1,9 @@
 // ============================================================================
-//  File        : UIGroupBox.h
+//  File        : UIHUDPanel.h
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
-//  Created     : 2025-05-07
-//  Description : Represents a UI rect containter for many use cases
+//  Created     : 2025-06-12
+//  Description : Represents a UI containter holding Heads Up Display entities
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -12,16 +12,20 @@
 #pragma once
 
 #include "UIElement.h"
-#include "UIPresets.h"
-#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
-#include <string>
 #include <vector>
 
+enum class HUDSlotAlignment
+{
+    Left,
+    Center, // optional
+    Right
+};
+
 // ============================================================================
-//  Class       : UIGroupBox
-//  Purpose     : Manages this UIGroupBox logic at the ui level.
+//  Class       : UIHUDPanel
+//  Purpose     : Manages this UIHUDPanel logic at the ui level.
 //
 //  Responsibilities:
 //      - Set container position/size
@@ -29,57 +33,57 @@
 //      - Update and render all components
 //
 // ============================================================================
-class UIGroupBox : public UIElement
+class UIHUDPanel : public UIElement
 {
   public:
-    UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size);
-    ~UIGroupBox() override = default;
+    UIHUDPanel(const sf::Vector2f &position, const sf::Vector2f &size);
+    ~UIHUDPanel() override = default;
 
     // Disable copy
-    UIGroupBox(const UIGroupBox &) = delete;
-    UIGroupBox &operator=(const UIGroupBox &) = delete;
+    UIHUDPanel(const UIHUDPanel &) = delete;
+    UIHUDPanel &operator=(const UIHUDPanel &) = delete;
 
     // Allow move
-    UIGroupBox(UIGroupBox &&) noexcept = default;
-    UIGroupBox &operator=(UIGroupBox &&) noexcept = default;
-
-    void SetTitle(const std::string &title, const sf::Font &font, unsigned int fontSize = 18, bool centerOrigin = true,
-                  UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
-    void SetTitleScheme(UITextLabelScheme scheme);
-    void AddElement(std::shared_ptr<UIElement> element);
-    void RealignChildren();
+    UIHUDPanel(UIHUDPanel &&) noexcept = default;
+    UIHUDPanel &operator=(UIHUDPanel &&) noexcept = default;
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
-    const std::vector<std::shared_ptr<UIElement>> &GetChildren() const;
 
     void SetPosition(const sf::Vector2f &position) override;
     sf::Vector2f GetPosition() const override;
+
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
-
-    void SetLayoutMode(LayoutMode mode);
-    void SetCenterChildren(bool center);
 
     void SetFillColor(const sf::Color &color);
     void SetOutlineColor(const sf::Color &color);
     void SetOutlineThickness(float thickness);
 
+    void AddElement(std::shared_ptr<UIElement> element, HUDSlotAlignment alignment = HUDSlotAlignment::Left);
+    const std::vector<std::shared_ptr<UIElement>> &GetChildren() const;
+
+    void SetLayoutMode(LayoutMode mode);
+    void SetCenterChildren(bool center);
     void SetInternalPadding(float padding);
     void SetEdgePadding(float padding);
+    void RealignChildren();
 
   private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    std::shared_ptr<UITextLabel> m_titleLabel;
     sf::RectangleShape m_background;
+    LayoutMode m_layoutMode = LayoutMode::Horizontal;
 
     std::vector<std::shared_ptr<UIElement>> m_children;
-    LayoutMode m_layoutMode = LayoutMode::Vertical;
+    std::vector<std::shared_ptr<UIElement>> m_leftAnchored;
+    std::vector<std::shared_ptr<UIElement>> m_rightAnchored;
 
-    float m_internalPadding = DEFAULT_GROUPBOX_INTERNAL_PAD;
-    float m_edgePadding = DEFAULT_GROUPBOX_EDGE_PAD;
+    sf::Vector2f m_position;
+    sf::Vector2f m_size;
 
+    float m_internalPadding = 4.f;
+    float m_edgePadding = 4.f;
     bool m_centerChildren = false;
 };

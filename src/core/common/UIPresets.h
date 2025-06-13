@@ -250,3 +250,34 @@ constexpr float DEFAULT_ARROW_RIGHT_CENTER_PERCENT = .95f;
 
 /// @brief Default relative space from left boundary for an Arrow, 5%.
 constexpr float DEFAULT_ARROW_BOTTOM_CENTER_PERCENT = .95f;
+
+// ============================================================================
+// Generic HUD Panel uses:
+// ============================================================================
+
+/// @brief Fixed constant to identify the score component on the HUD.
+constexpr auto HUD_SCORE_TAG = "Score: ";
+
+/// @brief Fixed constant for starting score HUD value.
+constexpr int HUD_SCORE_LABEL_START_VALUE = 0;
+
+/// @brief Fixed name constant allows for fixed text width large enough for any score value and spacing.
+constexpr auto HUD_SCORE_LABEL_INIT_STR = "Score: 1000000";
+
+/// @brief Fixed constant to identify the time component on the HUD.
+constexpr auto HUD_TIMER_TAG = "Time: ";
+
+/// @brief Fixed constant for starting minute and second HUD time components.
+constexpr auto HUD_TIMER_START_VALUE = "Time: 00:00";
+
+/// @brief Fixed name constant allows for fixed text width large enough for any time value and spacing.
+constexpr auto HUD_TIMER_LABEL_INIT_STR = "99:99";
+
+/// @brief Fixed constant to identify the health component on the HUD.
+constexpr auto HUD_HEALTH_TAG = "Health: ";
+
+/// @brief Fixed constant for starting health HUD value.
+constexpr int HUD_HEALTH_LABEL_START_VALUE = 100;
+
+/// @brief Fixed name constant allows for fixed text width large enough for any health value and spacing.
+constexpr auto HUD_HEALTH_LABEL_INIT_STR = "1000";
