@@ -13,6 +13,7 @@
 #include "UIButton.h"
 #include "UIElement.h"
 #include "UIGroupBox.h"
+#include "UIHUDPanel.h"
 #include "UISelectableButton.h"
 #include "UISkinnableButton.h"
 #include "UISlider.h"
@@ -68,6 +69,11 @@ class UIFactory
                                                        float duration, unsigned int baseFontSize,
                                                        bool centerOrigin = true,
                                                        UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
+
+    std::shared_ptr<UIHUDPanel> CreateHUDPanel(const sf::Vector2f &relativePosition, const sf::Vector2f &relativeSize,
+                                               const sf::Color &fillColor = sf::Color(64, 64, 64, 255),
+                                               const sf::Color &outlineColor = sf::Color::Transparent,
+                                               float outlineThickness = 0.f);
 
   private:
     UIFactory() = default;

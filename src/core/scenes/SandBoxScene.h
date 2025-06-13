@@ -15,6 +15,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
+#include "UIPresets.h"
 #include "UITextLabel.h"
 #include <memory>
 
@@ -54,14 +55,27 @@ class SandBoxScene final : public Scene
     void SetupSceneComponents();
     void LoadBackground();
     void CreateTitleText();
+    void CreateHUDPanel();
     void PlayGameMusic();
     void BindInputKeys();
     void CheckActionsPressed();
+    void UpdateHUD(float dt);
 
   private:
     std::shared_ptr<Settings> m_settings;
     std::shared_ptr<UITextLabel> m_titleLabel;
     std::shared_ptr<UITextLabel> m_helpLabel;
     std::unique_ptr<Background> m_background;
+
+    std::shared_ptr<UITextLabel> m_scoreLabel;
+    std::shared_ptr<UITextLabel> m_timerLabel;
+    std::shared_ptr<UITextLabel> m_healthLabel;
+
+    // Simple test variables for the time being. TODO: Cleanup this to the proper structure later.
+    float m_elapsedTime = 0.f;
+    int m_secondsPassed = 0;
+    int m_currentHealth = HUD_HEALTH_LABEL_START_VALUE;
+    int m_currentScore = HUD_SCORE_LABEL_START_VALUE;
+
     SceneID m_requestedScene;
 };

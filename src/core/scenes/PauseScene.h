@@ -31,6 +31,9 @@ class PauseScene : public Scene
     PauseScene(std::shared_ptr<Settings> settings);
     ~PauseScene() = default;
 
+    PauseScene(const PauseScene &) = delete;
+    PauseScene &operator=(const PauseScene &) = delete;
+
     void Init() override;
     void LoadRequiredAssets() override;
     void Shutdown() override;

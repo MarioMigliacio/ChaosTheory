@@ -226,3 +226,33 @@ std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string 
 
     return toast;
 }
+
+/// @brief Creates a UI HUDPanel element, given the custom input parameters.
+/// @param relativePosition Position for the HUD Panel.
+/// @param relativeSize Size for HUD panel.
+/// @param fillColor Fill color for HUD panel.
+/// @param outlineColor Outline color for HUD panel.
+/// @param outlineThickness Outline thickenss for HUD panel.
+/// @return safe pointer to a UIHUDPanel.
+std::shared_ptr<UIHUDPanel> UIFactory::CreateHUDPanel(const sf::Vector2f &relativePosition,
+                                                      const sf::Vector2f &relativeSize, const sf::Color &fillColor,
+                                                      const sf::Color &outlineColor, float outlineThickness)
+{
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    const sf::Vector2f scaledPos{scaleMgr.ScaledReferenceX(relativePosition.x),
+                                 scaleMgr.ScaledReferenceY(relativePosition.y)};
+    const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(relativeSize.x), scaleMgr.ScaledReferenceY(relativeSize.y)};
+
+    auto panel = std::make_shared<UIHUDPanel>(scaledPos, scaledSize);
+    panel->SetFillColor(fillColor);
+    panel->SetOutlineColor(outlineColor);
+    panel->SetOutlineThickness(outlineThickness);
+    panel->SetLayoutMode(LayoutMode::Horizontal);
+    // TODO: implement color schemes
+    panel->SetInternalPadding(scaleMgr.ScaledReferenceX(BASE_GROUPBOX_INTERNAL_PAD_RATIO));
+    panel->SetEdgePadding(scaleMgr.ScaledReferenceX(BASE_GROUPBOX_EDGE_PAD_RATIO));
+    panel->SetCenterChildren(false); // default for HUDs
+
+    return panel;
+}
