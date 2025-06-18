@@ -281,3 +281,13 @@ constexpr int HUD_HEALTH_LABEL_START_VALUE = 100;
 
 /// @brief Fixed name constant allows for fixed text width large enough for any health value and spacing.
 constexpr auto HUD_HEALTH_LABEL_INIT_STR = "1000";
+
+// ============================================================================
+// Generic Fillable Gauge uses:
+// ============================================================================
+
+/// @brief
+constexpr float DEFAULT_GAUGE_BORDER_THICKNESS = 2.f;
+
+/// @brief
+const sf::Color DEFAULT_GAUGE_BORDER_COLOR = sf::Color::White;

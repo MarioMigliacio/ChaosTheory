@@ -31,7 +31,7 @@ namespace
 constexpr auto TITLE_SCREEN_LABEL = "Sandbox Scene";
 
 /// @brief Fixed name constant for a helpful placeholder to pause the game.
-constexpr auto PAUSE_GAME_LABEL = "Press Spacebar to Pause";
+constexpr auto PAUSE_GAME_LABEL = "Press Escape to Pause";
 
 /// @brief Fixed name constant to be used with BindActionKey to setup a pause key.
 constexpr auto PAUSE_BUTTON_KEY = "Pause";
@@ -222,24 +222,30 @@ void SandBoxScene::CreateHUDPanel()
     const sf::Vector2f relativeSize{1.0f, 0.05f}; // Full width, 8% height
 
     auto hudPanel = UIFactory::Instance().CreateHUDPanel(relativePos, relativeSize);
-    hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.2f)); // Space between labels
-    hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));    // Padding around edges
+    hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.15f)); // Space between labels
+    hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));     // Padding around edges
     hudPanel->SetLayoutMode(LayoutMode::Horizontal);
     hudPanel->SetCenterChildren(false);
 
     const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    const sf::Vector2f gaugeRelativeSize = {0.2f, 0.015f}; // Width, Height in screen %
 
     m_healthLabel = UIFactory::Instance().CreateTextLabel(HUD_HEALTH_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
     m_scoreLabel = UIFactory::Instance().CreateTextLabel(HUD_SCORE_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
     m_timerLabel = UIFactory::Instance().CreateTextLabel(HUD_TIMER_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
+    m_healthGauge = UIFactory::Instance().CreateFillableGauge(
+        {0.f, 0.f}, gaugeRelativeSize, DEFAULT_GAUGE_BORDER_THICKNESS, DEFAULT_GAUGE_BORDER_COLOR,
+        GaugeColorScheme::Health, LayoutMode::Horizontal);
 
-    hudPanel->AddElement(m_healthLabel, HUDSlotAlignment::Left);
-    hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
-    hudPanel->AddElement(m_scoreLabel, HUDSlotAlignment::Right);
+    hudPanel->AddElement(m_healthLabel, HUDSlotAlignment::Center);
+    hudPanel->AddElement(m_healthGauge, HUDSlotAlignment::Center);
+    hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Center);
+    hudPanel->AddElement(m_scoreLabel, HUDSlotAlignment::Center);
 
     m_healthLabel->SetText(HUD_HEALTH_TAG + std::to_string(HUD_HEALTH_LABEL_START_VALUE));
     m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(HUD_SCORE_LABEL_START_VALUE));
     m_timerLabel->SetText(HUD_TIMER_START_VALUE);
+    m_healthGauge->SetValue(1.f);
 
     UIManager::Instance().AddElement(hudPanel);
 }
@@ -263,7 +269,7 @@ void SandBoxScene::PlayGameMusic()
 /// @brief Sets up keyboard inputs that can be picked up during scene lifetime.
 void SandBoxScene::BindInputKeys()
 {
-    InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Space);
+    InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Escape);
 }
 
 /// @brief Determines if any configured keyboard input has been pressed during scene update.
@@ -273,7 +279,7 @@ void SandBoxScene::CheckActionsPressed()
 
     if (input.IsKeyJustPressed(PAUSE_BUTTON_KEY))
     {
-        CT_LOG_INFO("SandBoxScene: Toggle Button Pressed.");
+        CT_LOG_INFO("SandBoxScene: Pause Button Pressed.");
 
         m_hasPendingTransition = true;
         m_requestedScene = SceneID::Pause;
@@ -308,14 +314,14 @@ void SandBoxScene::UpdateHUD(float dt)
            << seconds;
         m_timerLabel->SetText(ss.str());
 
-        // Every 5 seconds, reduce HP and increase score
-        if (m_secondsPassed % 5 == 0)
-        {
-            m_currentHealth = std::max(0, m_currentHealth - 1);
-            m_currentScore += 100;
+        m_currentHealth = std::max(0, m_currentHealth - 1);
+        m_currentScore += 100;
 
-            m_healthLabel->SetText(HUD_HEALTH_TAG + std::to_string(m_currentHealth));
-            m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
-        }
+        m_healthLabel->SetText(HUD_HEALTH_TAG + std::to_string(m_currentHealth));
+        m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
+
+        float normalized = static_cast<float>(m_currentHealth) / 100.f;
+        normalized = std::clamp(normalized, 0.f, 1.f); // Ensure within [0, 1]
+        m_healthGauge->SetValue(normalized);
     }
 }

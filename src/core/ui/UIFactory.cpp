@@ -5,6 +5,9 @@
 //  Created     : 2025-04-17
 //  Description : UIFactory is responsible for creating different types of
 //                UI elements such as buttons, sliders, chatboxes, etc.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UIFactory.h"
@@ -255,4 +258,24 @@ std::shared_ptr<UIHUDPanel> UIFactory::CreateHUDPanel(const sf::Vector2f &relati
     panel->SetCenterChildren(false); // default for HUDs
 
     return panel;
+}
+
+std::shared_ptr<UIFillableGauge> UIFactory::CreateFillableGauge(const sf::Vector2f &relativePosition,
+                                                                const sf::Vector2f &relativeSize, float borderThickness,
+                                                                sf::Color borderColor, GaugeColorScheme scheme,
+                                                                LayoutMode orientation)
+{
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    const sf::Vector2f scaledPos{scaleMgr.ScaledReferenceX(relativePosition.x),
+                                 scaleMgr.ScaledReferenceY(relativePosition.y)};
+    const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(relativeSize.x), scaleMgr.ScaledReferenceY(relativeSize.y)};
+
+    auto gauge = std::make_shared<UIFillableGauge>(scaledPos, scaledSize);
+    gauge->SetScheme(scheme);
+    gauge->SetOrientation(orientation);
+    gauge->SetBorder(borderThickness, borderColor);
+    gauge->SetValue(1.0f);
+
+    return gauge;
 }

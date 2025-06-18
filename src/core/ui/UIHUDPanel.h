@@ -79,6 +79,7 @@ class UIHUDPanel : public UIElement
     std::vector<std::shared_ptr<UIElement>> m_children;
     std::vector<std::shared_ptr<UIElement>> m_leftAnchored;
     std::vector<std::shared_ptr<UIElement>> m_rightAnchored;
+    std::vector<std::shared_ptr<UIElement>> m_centerAnchored;
 
     sf::Vector2f m_position;
     sf::Vector2f m_size;
