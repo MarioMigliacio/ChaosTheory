@@ -79,11 +79,7 @@ class UIFactory
                                                const sf::Color &outlineColor = sf::Color::Transparent,
                                                float outlineThickness = 0.f);
 
-    std::shared_ptr<UIFillableGauge> CreateFillableGauge(const sf::Vector2f &relativePosition,
-                                                         const sf::Vector2f &relativeSize, float borderThickness,
-                                                         sf::Color borderColor,
-                                                         GaugeColorScheme scheme = GaugeColorScheme::Default,
-                                                         LayoutMode orientation = LayoutMode::Horizontal);
+    std::shared_ptr<UIFillableGauge> CreateFillableGauge(const FillableGaugeConfig &cfg);
 
   private:
     UIFactory() = default;

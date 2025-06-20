@@ -17,6 +17,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/UIArrowTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIFactoryTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UIFillableGaugeTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIGroupBoxTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIHUDPanelTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIManagerTest.cpp

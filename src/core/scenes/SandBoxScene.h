@@ -62,6 +62,8 @@ class SandBoxScene final : public Scene
     void CheckActionsPressed();
     void UpdateHUD(float dt);
 
+    void MockFillableGaugeComponents();
+
   private:
     std::shared_ptr<Settings> m_settings;
     std::shared_ptr<UITextLabel> m_titleLabel;
@@ -70,7 +72,6 @@ class SandBoxScene final : public Scene
 
     std::shared_ptr<UITextLabel> m_scoreLabel;
     std::shared_ptr<UITextLabel> m_timerLabel;
-    std::shared_ptr<UITextLabel> m_healthLabel;
 
     std::shared_ptr<UIFillableGauge> m_healthGauge;
 

@@ -12,8 +12,12 @@
 #pragma once
 
 #include "UIElement.h"
+#include "UIPresets.h"
+#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
+#include <memory>
 
+/// @brief Enumeration field allowing for preset color customization schemes for ease of use,
 enum class GaugeColorScheme
 {
     Health,
@@ -22,6 +26,48 @@ enum class GaugeColorScheme
     Default,
 };
 
+/// @brief Enumeration field allowing for UITextLabels to exist Left, or Above of FillableGauge bar.
+enum class GaugeTitlePosition
+{
+    Left,
+    Above,
+};
+
+/// @brief Data structure holding internal configurations useful for construction.
+struct FillableGaugeConfig
+{
+    sf::Vector2f relativePosition;
+    sf::Vector2f relativeSize;
+
+    GaugeColorScheme colorScheme = GaugeColorScheme::Default;
+    LayoutMode orientation = LayoutMode::Horizontal;
+
+    float borderThickness = 0.f;
+    sf::Color borderColor = sf::Color::Transparent;
+
+    bool showPercentage = false;
+    bool showTitle = false;
+
+    std::string titleText = "";
+    unsigned int titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
+    UITextLabelScheme titleScheme = UITextLabelScheme::DefaultScheme;
+    GaugeTitlePosition titlePosition = GaugeTitlePosition::Left;
+    float titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
+
+    float initialValue = DEFAULT_GAUGE_FULL_VALUE;
+};
+
+// ============================================================================
+//  Class       : UIFillableGauge
+//  Purpose     : UI element which represents a rectangle bar that fills and
+//                depletes dynamically, with customizable text displays.
+//
+//  Responsibilities:
+//      - Adjust value when set, update display fillbar.
+//      - Set color scheme and border if requested.
+//      - Display title text or % filled if requested.
+//
+// ============================================================================
 class UIFillableGauge : public UIElement
 {
   public:
@@ -50,24 +96,39 @@ class UIFillableGauge : public UIElement
     void SetOrientation(LayoutMode orientation);
     void SetBorder(float thickness, const sf::Color &color);
 
+    void SetShowPercentage(bool show);
+    void SetShowTitleLabel(const std::string &text, unsigned int fontSize, float padding,
+                           UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme,
+                           GaugeTitlePosition position = GaugeTitlePosition::Left);
+    void SetTitleLabel(const std::string &text);
+
   private:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
     void UpdateFillVisual();
 
   private:
-    float m_value = 1.f; // 100% full
+    float m_value = DEFAULT_GAUGE_FULL_VALUE;
+    float m_titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
 
     LayoutMode m_orientation = LayoutMode::Horizontal;
+    GaugeTitlePosition m_titlePosition = GaugeTitlePosition::Left;
+
+    std::shared_ptr<UITextLabel> m_percentageLabel;
+    std::shared_ptr<UITextLabel> m_titleLabel;
+
     sf::RectangleShape m_fillBar;       // Foreground (value bar)
     sf::RectangleShape m_backgroundBar; // Background (empty portion)
 
-    sf::Color m_barFillColor = sf::Color::Green;
-    sf::Color m_barBackgroundColor = sf::Color(50, 50, 50);
+    sf::Color m_barFillColor = DEFAULT_GAUGE_FILL_COLOR;
+    sf::Color m_barBackgroundColor = DEFAULT_GAUGE_BACKGROUND_COLOR;
 
     sf::Vector2f m_position;
     sf::Vector2f m_size;
+    sf::Vector2f m_totalSize = {0.f, 0.f}; // Includes bar + optional title
 
     sf::RectangleShape m_border;
 
+    bool m_showPercentage = false;
+    bool m_showTitle = false;
     bool m_drawBorder = false;
 };

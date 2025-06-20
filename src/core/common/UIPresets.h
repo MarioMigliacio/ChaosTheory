@@ -274,7 +274,7 @@ constexpr auto HUD_TIMER_START_VALUE = "Time: 00:00";
 constexpr auto HUD_TIMER_LABEL_INIT_STR = "99:99";
 
 /// @brief Fixed constant to identify the health component on the HUD.
-constexpr auto HUD_HEALTH_TAG = "Health: ";
+constexpr auto HUD_HEALTH_TAG = "Health";
 
 /// @brief Fixed constant for starting health HUD value.
 constexpr int HUD_HEALTH_LABEL_START_VALUE = 100;
@@ -286,8 +286,47 @@ constexpr auto HUD_HEALTH_LABEL_INIT_STR = "1000";
 // Generic Fillable Gauge uses:
 // ============================================================================
 
-/// @brief
-constexpr float DEFAULT_GAUGE_BORDER_THICKNESS = 2.f;
+/// @brief Starting value representing 100% for a fillable gauge.
+constexpr float DEFAULT_GAUGE_FULL_VALUE = 1.f;
 
-/// @brief
+/// @brief Default gauge border thickness
+constexpr float DEFAULT_GAUGE_BORDER_THICKNESS = 1.5f;
+
+/// @brief Default gauge padding for title labels.
+constexpr float DEFAULT_GAUGE_TITLE_PADDING = 8.f;
+
+/// @brief Default gauge font size for the percentage overlay, if enabled.
+constexpr unsigned int DEFAULT_GAUGE_PERCENT_FONT_SIZE = 12;
+
+/// @brief Default gauge font size for the Title text label, if enabled.
+constexpr unsigned int DEFAULT_GAUGE_FONT_SIZE = 14;
+
+/// @brief Default gauge configuration with a border - use simple white
 const sf::Color DEFAULT_GAUGE_BORDER_COLOR = sf::Color::White;
+
+/// @brief Gauge configuration with a gold color for borders.
+const sf::Color GAUGE_BORDER_COLOR_GOLD = sf::Color(255, 215, 0);
+
+/// @brief Gauge fill bar Health scheme - Dark red.
+const sf::Color DEFAULT_GAUGE_HEALTH_BACKGROUND_COLOR = sf::Color(60, 0, 0);
+
+/// @brief Gauge background bar Health scheme - Bright red.
+const sf::Color DEFAULT_GAUGE_HEALTH_FILL_COLOR = sf::Color(220, 30, 30);
+
+/// @brief Gauge background bar Gas scheme - Dark green.
+const sf::Color DEFAULT_GAUGE_GAS_BACKGROUND_COLOR = sf::Color(0, 60, 0);
+
+/// @brief Gauge fill bar Gas scheme - Bright Green.
+const sf::Color DEFAULT_GAUGE_GAS_FILL_COLOR = sf::Color(30, 220, 30);
+
+/// @brief Gauge background bar Mana scheme - blue scheme.
+const sf::Color DEFAULT_GAUGE_MANA_BACKGROUND_COLOR = sf::Color(0, 0, 60);
+
+/// @brief Gauge fill bar Mana scheme - Bright blue.
+const sf::Color DEFAULT_GAUGE_MANA_FILL_COLOR = sf::Color(30, 30, 220);
+
+/// @brief Gauge background bar Default scheme - Neutral dark.
+const sf::Color DEFAULT_GAUGE_BACKGROUND_COLOR = sf::Color(40, 40, 40);
+
+/// @brief Gauge fill bar Default scheme - Neutral light.
+const sf::Color DEFAULT_GAUGE_FILL_COLOR = sf::Color(200, 200, 200);

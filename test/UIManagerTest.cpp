@@ -6,6 +6,7 @@
 //  Description : Unit tests for the Chaos Theory UI Manager class
 //
 //  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UIManager.h"
