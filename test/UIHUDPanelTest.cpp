@@ -6,6 +6,7 @@
 //  Description : Unit tests for the Chaos Theory UIHUDPanel class
 //
 //  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UIHUDPanel.h"
@@ -54,6 +55,46 @@ TEST_F(UIHUDPanelTest, CanAddLeftAlignedElement)
 
     auto button = std::make_shared<UIButton>(sf::Vector2f{0.f, 0.f}, sf::Vector2f{80.f, 30.f});
     panel.AddElement(button, HUDSlotAlignment::Left);
+
+    const auto &children = panel.GetChildren();
+    EXPECT_EQ(children.size(), 1);
+    EXPECT_EQ(children[0], button);
+
+    auto pos = button->GetPosition();
+    EXPECT_GE(pos.x, 0.f);
+    EXPECT_GE(pos.y, 0.f);
+}
+
+TEST_F(UIHUDPanelTest, CanAddRightAlignedElement)
+{
+    UIHUDPanel panel({0.f, 0.f}, {300.f, 50.f});
+    panel.SetLayoutMode(LayoutMode::Horizontal);
+    panel.SetEdgePadding(10.f);
+    panel.SetInternalPadding(5.f);
+    panel.SetCenterChildren(false);
+
+    auto button = std::make_shared<UIButton>(sf::Vector2f{0.f, 0.f}, sf::Vector2f{80.f, 30.f});
+    panel.AddElement(button, HUDSlotAlignment::Right);
+
+    const auto &children = panel.GetChildren();
+    EXPECT_EQ(children.size(), 1);
+    EXPECT_EQ(children[0], button);
+
+    auto pos = button->GetPosition();
+    EXPECT_GE(pos.x, 0.f);
+    EXPECT_GE(pos.y, 0.f);
+}
+
+TEST_F(UIHUDPanelTest, CanAddCenterAlignedElement)
+{
+    UIHUDPanel panel({0.f, 0.f}, {300.f, 50.f});
+    panel.SetLayoutMode(LayoutMode::Horizontal);
+    panel.SetEdgePadding(10.f);
+    panel.SetInternalPadding(5.f);
+    panel.SetCenterChildren(false);
+
+    auto button = std::make_shared<UIButton>(sf::Vector2f{0.f, 0.f}, sf::Vector2f{80.f, 30.f});
+    panel.AddElement(button, HUDSlotAlignment::Center);
 
     const auto &children = panel.GetChildren();
     EXPECT_EQ(children.size(), 1);

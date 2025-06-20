@@ -15,6 +15,7 @@
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
+#include "UIFillableGauge.h"
 #include "UIPresets.h"
 #include "UITextLabel.h"
 #include <memory>
@@ -61,6 +62,8 @@ class SandBoxScene final : public Scene
     void CheckActionsPressed();
     void UpdateHUD(float dt);
 
+    void MockFillableGaugeComponents();
+
   private:
     std::shared_ptr<Settings> m_settings;
     std::shared_ptr<UITextLabel> m_titleLabel;
@@ -69,7 +72,8 @@ class SandBoxScene final : public Scene
 
     std::shared_ptr<UITextLabel> m_scoreLabel;
     std::shared_ptr<UITextLabel> m_timerLabel;
-    std::shared_ptr<UITextLabel> m_healthLabel;
+
+    std::shared_ptr<UIFillableGauge> m_healthGauge;
 
     // Simple test variables for the time being. TODO: Cleanup this to the proper structure later.
     float m_elapsedTime = 0.f;

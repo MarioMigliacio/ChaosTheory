@@ -5,6 +5,9 @@
 //  Created     : 2025-04-17
 //  Description : UIFactory is responsible for creating different types of
 //                UI elements such as Buttons, Sliders, GroupBoxes, etc.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #pragma once
@@ -12,6 +15,7 @@
 #include "UIArrow.h"
 #include "UIButton.h"
 #include "UIElement.h"
+#include "UIFillableGauge.h"
 #include "UIGroupBox.h"
 #include "UIHUDPanel.h"
 #include "UISelectableButton.h"
@@ -74,6 +78,8 @@ class UIFactory
                                                const sf::Color &fillColor = sf::Color(64, 64, 64, 255),
                                                const sf::Color &outlineColor = sf::Color::Transparent,
                                                float outlineThickness = 0.f);
+
+    std::shared_ptr<UIFillableGauge> CreateFillableGauge(const FillableGaugeConfig &cfg);
 
   private:
     UIFactory() = default;

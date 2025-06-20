@@ -100,7 +100,6 @@ void UIGroupBox::RealignChildren()
             float x = m_centerChildren ? basePos.x + (m_background.getSize().x - childSize.x) / 2.f
                                        : basePos.x + m_edgePadding;
 
-            child->SetSize(childSize);
             child->SetPosition({x, currentPos.y});
             currentPos.y += childSize.y + m_internalPadding;
         }

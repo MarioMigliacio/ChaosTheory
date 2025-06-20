@@ -6,6 +6,7 @@
 //  Description : Unit tests for the Chaos Theory UIFactory class
 //
 //  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UIFactory.h"

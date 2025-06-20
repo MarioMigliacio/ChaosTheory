@@ -5,6 +5,9 @@
 //  Created     : 2025-04-17
 //  Description : UIFactory is responsible for creating different types of
 //                UI elements such as buttons, sliders, chatboxes, etc.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UIFactory.h"
@@ -255,4 +258,38 @@ std::shared_ptr<UIHUDPanel> UIFactory::CreateHUDPanel(const sf::Vector2f &relati
     panel->SetCenterChildren(false); // default for HUDs
 
     return panel;
+}
+
+/// @brief Creates a UI FillableGauge element, given the custom input structure config.
+/// @param cfg Configuration structure holding relevent data for a FillableGauge
+/// @return safe pointer to a UIFillableGauge
+std::shared_ptr<UIFillableGauge> UIFactory::CreateFillableGauge(const FillableGaugeConfig &cfg)
+{
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    const sf::Vector2f scaledPos{scaleMgr.ScaledReferenceX(cfg.relativePosition.x),
+                                 scaleMgr.ScaledReferenceY(cfg.relativePosition.y)};
+    const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(cfg.relativeSize.x),
+                                  scaleMgr.ScaledReferenceY(cfg.relativeSize.y)};
+
+    auto gauge = std::make_shared<UIFillableGauge>(scaledPos, scaledSize);
+    gauge->SetScheme(cfg.colorScheme);
+    gauge->SetOrientation(cfg.orientation);
+    gauge->SetBorder(cfg.borderThickness, cfg.borderColor);
+    gauge->SetValue(cfg.initialValue);
+
+    if (cfg.showPercentage)
+    {
+        gauge->SetShowPercentage(true);
+    }
+
+    if (cfg.showTitle)
+    {
+        gauge->SetShowTitleLabel(cfg.titleText, scaleMgr.ScaleFont(cfg.titleFontSize),
+                                 scaleMgr.ScaleX(cfg.titlePadding), cfg.titleScheme, cfg.titlePosition);
+    }
+
+    gauge->SetSize({scaledSize});
+
+    return gauge;
 }

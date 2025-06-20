@@ -84,14 +84,18 @@ void UIHUDPanel::AddElement(std::shared_ptr<UIElement> element, HUDSlotAlignment
 
     m_children.push_back(element);
 
-    if (alignment == HUDSlotAlignment::Left)
+    switch (alignment)
     {
-        m_leftAnchored.push_back(element);
-    }
-
-    else
-    {
-        m_rightAnchored.push_back(element);
+        case HUDSlotAlignment::Left:
+        default:
+            m_leftAnchored.push_back(element);
+            break;
+        case HUDSlotAlignment::Center:
+            m_centerAnchored.push_back(element);
+            break;
+        case HUDSlotAlignment::Right:
+            m_rightAnchored.push_back(element);
+            break;
     }
 
     RealignChildren();
@@ -128,12 +132,31 @@ void UIHUDPanel::SetEdgePadding(float padding)
 
 void UIHUDPanel::RealignChildren()
 {
-    float leftCursor = m_position.x + m_edgePadding;
-    float rightCursor = m_position.x + m_size.x - m_edgePadding;
+    const float leftEdge = m_position.x + m_edgePadding;
+    const float rightEdge = m_position.x + m_size.x - m_edgePadding;
+    const float centerY = m_position.y + (m_size.y / 2.f);
 
-    float centerY = m_position.y + (m_size.y / 2.f);
+    float leftCursor = leftEdge;
+    float rightCursor = rightEdge;
 
-    // Left-aligned elements (render left-to-right)
+    // === 1. Precalculate total width of right-aligned elements ===
+    float totalRightWidth = 0.f;
+    for (const auto &element : m_rightAnchored)
+    {
+        totalRightWidth += element->GetSize().x + m_internalPadding;
+    }
+    if (!m_rightAnchored.empty())
+    {
+        totalRightWidth -= m_internalPadding; // no trailing pad
+    }
+
+    // Clamp right cursor if right-aligned content would overflow
+    if (rightCursor - totalRightWidth < leftCursor)
+    {
+        rightCursor = leftCursor + totalRightWidth;
+    }
+
+    // === 2. Place left-aligned elements (left to right) ===
     for (const auto &element : m_leftAnchored)
     {
         const auto size = element->GetSize();
@@ -142,7 +165,7 @@ void UIHUDPanel::RealignChildren()
         leftCursor += size.x + m_internalPadding;
     }
 
-    // Right-aligned elements (render right-to-left)
+    // === 3. Place right-aligned elements (right to left) ===
     for (auto it = m_rightAnchored.rbegin(); it != m_rightAnchored.rend(); ++it)
     {
         const auto &element = *it;
@@ -153,7 +176,31 @@ void UIHUDPanel::RealignChildren()
         rightCursor -= m_internalPadding;
     }
 
-    // Center logic is optional, skipped for now
+    // === 4. Center-aligned elements ===
+    if (!m_centerAnchored.empty())
+    {
+        float totalCenterWidth = 0.f;
+
+        for (const auto &element : m_centerAnchored)
+        {
+            totalCenterWidth += element->GetSize().x + m_internalPadding;
+        }
+
+        if (!m_centerAnchored.empty())
+        {
+            totalCenterWidth -= m_internalPadding;
+        }
+
+        float centerStart = (leftCursor + rightCursor - totalCenterWidth) / 2.f;
+
+        for (const auto &element : m_centerAnchored)
+        {
+            const auto size = element->GetSize();
+            sf::Vector2f pos{centerStart, centerY - (size.y / 2.f)};
+            element->SetPosition(pos);
+            centerStart += size.x + m_internalPadding;
+        }
+    }
 }
 
 void UIHUDPanel::draw(sf::RenderTarget &target, sf::RenderStates states) const

@@ -166,6 +166,14 @@ void PauseScene::Update(float dt)
 /// @param event bubbled down from caller, not needed.
 void PauseScene::HandleEvent(const sf::Event &event)
 {
+    if (event.type == sf::Event::KeyPressed)
+    {
+        if (event.key.code == sf::Keyboard::Escape)
+        {
+            CT_LOG_INFO("PauseScene: Esc event handled.");
+            m_shouldExit = true;
+        }
+    }
 }
 
 /// @brief Not used in PauseScene context.
