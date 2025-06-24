@@ -64,7 +64,15 @@ void SandBoxScene::Init()
 /// @brief Load any required assets relevant to the SandBoxScene.
 void SandBoxScene::LoadRequiredAssets()
 {
-    for (const auto &[key, path] : SandBoxAssets::Textures)
+    for (const auto &[key, path] : SandBoxAssets::Backgrounds)
+    {
+        if (!AssetManager::Instance().LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("SandBoxScene failed to load texture asset: {} -> {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : SandBoxAssets::Sprites)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
@@ -175,6 +183,7 @@ void SandBoxScene::SetupSceneComponents()
     PlayGameMusic();
     CreateHUDPanel();
     MockFillableGaugeComponents();
+    MockIconComponents();
 }
 
 /// @brief Helper method to load the Background for this Scene.
@@ -382,7 +391,7 @@ void SandBoxScene::MockFillableGaugeComponents()
     const sf::Vector2f relativePos{0.80f, 0.75f};
     const sf::Vector2f relativeSize{0.16f, 0.18f};
 
-    auto groupBox = UIFactory::Instance().CreateGroupBox("Ship Stats", relativePos, relativeSize);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, "Ship Stats");
     groupBox->SetLayoutMode(LayoutMode::Horizontal);
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
@@ -454,4 +463,71 @@ void SandBoxScene::MockFillableGaugeComponents()
     gasGauge->SetOrientation(LayoutMode::Vertical);
 
     UIManager::Instance().AddElement(groupBox);
+}
+
+void SandBoxScene::MockIconComponents()
+{
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+    const float margin = 16.f;
+    const sf::Vector2f iconSize{32.f, 32.f};
+
+    // Define relative position near bottom-left
+    const sf::Vector2f groupBoxPos{0.05f, 0.85f};
+    const sf::Vector2f groupBoxSize{0.22f, 0.08f};
+
+    std::vector<sf::String> assets{SpriteAssets::WarpIconSpriteKey,   SpriteAssets::LifeIconSpriteKey,
+                                   SpriteAssets::GasIconSpriteKey,    SpriteAssets::FireRateIconSpriteKey,
+                                   SpriteAssets::AtomicIconSpriteKey, SpriteAssets::PowerIconSpriteKey,
+                                   SpriteAssets::UpgradeIconSpriteKey};
+
+    // --- Relative GroupBox Example ---
+    auto groupBoxRelative =
+        UIFactory::Instance().CreateGroupBox({0.05f, 0.85f}, {0.25f, 0.08f}, "Relative Tray", true,
+                                             CoordinateMode::Relative, UITextLabelScheme::DefaultScheme);
+
+    groupBoxRelative->SetLayoutMode(LayoutMode::Horizontal);
+    groupBoxRelative->SetInternalPadding(scaleMgr.ScaledReferenceY(0.015f));
+    groupBoxRelative->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));
+    groupBoxRelative->SetCenterChildren(true);
+
+    for (int i = 0; i < assets.size(); i++)
+    {
+        auto icon = UIFactory::Instance().CreateIcon(assets[i], {0.f, 0.f}, iconSize,
+                                                     [assets, i]()
+                                                     {
+                                                         std::stringstream ss;
+                                                         ss << "Clicked icon: " << assets[i].toAnsiString();
+                                                         CT_LOG_INFO(ss.str());
+                                                     });
+
+        groupBoxRelative->AddElement(icon);
+    }
+
+    UIManager::Instance().AddElement(groupBoxRelative);
+
+    const float hudEdgePadding = scaleMgr.ScaleX(5.f);
+    const float hudInternalPadding = scaleMgr.ScaleX(5.f);
+    const auto hudWidth =
+        scaleMgr.ScaleX((assets.size() * iconSize.x) + (assets.size() * hudInternalPadding) + hudEdgePadding);
+
+    // --- Absolute HUDPanel Example ---
+    auto hudPanel = UIFactory::Instance().CreateHUDPanel({50.f, 50.f},                      // absolute pixels
+                                                         {hudWidth, scaleMgr.ScaleX(40.f)}, // size in pixels
+                                                         sf::Color(40, 40, 40, 150), sf::Color::White, 1.f,
+                                                         CoordinateMode::Absolute);
+
+    hudPanel->SetInternalPadding(scaleMgr.ScaleX(5.f)); // Space between labels
+    hudPanel->SetEdgePadding(scaleMgr.ScaleX(5.f));     // Padding around edges
+    hudPanel->SetLayoutMode(LayoutMode::Horizontal);
+    hudPanel->SetCenterChildren(false);
+
+    for (int i = 0; i < assets.size(); i++)
+    {
+        auto icon = UIFactory::Instance().CreateIcon(assets[i], {0.f, 0.f}, iconSize,
+                                                     [i]() { CT_LOG_INFO("Absolute icon {} clicked", i); });
+
+        hudPanel->AddElement(icon);
+    }
+
+    UIManager::Instance().AddElement(hudPanel);
 }

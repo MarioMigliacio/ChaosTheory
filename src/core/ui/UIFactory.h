@@ -18,6 +18,7 @@
 #include "UIFillableGauge.h"
 #include "UIGroupBox.h"
 #include "UIHUDPanel.h"
+#include "UIIcon.h"
 #include "UISelectableButton.h"
 #include "UISkinnableButton.h"
 #include "UISlider.h"
@@ -27,6 +28,17 @@
 #include <functional>
 #include <memory>
 #include <string>
+
+/// @brief Represents an enumeration type for support of Relative (percentage-based) and Absolute (pixel-based)
+/// positioning
+enum class CoordinateMode
+{
+    /// @brief percentage-based, uses ResolutionScaleManager
+    Relative,
+
+    /// @brief pixel-based, raw coordinates
+    Absolute
+};
 
 // ============================================================================
 //  Class       : UIFactory
@@ -61,8 +73,9 @@ class UIFactory
                                          const std::string &texture, ArrowDirection direction,
                                          std::function<void()> onClick);
 
-    std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
-                                               const sf::Vector2f &relativeSize, bool centerOrigin = true,
+    std::shared_ptr<UIGroupBox> CreateGroupBox(const sf::Vector2f &position, const sf::Vector2f &size,
+                                               const std::string &title = "", bool centerOrigin = true,
+                                               CoordinateMode mode = CoordinateMode::Relative,
                                                UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
@@ -74,12 +87,16 @@ class UIFactory
                                                        bool centerOrigin = true,
                                                        UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
-    std::shared_ptr<UIHUDPanel> CreateHUDPanel(const sf::Vector2f &relativePosition, const sf::Vector2f &relativeSize,
+    std::shared_ptr<UIHUDPanel> CreateHUDPanel(const sf::Vector2f &position, const sf::Vector2f &size,
                                                const sf::Color &fillColor = sf::Color(64, 64, 64, 255),
                                                const sf::Color &outlineColor = sf::Color::Transparent,
-                                               float outlineThickness = 0.f);
+                                               float outlineThickness = 0.f,
+                                               CoordinateMode mode = CoordinateMode::Relative);
 
     std::shared_ptr<UIFillableGauge> CreateFillableGauge(const FillableGaugeConfig &cfg);
+
+    std::shared_ptr<UIIcon> CreateIcon(const std::string &textureKey, const sf::Vector2f &position,
+                                       const sf::Vector2f &size, std::function<void()> onClick = nullptr);
 
   private:
     UIFactory() = default;

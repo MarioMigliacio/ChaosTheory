@@ -208,7 +208,7 @@ void PauseScene::SetupUI()
     const sf::Vector2f relativeSize{0.25f, 0.40f}; // 1/4 width, 40% height
 
     // Create transparent group box
-    auto groupBox = UIFactory::Instance().CreateGroupBox(title, relativePos, relativeSize);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, title);
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.08f * relativeSize.y));
     groupBox->SetOutlineColor(sf::Color::Transparent);
