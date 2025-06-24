@@ -43,13 +43,14 @@ class UIIcon : public UIElement
     UIIcon &operator=(UIIcon &&) noexcept = default;
 
     void SetTextureSkin(const std::string &textureKey);
-    void SetOnClick(const std::function<void()> &callback);
-
-    void SetHoverTint(const sf::Color &color);
-    void SetDisabledTint(const sf::Color &color);
-    void SetNormalTint(const sf::Color &color);
+    void SetIconType(IconType type);
+    IconType GetIconType() const;
 
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
+    void StartFalling(float delaySeconds = 5.f);
+    bool IsExpired() const;
+
+    sf::FloatRect GetGlobalBounds() const;
     bool Contains(const sf::Vector2i &point) const override;
 
     void SetPosition(const sf::Vector2f &position) override;
@@ -58,21 +59,23 @@ class UIIcon : public UIElement
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
-    void SetIconType(IconType type);
-    IconType GetIconType() const;
-
   private:
     void ApplySpriteTransform();
+    void ApplyAlphaPulse();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    IconType m_iconType = IconType::None;
-
-    sf::Vector2f m_size;
     sf::Sprite m_sprite;
+    sf::Vector2f m_size;
     std::string m_textureKey;
 
-    sf::Color m_normalTint = sf::Color::White;
-    sf::Color m_hoverTint = sf::Color(200, 200, 255);
-    sf::Color m_disabledTint = sf::Color(128, 128, 128, 150);
+    IconType m_iconType = IconType::None;
+
+    float m_fallDelay;
+    float m_timeAlive = 0.f;
+    float m_driftSpeed = 40.f;
+
+    bool m_falling = false;
+    bool m_expired = false;
+    bool m_driftEnabled = false;
 };

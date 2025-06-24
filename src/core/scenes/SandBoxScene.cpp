@@ -35,6 +35,9 @@ constexpr auto PAUSE_GAME_LABEL = "Press Escape to Pause";
 
 /// @brief Fixed name constant to be used with BindActionKey to setup a pause key.
 constexpr auto PAUSE_BUTTON_KEY = "Pause";
+
+/// @brief Fixed name constant to be used with the ship stats group label box.
+constexpr auto SHIP_STATS_GROUPBOX_LABEL = "Ship Stats";
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -205,12 +208,12 @@ void SandBoxScene::CreateTitleText()
     const std::string titleLabel = TITLE_SCREEN_LABEL;
     const unsigned int titleFontSize = scaleMgr.ScaleFont(48);
     const sf::Vector2f titlePos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                   scaleMgr.ScaledReferenceY(0.08f)};
+                                   scaleMgr.ScaledReferenceY(0.15f)};
 
     const std::string helpLabel = PAUSE_GAME_LABEL;
     const unsigned int helpFontSize = scaleMgr.ScaleFont(20);
     const sf::Vector2f helpPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                  scaleMgr.ScaledReferenceY(0.20f)};
+                                  scaleMgr.ScaledReferenceY(0.25f)};
 
     m_titleLabel = UIFactory::Instance().CreateTextLabel(titleLabel, titlePos, titleFontSize, true,
                                                          UITextLabelScheme::MintyHerbScheme);
@@ -340,6 +343,7 @@ void SandBoxScene::UpdateHUD(float dt)
     }
 }
 
+/// @brief Helper method to test fillable gauge ui components.
 void SandBoxScene::MockFillableGaugeComponents()
 {
     // --- NON HUD FillableGauge testing --- //
@@ -391,7 +395,7 @@ void SandBoxScene::MockFillableGaugeComponents()
     const sf::Vector2f relativePos{0.80f, 0.75f};
     const sf::Vector2f relativeSize{0.16f, 0.18f};
 
-    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, "Ship Stats");
+    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, SHIP_STATS_GROUPBOX_LABEL);
     groupBox->SetLayoutMode(LayoutMode::Horizontal);
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
@@ -465,69 +469,37 @@ void SandBoxScene::MockFillableGaugeComponents()
     UIManager::Instance().AddElement(groupBox);
 }
 
+/// @brief Helper method to test Icon ui components.
 void SandBoxScene::MockIconComponents()
 {
-    auto &scaleMgr = ResolutionScaleManager::Instance();
-    const float margin = 16.f;
-    const sf::Vector2f iconSize{32.f, 32.f};
+    const auto &window = WindowManager::Instance().GetWindow();
+    const float startY = 50.f;
+    const float iconSize = 32.f;
+    const float spacing = 48.f;
+    const float startX = 75.f;
 
-    // Define relative position near bottom-left
-    const sf::Vector2f groupBoxPos{0.05f, 0.85f};
-    const sf::Vector2f groupBoxSize{0.22f, 0.08f};
-
-    std::vector<sf::String> assets{SpriteAssets::WarpIconSpriteKey,   SpriteAssets::LifeIconSpriteKey,
-                                   SpriteAssets::GasIconSpriteKey,    SpriteAssets::FireRateIconSpriteKey,
-                                   SpriteAssets::AtomicIconSpriteKey, SpriteAssets::PowerIconSpriteKey,
-                                   SpriteAssets::UpgradeIconSpriteKey};
-
-    // --- Relative GroupBox Example ---
-    auto groupBoxRelative =
-        UIFactory::Instance().CreateGroupBox({0.05f, 0.85f}, {0.25f, 0.08f}, "Relative Tray", true,
-                                             CoordinateMode::Relative, UITextLabelScheme::DefaultScheme);
-
-    groupBoxRelative->SetLayoutMode(LayoutMode::Horizontal);
-    groupBoxRelative->SetInternalPadding(scaleMgr.ScaledReferenceY(0.015f));
-    groupBoxRelative->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));
-    groupBoxRelative->SetCenterChildren(true);
-
-    for (int i = 0; i < assets.size(); i++)
+    struct IconSpawnData
     {
-        auto icon = UIFactory::Instance().CreateIcon(assets[i], {0.f, 0.f}, iconSize,
-                                                     [assets, i]()
-                                                     {
-                                                         std::stringstream ss;
-                                                         ss << "Clicked icon: " << assets[i].toAnsiString();
-                                                         CT_LOG_INFO(ss.str());
-                                                     });
+        IconType type;
+        std::string spriteKey;
+    };
 
-        groupBoxRelative->AddElement(icon);
-    }
+    std::vector<IconSpawnData> iconTypesToTest = {
+        {IconType::AtomicIcon, SpriteAssets::AtomicIconSpriteKey},
+        {IconType::FireRateIcon, SpriteAssets::FireRateIconSpriteKey},
+        {IconType::GasIcon, SpriteAssets::GasIconSpriteKey},
+        {IconType::LifeIcon, SpriteAssets::LifeIconSpriteKey},
+        {IconType::PowerIcon, SpriteAssets::PowerIconSpriteKey},
+        {IconType::UpgradeIcon, SpriteAssets::UpgradeIconSpriteKey},
+        {IconType::WarpIcon, SpriteAssets::WarpIconSpriteKey},
+    };
 
-    UIManager::Instance().AddElement(groupBoxRelative);
-
-    const float hudEdgePadding = scaleMgr.ScaleX(5.f);
-    const float hudInternalPadding = scaleMgr.ScaleX(5.f);
-    const auto hudWidth =
-        scaleMgr.ScaleX((assets.size() * iconSize.x) + (assets.size() * hudInternalPadding) + hudEdgePadding);
-
-    // --- Absolute HUDPanel Example ---
-    auto hudPanel = UIFactory::Instance().CreateHUDPanel({50.f, 50.f},                      // absolute pixels
-                                                         {hudWidth, scaleMgr.ScaleX(40.f)}, // size in pixels
-                                                         sf::Color(40, 40, 40, 150), sf::Color::White, 1.f,
-                                                         CoordinateMode::Absolute);
-
-    hudPanel->SetInternalPadding(scaleMgr.ScaleX(5.f)); // Space between labels
-    hudPanel->SetEdgePadding(scaleMgr.ScaleX(5.f));     // Padding around edges
-    hudPanel->SetLayoutMode(LayoutMode::Horizontal);
-    hudPanel->SetCenterChildren(false);
-
-    for (int i = 0; i < assets.size(); i++)
+    for (std::size_t i = 0; i < iconTypesToTest.size(); i++)
     {
-        auto icon = UIFactory::Instance().CreateIcon(assets[i], {0.f, 0.f}, iconSize,
-                                                     [i]() { CT_LOG_INFO("Absolute icon {} clicked", i); });
+        const auto &entry = iconTypesToTest[i];
+        sf::Vector2f pos{startX + (i * spacing), startY};
 
-        hudPanel->AddElement(icon);
+        auto icon = UIFactory::Instance().CreateIcon(entry.spriteKey, pos, {iconSize, iconSize}, entry.type);
+        UIManager::Instance().AddElement(icon);
     }
-
-    UIManager::Instance().AddElement(hudPanel);
 }

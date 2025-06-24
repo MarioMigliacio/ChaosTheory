@@ -29,17 +29,6 @@
 #include <memory>
 #include <string>
 
-/// @brief Represents an enumeration type for support of Relative (percentage-based) and Absolute (pixel-based)
-/// positioning
-enum class CoordinateMode
-{
-    /// @brief percentage-based, uses ResolutionScaleManager
-    Relative,
-
-    /// @brief pixel-based, raw coordinates
-    Absolute
-};
-
 // ============================================================================
 //  Class       : UIFactory
 //  Purpose     : Singleton class that manages the generation of UI elements.
@@ -73,9 +62,8 @@ class UIFactory
                                          const std::string &texture, ArrowDirection direction,
                                          std::function<void()> onClick);
 
-    std::shared_ptr<UIGroupBox> CreateGroupBox(const sf::Vector2f &position, const sf::Vector2f &size,
+    std::shared_ptr<UIGroupBox> CreateGroupBox(const sf::Vector2f &relativePos, const sf::Vector2f &relativeSize,
                                                const std::string &title = "", bool centerOrigin = true,
-                                               CoordinateMode mode = CoordinateMode::Relative,
                                                UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
@@ -87,16 +75,15 @@ class UIFactory
                                                        bool centerOrigin = true,
                                                        UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
-    std::shared_ptr<UIHUDPanel> CreateHUDPanel(const sf::Vector2f &position, const sf::Vector2f &size,
+    std::shared_ptr<UIHUDPanel> CreateHUDPanel(const sf::Vector2f &relativePosition, const sf::Vector2f &relativeSize,
                                                const sf::Color &fillColor = sf::Color(64, 64, 64, 255),
                                                const sf::Color &outlineColor = sf::Color::Transparent,
-                                               float outlineThickness = 0.f,
-                                               CoordinateMode mode = CoordinateMode::Relative);
+                                               float outlineThickness = 0.f);
 
     std::shared_ptr<UIFillableGauge> CreateFillableGauge(const FillableGaugeConfig &cfg);
 
     std::shared_ptr<UIIcon> CreateIcon(const std::string &textureKey, const sf::Vector2f &position,
-                                       const sf::Vector2f &size, std::function<void()> onClick = nullptr);
+                                       const sf::Vector2f &size, IconType type = IconType::None);
 
   private:
     UIFactory() = default;

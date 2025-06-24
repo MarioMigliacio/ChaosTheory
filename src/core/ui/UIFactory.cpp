@@ -159,32 +159,26 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(const sf::Vector2f &position, co
 }
 
 /// @brief Creates a UI UIGroupBox element, given the custom input parameters.
-
-/// @param position Screen relative position to be centered around.
-/// @param size Screen relative size to occupy.
+/// @param relativePosition Screen relative position to be centered around.
+/// @param relativeSize Screen relative size to occupy.
 /// @param title String representation for GroupBox.
 /// @param centerOrigin Whether or not to center title text for groupbox around position.
-/// @param mode Relative or Absolute position based.
 /// @param scheme Type of ui text label color themes.
 /// @return safe pointer to a UIGroupBox.
-std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const sf::Vector2f &position, const sf::Vector2f &size,
-                                                      const std::string &title, bool centerOrigin, CoordinateMode mode,
-                                                      UITextLabelScheme scheme)
+std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const sf::Vector2f &relativePosition,
+                                                      const sf::Vector2f &relativeSize, const std::string &title,
+                                                      bool centerOrigin, UITextLabelScheme scheme)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    sf::Vector2f finalPos = (mode == CoordinateMode::Relative) ? sf::Vector2f{scaleMgr.ScaledReferenceX(position.x),
-                                                                              scaleMgr.ScaledReferenceY(position.y)}
-                                                               : position;
-
-    sf::Vector2f finalSize = (mode == CoordinateMode::Relative)
-                                 ? sf::Vector2f{scaleMgr.ScaledReferenceX(size.x), scaleMgr.ScaledReferenceY(size.y)}
-                                 : size;
+    const sf::Vector2f scaledPos{scaleMgr.ScaledReferenceX(relativePosition.x),
+                                 scaleMgr.ScaledReferenceY(relativePosition.y)};
+    const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(relativeSize.x), scaleMgr.ScaledReferenceY(relativeSize.y)};
 
     const float internalPadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_INTERNAL_PAD_RATIO);
     const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
-    auto groupBox = std::make_shared<UIGroupBox>(finalPos, finalSize);
+    auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
 
     if (title != "")
     {
@@ -247,23 +241,18 @@ std::shared_ptr<UIToastMessage> UIFactory::CreateToastMessage(const std::string 
 /// @param fillColor Fill color for HUD panel.
 /// @param outlineColor Outline color for HUD panel.
 /// @param outlineThickness Outline thickenss for HUD panel.
-/// @param mode Relative or Absolute position based.
 /// @return safe pointer to a UIHUDPanel.
-std::shared_ptr<UIHUDPanel> UIFactory::CreateHUDPanel(const sf::Vector2f &position, const sf::Vector2f &size,
-                                                      const sf::Color &fillColor, const sf::Color &outlineColor,
-                                                      float outlineThickness, CoordinateMode mode)
+std::shared_ptr<UIHUDPanel> UIFactory::CreateHUDPanel(const sf::Vector2f &relativePosition,
+                                                      const sf::Vector2f &relativeSize, const sf::Color &fillColor,
+                                                      const sf::Color &outlineColor, float outlineThickness)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
-    sf::Vector2f finalPos = (mode == CoordinateMode::Relative) ? sf::Vector2f{scaleMgr.ScaledReferenceX(position.x),
-                                                                              scaleMgr.ScaledReferenceY(position.y)}
-                                                               : position;
+    const sf::Vector2f scaledPos{scaleMgr.ScaledReferenceX(relativePosition.x),
+                                 scaleMgr.ScaledReferenceY(relativePosition.y)};
+    const sf::Vector2f scaledSize{scaleMgr.ScaledReferenceX(relativeSize.x), scaleMgr.ScaledReferenceY(relativeSize.y)};
 
-    sf::Vector2f finalSize = (mode == CoordinateMode::Relative)
-                                 ? sf::Vector2f{scaleMgr.ScaledReferenceX(size.x), scaleMgr.ScaledReferenceY(size.y)}
-                                 : size;
-
-    auto panel = std::make_shared<UIHUDPanel>(finalPos, finalSize);
+    auto panel = std::make_shared<UIHUDPanel>(scaledPos, scaledSize);
     panel->SetFillColor(fillColor);
     panel->SetOutlineColor(outlineColor);
     panel->SetOutlineThickness(outlineThickness);
@@ -313,21 +302,18 @@ std::shared_ptr<UIFillableGauge> UIFactory::CreateFillableGauge(const FillableGa
 /// @param textureKey Asset path to sprite.
 /// @param position Location to instantiate at.
 /// @param size Size adjustment for icon.
-/// @param onClick Callback function if relevent, often onClick.
+/// @param type Icon type for Icon.
 /// @return safe pointer to a UIIcon.
 std::shared_ptr<UIIcon> UIFactory::CreateIcon(const std::string &textureKey, const sf::Vector2f &position,
-                                              const sf::Vector2f &size, std::function<void()> onClick)
+                                              const sf::Vector2f &size, IconType type)
 {
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
                             ResolutionScaleManager::Instance().ScaleY(size.y));
 
     auto icon = std::make_shared<UIIcon>(scaledSize, position);
     icon->SetTextureSkin(textureKey);
-
-    if (onClick)
-    {
-        icon->SetOnClick(onClick);
-    }
+    icon->SetIconType(type);
+    icon->StartFalling();
 
     return icon;
 }

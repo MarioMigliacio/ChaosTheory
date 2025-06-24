@@ -67,7 +67,7 @@ TEST_F(UIIconTest, SetSizeUpdatesCorrectly)
     EXPECT_EQ(icon.GetSize(), sf::Vector2f(64.f, 64.f));
 }
 
-TEST_F(UIIconTest, HoverDetectionWorks)
+TEST_F(UIIconTest, ContainsDetectionWorks)
 {
     AssetManager::Instance().LoadTexture("test_icon", "assets/sprites/AtomicIcon.png");
     UIIcon icon({32.f, 32.f}, {50.f, 50.f});
@@ -79,21 +79,4 @@ TEST_F(UIIconTest, HoverDetectionWorks)
 
     EXPECT_TRUE(icon.Contains(insidePoint));
     EXPECT_FALSE(icon.Contains(outsidePoint));
-}
-
-TEST_F(UIIconTest, ClickCallbackIsInvoked)
-{
-    bool clicked = false;
-
-    AssetManager::Instance().LoadTexture("test_icon", "assets/sprites/AtomicIcon.png");
-
-    UIIcon icon({32.f, 32.f}, {100.f, 100.f});
-    icon.SetTextureSkin("test_icon");
-
-    icon.SetOnClick([&clicked]() { clicked = true; });
-
-    sf::Vector2i insidePoint(110, 110);
-    icon.Update(insidePoint, true, true, 0.f);
-
-    EXPECT_TRUE(clicked);
 }
