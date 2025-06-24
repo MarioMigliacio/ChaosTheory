@@ -154,31 +154,6 @@ sf::Vector2f UISkinnableButton::GetSize() const
     return m_size;
 }
 
-/// @brief Scales the sprite for this UISkinnableButton to be be appropriate with the size currently set.
-void UISkinnableButton::ApplySpriteTransform()
-{
-    if (!m_sprite.getTexture())
-    {
-        CT_LOG_WARN("UISkinnableButton: No texture bound to sprite.");
-
-        return;
-    }
-
-    const sf::Vector2u texSize = m_sprite.getTexture()->getSize();
-
-    if (texSize.x == 0 || texSize.y == 0)
-    {
-        return;
-    }
-
-    const float scaleX = m_size.x / static_cast<float>(texSize.x);
-    const float scaleY = m_size.y / static_cast<float>(texSize.y);
-
-    m_sprite.setScale(scaleX, scaleY);
-    m_sprite.setPosition(m_position);
-    CenterLabel();
-}
-
 /// @brief Helper method to utilize color themes for a SkinnableButton combo.
 /// @param scheme Enum field representing  the type of scheme.
 void UISkinnableButton::ApplySkinnableButtonTextStyle(UIButtonColorScheme scheme)
@@ -270,6 +245,31 @@ void UISkinnableButton::Update(const sf::Vector2i &mousePos, bool isMousePressed
 
         m_isPressed = false;
     }
+}
+
+/// @brief Scales the sprite for this UISkinnableButton to be be appropriate with the size currently set.
+void UISkinnableButton::ApplySpriteTransform()
+{
+    if (!m_sprite.getTexture())
+    {
+        CT_LOG_WARN("UISkinnableButton: No texture bound to sprite.");
+
+        return;
+    }
+
+    const sf::Vector2u texSize = m_sprite.getTexture()->getSize();
+
+    if (texSize.x == 0 || texSize.y == 0)
+    {
+        return;
+    }
+
+    const float scaleX = m_size.x / static_cast<float>(texSize.x);
+    const float scaleY = m_size.y / static_cast<float>(texSize.y);
+
+    m_sprite.setScale(scaleX, scaleY);
+    m_sprite.setPosition(m_position);
+    CenterLabel();
 }
 
 /// @brief Adjusts the text label for this UISkinnableButton.
