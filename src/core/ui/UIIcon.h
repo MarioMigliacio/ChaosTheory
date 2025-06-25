@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-06-19
-//  Description : Represents a square clickable icon with a sprite
+//  Description : Represents a square icon with a sprite.
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -16,18 +16,45 @@
 #include <functional>
 #include <memory>
 
+/// @brief Enumeration type representing supported Icon type UI objects.
 enum class IconType
 {
+    /// @brief Default nothing entity.
     None,
+
+    /// @brief Atomic Icon grants a bomb item.
     AtomicIcon,
+
+    /// @brief FireRate Icon grants faster shooting capability.
     FireRateIcon,
+
+    /// @brief Gas Icon grants replenished Fuel meter.
     GasIcon,
+
+    /// @brief Life Icon grants an additional life.
     LifeIcon,
+
+    /// @brief Power Icon grants increased damage per shot potential.
     PowerIcon,
+
+    /// @brief Upgrade Icon grants enhanced damage signature pattern.
     UpgradeIcon,
+
+    /// @brief Warp Icon allows for teleportation to matching warp icon.
     WarpIcon
 };
 
+// ============================================================================
+//  Class       : UIIcon
+//  Purpose     : Handles the logic for ui Icon elements providing robust
+//                Enhancements during gameplay.
+//
+//  Responsibilities:
+//      - Initializes and expires.
+//      - Generate texture with bounding sprite.
+//      - Update based on time.
+//
+// ============================================================================
 class UIIcon : public UIElement
 {
   public:
@@ -47,7 +74,7 @@ class UIIcon : public UIElement
     IconType GetIconType() const;
 
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
-    void StartFalling(float delaySeconds = 5.f);
+    void StartFalling();
     bool IsExpired() const;
 
     sf::FloatRect GetGlobalBounds() const;
@@ -72,8 +99,8 @@ class UIIcon : public UIElement
     IconType m_iconType = IconType::None;
 
     float m_fallDelay;
-    float m_timeAlive = 0.f;
-    float m_driftSpeed = 40.f;
+    float m_timeAlive;
+    float m_driftSpeed;
 
     bool m_falling = false;
     bool m_expired = false;

@@ -16,10 +16,16 @@
 #include <memory>
 #include <vector>
 
+/// @brief Enumeration for alignment type for HUD children.
 enum class HUDSlotAlignment
 {
+    /// @brief Align element to left side of panel.
     Left,
-    Center, // optional
+
+    /// @brief Align element to center of panel.
+    Center,
+
+    /// @brief Align element to right side of panel.
     Right
 };
 
