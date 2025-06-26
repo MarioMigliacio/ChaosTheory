@@ -35,6 +35,9 @@ constexpr auto PAUSE_GAME_LABEL = "Press Escape to Pause";
 
 /// @brief Fixed name constant to be used with BindActionKey to setup a pause key.
 constexpr auto PAUSE_BUTTON_KEY = "Pause";
+
+/// @brief Fixed name constant to be used with the ship stats group label box.
+constexpr auto SHIP_STATS_GROUPBOX_LABEL = "Ship Stats";
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -64,7 +67,15 @@ void SandBoxScene::Init()
 /// @brief Load any required assets relevant to the SandBoxScene.
 void SandBoxScene::LoadRequiredAssets()
 {
-    for (const auto &[key, path] : SandBoxAssets::Textures)
+    for (const auto &[key, path] : SandBoxAssets::Backgrounds)
+    {
+        if (!AssetManager::Instance().LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("SandBoxScene failed to load texture asset: {} -> {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : SandBoxAssets::Sprites)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
@@ -175,6 +186,7 @@ void SandBoxScene::SetupSceneComponents()
     PlayGameMusic();
     CreateHUDPanel();
     MockFillableGaugeComponents();
+    MockIconComponents();
 }
 
 /// @brief Helper method to load the Background for this Scene.
@@ -196,12 +208,12 @@ void SandBoxScene::CreateTitleText()
     const std::string titleLabel = TITLE_SCREEN_LABEL;
     const unsigned int titleFontSize = scaleMgr.ScaleFont(48);
     const sf::Vector2f titlePos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                   scaleMgr.ScaledReferenceY(0.08f)};
+                                   scaleMgr.ScaledReferenceY(0.15f)};
 
     const std::string helpLabel = PAUSE_GAME_LABEL;
     const unsigned int helpFontSize = scaleMgr.ScaleFont(20);
     const sf::Vector2f helpPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                  scaleMgr.ScaledReferenceY(0.20f)};
+                                  scaleMgr.ScaledReferenceY(0.25f)};
 
     m_titleLabel = UIFactory::Instance().CreateTextLabel(titleLabel, titlePos, titleFontSize, true,
                                                          UITextLabelScheme::MintyHerbScheme);
@@ -331,6 +343,7 @@ void SandBoxScene::UpdateHUD(float dt)
     }
 }
 
+/// @brief Helper method to test fillable gauge ui components.
 void SandBoxScene::MockFillableGaugeComponents()
 {
     // --- NON HUD FillableGauge testing --- //
@@ -382,7 +395,7 @@ void SandBoxScene::MockFillableGaugeComponents()
     const sf::Vector2f relativePos{0.80f, 0.75f};
     const sf::Vector2f relativeSize{0.16f, 0.18f};
 
-    auto groupBox = UIFactory::Instance().CreateGroupBox("Ship Stats", relativePos, relativeSize);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, SHIP_STATS_GROUPBOX_LABEL);
     groupBox->SetLayoutMode(LayoutMode::Horizontal);
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
@@ -454,4 +467,39 @@ void SandBoxScene::MockFillableGaugeComponents()
     gasGauge->SetOrientation(LayoutMode::Vertical);
 
     UIManager::Instance().AddElement(groupBox);
+}
+
+/// @brief Helper method to test Icon ui components.
+void SandBoxScene::MockIconComponents()
+{
+    const auto &window = WindowManager::Instance().GetWindow();
+    const float startY = 50.f;
+    const float iconSize = 32.f;
+    const float spacing = 48.f;
+    const float startX = 75.f;
+
+    struct IconSpawnData
+    {
+        IconType type;
+        std::string spriteKey;
+    };
+
+    std::vector<IconSpawnData> iconTypesToTest = {
+        {IconType::AtomicIcon, SpriteAssets::AtomicIconSpriteKey},
+        {IconType::FireRateIcon, SpriteAssets::FireRateIconSpriteKey},
+        {IconType::GasIcon, SpriteAssets::GasIconSpriteKey},
+        {IconType::LifeIcon, SpriteAssets::LifeIconSpriteKey},
+        {IconType::PowerIcon, SpriteAssets::PowerIconSpriteKey},
+        {IconType::UpgradeIcon, SpriteAssets::UpgradeIconSpriteKey},
+        {IconType::WarpIcon, SpriteAssets::WarpIconSpriteKey},
+    };
+
+    for (std::size_t i = 0; i < iconTypesToTest.size(); i++)
+    {
+        const auto &entry = iconTypesToTest[i];
+        sf::Vector2f pos{startX + (i * spacing), startY};
+
+        auto icon = UIFactory::Instance().CreateIcon(entry.spriteKey, pos, {iconSize, iconSize}, entry.type);
+        UIManager::Instance().AddElement(icon);
+    }
 }

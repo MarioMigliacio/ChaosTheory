@@ -63,6 +63,7 @@ class SandBoxScene final : public Scene
     void UpdateHUD(float dt);
 
     void MockFillableGaugeComponents();
+    void MockIconComponents();
 
   private:
     std::shared_ptr<Settings> m_settings;

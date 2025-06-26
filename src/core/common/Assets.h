@@ -114,38 +114,20 @@ static const std::unordered_map<std::string, std::string> Fonts = {
 
 namespace SpriteAssets
 {
-/// @brief Key to the PlayerShipSpriteKey Sprite Asset.
-static auto PlayerShipSpriteKey = "PlayerShip";
-
 /// @brief Key to the AlienShipSpriteKey Sprite Asset.
 static auto AlienShipSpriteKey = "AlienShip";
+
+/// @brief Key to the AtomicIconSpriteKey Sprite Asset.
+static auto AtomicIconSpriteKey = "AtomicIcon";
 
 /// @brief Key to the BasicShipSpriteKey Sprite Asset.
 static auto BasicShipSpriteKey = "BasicShip";
 
-/// @brief Key to the BombBlastOriginalSpriteKey Sprite Asset.
-static auto BombBlastOriginalSpriteKey = "BombBlastOriginal";
-
 /// @brief Key to the BombBlastFinalSpriteKey Sprite Asset.
 static auto BombBlastFinalSpriteKey = "BombBlastFinal";
 
-/// @brief Key to the BombTokenSpriteKey Sprite Asset.
-static auto BombTokenSpriteKey = "BombToken";
-
-/// @brief Key to the DamageTokenSpriteKey Sprite Asset.
-static auto DamageTokenSpriteKey = "DamageToken";
-
-/// @brief Key to the FireRateTokenSpriteKey Sprite Asset.
-static auto FireRateTokenSpriteKey = "FireRateToken";
-
-/// @brief Key to the FreeScoreTokenSpriteKey Sprite Asset.
-static auto FreeScoreTokenSpriteKey = "FreeScoreToken";
-
-/// @brief Key to the PatternTokenSpriteKey Sprite Asset.
-static auto PatternTokenSpriteKey = "PatternToken";
-
-/// @brief Key to the LifeTokenSpriteKey Sprite Asset.
-static auto LifeTokenSpriteKey = "LifeToken";
+/// @brief Key to the BombBlastOriginalSpriteKey Sprite Asset.
+static auto BombBlastOriginalSpriteKey = "BombBlastOriginal";
 
 /// @brief Key to the BulletBlueSpriteKey Sprite Asset.
 static auto BulletBlueSpriteKey = "BulletBlue";
@@ -155,6 +137,12 @@ static auto BulletGreenSpriteKey = "BulletGreen";
 
 /// @brief Key to the BulletRedSpriteKey Sprite Asset.
 static auto BulletRedSpriteKey = "BulletRed";
+
+/// @brief Key to the FireRateIconSpriteKey Sprite Asset.
+static auto FireRateIconSpriteKey = "FireRateIcon";
+
+/// @brief Key to the GasIconSpriteKey Sprite Asset.
+static auto GasIconSpriteKey = "GasIcon";
 
 /// @brief Key to the HomingRocketSpriteKey Sprite Asset.
 static auto HomingRocketSpriteKey = "HomingRocket";
@@ -168,6 +156,21 @@ static auto LazerGreenSpriteKey = "LazerGreen";
 /// @brief Key to the LazerRedSpriteKey Sprite Asset.
 static auto LazerRedSpriteKey = "LazerRed";
 
+/// @brief Key to the PlayerShipSpriteKey Sprite Asset.
+static auto PlayerShipSpriteKey = "PlayerShip";
+
+/// @brief Key to the PowerIconSpriteKey Sprite Asset.
+static auto PowerIconSpriteKey = "PowerIcon";
+
+/// @brief Key to the LifeIconSpriteKey Sprite Asset.
+static auto LifeIconSpriteKey = "LifeIcon";
+
+/// @brief Key to the UpgradeIconSpriteKey Sprite Asset.
+static auto UpgradeIconSpriteKey = "UpgradeIcon";
+
+/// @brief Key to the WarpIconSpriteKey Sprite Asset.
+static auto WarpIconSpriteKey = "WarpIcon";
+
 /// @brief Key to the WideLazerBlueSpriteKey Sprite Asset.
 static auto WideLazerBlueSpriteKey = "WideLazerBlue";
 
@@ -179,24 +182,25 @@ static auto WideLazerRedSpriteKey = "WideLazerRed";
 
 /// @brief Sprites contain a Key and Value pair collection of sprite assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"PlayerShip", "assets/sprites/PlayerShip.png"},
     {"AlienShip", "assets/sprites/AlienShip.png"},
+    {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
     {"BasicShip", "assets/sprites/BasicShip.png"},
-    {"BombBlastOriginal", "assets/sprites/BombBlastOriginal.png"},
     {"BombBlastFinal", "assets/sprites/BombBlastFinal.png"},
-    {"BombToken", "assets/sprites/BombToken.png"},
-    {"DamageToken", "assets/sprites/DamageToken.png"},
-    {"FireRateToken", "assets/sprites/FireRateToken.png"},
-    {"FreeScoreToken", "assets/sprites/FreeScoreToken.png"},
-    {"PatternToken", "assets/sprites/PatternToken.png"},
-    {"LifeToken", "assets/sprites/LifeToken.png"},
+    {"BombBlastOriginal", "assets/sprites/BombBlastOriginal.png"},
     {"BulletBlue", "assets/sprites/BulletBlue.png"},
     {"BulletGreen", "assets/sprites/BulletGreen.png"},
     {"BulletRed", "assets/sprites/BulletRed.png"},
+    {"FireRateIcon", "assets/sprites/FireRateIcon.png"},
+    {"GasIcon", "assets/sprites/GasIcon.png"},
     {"HomingRocket", "assets/sprites/HomingRocket.png"},
     {"LazerBlue", "assets/sprites/LazerBlue.png"},
     {"LazerGreen", "assets/sprites/LazerGreen.png"},
     {"LazerRed", "assets/sprites/LazerRed.png"},
+    {"PlayerShip", "assets/sprites/PlayerShip.png"},
+    {"PowerIcon", "assets/sprites/PowerIcon.png"},
+    {"LifeIcon", "assets/sprites/LifeIcon.png"},
+    {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},
+    {"WarpIcon", "assets/sprites/WarpIcon.png"},
     {"WideLazerBlue", "assets/sprites/WideLazerBlue.png"},
     {"WideLazerGreen", "assets/sprites/WideLazerGreen.png"},
     {"WideLazerRed", "assets/sprites/WideLazerRed.png"},
@@ -329,10 +333,19 @@ namespace SandBoxAssets
 constexpr auto GameTrack = "assets/audio/RootMenu.wav";
 
 /// @brief Textures contain a Key and Value pair collection of image assets
-static const std::unordered_map<std::string, std::string> Textures = {
+static const std::unordered_map<std::string, std::string> Backgrounds = {
     {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
     {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
     {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
+};
+
+/// @brief Textures contain a Key and Value pair collection of image assets
+static const std::unordered_map<std::string, std::string> Sprites = {
+    {"AlienShip", "assets/sprites/AlienShip.png"}, {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
+    {"BasicShip", "assets/sprites/BasicShip.png"}, {"FireRateIcon", "assets/sprites/FireRateIcon.png"},
+    {"GasIcon", "assets/sprites/GasIcon.png"},     {"PowerIcon", "assets/sprites/PowerIcon.png"},
+    {"LifeIcon", "assets/sprites/LifeIcon.png"},   {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},
+    {"WarpIcon", "assets/sprites/WarpIcon.png"},
 };
 } // namespace SandBoxAssets
 

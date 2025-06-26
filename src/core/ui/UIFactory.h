@@ -18,6 +18,7 @@
 #include "UIFillableGauge.h"
 #include "UIGroupBox.h"
 #include "UIHUDPanel.h"
+#include "UIIcon.h"
 #include "UISelectableButton.h"
 #include "UISkinnableButton.h"
 #include "UISlider.h"
@@ -61,8 +62,8 @@ class UIFactory
                                          const std::string &texture, ArrowDirection direction,
                                          std::function<void()> onClick);
 
-    std::shared_ptr<UIGroupBox> CreateGroupBox(const std::string &title, const sf::Vector2f &relativePos,
-                                               const sf::Vector2f &relativeSize, bool centerOrigin = true,
+    std::shared_ptr<UIGroupBox> CreateGroupBox(const sf::Vector2f &relativePos, const sf::Vector2f &relativeSize,
+                                               const std::string &title = "", bool centerOrigin = true,
                                                UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
 
     std::shared_ptr<UITextLabel> CreateTextLabel(const std::string &text, const sf::Vector2f &position,
@@ -80,6 +81,9 @@ class UIFactory
                                                float outlineThickness = 0.f);
 
     std::shared_ptr<UIFillableGauge> CreateFillableGauge(const FillableGaugeConfig &cfg);
+
+    std::shared_ptr<UIIcon> CreateIcon(const std::string &textureKey, const sf::Vector2f &position,
+                                       const sf::Vector2f &size, IconType type = IconType::None);
 
   private:
     UIFactory() = default;

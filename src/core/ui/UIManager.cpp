@@ -13,6 +13,7 @@
 #include "UIManager.h"
 #include "LogManager.h"
 #include "Macros.h"
+#include "UIIcon.h"
 #include "UIToastMessage.h"
 
 /// @brief Get the current Instance for this UIManager singleton.
@@ -91,6 +92,14 @@ void UIManager::Update(const sf::Vector2i &mousePos, bool isLeftClick, bool isJu
         if (auto toast = std::dynamic_pointer_cast<UIToastMessage>(element))
         {
             if (toast->IsExpired())
+            {
+                toRemove.push_back(i);
+            }
+        }
+
+        else if (auto icon = std::dynamic_pointer_cast<UIIcon>(element))
+        {
+            if (icon->IsExpired())
             {
                 toRemove.push_back(i);
             }

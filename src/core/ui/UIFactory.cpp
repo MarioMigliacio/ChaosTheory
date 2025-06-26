@@ -159,15 +159,15 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(const sf::Vector2f &position, co
 }
 
 /// @brief Creates a UI UIGroupBox element, given the custom input parameters.
-/// @param title String representation for GroupBox.
 /// @param relativePosition Screen relative position to be centered around.
 /// @param relativeSize Screen relative size to occupy.
+/// @param title String representation for GroupBox.
 /// @param centerOrigin Whether or not to center title text for groupbox around position.
 /// @param scheme Type of ui text label color themes.
 /// @return safe pointer to a UIGroupBox.
-std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, const sf::Vector2f &relativePosition,
-                                                      const sf::Vector2f &relativeSize, bool centerOrigin,
-                                                      UITextLabelScheme scheme)
+std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const sf::Vector2f &relativePosition,
+                                                      const sf::Vector2f &relativeSize, const std::string &title,
+                                                      bool centerOrigin, UITextLabelScheme scheme)
 {
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
@@ -179,10 +179,15 @@ std::shared_ptr<UIGroupBox> UIFactory::CreateGroupBox(const std::string &title, 
     const float edgePadding = scaleMgr.ScaledReferenceY(BASE_GROUPBOX_EDGE_PAD_RATIO);
 
     auto groupBox = std::make_shared<UIGroupBox>(scaledPos, scaledSize);
-    groupBox->SetTitle(title, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
-                       scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE), centerOrigin, scheme);
-    groupBox->SetLayoutMode(LayoutMode::Vertical); // safe default state
-    groupBox->SetCenterChildren(true);             // safe default state
+
+    if (title != "")
+    {
+        groupBox->SetTitle(title, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                           scaleMgr.ScaleFont(BASE_GROUPBOX_FONT_SIZE), centerOrigin, scheme);
+    }
+
+    groupBox->SetLayoutMode(LayoutMode::Vertical);
+    groupBox->SetCenterChildren(true);
     groupBox->SetInternalPadding(internalPadding);
     groupBox->SetEdgePadding(edgePadding);
 
@@ -252,10 +257,9 @@ std::shared_ptr<UIHUDPanel> UIFactory::CreateHUDPanel(const sf::Vector2f &relati
     panel->SetOutlineColor(outlineColor);
     panel->SetOutlineThickness(outlineThickness);
     panel->SetLayoutMode(LayoutMode::Horizontal);
-    // TODO: implement color schemes
     panel->SetInternalPadding(scaleMgr.ScaledReferenceX(BASE_GROUPBOX_INTERNAL_PAD_RATIO));
     panel->SetEdgePadding(scaleMgr.ScaledReferenceX(BASE_GROUPBOX_EDGE_PAD_RATIO));
-    panel->SetCenterChildren(false); // default for HUDs
+    panel->SetCenterChildren(false);
 
     return panel;
 }
@@ -292,4 +296,24 @@ std::shared_ptr<UIFillableGauge> UIFactory::CreateFillableGauge(const FillableGa
     gauge->SetSize({scaledSize});
 
     return gauge;
+}
+
+/// @brief Creates a UI Icon element, given the custom input parameters.
+/// @param textureKey Asset path to sprite.
+/// @param position Location to instantiate at.
+/// @param size Size adjustment for icon.
+/// @param type Icon type for Icon.
+/// @return safe pointer to a UIIcon.
+std::shared_ptr<UIIcon> UIFactory::CreateIcon(const std::string &textureKey, const sf::Vector2f &position,
+                                              const sf::Vector2f &size, IconType type)
+{
+    sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(size.x),
+                            ResolutionScaleManager::Instance().ScaleY(size.y));
+
+    auto icon = std::make_shared<UIIcon>(scaledSize, position);
+    icon->SetTextureSkin(textureKey);
+    icon->SetIconType(type);
+    icon->StartFalling();
+
+    return icon;
 }
