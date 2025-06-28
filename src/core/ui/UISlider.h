@@ -12,11 +12,31 @@
 
 #pragma once
 
+#include "Macros.h"
 #include "UIElement.h"
 #include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <string>
+
+/// @brief Data structure holding internal configurations useful for SliderConfig construction.
+/// @param label string Label for Slider.
+/// @param position Vector2f position for Slider.
+/// @param size Vector2f size for Slider.
+/// @param minValue flaot minimum value for Slider.
+/// @param maxValue float maximum value for Slider.
+/// @param initialValue float initial value for Slider.
+/// @param onChange function callback to trigger for Slider.
+struct SliderConfig
+{
+    std::string label;
+    sf::Vector2f position;
+    sf::Vector2f size;
+    float minValue;
+    float maxValue;
+    float initialValue;
+    std::function<void(float)> onChange;
+};
 
 // ============================================================================
 //  Class       : UISlider

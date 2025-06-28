@@ -19,6 +19,23 @@
 #include <string>
 #include <vector>
 
+/// @brief Data structure holding internal configurations useful for GroupBoxConfig construction.
+/// @param position Vector2f position for Group Box.
+/// @param size Vector2f size for Group Box.
+/// @param useTitle bool should title be used for Group Box [default false].
+/// @param title string title label for Group Box [default = ""].
+/// @param centerOrigin bool should center origin for Group Box title [default true].
+/// @param scheme UITextLabelScheme Color Scheme for Group Box [default default color scheme].
+struct GroupBoxConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    bool useTitle = false;
+    std::string title = "";
+    bool centerOrigin = true;
+    UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme;
+};
+
 // ============================================================================
 //  Class       : UIGroupBox
 //  Purpose     : Manages this UIGroupBox logic at the ui level.

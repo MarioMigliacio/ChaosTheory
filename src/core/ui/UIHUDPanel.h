@@ -12,6 +12,7 @@
 #pragma once
 
 #include "UIElement.h"
+#include "UIPresets.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
@@ -27,6 +28,21 @@ enum class HUDSlotAlignment
 
     /// @brief Align element to right side of panel.
     Right
+};
+
+/// @brief Data structure holding internal configurations useful for HUDPanelConfig construction.
+/// @param position Vector2f position for HUD Panel.
+/// @param size Vector2f size for HUD Panel.
+/// @param fillColor Color Label for HUD Panel [default DEFAULT_HUD_COLOR grey].
+/// @param outlineColor Color Label for HUD Panel [default DEFAULLT_HUD_BACKGROUND_COLOR transparent].
+/// @param outlineThickness float outline thickness for HUD Panel [default 0.f].
+struct HUDPanelConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    sf::Color fillColor = DEFAULT_HUD_COLOR;
+    sf::Color outlineColor = DEFAULLT_HUD_BACKGROUND_COLOR;
+    float outlineThickness = 0.f;
 };
 
 // ============================================================================

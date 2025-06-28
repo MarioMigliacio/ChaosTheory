@@ -215,11 +215,11 @@ void SandBoxScene::CreateTitleText()
     const sf::Vector2f helpPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                   scaleMgr.ScaledReferenceY(0.25f)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleLabel, titlePos, titleFontSize, true,
-                                                         UITextLabelScheme::MintyHerbScheme);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(
+        INIT_TEXTLABEL_CONFIG(titleLabel, titlePos, titleFontSize, true, UITextLabelScheme::MintyHerbScheme));
 
-    m_helpLabel = UIFactory::Instance().CreateTextLabel(helpLabel, helpPos, helpFontSize, true,
-                                                        UITextLabelScheme::MintyHerbScheme);
+    m_helpLabel = UIFactory::Instance().CreateTextLabel(
+        INIT_TEXTLABEL_CONFIG(helpLabel, helpPos, helpFontSize, true, UITextLabelScheme::MintyHerbScheme));
 
     UIManager::Instance().AddElement(m_titleLabel);
     UIManager::Instance().AddElement(m_helpLabel);
@@ -234,7 +234,8 @@ void SandBoxScene::CreateHUDPanel()
     const sf::Vector2f relativePos{0.f, 0.f};
     const sf::Vector2f relativeSize{1.0f, 0.05f}; // Full width, 8% height
 
-    auto hudPanel = UIFactory::Instance().CreateHUDPanel(relativePos, relativeSize);
+    auto hudPanel = UIFactory::Instance().CreateHUDPanel(
+        INIT_HUDPANEL_CONFIG(relativePos, relativeSize, DEFAULT_HUD_COLOR, DEFAULLT_HUD_BACKGROUND_COLOR, 0.f));
     hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.15f)); // Space between labels
     hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));     // Padding around edges
     hudPanel->SetLayoutMode(LayoutMode::Horizontal);
@@ -243,21 +244,14 @@ void SandBoxScene::CreateHUDPanel()
     const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
     const sf::Vector2f gaugeRelativeSize = {0.2f, 0.015f}; // Width, Height in screen %
 
-    m_scoreLabel = UIFactory::Instance().CreateTextLabel(HUD_SCORE_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
-    m_timerLabel = UIFactory::Instance().CreateTextLabel(HUD_TIMER_LABEL_INIT_STR, {0.f, 0.f}, fontSize, false);
-
-    FillableGaugeConfig gaugeCfg;
-    gaugeCfg.relativePosition = {0.f, 0.f}; // handled by HUD
-    gaugeCfg.relativeSize = {0.2f, 0.015f};
-    gaugeCfg.colorScheme = GaugeColorScheme::Health;
-    gaugeCfg.borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS;
-    gaugeCfg.borderColor = DEFAULT_GAUGE_BORDER_COLOR;
-    gaugeCfg.showPercentage = true;
-    gaugeCfg.initialValue = 1.f;
-    gaugeCfg.showTitle = true;
-    gaugeCfg.titleText = HUD_HEALTH_TAG;
-
-    m_healthGauge = UIFactory::Instance().CreateFillableGauge(gaugeCfg);
+    m_scoreLabel = UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(
+        HUD_SCORE_LABEL_INIT_STR, relativePos, fontSize, false, UITextLabelScheme::DefaultScheme));
+    m_timerLabel = UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(
+        HUD_TIMER_LABEL_INIT_STR, relativePos, fontSize, false, UITextLabelScheme::DefaultScheme));
+    m_healthGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
+        relativePos, gaugeRelativeSize, LayoutMode::Horizontal, GaugeColorScheme::Health, DEFAULT_GAUGE_FULL_VALUE,
+        DEFAULT_GAUGE_BORDER_THICKNESS, DEFAULT_GAUGE_BORDER_COLOR, true, true, HUD_HEALTH_TAG, DEFAULT_GAUGE_FONT_SIZE,
+        UITextLabelScheme::DefaultScheme, GaugeTitlePosition::Left, DEFAULT_GAUGE_TITLE_PADDING));
 
     hudPanel->AddElement(m_healthGauge, HUDSlotAlignment::Left);
     hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
@@ -347,45 +341,25 @@ void SandBoxScene::UpdateHUD(float dt)
 void SandBoxScene::MockFillableGaugeComponents()
 {
     // --- NON HUD FillableGauge testing --- //
+    sf::Vector2f pos(0.33f, 0.33f);
+    sf::Vector2f size(0.015f, 0.2f);
 
-    FillableGaugeConfig testCfg2;
-    testCfg2.borderColor = GAUGE_BORDER_COLOR_GOLD;
-    testCfg2.borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS;
-    testCfg2.colorScheme = GaugeColorScheme::Gas;
-    testCfg2.initialValue = .33f;
-    testCfg2.orientation = LayoutMode::Vertical;
-    testCfg2.relativePosition = {.33f, .33f};
-    testCfg2.relativeSize = {0.015f, 0.2f};
-    testCfg2.showPercentage = true;
-    testCfg2.showTitle = true;
-    testCfg2.titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
-    testCfg2.titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
-    testCfg2.titlePosition = GaugeTitlePosition::Left;
-    testCfg2.titleScheme = UITextLabelScheme::MintyHerbScheme;
-    testCfg2.titleText = "Gas-Vert";
+    auto looseGasGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
+        pos, size, LayoutMode::Vertical, GaugeColorScheme::Gas, .33f, DEFAULT_GAUGE_BORDER_THICKNESS,
+        GAUGE_BORDER_COLOR_GOLD, true, true, "Gas-Vert", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::MintyHerbScheme,
+        GaugeTitlePosition::Left, DEFAULT_GAUGE_TITLE_PADDING));
 
-    auto testGauge2 = UIFactory::Instance().CreateFillableGauge(testCfg2);
+    UIManager::Instance().AddElement(looseGasGauge);
 
-    UIManager::Instance().AddElement(testGauge2);
+    pos = {.5f, .5f};
+    size = {0.2f, 0.015f};
 
-    FillableGaugeConfig testCfg;
-    testCfg.borderColor = GAUGE_BORDER_COLOR_GOLD;
-    testCfg.borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS;
-    testCfg.colorScheme = GaugeColorScheme::Gas;
-    testCfg.initialValue = .33f;
-    testCfg.orientation = LayoutMode::Horizontal;
-    testCfg.relativePosition = {.5f, .5f};
-    testCfg.relativeSize = {0.2f, 0.015f};
-    testCfg.showPercentage = true;
-    testCfg.showTitle = true;
-    testCfg.titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
-    testCfg.titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
-    testCfg.titlePosition = GaugeTitlePosition::Above;
-    testCfg.titleScheme = UITextLabelScheme::MintyHerbScheme;
-    testCfg.titleText = "Gas-Horiz";
+    auto looseGasGauge2 = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
+        pos, size, LayoutMode::Horizontal, GaugeColorScheme::Gas, .33f, DEFAULT_GAUGE_BORDER_THICKNESS,
+        GAUGE_BORDER_COLOR_GOLD, true, true, "Gas-Horiz", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::MintyHerbScheme,
+        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
 
-    auto testGauge = UIFactory::Instance().CreateFillableGauge(testCfg);
-    UIManager::Instance().AddElement(testGauge);
+    UIManager::Instance().AddElement(looseGasGauge2);
 
     // ----- Testing Groupbox ------ //
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -395,70 +369,38 @@ void SandBoxScene::MockFillableGaugeComponents()
     const sf::Vector2f relativePos{0.80f, 0.75f};
     const sf::Vector2f relativeSize{0.16f, 0.18f};
 
-    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, SHIP_STATS_GROUPBOX_LABEL);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(INIT_GROUPBOX_CONFIG(
+        relativePos, relativeSize, true, SHIP_STATS_GROUPBOX_LABEL, true, UITextLabelScheme::DefaultScheme));
     groupBox->SetLayoutMode(LayoutMode::Horizontal);
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetCenterChildren(true);
 
     // === HEALTH GAUGE ===
-    FillableGaugeConfig healthConfig;
-    healthConfig.borderColor = GAUGE_BORDER_COLOR_GOLD;
-    healthConfig.borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS;
-    healthConfig.colorScheme = GaugeColorScheme::Health;
-    healthConfig.initialValue = .25f;
-    healthConfig.orientation = LayoutMode::Vertical;
-    healthConfig.relativePosition = {0, 0}; // let groupbox orient
-    healthConfig.relativeSize = {0.015f, 0.1f};
-    healthConfig.showPercentage = true;
-    healthConfig.showTitle = true;
-    healthConfig.titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
-    healthConfig.titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
-    healthConfig.titlePosition = GaugeTitlePosition::Above;
-    healthConfig.titleScheme = UITextLabelScheme::CougarScheme;
-    healthConfig.titleText = "H";
+    pos = {0, 0};
+    size = {0.015f, 0.1f};
 
-    auto healthGauge = UIFactory::Instance().CreateFillableGauge(healthConfig);
+    auto healthGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
+        pos, size, LayoutMode::Vertical, GaugeColorScheme::Health, .25f, DEFAULT_GAUGE_BORDER_THICKNESS,
+        GAUGE_BORDER_COLOR_GOLD, true, true, "H", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::CougarScheme,
+        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
+
     groupBox->AddElement(healthGauge);
 
     // === MANA GAUGE ===
-    FillableGaugeConfig manaConfig;
-    manaConfig.borderColor = GAUGE_BORDER_COLOR_GOLD;
-    manaConfig.borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS;
-    manaConfig.colorScheme = GaugeColorScheme::Mana;
-    manaConfig.initialValue = .10;
-    manaConfig.orientation = LayoutMode::Vertical;
-    manaConfig.relativePosition = {0, 0};
-    manaConfig.relativeSize = {0.015f, 0.1f};
-    manaConfig.showPercentage = true;
-    manaConfig.showTitle = true;
-    manaConfig.titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
-    manaConfig.titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
-    manaConfig.titlePosition = GaugeTitlePosition::Above;
-    manaConfig.titleScheme = UITextLabelScheme::MintyHerbScheme;
-    manaConfig.titleText = "M";
+    auto manaGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
+        pos, size, LayoutMode::Vertical, GaugeColorScheme::Mana, .10f, DEFAULT_GAUGE_BORDER_THICKNESS,
+        GAUGE_BORDER_COLOR_GOLD, true, true, "M", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::MintyHerbScheme,
+        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
 
-    auto manaGauge = UIFactory::Instance().CreateFillableGauge(manaConfig);
     groupBox->AddElement(manaGauge);
 
     // === GAS GAUGE ===
-    FillableGaugeConfig gasConfig;
-    gasConfig.borderColor = GAUGE_BORDER_COLOR_GOLD;
-    gasConfig.borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS;
-    gasConfig.colorScheme = GaugeColorScheme::Gas;
-    gasConfig.initialValue = .66f;
-    gasConfig.orientation = LayoutMode::Vertical;
-    gasConfig.relativePosition = {0, 0};
-    gasConfig.relativeSize = {0.015f, 0.1f};
-    gasConfig.showPercentage = true;
-    gasConfig.showTitle = true;
-    gasConfig.titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
-    gasConfig.titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
-    gasConfig.titlePosition = GaugeTitlePosition::Above;
-    gasConfig.titleScheme = UITextLabelScheme::BlueSteelScheme;
-    gasConfig.titleText = "G";
+    auto gasGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
+        pos, size, LayoutMode::Vertical, GaugeColorScheme::Gas, .66f, DEFAULT_GAUGE_BORDER_THICKNESS,
+        GAUGE_BORDER_COLOR_GOLD, true, true, "G", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::BlueSteelScheme,
+        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
 
-    auto gasGauge = UIFactory::Instance().CreateFillableGauge(gasConfig);
     groupBox->AddElement(gasGauge);
 
     // when in groupbox, this is required for correct fill orientation
@@ -474,7 +416,7 @@ void SandBoxScene::MockIconComponents()
 {
     const auto &window = WindowManager::Instance().GetWindow();
     const float startY = 50.f;
-    const float iconSize = 32.f;
+    const sf::Vector2f iconSize = {32.f, 32.f};
     const float spacing = 48.f;
     const float startX = 75.f;
 
@@ -499,7 +441,7 @@ void SandBoxScene::MockIconComponents()
         const auto &entry = iconTypesToTest[i];
         sf::Vector2f pos{startX + (i * spacing), startY};
 
-        auto icon = UIFactory::Instance().CreateIcon(entry.spriteKey, pos, {iconSize, iconSize}, entry.type);
+        auto icon = UIFactory::Instance().CreateIcon(INIT_ICON_CONFIG(pos, iconSize, entry.spriteKey, entry.type));
         UIManager::Instance().AddElement(icon);
     }
 }

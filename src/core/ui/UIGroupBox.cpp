@@ -50,9 +50,12 @@ void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsign
     // Compute default title position just above box
     const sf::Vector2f groupBoxPos = m_background.getPosition();
     const float paddingY = ResolutionScaleManager::Instance().ScaleY(TITLE_PAD_Y);
+    const sf::Vector2f size = {0.f, 0.f};
 
     // We will adjust the positioning after we determine the length the text field will occupy.
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(title, {0.f, 0.f}, fontSize, centerOrigin, scheme);
+
+    m_titleLabel =
+        UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(title, size, fontSize, centerOrigin, scheme));
     sf::Vector2f textSize = m_titleLabel->GetSize();
 
     const float anchorX = groupBoxPos.x + (m_background.getSize().x / 2);

@@ -46,19 +46,29 @@ class UIFactoryTest : public ::testing::Test
 
 TEST_F(UIFactoryTest, CanCreateClassicButton)
 {
-    auto button = UIFactory::Instance().CreateButton({100.f, 100.f}, {180.f, 40.f}, "TestButton", nullptr);
+    const sf::Vector2f size = {100.f, 100.f};
+    const sf::Vector2f pos = {180.f, 40.f};
+
+    auto button = UIFactory::Instance().CreateButton(INIT_BUTTON_CONFIG(pos, size, "TestButton", nullptr));
     EXPECT_NE(button, nullptr);
 }
 
 TEST_F(UIFactoryTest, CanCreateSelectableButton)
 {
-    auto sb = UIFactory::Instance().CreateSelectableButton({100.f, 100.f}, {180.f, 40.f}, "TestRadio", nullptr);
+    const sf::Vector2f size = {100.f, 100.f};
+    const sf::Vector2f pos = {180.f, 40.f};
+
+    auto sb =
+        UIFactory::Instance().CreateSelectableButton(INIT_SELECTABLE_BUTTON_CONFIG(pos, size, "TestRadio", nullptr));
     EXPECT_NE(sb, nullptr);
 }
 
 TEST_F(UIFactoryTest, CanCreateSlider)
 {
+    const sf::Vector2f size = {100.f, 100.f};
+    const sf::Vector2f pos = {300.f, 20.f};
+
     auto slider =
-        UIFactory::Instance().CreateSlider("TestSlider", {100.f, 100.f}, {300.f, 20.f}, 0.f, 100.f, 50.f, nullptr);
+        UIFactory::Instance().CreateSlider(INIT_SLIDER_CONFIG("TestSlider", pos, size, 0.f, 100.f, 50.f, nullptr));
     EXPECT_NE(slider, nullptr);
 }

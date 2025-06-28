@@ -33,28 +33,47 @@ enum class GaugeTitlePosition
     Above,
 };
 
-/// @brief Data structure holding internal configurations useful for construction.
+/// @brief Data structure holding internal configurations useful for FillableGauge construction.
+/// @param position Vector2f relative screen position for the gauge.
+/// @param size Vector2f relative screen size for the gauge.
+/// @param orientation LayoutMode layout mode (horizontal or vertical) for gauge fill direction. [default horizontal]
+/// @param colorScheme GaugeColorScheme specifying the visual color scheme of the gauge. [default default color scheme]
+/// @param initialValue Float representing the starting fill level of the gauge (range: 0.0–1.0). [default 1.f]
+/// @param borderThickness Float representing thickness of the gauge border. [default 0.f (none)]
+/// @param borderColor sf::Color value for the border color of the gauge. [default transparent (none)]
+/// @param showPercentage Boolean toggle to render percentage overlay on the gauge. [default false]
+/// @param showTitle Boolean toggle to render a title label alongside the gauge. [default false]
+/// @param titleText String label displayed when title is enabled. [default "" (empty)]
+/// @param titleFontSize Font size used when title is enabled. [default 14U]
+/// @param titleScheme UITextLabelScheme enum defining the text color style for the title. [default default color
+/// scheme]
+/// @param titlePosition GaugeTitlePosition defining title appearance. [default left position]
+/// @param titlePadding Float amount of padding between title and gauge body. [default 8.f]
 struct FillableGaugeConfig
 {
-    sf::Vector2f relativePosition;
-    sf::Vector2f relativeSize;
-
-    GaugeColorScheme colorScheme = GaugeColorScheme::Default;
+    // Layout & Size
+    sf::Vector2f position;
+    sf::Vector2f size;
     LayoutMode orientation = LayoutMode::Horizontal;
 
+    // Fill Scheme & Value
+    GaugeColorScheme colorScheme = GaugeColorScheme::Default;
+    float initialValue = DEFAULT_GAUGE_FULL_VALUE;
+
+    // Border
     float borderThickness = 0.f;
     sf::Color borderColor = sf::Color::Transparent;
 
+    // Percentage Overlay
     bool showPercentage = false;
-    bool showTitle = false;
 
+    // Title Display
+    bool showTitle = false;
     std::string titleText = "";
     unsigned int titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
     UITextLabelScheme titleScheme = UITextLabelScheme::DefaultScheme;
     GaugeTitlePosition titlePosition = GaugeTitlePosition::Left;
     float titlePadding = DEFAULT_GAUGE_TITLE_PADDING;
-
-    float initialValue = DEFAULT_GAUGE_FULL_VALUE;
 };
 
 // ============================================================================

@@ -41,7 +41,8 @@ UIToastMessage::UIToastMessage(const std::string &text, const sf::Vector2f &posi
 void UIToastMessage::InitTextLabel(const std::string &text, const sf::Vector2f &position, unsigned int fontSize,
                                    bool centerOrigin, UITextLabelScheme scheme)
 {
-    m_label = UIFactory::Instance().CreateTextLabel(text, position, fontSize, centerOrigin, scheme);
+    TextLabelConfig cfg = INIT_TEXTLABEL_CONFIG(text, position, fontSize, centerOrigin, scheme);
+    m_label = UIFactory::Instance().CreateTextLabel(cfg);
 }
 
 /// @brief Performs internal state management during a single frame. Note the default update signature is in line with

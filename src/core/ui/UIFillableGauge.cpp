@@ -245,8 +245,9 @@ void UIFillableGauge::SetShowPercentage(bool show)
 
     if (show && !m_percentageLabel)
     {
-        m_percentageLabel = UIFactory::Instance().CreateTextLabel(TEXT_LABEL_INITIAL_VALUE, m_position,
-                                                                  DEFAULT_GAUGE_PERCENT_FONT_SIZE);
+        m_percentageLabel = UIFactory::Instance().CreateTextLabel(
+            INIT_TEXTLABEL_CONFIG(TEXT_LABEL_INITIAL_VALUE, m_position, DEFAULT_GAUGE_PERCENT_FONT_SIZE, true,
+                                  UITextLabelScheme::DefaultScheme));
         SetValue(m_value);
         SetPosition(m_position);
     }
@@ -266,7 +267,8 @@ void UIFillableGauge::SetShowTitleLabel(const std::string &text, unsigned int fo
     m_titlePadding = padding;
     bool shouldCenterOrigin = position == GaugeTitlePosition::Above ? true : false;
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(text, m_position, fontSize, shouldCenterOrigin, scheme);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(
+        INIT_TEXTLABEL_CONFIG(text, m_position, fontSize, shouldCenterOrigin, scheme));
 
     SetSize(m_size);         // Recalculate m_totalSize
     SetPosition(m_position); // Update all layout

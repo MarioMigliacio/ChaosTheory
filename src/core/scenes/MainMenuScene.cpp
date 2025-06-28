@@ -245,7 +245,8 @@ void MainMenuScene::CreateTitleText()
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(
+        INIT_TEXTLABEL_CONFIG(titleText, centerPos, fontSize, true, UITextLabelScheme::DefaultScheme));
 
     UIManager::Instance().AddElement(m_titleLabel);
 }
@@ -267,34 +268,34 @@ void MainMenuScene::CreateButtons()
 
     const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
 
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateSkinnableButton(playPos, btnSize, PLAY_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                                    UIAssets::UISkinButtonBlueHoverKey, UIButtonColorScheme::Blue,
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Play button clicked!");
-                                                        m_hasPendingTransition = true;
-                                                        m_requestedScene = SceneID::SandBox;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
+        INIT_SKINNABLE_BUTTON_CONFIG(playPos, btnSize, PLAY_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
+                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
+                                     [this]()
+                                     {
+                                         CT_LOG_INFO("Play button clicked!");
+                                         m_hasPendingTransition = true;
+                                         m_requestedScene = SceneID::SandBox;
+                                     })));
 
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        settingsPos, btnSize, SETTING_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey, UIAssets::UISkinButtonBlueHoverKey,
-        UIButtonColorScheme::Blue,
-        [this]()
-        {
-            CT_LOG_INFO("Settings button clicked!");
-            m_hasPendingTransition = true;
-            m_requestedScene = SceneID::Settings;
-        }));
+        INIT_SKINNABLE_BUTTON_CONFIG(settingsPos, btnSize, SETTING_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
+                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
+                                     [this]()
+                                     {
+                                         CT_LOG_INFO("Settings button clicked!");
+                                         m_hasPendingTransition = true;
+                                         m_requestedScene = SceneID::Settings;
+                                     })));
 
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateSkinnableButton(exitPos, btnSize, EXIT_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                                    UIAssets::UISkinButtonBlueHoverKey, UIButtonColorScheme::Blue,
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Exit button clicked!");
-                                                        m_shouldExit = true;
-                                                    }));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
+        INIT_SKINNABLE_BUTTON_CONFIG(exitPos, btnSize, EXIT_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
+                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
+                                     [this]()
+                                     {
+                                         CT_LOG_INFO("Exit button clicked!");
+                                         m_shouldExit = true;
+                                     })));
 }
 
 /// @brief Loads the main background images for this MainMenuScene.
