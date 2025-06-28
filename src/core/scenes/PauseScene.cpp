@@ -206,9 +206,11 @@ void PauseScene::SetupUI()
     const std::string title = PAUSE_TITLE_LABEL;
     const sf::Vector2f relativePos{0.375f, 0.30f}; // Centered box
     const sf::Vector2f relativeSize{0.25f, 0.40f}; // 1/4 width, 40% height
+    const sf::Vector2f grpBoxElePos = {0.f, 0.f};
 
     // Create transparent group box
-    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, title);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(
+        INIT_GROUPBOX_CONFIG(relativePos, relativeSize, true, title, true, UITextLabelScheme::DefaultScheme));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.08f * relativeSize.y));
     groupBox->SetOutlineColor(sf::Color::Transparent);
@@ -219,35 +221,35 @@ void PauseScene::SetupUI()
 
     // === 1. UNPAUSE GAME ===
     auto btnResume = UIFactory::Instance().CreateSkinnableButton(
-        {0.f, 0.f}, buttonSize, RESUME_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey, UIAssets::UISkinButtonBlueHoverKey,
-        UIButtonColorScheme::Blue,
-        [this]()
-        {
-            m_shouldExit = true;
-            CT_LOG_INFO("PauseScene: Unpause Button Clicked.");
-        });
+        INIT_SKINNABLE_BUTTON_CONFIG(grpBoxElePos, buttonSize, RESUME_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
+                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
+                                     [this]()
+                                     {
+                                         m_shouldExit = true;
+                                         CT_LOG_INFO("PauseScene: Unpause Button Clicked.");
+                                     }));
 
     // === 2. SETTINGS ===
     auto btnSettings = UIFactory::Instance().CreateSkinnableButton(
-        {0.f, 0.f}, buttonSize, SETTINGS_BTN_LABEL, UIAssets::UISkinButtonGreenIdleKey,
-        UIAssets::UISkinButtonGreenHoverKey, UIButtonColorScheme::Green,
-        [this]()
-        {
-            m_hasPendingTransition = true;
-            m_requestedScene = SceneID::Settings;
-            CT_LOG_INFO("PauseScene: Settings Button Clicked.");
-        });
+        INIT_SKINNABLE_BUTTON_CONFIG(grpBoxElePos, buttonSize, SETTINGS_BTN_LABEL, UIAssets::UISkinButtonGreenIdleKey,
+                                     UIAssets::UISkinButtonGreenHoverKey, UISkinnableButtonColorScheme::Green,
+                                     [this]()
+                                     {
+                                         m_hasPendingTransition = true;
+                                         m_requestedScene = SceneID::Settings;
+                                         CT_LOG_INFO("PauseScene: Settings Button Clicked.");
+                                     }));
 
     // === 3. RETURN TO MENU ===
     auto btnReturn = UIFactory::Instance().CreateSkinnableButton(
-        {0.f, 0.f}, buttonSize, RETURN_BTN_LABEL, UIAssets::UISkinButtonRedIdleKey, UIAssets::UISkinButtonRedHoverKey,
-        UIButtonColorScheme::Red,
-        [this]()
-        {
-            m_hasPendingTransition = true;
-            m_requestedScene = SceneID::MainMenu;
-            CT_LOG_INFO("PauseScene: Return to Menu Button Clicked.");
-        });
+        INIT_SKINNABLE_BUTTON_CONFIG(grpBoxElePos, buttonSize, RETURN_BTN_LABEL, UIAssets::UISkinButtonRedIdleKey,
+                                     UIAssets::UISkinButtonRedHoverKey, UISkinnableButtonColorScheme::Red,
+                                     [this]()
+                                     {
+                                         m_hasPendingTransition = true;
+                                         m_requestedScene = SceneID::MainMenu;
+                                         CT_LOG_INFO("PauseScene: Return to Menu Button Clicked.");
+                                     }));
 
     groupBox->AddElement(btnResume);
     groupBox->AddElement(btnSettings);

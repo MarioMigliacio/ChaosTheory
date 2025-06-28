@@ -320,7 +320,8 @@ void SettingsScene::CreateTitleText()
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(
+        INIT_TEXTLABEL_CONFIG(titleText, centerPos, fontSize, true, UITextLabelScheme::DefaultScheme));
 
     UIManager::Instance().AddElement(m_titleLabel);
 }
@@ -352,21 +353,21 @@ void SettingsScene::CreateArrows(SettingsPage page)
     {
         // LEFT ARROW
         const sf::Vector2f pos = {scaleMgr.ScaledReferenceX(DEFAULT_ARROW_LEFT_CENTER_PERCENT), centerY};
+        auto leftArrowCallback = [this, page]()
+        {
+            if (page == SettingsPage::Difficulty)
+            {
+                SwitchToPage(SettingsPage::Audio);
+            }
 
-        auto leftArrow =
-            UIFactory::Instance().CreateArrow(pos, arrowSize, UIAssets::UIArrowTextureKey, ArrowDirection::Left,
-                                              [this, page]()
-                                              {
-                                                  if (page == SettingsPage::Difficulty)
-                                                  {
-                                                      SwitchToPage(SettingsPage::Audio);
-                                                  }
+            else if (page == SettingsPage::Audio)
+            {
+                SwitchToPage(SettingsPage::Video);
+            }
+        };
 
-                                                  else if (page == SettingsPage::Audio)
-                                                  {
-                                                      SwitchToPage(SettingsPage::Video);
-                                                  }
-                                              });
+        auto leftArrow = UIFactory::Instance().CreateArrow(
+            INIT_ARROW_CONFIG(pos, arrowSize, UIAssets::UIArrowTextureKey, ArrowDirection::Left, leftArrowCallback));
 
         UIManager::Instance().AddElement(leftArrow);
     }
@@ -375,21 +376,21 @@ void SettingsScene::CreateArrows(SettingsPage page)
     {
         // RIGHT ARROW
         const sf::Vector2f pos = {scaleMgr.ScaledReferenceX(DEFAULT_ARROW_RIGHT_CENTER_PERCENT), centerY};
+        auto rightArrowCallback = [this, page]()
+        {
+            if (page == SettingsPage::Audio)
+            {
+                SwitchToPage(SettingsPage::Difficulty);
+            }
 
-        auto rightArrow =
-            UIFactory::Instance().CreateArrow(pos, arrowSize, UIAssets::UIArrowTextureKey, ArrowDirection::Right,
-                                              [this, page]()
-                                              {
-                                                  if (page == SettingsPage::Audio)
-                                                  {
-                                                      SwitchToPage(SettingsPage::Difficulty);
-                                                  }
+            else if (page == SettingsPage::Video)
+            {
+                SwitchToPage(SettingsPage::Audio);
+            }
+        };
 
-                                                  else if (page == SettingsPage::Video)
-                                                  {
-                                                      SwitchToPage(SettingsPage::Audio);
-                                                  }
-                                              });
+        auto rightArrow = UIFactory::Instance().CreateArrow(
+            INIT_ARROW_CONFIG(pos, arrowSize, UIAssets::UIArrowTextureKey, ArrowDirection::Right, rightArrowCallback));
 
         UIManager::Instance().AddElement(rightArrow);
     }
@@ -413,9 +414,9 @@ void SettingsScene::CreateButtonControls()
     const sf::Vector2f backPos{centerX + spacingFromCenter - scaledButtonWidth / 2.f, footerY};
 
     // Apply Changes UIButton
-    m_applyButton = UIFactory::Instance().CreateSkinnableButton(
+    m_applyButton = UIFactory::Instance().CreateSkinnableButton(INIT_SKINNABLE_BUTTON_CONFIG(
         applyPos, btnSize, APPLY_BTN_LABEL, UIAssets::UISkinButtonGreenIdleKey, UIAssets::UISkinButtonGreenHoverKey,
-        UIButtonColorScheme::Green,
+        UISkinnableButtonColorScheme::Green,
         [this]()
         {
             CT_LOG_INFO("SettingsScene: Apply Changes clicked.");
@@ -446,18 +447,28 @@ void SettingsScene::CreateButtonControls()
             {
                 ShowToast(SETTINGS_TOAST_MSG); // no resolution change, show immediately
             }
-        });
+        }));
 
+    // We don't directly call the addElement before the button because we will need to perform specific logic on that
+    // button internally in SettingsScene directly.
     UIManager::Instance().AddElement(m_applyButton);
 
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateSkinnableButton(backPos, btnSize, BACK_BTN_LABEL, UIAssets::UISkinButtonRedIdleKey,
-                                                    UIAssets::UISkinButtonRedHoverKey, UIButtonColorScheme::Red,
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("SettingsScene: Go Back clicked.");
-                                                        OnGoBack();
-                                                    }));
+    auto cfg = INIT_SKINNABLE_BUTTON_CONFIG(backPos, btnSize, BACK_BTN_LABEL, UIAssets::UISkinButtonRedIdleKey,
+                                            UIAssets::UISkinButtonRedHoverKey, UISkinnableButtonColorScheme::Red,
+                                            [this]()
+                                            {
+                                                CT_LOG_INFO("SettingsScene: Go Back clicked.");
+                                                OnGoBack();
+                                            });
+    // Back UIButton
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
+        INIT_SKINNABLE_BUTTON_CONFIG(backPos, btnSize, BACK_BTN_LABEL, UIAssets::UISkinButtonRedIdleKey,
+                                     UIAssets::UISkinButtonRedHoverKey, UISkinnableButtonColorScheme::Red,
+                                     [this]()
+                                     {
+                                         CT_LOG_INFO("SettingsScene: Go Back clicked.");
+                                         OnGoBack();
+                                     })));
 }
 
 /// @brief Generate the Audio Sliders needed for the Audio Settings Scene page.
@@ -466,27 +477,31 @@ void SettingsScene::CreateAudioControls()
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
     const std::string title = AUDIO_PAGE_LABEL;
-    const sf::Vector2f relativePos{0.25f, 0.25f};
-    const sf::Vector2f relativeSize{0.5f, 0.5f};
+    const sf::Vector2f grpBoxPos{0.25f, 0.25f};
+    const sf::Vector2f grpBoxSize{0.5f, 0.5f};
 
     // Create a 50% screen width, 50% screen height UIGroupBox for UI elements as children.
-    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, title);
+
+    auto groupBox = UIFactory::Instance().CreateGroupBox(
+        INIT_GROUPBOX_CONFIG(grpBoxPos, grpBoxSize, true, title, true, UITextLabelScheme::DefaultScheme));
 
     const float referenceSliderWidth = BASE_SLIDER_WIDTH_PERCENT; // 45% of reference width
     const float sliderHeight = scaleMgr.ScaleY(BASE_SLIDER_HEIGHT_PIXEL);
 
-    groupBox->AddElement(
-        UIFactory::Instance().CreateSlider(MASTER_VOL_SLIDER_LABEL, {0.f, 0.f}, {referenceSliderWidth, sliderHeight},
-                                           0.f, MAX_SLIDER_VALUE, m_settings->m_masterVolume, [](float val)
-                                           { SettingsManager::Instance().GetSettings()->m_masterVolume = val; }));
+    const sf::Vector2f pos = {0.f, 0.f};
+    const sf::Vector2f size = {referenceSliderWidth, sliderHeight};
 
     groupBox->AddElement(UIFactory::Instance().CreateSlider(
-        MUSIC_VOL_SLIDER_LABEL, {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, MAX_SLIDER_VALUE,
-        m_settings->m_musicVolume, [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; }));
+        INIT_SLIDER_CONFIG(MASTER_VOL_SLIDER_LABEL, pos, size, 0.f, MAX_SLIDER_VALUE, m_settings->m_masterVolume,
+                           [](float val) { SettingsManager::Instance().GetSettings()->m_masterVolume = val; })));
 
     groupBox->AddElement(UIFactory::Instance().CreateSlider(
-        SFX_VOL_SLIDER_LABEL, {0.f, 0.f}, {referenceSliderWidth, sliderHeight}, 0.f, MAX_SLIDER_VALUE,
-        m_settings->m_sfxVolume, [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; }));
+        INIT_SLIDER_CONFIG(MUSIC_VOL_SLIDER_LABEL, pos, size, 0.f, MAX_SLIDER_VALUE, m_settings->m_musicVolume,
+                           [](float val) { SettingsManager::Instance().GetSettings()->m_musicVolume = val; })));
+
+    groupBox->AddElement(UIFactory::Instance().CreateSlider(
+        INIT_SLIDER_CONFIG(SFX_VOL_SLIDER_LABEL, pos, size, 0.f, MAX_SLIDER_VALUE, m_settings->m_sfxVolume,
+                           [](float val) { SettingsManager::Instance().GetSettings()->m_sfxVolume = val; })));
 
     UIManager::Instance().AddElement(groupBox);
 }
@@ -501,7 +516,8 @@ void SettingsScene::CreateResolutionControls()
     const sf::Vector2f relativeSize{0.25f, 0.40f};
 
     // Create the group box using the centralized UIFactory
-    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, title);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(
+        INIT_GROUPBOX_CONFIG(relativePos, relativeSize, true, title, true, UITextLabelScheme::DefaultScheme));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.15f * relativeSize.y));
 
@@ -517,19 +533,21 @@ void SettingsScene::CreateResolutionControls()
 
     for (const auto &[label, resValue] : options)
     {
-        auto selectableButton = UIFactory::Instance().CreateSelectableButton(
-            {0.f, 0.f}, buttonSize, label,
-            [this, resValue, label, groupBox]()
+        const sf::Vector2f pos = {0.f, 0.f};
+        auto btnCallbackFunc = [this, resValue, label, groupBox]()
+        {
+            for (auto &el : groupBox->GetChildren())
             {
-                for (auto &el : groupBox->GetChildren())
+                if (auto sb = std::dynamic_pointer_cast<UISelectableButton>(el))
                 {
-                    if (auto sb = std::dynamic_pointer_cast<UISelectableButton>(el))
-                    {
-                        sb->SetSelected(sb->GetLabel() == label);
-                    }
+                    sb->SetSelected(sb->GetLabel() == label);
                 }
-                SettingsManager::Instance().GetSettings()->m_resolution = resValue;
-            });
+            }
+            SettingsManager::Instance().GetSettings()->m_resolution = resValue;
+        };
+
+        auto selectableButton = UIFactory::Instance().CreateSelectableButton(
+            INIT_SELECTABLE_BUTTON_CONFIG(pos, buttonSize, label, btnCallbackFunc));
 
         selectableButton->SetSelected(resValue == current);
         groupBox->AddElement(selectableButton);
@@ -548,7 +566,8 @@ void SettingsScene::CreateDifficultyControls()
     const sf::Vector2f relativeSize{0.25f, 0.40f};
 
     // Create the group box using the centralized UIFactory
-    auto groupBox = UIFactory::Instance().CreateGroupBox(relativePos, relativeSize, title);
+    auto groupBox = UIFactory::Instance().CreateGroupBox(
+        INIT_GROUPBOX_CONFIG(relativePos, relativeSize, true, title, true, UITextLabelScheme::DefaultScheme));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(.02f));
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(.15f * relativeSize.y));
 
@@ -564,19 +583,21 @@ void SettingsScene::CreateDifficultyControls()
 
     for (const auto &[label, modeValue] : options)
     {
-        auto selectableButton = UIFactory::Instance().CreateSelectableButton(
-            {0.f, 0.f}, buttonSize, label,
-            [this, modeValue, label, groupBox]()
+        const sf::Vector2f pos = {0.f, 0.f};
+        auto btnCallbackFunc = [this, modeValue, label, groupBox]()
+        {
+            for (auto &el : groupBox->GetChildren())
             {
-                for (auto &el : groupBox->GetChildren())
+                if (auto sb = std::dynamic_pointer_cast<UISelectableButton>(el))
                 {
-                    if (auto sb = std::dynamic_pointer_cast<UISelectableButton>(el))
-                    {
-                        sb->SetSelected(sb->GetLabel() == label);
-                    }
+                    sb->SetSelected(sb->GetLabel() == label);
                 }
-                SettingsManager::Instance().GetSettings()->m_gameDifficulty = modeValue;
-            });
+            }
+            SettingsManager::Instance().GetSettings()->m_gameDifficulty = modeValue;
+        };
+
+        auto selectableButton = UIFactory::Instance().CreateSelectableButton(
+            INIT_SELECTABLE_BUTTON_CONFIG(pos, buttonSize, label, btnCallbackFunc));
 
         selectableButton->SetSelected(modeValue == current);
         groupBox->AddElement(selectableButton);
@@ -601,8 +622,8 @@ void SettingsScene::ShowToast(const std::string &message)
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
     sf::Vector2f pos{winSize.x * BASE_FOOTER_WIDTH_75_PERCENT, winSize.y * BASE_FOOTER_HEIGHT_85_PERCENT};
 
-    auto toast =
-        UIFactory::Instance().CreateToastMessage(message, pos, TOAST_DEFAULT_DURATION, TOAST_DEFAULT_FONT_SIZE);
+    auto toast = UIFactory::Instance().CreateToastMessage(INIT_TOAST_CONFIG(
+        message, pos, TOAST_DEFAULT_DURATION, TOAST_DEFAULT_FONT_SIZE, true, UITextLabelScheme::DefaultScheme));
     UIManager::Instance().AddElement(toast);
 }
 

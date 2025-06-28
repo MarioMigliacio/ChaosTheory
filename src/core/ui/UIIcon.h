@@ -44,6 +44,19 @@ enum class IconType
     WarpIcon
 };
 
+/// @brief Data structure holding internal configurations useful for IconConfig construction.
+/// @param position Vector2f position for Icon Config.
+/// @param size Vector2f size for Icon Config.
+/// @param textureKey String texture key for Icon Config.
+/// @param type IconType type for Icon Config.
+struct IconConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    std::string textureKey;
+    IconType type = IconType::None;
+};
+
 // ============================================================================
 //  Class       : UIIcon
 //  Purpose     : Handles the logic for ui Icon elements providing robust

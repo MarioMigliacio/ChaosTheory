@@ -156,19 +156,19 @@ sf::Vector2f UISkinnableButton::GetSize() const
 
 /// @brief Helper method to utilize color themes for a SkinnableButton combo.
 /// @param scheme Enum field representing  the type of scheme.
-void UISkinnableButton::ApplySkinnableButtonTextStyle(UIButtonColorScheme scheme)
+void UISkinnableButton::ApplySkinnableButtonTextStyle(UISkinnableButtonColorScheme scheme)
 {
     switch (scheme)
     {
-        case UIButtonColorScheme::Blue:
+        case UISkinnableButtonColorScheme::Blue:
             SetTextStyle(TEX_BTN_BLUE_LABEL_TEXT_COLOR, TEX_BTN_BLUE_TEXT_OUTLINE_COLOR, 2.0f);
             break;
 
-        case UIButtonColorScheme::Green:
+        case UISkinnableButtonColorScheme::Green:
             SetTextStyle(TEX_BTN_GREEN_LABEL_TEXT_COLOR, TEX_BTN_GREEN_TEXT_OUTLINE_COLOR, 2.0f);
             break;
 
-        case UIButtonColorScheme::Red:
+        case UISkinnableButtonColorScheme::Red:
             SetTextStyle(TEX_BTN_RED_LABEL_TEXT_COLOR, TEX_BTN_RED_TEXT_OUTLINE_COLOR, 2.0f);
             break;
     }

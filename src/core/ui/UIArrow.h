@@ -24,6 +24,21 @@ enum class ArrowDirection
     Down
 };
 
+/// @brief Data structure holding internal configurations useful for ArrowConfig construction.
+/// @param position Vector2f position for Arrow.
+/// @param size Vector2f size for Arrow.
+/// @param textureKey string texture key for Arrow.
+/// @param direction ArrowDirection direction for Arrow.
+/// @param onClick function callback to trigger for Arrow.
+struct ArrowConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    std::string textureKey;
+    ArrowDirection direction;
+    std::function<void()> onClick;
+};
+
 // ============================================================================
 //  Class       : UIArrow
 //  Purpose     : Manages this UIArrow logic at the ui level.

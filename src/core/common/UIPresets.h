@@ -230,7 +230,7 @@ constexpr float TOAST_DEFAULT_FADE_DURATION = 1.f;
 constexpr float TOAST_DEFAULT_DRIFT_PERCENTAGE = .05f;
 
 /// @brief Lime green color for a toast message.
-const sf::Color TOAST_DEFAULT_COLOR(102, 255, 102);
+const sf::Color TOAST_DEFAULT_COLOR = sf::Color(102, 255, 102);
 
 // ============================================================================
 // Generic Arrow uses:
@@ -281,6 +281,12 @@ constexpr int HUD_HEALTH_LABEL_START_VALUE = 100;
 
 /// @brief Fixed name constant allows for fixed text width large enough for any health value and spacing.
 constexpr auto HUD_HEALTH_LABEL_INIT_STR = "1000";
+
+/// @brief Default color pallet for HUD bar, semi dark grey.
+const sf::Color DEFAULT_HUD_COLOR = sf::Color(64, 64, 64, 255);
+
+/// @brief Default color pallet for HUD outline, invisible by default.
+const sf::Color DEFAULLT_HUD_BACKGROUND_COLOR = sf::Color::Transparent;
 
 // ============================================================================
 // Generic Fillable Gauge uses:
