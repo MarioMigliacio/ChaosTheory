@@ -115,7 +115,7 @@ void UIChatBox::AddLine(const std::string &text)
     }
 }
 
-/// @brief Starts revealing the next line in the queue or clears text if queue is empty. test
+/// @brief Starts revealing the next line in the queue or clears text if queue is empty.
 void UIChatBox::StartNextLine()
 {
     if (m_nextIndicatorIcon)
