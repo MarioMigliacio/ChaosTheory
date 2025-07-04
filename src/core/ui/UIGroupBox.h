@@ -23,7 +23,7 @@
 /// @param position Vector2f position for Group Box.
 /// @param size Vector2f size for Group Box.
 /// @param useTitle bool should title be used for Group Box [default false].
-/// @param title string title label for Group Box [default = ""].
+/// @param title string title label for Group Box [default empty string].
 /// @param centerOrigin bool should center origin for Group Box title [default true].
 /// @param scheme UITextLabelScheme Color Scheme for Group Box [default default color scheme].
 struct GroupBoxConfig
@@ -31,7 +31,7 @@ struct GroupBoxConfig
     sf::Vector2f position;
     sf::Vector2f size;
     bool useTitle = false;
-    std::string title = "";
+    std::string title = std::string();
     bool centerOrigin = true;
     UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme;
 };
@@ -64,6 +64,7 @@ class UIGroupBox : public UIElement
                   UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme);
     void SetTitleScheme(UITextLabelScheme scheme);
     void AddElement(std::shared_ptr<UIElement> element);
+    void RemoveElement(const std::shared_ptr<UIElement> &element);
     void RealignChildren();
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed, float dt) override;

@@ -253,3 +253,11 @@ std::shared_ptr<UIIcon> UIFactory::CreateIcon(const IconConfig &cfg)
 
     return icon;
 }
+
+/// @brief Creates a UI ChatBox element, given the custom input parameters.
+/// @param cfg UIChatBox.
+/// @return safe pointer to a UIChatBox.
+std::shared_ptr<UIChatBox> UIFactory::CreateChatBox(const ChatBoxConfig &cfg)
+{
+    return std::make_shared<UIChatBox>(cfg);
+}

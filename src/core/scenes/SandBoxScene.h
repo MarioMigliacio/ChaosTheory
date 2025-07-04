@@ -12,12 +12,11 @@
 #pragma once
 
 #include "Background.h"
+#include "Macros.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
-#include "UIFillableGauge.h"
 #include "UIPresets.h"
-#include "UITextLabel.h"
 #include <memory>
 
 // ============================================================================
@@ -53,22 +52,26 @@ class SandBoxScene final : public Scene
     void Render() override;
 
   private:
-    void SetupSceneComponents();
     void LoadBackground();
-    void CreateTitleText();
-    void CreateHUDPanel();
-    void PlayGameMusic();
     void BindInputKeys();
     void CheckActionsPressed();
-    void UpdateHUD(float dt);
 
-    void MockFillableGaugeComponents();
-    void MockIconComponents();
+    void SetupSceneComponents();
+    void MockTitleText(const bool enabled);
+    void MockHUDPanel(const bool enabled);
+    void MockFillableGaugeComponents(const bool enabled);
+    void MockShipStatusComponent(const bool enabled);
+    void MockIconComponents(const bool enabled);
+    void MockChatBox(const bool enabled);
+
+    void PlayGameMusic();
+    void UpdateHUD(float dt, const bool enabled);
 
   private:
     std::shared_ptr<Settings> m_settings;
     std::shared_ptr<UITextLabel> m_titleLabel;
     std::shared_ptr<UITextLabel> m_helpLabel;
+    std::shared_ptr<UIChatBox> m_testChatBox;
     std::unique_ptr<Background> m_background;
 
     std::shared_ptr<UITextLabel> m_scoreLabel;

@@ -61,6 +61,18 @@ void UIManager::AddElement(std::shared_ptr<UIElement> element)
     m_elements.push_back(std::move(element));
 }
 
+/// @brief Remove the desired element from the collection of elements.
+/// @param element record to be removed from m_elements.
+void UIManager::RemoveElement(const std::shared_ptr<UIElement> &element)
+{
+    auto it = std::find(m_elements.begin(), m_elements.end(), element);
+
+    if (it != m_elements.end())
+    {
+        m_elements.erase(it);
+    }
+}
+
 /// @brief Returns a reference to the UIManagers collection of elements.
 /// @return m_elements.
 const std::vector<std::shared_ptr<UIElement>> &UIManager::GetElements() const

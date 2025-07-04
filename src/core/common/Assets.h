@@ -25,26 +25,29 @@
 /// @brief Exposes relevent assets to the AudioAssets namespace.
 namespace AudioAssets
 {
-/// @brief Key to the BombAudioKey Texture Asset.
+/// @brief Key to the BombAudioKey Audio Asset.
 static auto BombAudioKey = "Bomb";
 
-/// @brief Key to the ExplosionAudioKey Texture Asset.
+/// @brief Key to the ExplosionAudioKey Audio Asset.
 static auto ExplosionAudioKey = "Explosion";
 
-/// @brief Key to the SplashIntroAudioKey Texture Asset.
+/// @brief Key to the SplashIntroAudioKey Audio Asset.
 static auto SplashIntroAudioKey = "IntroClip";
 
-/// @brief Key to the PingAudioKey Texture Asset.
+/// @brief Key to the PingAudioKey Audio Asset.
 static auto PingAudioKey = "Ping";
 
-/// @brief Key to the RootMenuAudioKey Texture Asset.
+/// @brief Key to the RootMenuAudioKey Audio Asset.
 static auto RootMenuAudioKey = "RootMenu";
+
+/// @brief Key to the ChatBlipKey Audio Asset.
+static auto ChatBlipKey = "ChatBlip";
 
 // @brief Sounds contain a Key and Value pair collection of Audio Assets
 static const std::unordered_map<std::string, std::string> Sounds = {
     {"Bomb", "assets/audio/Bomb.wav"},           {"Explosion", "assets/audio/Explosion.wav"},
     {"IntroClip", "assets/audio/IntroClip.wav"}, {"Ping", "assets/audio/Ping.wav"},
-    {"RootMenu", "assets/audio/RootMenu.wav"},
+    {"RootMenu", "assets/audio/RootMenu.wav"},   {"ChatBlip", "assets/audio/ChatBlip.wav"},
 };
 } // namespace AudioAssets
 
@@ -117,6 +120,9 @@ namespace SpriteAssets
 /// @brief Key to the AlienShipSpriteKey Sprite Asset.
 static auto AlienShipSpriteKey = "AlienShip";
 
+/// @brief Key to the AstronautSpeakerKey Sprite Asset.
+static auto AstronautSpeakerKey = "AstronautSpeaker";
+
 /// @brief Key to the AtomicIconSpriteKey Sprite Asset.
 static auto AtomicIconSpriteKey = "AtomicIcon";
 
@@ -183,6 +189,7 @@ static auto WideLazerRedSpriteKey = "WideLazerRed";
 /// @brief Sprites contain a Key and Value pair collection of sprite assets
 static const std::unordered_map<std::string, std::string> Sprites = {
     {"AlienShip", "assets/sprites/AlienShip.png"},
+    {"AstronautSpeaker", "assets/sprites/AstronautSpeaker.png"},
     {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
     {"BasicShip", "assets/sprites/BasicShip.png"},
     {"BombBlastFinal", "assets/sprites/BombBlastFinal.png"},
@@ -217,6 +224,15 @@ namespace UIAssets
 /// @brief Key to the UIArrow Texture Asset.
 static auto UIArrowTextureKey = "UIArrow";
 
+/// @brief Key to the UIArrowDown Texture Asset.
+static auto UIArrowDownTextureKey = "UIArrowDown";
+
+/// @brief Key to the UIArrowRight Texture Asset.
+static auto UIArrowRightTextureKey = "UIArrowRight";
+
+/// @brief Key to the UIArrowUp Texture Asset.
+static auto UIArrowUpTextureKey = "UIArrowUp";
+
 /// @brief Key to the UISkinnableButton: Blue-Idle Texture Asset.
 static auto UISkinButtonBlueIdleKey = "BlueButtonIdle";
 
@@ -238,6 +254,9 @@ static auto UISkinButtonRedHoverKey = "RedButtonHover";
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Textures = {
     {"UIArrow", "assets/ui/arrow/UIArrow.png"},
+    {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
+    {"UIArrowRight", "assets/ui/arrow/UIArrowRight.png"},
+    {"UIArrowUp", "assets/ui/arrow/UIArrowUp.png"},
     {"BlueButtonIdle", "assets/ui/button/blue/BlueButtonIdle.png"},
     {"BlueButtonHover", "assets/ui/button/blue/BlueButtonHover.png"},
     {"GreenButtonIdle", "assets/ui/button/green/GreenButtonIdle.png"},
@@ -341,11 +360,17 @@ static const std::unordered_map<std::string, std::string> Backgrounds = {
 
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"AlienShip", "assets/sprites/AlienShip.png"}, {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
-    {"BasicShip", "assets/sprites/BasicShip.png"}, {"FireRateIcon", "assets/sprites/FireRateIcon.png"},
-    {"GasIcon", "assets/sprites/GasIcon.png"},     {"PowerIcon", "assets/sprites/PowerIcon.png"},
-    {"LifeIcon", "assets/sprites/LifeIcon.png"},   {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},
-    {"WarpIcon", "assets/sprites/WarpIcon.png"},
+    {"AlienShip", "assets/sprites/AlienShip.png"},       {"AstronautSpeaker", "assets/sprites/AstronautSpeaker.png"},
+    {"AtomicIcon", "assets/sprites/AtomicIcon.png"},     {"BasicShip", "assets/sprites/BasicShip.png"},
+    {"FireRateIcon", "assets/sprites/FireRateIcon.png"}, {"GasIcon", "assets/sprites/GasIcon.png"},
+    {"PowerIcon", "assets/sprites/PowerIcon.png"},       {"LifeIcon", "assets/sprites/LifeIcon.png"},
+    {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},   {"WarpIcon", "assets/sprites/WarpIcon.png"},
+    {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
+};
+
+/// @brief Sounds contain a Key and Value pair collection of image assets
+static const std::unordered_map<std::string, std::string> Sounds = {
+    {"ChatBlip", "assets/audio/ChatBlip.wav"},
 };
 } // namespace SandBoxAssets
 
