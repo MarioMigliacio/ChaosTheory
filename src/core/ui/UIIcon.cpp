@@ -47,7 +47,7 @@ constexpr float POWER_ICON_DRIFT_SPEED = 80.f;
 /// @brief Default fall delay for the PowerIcon.
 constexpr float POWER_ICON_FALL_DELAY = 2.5f;
 
-/// @brief Default drifting speed of the UpgradeIcon.
+/// @brief Default drifting speed of the UpgradeIcon.IconType
 constexpr float UPGRADE_ICON_DRIFT_SPEED = 90.f;
 
 /// @brief Default fall delay for the UpgradeIcon.
@@ -168,11 +168,17 @@ void UIIcon::StartFalling()
             m_fallDelay = UPGRADE_ICON_FALL_DELAY;
             break;
         case IconType::WarpIcon:
-            m_driftSpeed = 0.f;
             m_driftEnabled = false;
+            m_driftSpeed = 0.f;
             break;
+        case IconType::SpeakerIcon:
+            m_driftEnabled = false;
+            m_driftSpeed = 0.f;
+            break;
+        case IconType::DialogNextIcon:
+            // intentional leave m_driftEnabled = true, but remove drift speed, so it does FadeAlpha, but doesn't move.
+            m_driftSpeed = 0.f;
         default:
-
             break;
     }
 }

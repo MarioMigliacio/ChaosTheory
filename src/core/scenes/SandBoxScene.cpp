@@ -14,7 +14,6 @@
 #include "Assets.h"
 #include "AudioManager.h"
 #include "InputManager.h"
-#include "Macros.h"
 #include "MainMenuScene.h"
 #include "PauseScene.h"
 #include "ResolutionScaleManager.h"
@@ -36,8 +35,20 @@ constexpr auto PAUSE_GAME_LABEL = "Press Escape to Pause";
 /// @brief Fixed name constant to be used with BindActionKey to setup a pause key.
 constexpr auto PAUSE_BUTTON_KEY = "Pause";
 
+/// @brief Fixed name constant to be used with BindActionKey to setup the skip chatbox dialog.
+constexpr auto SKIP_CHAT_KEY = "Space";
+
 /// @brief Fixed name constant to be used with the ship stats group label box.
 constexpr auto SHIP_STATS_GROUPBOX_LABEL = "Ship Stats";
+
+/// @brief Quick enabling of method.
+constexpr bool TEST_ENABLED = true;
+
+/// @brief Quick disabling of method.
+constexpr bool TEST_DISABLED = false;
+
+/// @brief Quickk disabling of HUD methods.
+constexpr bool HUD_MOCK_BOOL = false;
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -83,6 +94,14 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
+    for (const auto &[key, path] : SandBoxAssets::Sounds)
+    {
+        if (!AssetManager::Instance().LoadSound(key, path))
+        {
+            CT_LOG_ERROR("SandBoxScene failed to load sound asset: {} -> {}", key, path);
+        }
+    }
+
     for (const auto &[key, path] : FontAssets::Fonts)
     {
         if (!AssetManager::Instance().LoadFont(key, path))
@@ -109,6 +128,7 @@ void SandBoxScene::Shutdown()
 void SandBoxScene::OnExit()
 {
     InputManager::Instance().UnbindKey(PAUSE_BUTTON_KEY);
+    InputManager::Instance().UnbindKey(SKIP_CHAT_KEY);
 
     CT_LOG_INFO("SandBoxScene OnExit.");
 }
@@ -138,7 +158,7 @@ void SandBoxScene::Update(float dt)
     }
 
     CheckActionsPressed();
-    UpdateHUD(dt);
+    UpdateHUD(dt, HUD_MOCK_BOOL);
 
     // Handle button scene request change
     if (m_hasPendingTransition)
@@ -179,16 +199,6 @@ void SandBoxScene::Render()
     UIManager::Instance().Render(window);
 }
 
-/// @brief Helper method to initialize necessary Scene components.
-void SandBoxScene::SetupSceneComponents()
-{
-    CreateTitleText();
-    PlayGameMusic();
-    CreateHUDPanel();
-    MockFillableGaugeComponents();
-    MockIconComponents();
-}
-
 /// @brief Helper method to load the Background for this Scene.
 void SandBoxScene::LoadBackground()
 {
@@ -200,9 +210,71 @@ void SandBoxScene::LoadBackground()
     m_background->SetLayerMotion(BackgroundAssets::GasPattern1BackgroundKey, {0.f, -0.1f});
 }
 
-/// @brief Helper method to create the Title string entity for this scene.
-void SandBoxScene::CreateTitleText()
+/// @brief Sets up keyboard inputs that can be picked up during scene lifetime.
+void SandBoxScene::BindInputKeys()
 {
+    InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Escape);
+    InputManager::Instance().BindKey(SKIP_CHAT_KEY, sf::Keyboard::Key::Space);
+}
+
+/// @brief Determines if any configured keyboard input has been pressed during scene update.
+void SandBoxScene::CheckActionsPressed()
+{
+    auto &input = InputManager::Instance();
+
+    if (input.IsKeyJustPressed(PAUSE_BUTTON_KEY))
+    {
+        CT_LOG_INFO("SandBoxScene: Pause Button Pressed.");
+
+        m_hasPendingTransition = true;
+        m_requestedScene = SceneID::Pause;
+    }
+
+    if (m_testChatBox)
+    {
+        if (input.IsKeyJustPressed(SKIP_CHAT_KEY))
+        {
+            if (!m_testChatBox->IsTypingComplete())
+            {
+                m_testChatBox->SkipTyping();
+            }
+
+            else if (m_testChatBox->HasMoreLines())
+            {
+                m_testChatBox->StartNextLine();
+            }
+
+            else
+            {
+                // Final line is done, chatbox is now empty
+                m_testChatBox->Clear();
+                UIManager::Instance().RemoveElement(m_testChatBox);
+                m_testChatBox.reset();
+            }
+        }
+    }
+}
+
+/// @brief Helper method to initialize necessary Scene components.
+void SandBoxScene::SetupSceneComponents()
+{
+    PlayGameMusic();
+    MockTitleText(TEST_DISABLED);
+    MockHUDPanel(HUD_MOCK_BOOL);
+    MockFillableGaugeComponents(TEST_DISABLED);
+    MockShipStatusComponent(TEST_ENABLED);
+    MockIconComponents(TEST_ENABLED);
+    MockChatBox(TEST_ENABLED);
+}
+
+/// @brief Helper method to create the Title string entity for this scene.
+void SandBoxScene::MockTitleText(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
     const std::string titleLabel = TITLE_SCREEN_LABEL;
@@ -226,8 +298,13 @@ void SandBoxScene::CreateTitleText()
 }
 
 /// @brief Initializes the HUD Panel ui component.
-void SandBoxScene::CreateHUDPanel()
+void SandBoxScene::MockHUDPanel(const bool enabled)
 {
+    if (!enabled)
+    {
+        return;
+    }
+
     auto &scaleMgr = ResolutionScaleManager::Instance();
 
     // Relative position and size (top bar)
@@ -263,83 +340,15 @@ void SandBoxScene::CreateHUDPanel()
     UIManager::Instance().AddElement(hudPanel);
 }
 
-/// @brief Helper method to load and play the game music for this scene.
-void SandBoxScene::PlayGameMusic()
+/// @brief Mocks single gauges that are not embedded in any GroupBox or HUD containers.
+/// @param enabled Whether or not to use this MOCK component in SandBox.
+void SandBoxScene::MockFillableGaugeComponents(const bool enabled)
 {
-    if (!AudioManager::Instance().IsMusicPlaying() ||
-        AudioManager::Instance().GetCurrentMusicName() != SandBoxAssets::GameTrack)
+    if (!enabled)
     {
-        CT_LOG_INFO("SandBoxScene: Starting or resuming menu music.");
-        AudioManager::Instance().PlayMusic(SandBoxAssets::GameTrack, true);
+        return;
     }
 
-    else
-    {
-        CT_LOG_INFO("SandBoxScene: Menu music already playing, no action needed.");
-    }
-}
-
-/// @brief Sets up keyboard inputs that can be picked up during scene lifetime.
-void SandBoxScene::BindInputKeys()
-{
-    InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Escape);
-}
-
-/// @brief Determines if any configured keyboard input has been pressed during scene update.
-void SandBoxScene::CheckActionsPressed()
-{
-    auto &input = InputManager::Instance();
-
-    if (input.IsKeyJustPressed(PAUSE_BUTTON_KEY))
-    {
-        CT_LOG_INFO("SandBoxScene: Pause Button Pressed.");
-
-        m_hasPendingTransition = true;
-        m_requestedScene = SceneID::Pause;
-    }
-}
-
-/// @brief Updates the HUD Panel and all children entities.
-/// @param dt Delta time since last update.
-void SandBoxScene::UpdateHUD(float dt)
-{
-    // Update HUD timers and simulate game state
-    m_elapsedTime += dt;
-
-    if (m_elapsedTime >= 1.f)
-    {
-        m_secondsPassed += 1;
-        m_elapsedTime = 0.f;
-
-        // Update timer display
-        int minutes = m_secondsPassed / 60;
-        int seconds = m_secondsPassed % 60;
-
-        // place a cap on timer
-        if (minutes > 99)
-        {
-            minutes = 99;
-            seconds = 0;
-        }
-
-        std::stringstream ss;
-        ss << HUD_TIMER_TAG << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0')
-           << seconds;
-        m_timerLabel->SetText(ss.str());
-
-        m_currentHealth = std::max(0, m_currentHealth - 1);
-        m_currentScore += 100;
-        m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
-
-        float normalized = static_cast<float>(m_currentHealth) / 100.f;
-        normalized = std::clamp(normalized, 0.f, 1.f); // Ensure within [0, 1]
-        m_healthGauge->SetValue(normalized);
-    }
-}
-
-/// @brief Helper method to test fillable gauge ui components.
-void SandBoxScene::MockFillableGaugeComponents()
-{
     // --- NON HUD FillableGauge testing --- //
     sf::Vector2f pos(0.33f, 0.33f);
     sf::Vector2f size(0.015f, 0.2f);
@@ -360,6 +369,19 @@ void SandBoxScene::MockFillableGaugeComponents()
         GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
 
     UIManager::Instance().AddElement(looseGasGauge2);
+}
+
+/// @brief Helper method to test fillable gauge ui components.
+/// @param enabled Whether or not to use this MOCK in SandBox.
+void SandBoxScene::MockShipStatusComponent(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    sf::Vector2f pos{0, 0};
+    sf::Vector2f size{0.015f, 0.1f};
 
     // ----- Testing Groupbox ------ //
     auto &scaleMgr = ResolutionScaleManager::Instance();
@@ -377,9 +399,6 @@ void SandBoxScene::MockFillableGaugeComponents()
     groupBox->SetCenterChildren(true);
 
     // === HEALTH GAUGE ===
-    pos = {0, 0};
-    size = {0.015f, 0.1f};
-
     auto healthGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
         pos, size, LayoutMode::Vertical, GaugeColorScheme::Health, .25f, DEFAULT_GAUGE_BORDER_THICKNESS,
         GAUGE_BORDER_COLOR_GOLD, true, true, "H", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::CougarScheme,
@@ -412,8 +431,14 @@ void SandBoxScene::MockFillableGaugeComponents()
 }
 
 /// @brief Helper method to test Icon ui components.
-void SandBoxScene::MockIconComponents()
+/// @param enabled Whether or not to use this MOCK in SandBox.
+void SandBoxScene::MockIconComponents(const bool enabled)
 {
+    if (!enabled)
+    {
+        return;
+    }
+
     const auto &window = WindowManager::Instance().GetWindow();
     const float startY = 50.f;
     const sf::Vector2f iconSize = {32.f, 32.f};
@@ -443,5 +468,98 @@ void SandBoxScene::MockIconComponents()
 
         auto icon = UIFactory::Instance().CreateIcon(INIT_ICON_CONFIG(pos, iconSize, entry.spriteKey, entry.type));
         UIManager::Instance().AddElement(icon);
+    }
+}
+
+/// @brief Composes a UIChatBox entity and runs a mock dialog.
+/// @param enabled Whether or not to use this MOCK in SandBox.
+void SandBoxScene::MockChatBox(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    ChatBoxConfig cfg{.position = DEFAULT_CHATBOX_POSITION,
+                      .size = DEFAULT_CHATBOX_SIZE,
+                      .showTitle = true,
+                      .title = "Commander",
+                      .typeSpeed = DEFAULT_CHATBOX_DIALOG_SPEED,
+                      .textScheme = UITextLabelScheme::DefaultScheme,
+                      .titleScheme = UITextLabelScheme::DefaultScheme,
+                      .useSpeakerIcon = true,
+                      .iconTextureKey = SpriteAssets::AstronautSpeakerKey,
+                      .iconType = IconType::SpeakerIcon};
+
+    m_testChatBox = UIFactory::Instance().CreateChatBox(cfg);
+
+    // TODO: Patch will fix magic constants and own the Dialog logic.
+    m_testChatBox->AddLine(
+        "Welcome to the front line, pilot!\nThere are numerous enemy vessels detected in your "
+        "A-O,\nProceed with absolute caution.\nBut someone of your calibur should handle just fine.");
+    m_testChatBox->AddLine("TIP #1:\n\nDo be wary of the asteroid belt.\n"
+                           "Take it slow and conserve fuel.");
+    m_testChatBox->AddLine("TIP #2:\n\nDo not bomb black holes.\n"
+                           "It can be unpredictable!");
+    UIManager::Instance().AddElement(m_testChatBox);
+}
+
+/// @brief Helper method to load and play the game music for this scene.
+void SandBoxScene::PlayGameMusic()
+{
+    if (!AudioManager::Instance().IsMusicPlaying() ||
+        AudioManager::Instance().GetCurrentMusicName() != SandBoxAssets::GameTrack)
+    {
+        CT_LOG_INFO("SandBoxScene: Starting or resuming menu music.");
+        AudioManager::Instance().PlayMusic(SandBoxAssets::GameTrack, true);
+    }
+
+    else
+    {
+        CT_LOG_INFO("SandBoxScene: Menu music already playing, no action needed.");
+    }
+}
+
+/// @brief Updates the HUD Panel and all children entities.
+/// @param dt Delta time since last update.
+/// @param enabled Whether or not the HUD is enabled or not for this SandBox.
+void SandBoxScene::UpdateHUD(float dt, const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    // Update HUD timers and simulate game state
+    m_elapsedTime += dt;
+
+    if (m_elapsedTime >= 1.f)
+    {
+        m_secondsPassed += 1;
+        m_elapsedTime = 0.f;
+
+        // Update timer display
+        int minutes = m_secondsPassed / 60;
+        int seconds = m_secondsPassed % 60;
+
+        // place a cap on timer
+        if (minutes > 99)
+        {
+            minutes = 99;
+            seconds = 0;
+        }
+
+        std::stringstream ss;
+        ss << HUD_TIMER_TAG << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0')
+           << seconds;
+        m_timerLabel->SetText(ss.str());
+
+        m_currentHealth = std::max(0, m_currentHealth - 1);
+        m_currentScore += 100;
+        m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
+
+        float normalized = static_cast<float>(m_currentHealth) / 100.f;
+        normalized = std::clamp(normalized, 0.f, 1.f); // Ensure within [0, 1]
+        m_healthGauge->SetValue(normalized);
     }
 }

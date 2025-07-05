@@ -43,6 +43,7 @@ class UIFactory
     std::shared_ptr<UIHUDPanel> CreateHUDPanel(const HUDPanelConfig &cfg);
     std::shared_ptr<UIFillableGauge> CreateFillableGauge(const FillableGaugeConfig &cfg);
     std::shared_ptr<UIIcon> CreateIcon(const IconConfig &cfg);
+    std::shared_ptr<UIChatBox> CreateChatBox(const ChatBoxConfig &cfg);
 
   private:
     UIFactory() = default;

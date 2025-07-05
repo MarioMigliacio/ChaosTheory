@@ -43,7 +43,7 @@ enum class GaugeTitlePosition
 /// @param borderColor sf::Color value for the border color of the gauge. [default transparent (none)]
 /// @param showPercentage Boolean toggle to render percentage overlay on the gauge. [default false]
 /// @param showTitle Boolean toggle to render a title label alongside the gauge. [default false]
-/// @param titleText String label displayed when title is enabled. [default "" (empty)]
+/// @param titleText String label displayed when title is enabled. [default (empty)]
 /// @param titleFontSize Font size used when title is enabled. [default 14U]
 /// @param titleScheme UITextLabelScheme enum defining the text color style for the title. [default default color
 /// scheme]
@@ -69,7 +69,7 @@ struct FillableGaugeConfig
 
     // Title Display
     bool showTitle = false;
-    std::string titleText = "";
+    std::string titleText = std::string();
     unsigned int titleFontSize = DEFAULT_GAUGE_FONT_SIZE;
     UITextLabelScheme titleScheme = UITextLabelScheme::DefaultScheme;
     GaugeTitlePosition titlePosition = GaugeTitlePosition::Left;

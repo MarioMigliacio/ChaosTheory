@@ -336,3 +336,19 @@ const sf::Color DEFAULT_GAUGE_BACKGROUND_COLOR = sf::Color(40, 40, 40);
 
 /// @brief Gauge fill bar Default scheme - Neutral light.
 const sf::Color DEFAULT_GAUGE_FILL_COLOR = sf::Color(200, 200, 200);
+
+// ============================================================================
+// Generic ChatBox uses:
+// ============================================================================
+
+/// @brief Default ChatBox font size for the internal text.
+constexpr unsigned int DEFAULT_CHATBOX_FONT_SIZE = 14;
+
+/// @brief Default ChatBox character reveal speed.
+constexpr float DEFAULT_CHATBOX_DIALOG_SPEED = .02f;
+
+/// @brief Default ChatBox position.
+const sf::Vector2f DEFAULT_CHATBOX_POSITION = sf::Vector2f(0.1f, 0.7f);
+
+/// @brief Default ChatBox size.
+const sf::Vector2f DEFAULT_CHATBOX_SIZE = sf::Vector2f(0.8f, 0.2f);

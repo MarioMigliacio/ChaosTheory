@@ -14,6 +14,7 @@
 #include "LogManager.h"
 #include "UIArrow.h"
 #include "UIButton.h"
+#include "UIChatBox.h"
 #include "UIFillableGauge.h"
 #include "UIGroupBox.h"
 #include "UIHUDPanel.h"
@@ -93,7 +94,7 @@
 /// @param borderColor Uses [default transparent (none)]
 /// @param showPercentage Uses [default false]
 /// @param showTitle Uses [default false]
-/// @param titleText Uses [default "" (empty)]
+/// @param titleText Uses [default (empty)]
 /// @param titleFontSize Uses [default 14U]
 /// @param titleScheme Uses [default default color scheme]
 /// @param titlePositionEnum Uses [default left position]
@@ -115,7 +116,7 @@
 /// @param borderColor sf::Color value for the border color of the gauge. [default transparent (none)]
 /// @param showPercentage Boolean toggle to render percentage overlay on the gauge. [default false]
 /// @param showTitle Boolean toggle to render a title label alongside the gauge. [default false]
-/// @param titleText String label displayed when title is enabled. [default "" (empty)]
+/// @param titleText String label displayed when title is enabled. [default (empty)]
 /// @param titleFontSize Font size used when title is enabled. [default 14U]
 /// @param titleScheme UITextLabelScheme defining the text color style for the title. [default default color scheme]
 /// @param titlePosition GaugeTitlePosition defining title appearance. [default left position]
@@ -133,7 +134,7 @@
 /// @param pos Vector2f position for Group Box.
 /// @param size Vector2f size for Group Box.
 /// @param useTitle bool should title be used for Group Box [default false].
-/// @param title string title label for Group Box [default = ""].
+/// @param title string title label for Group Box [default = empty].
 /// @param centerOrigin bool should center origin for Group Box title [default true].
 /// @param schemeEnum UITextLabelScheme Color Scheme for Group Box [default default color scheme].
 #define INIT_GROUPBOX_CONFIG(pos, size, useTitle, title, centerOrigin, schemeEnum)                                     \
@@ -227,4 +228,22 @@
     ToastMessageConfig                                                                                                 \
     {                                                                                                                  \
         text, pos, durationSec, fontSize, centerOrigin, schemeEnum                                                     \
+    }
+
+/// @brief Initializes a ChatBox structure to be handled by UIFactory for construction.
+/// @param pos Vector2f position for ChatBox.
+/// @param size Vector2f size for ChatBox.
+/// @param showTitle Bool to toggle title [default false (title disabled)].
+/// @param title Optional string for title label [default empty string].
+/// @param typeSpeed float Seconds per character for typewriter effect [default 0.05f].
+/// @param textScheme Scheme for chat text [default default color scheme].
+/// @param titleScheme Scheme for title text [default default color scheme].
+/// @param useIcon bool to toggle usage of Icon for ChatBox speaker.
+/// @param iconKey string path to asset key for icon if applicable.
+/// @param iconType IconType enum for type of icon.
+#define INIT_CHATBOX_CONFIG(pos, size, showTitle, title, typeSpeed, textScheme, titleScheme, useIcon, iconKey,         \
+                            iconType)                                                                                  \
+    ChatBoxConfig                                                                                                      \
+    {                                                                                                                  \
+        pos, size, showTitle, title, typeSpeed, textScheme, titleScheme, useIcon, iconKey, iconType                    \
     }

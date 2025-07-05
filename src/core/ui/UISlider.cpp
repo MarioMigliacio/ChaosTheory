@@ -65,10 +65,8 @@ void UISlider::SetupGraphics()
     std::stringstream ss;
     ss << m_label << ": " << static_cast<int>(m_value);
 
-    TextLabelConfig cfg = INIT_TEXTLABEL_CONFIG(ss.str(), m_position, BASE_SLIDER_TITLE_FONT_SIZE, false,
-                                                UITextLabelScheme::DefaultScheme);
-
-    m_labelText = UIFactory::Instance().CreateTextLabel(cfg);
+    m_labelText = UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(
+        ss.str(), m_position, BASE_SLIDER_TITLE_FONT_SIZE, false, UITextLabelScheme::DefaultScheme));
 }
 
 /// @brief Returns a normalized value to be bound in min / max and value ratio.

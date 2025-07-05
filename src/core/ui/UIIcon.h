@@ -41,7 +41,13 @@ enum class IconType
     UpgradeIcon,
 
     /// @brief Warp Icon allows for teleportation to matching warp icon.
-    WarpIcon
+    WarpIcon,
+
+    /// @brief Represents an icon for a Speaker embedded in a ChatBox or other UI entity.
+    SpeakerIcon,
+
+    /// @brief Represents a Next indicator for a dialog ChatBox or other UI entity.
+    DialogNextIcon,
 };
 
 /// @brief Data structure holding internal configurations useful for IconConfig construction.
