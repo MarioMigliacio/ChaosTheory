@@ -28,6 +28,9 @@ namespace AudioAssets
 /// @brief Key to the BombAudioKey Audio Asset.
 static auto BombAudioKey = "Bomb";
 
+/// @brief Key to the ChatBlipKey Audio Asset.
+static auto ChatBlipKey = "ChatBlip";
+
 /// @brief Key to the ExplosionAudioKey Audio Asset.
 static auto ExplosionAudioKey = "Explosion";
 
@@ -39,9 +42,6 @@ static auto PingAudioKey = "Ping";
 
 /// @brief Key to the RootMenuAudioKey Audio Asset.
 static auto RootMenuAudioKey = "RootMenu";
-
-/// @brief Key to the ChatBlipKey Audio Asset.
-static auto ChatBlipKey = "ChatBlip";
 
 // @brief Sounds contain a Key and Value pair collection of Audio Assets
 static const std::unordered_map<std::string, std::string> Sounds = {
