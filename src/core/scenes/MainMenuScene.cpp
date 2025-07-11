@@ -246,7 +246,7 @@ void MainMenuScene::CreateTitleText()
                                     scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
     m_titleLabel = UIFactory::Instance().CreateTextLabel(
-        INIT_TEXTLABEL_CONFIG(titleText, centerPos, fontSize, true, UITextLabelScheme::DefaultScheme));
+        TextLabelConfig{.text = titleText, .position = centerPos, .fontSize = fontSize});
 
     UIManager::Instance().AddElement(m_titleLabel);
 }
@@ -262,40 +262,54 @@ void MainMenuScene::CreateButtons()
     const float startY = winSize.y * 0.7f;
     const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
 
+    const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
     const sf::Vector2f playPos{centerX, startY};
     const sf::Vector2f settingsPos{centerX, playPos.y + scaledButtonHeight + scaledSpacing};
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
-    const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
-
+    // Play button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        INIT_SKINNABLE_BUTTON_CONFIG(playPos, btnSize, PLAY_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
-                                     [this]()
-                                     {
-                                         CT_LOG_INFO("Play button clicked!");
-                                         m_hasPendingTransition = true;
-                                         m_requestedScene = SceneID::SandBox;
-                                     })));
+        SkinnableButtonConfig{.position = playPos,
+                              .size = btnSize,
+                              .label = PLAY_BTN_LABEL,
+                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+                              .scheme = UISkinnableButtonColorScheme::Blue,
+                              .onClick = [this]()
+                              {
+                                  CT_LOG_INFO("Play button clicked!");
+                                  m_hasPendingTransition = true;
+                                  m_requestedScene = SceneID::SandBox;
+                              }}));
 
+    // Settings button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        INIT_SKINNABLE_BUTTON_CONFIG(settingsPos, btnSize, SETTING_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
-                                     [this]()
-                                     {
-                                         CT_LOG_INFO("Settings button clicked!");
-                                         m_hasPendingTransition = true;
-                                         m_requestedScene = SceneID::Settings;
-                                     })));
+        SkinnableButtonConfig{.position = settingsPos,
+                              .size = btnSize,
+                              .label = SETTING_BTN_LABEL,
+                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+                              .scheme = UISkinnableButtonColorScheme::Blue,
+                              .onClick = [this]()
+                              {
+                                  CT_LOG_INFO("Settings button clicked!");
+                                  m_hasPendingTransition = true;
+                                  m_requestedScene = SceneID::Settings;
+                              }}));
 
+    // Exit button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        INIT_SKINNABLE_BUTTON_CONFIG(exitPos, btnSize, EXIT_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                     UIAssets::UISkinButtonBlueHoverKey, UISkinnableButtonColorScheme::Blue,
-                                     [this]()
-                                     {
-                                         CT_LOG_INFO("Exit button clicked!");
-                                         m_shouldExit = true;
-                                     })));
+        SkinnableButtonConfig{.position = exitPos,
+                              .size = btnSize,
+                              .label = EXIT_BTN_LABEL,
+                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+                              .scheme = UISkinnableButtonColorScheme::Blue,
+                              .onClick = [this]()
+                              {
+                                  CT_LOG_INFO("Exit button clicked!");
+                                  m_shouldExit = true;
+                              }}));
 }
 
 /// @brief Loads the main background images for this MainMenuScene.

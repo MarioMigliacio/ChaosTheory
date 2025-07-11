@@ -53,10 +53,10 @@ void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsign
     // Compute default title position just above box
     const sf::Vector2f groupBoxPos = m_background.getPosition();
     const float paddingY = ResolutionScaleManager::Instance().ScaleY(TITLE_PAD_Y);
-    const sf::Vector2f size = {0.f, 0.f};
+    const sf::Vector2f pos = {0.f, 0.f};
 
-    m_titleLabel =
-        UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(title, size, fontSize, centerOrigin, scheme));
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
+        .text = title, .position = pos, .fontSize = fontSize, .centerOrigin = centerOrigin, .scheme = scheme});
     sf::Vector2f textSize = m_titleLabel->GetSize();
 
     // Compute anchor X
