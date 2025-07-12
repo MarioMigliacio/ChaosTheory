@@ -66,6 +66,7 @@ class UIGroupBox : public UIElement
     void AddElement(std::shared_ptr<UIElement> element);
     void RemoveElement(const std::shared_ptr<UIElement> &element);
     void RealignChildren();
+    void ClearChildren();
 
     void Update(const sf::Vector2i &mousePosition, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;

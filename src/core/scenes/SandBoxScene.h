@@ -12,6 +12,9 @@
 #pragma once
 
 #include "Background.h"
+#include "DialogConstants.h"
+#include "DialogLine.h"
+#include "DialogQueue.h"
 #include "Macros.h"
 #include "Scene.h"
 #include "SceneManager.h"
@@ -73,11 +76,11 @@ class SandBoxScene final : public Scene
     std::shared_ptr<UITextLabel> m_helpLabel;
     std::shared_ptr<UIChatBox> m_testChatBox;
     std::unique_ptr<Background> m_background;
-
     std::shared_ptr<UITextLabel> m_scoreLabel;
     std::shared_ptr<UITextLabel> m_timerLabel;
-
     std::shared_ptr<UIFillableGauge> m_healthGauge;
+
+    DialogQueue m_dialogQueue;
 
     // Simple test variables for the time being. TODO: Cleanup this to the proper structure later.
     float m_elapsedTime = 0.f;
