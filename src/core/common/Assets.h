@@ -120,8 +120,20 @@ namespace SpriteAssets
 /// @brief Key to the AlienShipSpriteKey Sprite Asset.
 static auto AlienShipSpriteKey = "AlienShip";
 
-/// @brief Key to the AstronautSpeakerKey Sprite Asset.
-static auto AstronautSpeakerKey = "AstronautSpeaker";
+/// @brief Key to the AstronautSpeakerBlackKey Sprite Asset.
+static auto AstronautSpeakerBlackKey = "AstronautSpeakerBlack";
+
+/// @brief Key to the AstronautSpeakerBlueKey Sprite Asset.
+static auto AstronautSpeakerBlueKey = "AstronautSpeakerBlue";
+
+/// @brief Key to the AstronautSpeakerGreenKey Sprite Asset.
+static auto AstronautSpeakerGreenKey = "AstronautSpeakerGreen";
+
+/// @brief Key to the AstronautSpeakerRedKey Sprite Asset.
+static auto AstronautSpeakerRedKey = "AstronautSpeakerRed";
+
+/// @brief Key to the AstronautSpeakerWhiteKey Sprite Asset.
+static auto AstronautSpeakerWhiteKey = "AstronautSpeakerWhite";
 
 /// @brief Key to the AtomicIconSpriteKey Sprite Asset.
 static auto AtomicIconSpriteKey = "AtomicIcon";
@@ -189,7 +201,11 @@ static auto WideLazerRedSpriteKey = "WideLazerRed";
 /// @brief Sprites contain a Key and Value pair collection of sprite assets
 static const std::unordered_map<std::string, std::string> Sprites = {
     {"AlienShip", "assets/sprites/AlienShip.png"},
-    {"AstronautSpeaker", "assets/sprites/AstronautSpeaker.png"},
+    {"AstronautSpeakerBlack", "assets/sprites/AstronautSpeakerBlack.png"},
+    {"AstronautSpeakerBlue", "assets/sprites/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGreen", "assets/sprites/AstronautSpeakerGreen.png"},
+    {"AstronautSpeakerRed", "assets/sprites/AstronautSpeakerRed.png"},
+    {"AstronautSpeakerWhite", "assets/sprites/AstronautSpeakerWhite.png"},
     {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
     {"BasicShip", "assets/sprites/BasicShip.png"},
     {"BombBlastFinal", "assets/sprites/BombBlastFinal.png"},
@@ -361,11 +377,20 @@ static const std::unordered_map<std::string, std::string> Backgrounds = {
 
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"AlienShip", "assets/sprites/AlienShip.png"},       {"AstronautSpeaker", "assets/sprites/AstronautSpeaker.png"},
-    {"AtomicIcon", "assets/sprites/AtomicIcon.png"},     {"BasicShip", "assets/sprites/BasicShip.png"},
-    {"FireRateIcon", "assets/sprites/FireRateIcon.png"}, {"GasIcon", "assets/sprites/GasIcon.png"},
-    {"PowerIcon", "assets/sprites/PowerIcon.png"},       {"LifeIcon", "assets/sprites/LifeIcon.png"},
-    {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},   {"WarpIcon", "assets/sprites/WarpIcon.png"},
+    {"AlienShip", "assets/sprites/AlienShip.png"},
+    {"AstronautSpeakerBlack", "assets/sprites/AstronautSpeakerBlack.png"},
+    {"AstronautSpeakerBlue", "assets/sprites/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGreen", "assets/sprites/AstronautSpeakerGreen.png"},
+    {"AstronautSpeakerRed", "assets/sprites/AstronautSpeakerRed.png"},
+    {"AstronautSpeakerWhite", "assets/sprites/AstronautSpeakerWhite.png"},
+    {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
+    {"BasicShip", "assets/sprites/BasicShip.png"},
+    {"FireRateIcon", "assets/sprites/FireRateIcon.png"},
+    {"GasIcon", "assets/sprites/GasIcon.png"},
+    {"PowerIcon", "assets/sprites/PowerIcon.png"},
+    {"LifeIcon", "assets/sprites/LifeIcon.png"},
+    {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},
+    {"WarpIcon", "assets/sprites/WarpIcon.png"},
 };
 
 /// @brief Sounds contain a Key and Value pair collection of image assets

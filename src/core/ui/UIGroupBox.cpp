@@ -143,6 +143,12 @@ void UIGroupBox::RealignChildren()
     }
 }
 
+/// @brief Remove all existing children in this GroupBox.
+void UIGroupBox::ClearChildren()
+{
+    m_children.clear();
+}
+
 /// @brief Performs internal state management during a single frame.
 /// @param mousePosition Currently traced mouse position.
 /// @param isMousePressed IsMousePressed?

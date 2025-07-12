@@ -234,19 +234,36 @@ void SandBoxScene::CheckActionsPressed()
     {
         if (input.IsKeyJustPressed(SKIP_CHAT_KEY))
         {
+            // Chatbox is not finished with its line; skip to line end.
             if (!m_testChatBox->IsTypingComplete())
             {
                 m_testChatBox->SkipTyping();
             }
 
+            // Chatbox is at the end of a line, and there's more dialog; skip to next line.
             else if (m_testChatBox->HasMoreLines())
             {
                 m_testChatBox->StartNextLine();
             }
 
+            // Chatbox is at the end of a dialog, but there may be another dialog in the queue; skip to next dialog.
+            else if (m_dialogQueue.HasNext())
+            {
+                DialogLine next = m_dialogQueue.Next();
+
+                // Reconfigure title & icon first
+                m_testChatBox->SetSpeaker(next.speakerName, next.showTitle, next.iconTextureKey, next.iconType);
+
+                // Then clear any previous lines
+                m_testChatBox->Clear();
+
+                // Then add the new line text
+                m_testChatBox->AddLine(next.text);
+            }
+
+            // Fully done - remove chatbox
             else
             {
-                // Final line is done, chatbox is now empty
                 m_testChatBox->Clear();
                 UIManager::Instance().RemoveElement(m_testChatBox);
                 m_testChatBox.reset();
@@ -533,27 +550,34 @@ void SandBoxScene::MockChatBox(const bool enabled)
         return;
     }
 
-    m_testChatBox =
-        UIFactory::Instance().CreateChatBox(ChatBoxConfig{.position = DEFAULT_CHATBOX_POSITION,
-                                                          .size = DEFAULT_CHATBOX_SIZE,
-                                                          .showTitle = true,
-                                                          .title = "Commander",
-                                                          .typeSpeed = DEFAULT_CHATBOX_DIALOG_SPEED,
-                                                          .textScheme = UITextLabelScheme::DefaultScheme,
-                                                          .titleScheme = UITextLabelScheme::DefaultScheme,
-                                                          .useSpeakerIcon = true,
-                                                          .iconTextureKey = SpriteAssets::AstronautSpeakerKey,
-                                                          .iconType = IconType::SpeakerIcon});
+    // Clear any previous
+    m_dialogQueue.Clear();
 
-    // TODO: Patch will fix magic constants and own the Dialog logic.
-    m_testChatBox->AddLine(
-        "Welcome to the front line, pilot!\nThere are numerous enemy vessels detected in your "
-        "A-O,\nProceed with absolute caution.\nBut someone of your calibur should handle just fine.");
-    m_testChatBox->AddLine("TIP #1:\n\nDo be wary of the asteroid belt.\n"
-                           "Take it slow and conserve fuel.");
-    m_testChatBox->AddLine("TIP #2:\n\nDo not bomb black holes.\n"
-                           "It can be unpredictable!");
-    UIManager::Instance().AddElement(m_testChatBox);
+    // Add all lines from predefined vector
+    for (const auto &line : DialogConstants::IntroDialog::INTRO_SEQUENCE)
+    {
+        m_dialogQueue.AddLine(line);
+    }
+
+    if (m_dialogQueue.HasNext())
+    {
+        DialogLine next = m_dialogQueue.Next();
+
+        m_testChatBox =
+            UIFactory::Instance().CreateChatBox(ChatBoxConfig{.position = DEFAULT_CHATBOX_POSITION,
+                                                              .size = DEFAULT_CHATBOX_SIZE,
+                                                              .showTitle = next.showTitle,
+                                                              .title = next.speakerName,
+                                                              .typeSpeed = DEFAULT_CHATBOX_DIALOG_SPEED,
+                                                              .textScheme = UITextLabelScheme::DefaultScheme,
+                                                              .titleScheme = UITextLabelScheme::DefaultScheme,
+                                                              .useSpeakerIcon = !next.iconTextureKey.empty(),
+                                                              .iconTextureKey = next.iconTextureKey,
+                                                              .iconType = next.iconType});
+
+        m_testChatBox->AddLine(next.text);
+        UIManager::Instance().AddElement(m_testChatBox);
+    }
 }
 
 /// @brief Helper method to load and play the game music for this scene.

@@ -72,6 +72,7 @@ class UIChatBox : public UIElement
     UIChatBox &operator=(UIChatBox &&) noexcept = default;
 
     void AddLine(const std::string &text);
+    void SetSpeaker(const std::string &speakerName, bool showTitle, const std::string &iconTextureKey, IconType type);
     void StartNextLine();
     void SkipTyping();
     bool HasMoreLines() const;
@@ -95,6 +96,7 @@ class UIChatBox : public UIElement
     std::shared_ptr<UIGroupBox> m_groupBox;
     std::shared_ptr<UITextLabel> m_textLabel;
     std::shared_ptr<UIIcon> m_nextIndicatorIcon;
+    std::shared_ptr<UIGroupBox> m_speakerIconGroupBox;
 
     std::string m_fullText;
     std::string m_currentText;

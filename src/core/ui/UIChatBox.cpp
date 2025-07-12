@@ -16,6 +16,7 @@
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "UIFactory.h"
+#include "UIPresets.h"
 
 /// @brief Constants that can be adjusted throughout the UIChatBox.
 namespace
@@ -76,16 +77,16 @@ UIChatBox::UIChatBox(const ChatBoxConfig &config) : m_typeSpeed(config.typeSpeed
                                  .centerOrigin = false,
                                  .scheme = UITextLabelScheme::DefaultScheme};
 
-        auto iconGroupBox = UIFactory::Instance().CreateGroupBox(iconGbCfg);
+        m_speakerIconGroupBox = UIFactory::Instance().CreateGroupBox(iconGbCfg);
 
-        iconGroupBox->SetSize(sf::Vector2f(scaleMgr.ScaleX(ICON_SIZE.x + scaledBorderSize * 2),
-                                           scaleMgr.ScaleY(ICON_SIZE.y + scaledBorderSize * 2)));
-        iconGroupBox->SetInternalPadding(ICON_PADDING);
-        iconGroupBox->SetEdgePadding(ICON_PADDING);
-        iconGroupBox->SetLayoutMode(LayoutMode::Vertical);
-        iconGroupBox->SetCenterChildren(true);
-        iconGroupBox->SetOutlineColor(GAUGE_BORDER_COLOR_GOLD);
-        iconGroupBox->SetOutlineThickness(scaleMgr.ScaleUniform(ICON_BORDER_SIZE));
+        m_speakerIconGroupBox->SetSize(sf::Vector2f(scaleMgr.ScaleX(ICON_SIZE.x + scaledBorderSize * 2),
+                                                    scaleMgr.ScaleY(ICON_SIZE.y + scaledBorderSize * 2)));
+        m_speakerIconGroupBox->SetInternalPadding(ICON_PADDING);
+        m_speakerIconGroupBox->SetEdgePadding(ICON_PADDING);
+        m_speakerIconGroupBox->SetLayoutMode(LayoutMode::Vertical);
+        m_speakerIconGroupBox->SetCenterChildren(true);
+        m_speakerIconGroupBox->SetOutlineColor(GAUGE_BORDER_COLOR_GOLD);
+        m_speakerIconGroupBox->SetOutlineThickness(scaleMgr.ScaleUniform(ICON_BORDER_SIZE));
 
         IconConfig iconCfg{.position = sf::Vector2f(0.f, 0.f),
                            .size = ICON_SIZE,
@@ -94,8 +95,8 @@ UIChatBox::UIChatBox(const ChatBoxConfig &config) : m_typeSpeed(config.typeSpeed
 
         auto speakerIcon = UIFactory::Instance().CreateIcon(iconCfg);
 
-        iconGroupBox->AddElement(speakerIcon);
-        m_groupBox->AddElement(iconGroupBox);
+        m_speakerIconGroupBox->AddElement(speakerIcon);
+        m_groupBox->AddElement(m_speakerIconGroupBox);
     }
 
     // Create text label for dialog lines
@@ -106,7 +107,7 @@ UIChatBox::UIChatBox(const ChatBoxConfig &config) : m_typeSpeed(config.typeSpeed
                         .centerOrigin = false,
                         .scheme = config.textScheme});
 
-    m_groupBox->AddElement(m_textLabel);
+    SetSpeaker(config.title, config.showTitle, config.iconTextureKey, config.iconType);
 }
 
 /// @brief Adds a line of text to the queue. Starts next line immediately if idle.
@@ -119,6 +120,85 @@ void UIChatBox::AddLine(const std::string &text)
     {
         StartNextLine();
     }
+}
+
+/// @brief Updates the Chatbox Speaker and internals.
+/// @param speakerName the title text for the speaker entity.
+/// @param showTitle whether or not we wish to display the speakerName.
+/// @param iconTextureKey the asset path to the speaker icon.
+/// @param type the iconType for which the icon represents.
+void UIChatBox::SetSpeaker(const std::string &speakerName, bool showTitle, const std::string &iconTextureKey,
+                           IconType type)
+{
+    // === Update title ===
+    if (showTitle && m_groupBox)
+    {
+        m_groupBox->SetTitle(speakerName, *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                             ResolutionScaleManager::Instance().ScaleFont(DEFAULT_CHATBOX_FONT_SIZE), false,
+                             UITextLabelScheme::DefaultScheme);
+    }
+
+    else if (m_groupBox)
+    {
+        // Remove title if no longer needed
+        m_groupBox->SetTitle("", *AssetManager::Instance().GetFont(FontAssets::DefaultFontKey),
+                             ResolutionScaleManager::Instance().ScaleFont(DEFAULT_CHATBOX_FONT_SIZE), false,
+                             UITextLabelScheme::DefaultScheme);
+    }
+
+    // === Update icon ===
+    if (m_speakerIconGroupBox)
+    {
+        // Remove old groupbox entirely from main groupbox
+        m_groupBox->RemoveElement(m_speakerIconGroupBox);
+        m_speakerIconGroupBox.reset();
+    }
+
+    if (!iconTextureKey.empty())
+    {
+        auto &scaleMgr = ResolutionScaleManager::Instance();
+        const float scaledBorderSize = scaleMgr.ScaleUniform(ICON_BORDER_SIZE);
+
+        GroupBoxConfig iconGbCfg{.position = sf::Vector2f(0.f, 0.f),
+                                 .size = sf::Vector2f(0.f, 0.f),
+                                 .useTitle = false,
+                                 .title = std::string(),
+                                 .centerOrigin = false,
+                                 .scheme = UITextLabelScheme::DefaultScheme};
+
+        m_speakerIconGroupBox = UIFactory::Instance().CreateGroupBox(iconGbCfg);
+
+        m_speakerIconGroupBox->SetSize(sf::Vector2f(scaleMgr.ScaleX(ICON_SIZE.x + scaledBorderSize * 2),
+                                                    scaleMgr.ScaleY(ICON_SIZE.y + scaledBorderSize * 2)));
+        m_speakerIconGroupBox->SetInternalPadding(ICON_PADDING);
+        m_speakerIconGroupBox->SetEdgePadding(ICON_PADDING);
+        m_speakerIconGroupBox->SetLayoutMode(LayoutMode::Vertical);
+        m_speakerIconGroupBox->SetCenterChildren(true);
+        m_speakerIconGroupBox->SetOutlineColor(GAUGE_BORDER_COLOR_GOLD);
+        m_speakerIconGroupBox->SetOutlineThickness(scaleMgr.ScaleUniform(ICON_BORDER_SIZE));
+
+        IconConfig iconCfg{
+            .position = sf::Vector2f(0.f, 0.f), .size = ICON_SIZE, .textureKey = iconTextureKey, .type = type};
+
+        auto speakerIcon = UIFactory::Instance().CreateIcon(iconCfg);
+
+        m_speakerIconGroupBox->AddElement(speakerIcon);
+    }
+
+    // Remove all elements from groupbox
+    m_groupBox->ClearChildren();
+
+    // Re-add icon first (if exists)
+    if (m_speakerIconGroupBox)
+    {
+        m_groupBox->AddElement(m_speakerIconGroupBox);
+    }
+
+    // Re-add text label
+    m_groupBox->AddElement(m_textLabel);
+
+    // Realign
+    m_groupBox->RealignChildren();
 }
 
 /// @brief Starts revealing the next line in the queue or clears text if queue is empty.
