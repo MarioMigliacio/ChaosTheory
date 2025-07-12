@@ -221,8 +221,8 @@ static const std::unordered_map<std::string, std::string> Sprites = {
 /// @brief Exposes relevent assets to the UIAssets namespace.
 namespace UIAssets
 {
-/// @brief Key to the UIArrow Texture Asset.
-static auto UIArrowTextureKey = "UIArrow";
+/// @brief Key to the UIArrowLeft Texture Asset.
+static auto UIArrowLeftTextureKey = "UIArrowLeft";
 
 /// @brief Key to the UIArrowDown Texture Asset.
 static auto UIArrowDownTextureKey = "UIArrowDown";
@@ -253,7 +253,7 @@ static auto UISkinButtonRedHoverKey = "RedButtonHover";
 
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Textures = {
-    {"UIArrow", "assets/ui/arrow/UIArrow.png"},
+    {"UIArrowLeft", "assets/ui/arrow/UIArrowLeft.png"},
     {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
     {"UIArrowRight", "assets/ui/arrow/UIArrowRight.png"},
     {"UIArrowUp", "assets/ui/arrow/UIArrowUp.png"},
@@ -289,7 +289,8 @@ static const std::unordered_map<std::string, std::string> Sounds = {
 
 /// @brief UI contain a Key and Value pair collection of ui assets
 static const std::unordered_map<std::string, std::string> UI = {
-    {"UIArrow", "assets/ui/arrow/UIArrow.png"},
+    {"UIArrowLeft", "assets/ui/arrow/UIArrowLeft.png"},
+    {"UIArrowRight", "assets/ui/arrow/UIArrowRight.png"},
     {"GreenButtonIdle", "assets/ui/button/green/GreenButtonIdle.png"},
     {"GreenButtonHover", "assets/ui/button/green/GreenButtonHover.png"},
     {"RedButtonIdle", "assets/ui/button/red/RedButtonIdle.png"},
@@ -365,7 +366,6 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"FireRateIcon", "assets/sprites/FireRateIcon.png"}, {"GasIcon", "assets/sprites/GasIcon.png"},
     {"PowerIcon", "assets/sprites/PowerIcon.png"},       {"LifeIcon", "assets/sprites/LifeIcon.png"},
     {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},   {"WarpIcon", "assets/sprites/WarpIcon.png"},
-    {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
 };
 
 /// @brief Sounds contain a Key and Value pair collection of image assets

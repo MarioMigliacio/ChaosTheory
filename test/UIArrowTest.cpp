@@ -11,6 +11,7 @@
 
 #include "UIArrow.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "Macros.h"
 #include "TestHelpers.h"
 #include <gtest/gtest.h>
@@ -28,6 +29,7 @@ class UIArrowTest : public ::testing::Test
         if (!AssetManager::Instance().IsInitialized())
         {
             AssetManager::Instance().Init(CreateTestSettings());
+            AssetManager::Instance().LoadTexture("UIArrowLeft", "assets/ui/arrow/UIArrowLeft.png");
         }
     }
 
@@ -46,22 +48,22 @@ class UIArrowTest : public ::testing::Test
 
 TEST_F(UIArrowTest, CreationSetsCorrectPositionAndDirection)
 {
-    UIArrow arrow({100.f, 200.f}, {64.f, 64.f}, ArrowDirection::Left);
+
+    UIArrow arrow({100.f, 200.f}, {64.f, 64.f}, UIAssets::UIArrowLeftTextureKey);
 
     EXPECT_EQ(arrow.GetPosition(), sf::Vector2f(100.f, 200.f));
-    EXPECT_EQ(arrow.GetDirection(), ArrowDirection::Left);
 }
 
 TEST_F(UIArrowTest, SetPositionUpdatesCorrectly)
 {
-    UIArrow arrow({100.f, 200.f}, {64.f, 64.f}, ArrowDirection::Right);
+    UIArrow arrow({100.f, 200.f}, {64.f, 64.f}, UIAssets::UIArrowLeftTextureKey);
     arrow.SetPosition({300.f, 300.f});
     EXPECT_EQ(arrow.GetPosition(), sf::Vector2f(300.f, 300.f));
 }
 
 TEST_F(UIArrowTest, SetSizeUpdatesCorrectly)
 {
-    UIArrow arrow({100.f, 200.f}, {64.f, 64.f}, ArrowDirection::Right);
+    UIArrow arrow({100.f, 200.f}, {64.f, 64.f}, UIAssets::UIArrowLeftTextureKey);
     arrow.SetSize({128.f, 128.f});
     EXPECT_GT(arrow.GetSize().x, 64.f);
     EXPECT_GT(arrow.GetSize().y, 64.f);

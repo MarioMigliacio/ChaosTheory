@@ -369,8 +369,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
 
         auto leftArrow = UIFactory::Instance().CreateArrow(ArrowConfig{.position = pos,
                                                                        .size = arrowSize,
-                                                                       .textureKey = UIAssets::UIArrowTextureKey,
-                                                                       .direction = ArrowDirection::Left,
+                                                                       .textureKey = UIAssets::UIArrowLeftTextureKey,
                                                                        .onClick = leftArrowCallback});
 
         UIManager::Instance().AddElement(leftArrow);
@@ -395,8 +394,7 @@ void SettingsScene::CreateArrows(SettingsPage page)
 
         auto rightArrow = UIFactory::Instance().CreateArrow(ArrowConfig{.position = pos,
                                                                         .size = arrowSize,
-                                                                        .textureKey = UIAssets::UIArrowTextureKey,
-                                                                        .direction = ArrowDirection::Right,
+                                                                        .textureKey = UIAssets::UIArrowRightTextureKey,
                                                                         .onClick = rightArrowCallback});
 
         UIManager::Instance().AddElement(rightArrow);
