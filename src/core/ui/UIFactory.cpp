@@ -118,7 +118,7 @@ std::shared_ptr<UIArrow> UIFactory::CreateArrow(const ArrowConfig &cfg)
     sf::Vector2f scaledSize(ResolutionScaleManager::Instance().ScaleX(cfg.size.x),
                             ResolutionScaleManager::Instance().ScaleY(cfg.size.y));
 
-    auto arrow = std::make_shared<UIArrow>(cfg.position, scaledSize, cfg.direction);
+    auto arrow = std::make_shared<UIArrow>(cfg.position, scaledSize, cfg.textureKey);
     arrow->SetOnClick(cfg.onClick);
     arrow->SetTextureSkin(cfg.textureKey);
     arrow->SetSize(scaledSize);

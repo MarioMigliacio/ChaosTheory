@@ -43,9 +43,10 @@ constexpr float PULSE_AMPLITUDE = 0.5f;
 /// @param position Position to emplace.
 /// @param size Size to initialize with.
 /// @param direction Direction to face.
-UIArrow::UIArrow(const sf::Vector2f &position, const sf::Vector2f &size, ArrowDirection direction)
-    : m_direction(direction), m_position(position), m_size(size)
+UIArrow::UIArrow(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &textureKey)
+    : m_position(position), m_size(size)
 {
+    SetTextureSkin(textureKey);
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -169,7 +170,7 @@ void UIArrow::SetTextureSkin(const std::string &texture)
     if (tex)
     {
         m_sprite.setTexture(*tex, true);
-        SetDirection(m_direction);
+        UpdateSprite();
     }
 }
 
@@ -195,46 +196,12 @@ void UIArrow::SetOnClick(std::function<void()> callback)
     m_onClick = std::move(callback);
 }
 
-/// @brief Gets the direction for this UIArrow.
-/// @return m_direction.
-const ArrowDirection UIArrow::GetDirection() const
-{
-    return m_direction;
-}
-
 /// @brief Draw this UIArrow to the render target.
 /// @param target render target
 /// @param states optional sf::RenderStates, unused.
 void UIArrow::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     target.draw(m_sprite, states);
-}
-
-/// @brief Sets the internal direction the arrow texture should face.
-/// @param dir new m_direction.
-void UIArrow::SetDirection(ArrowDirection dir)
-{
-    if (m_sprite.getTexture())
-    {
-        // Rotate based on direction
-        switch (m_direction)
-        {
-            case ArrowDirection::Left:
-                m_sprite.setRotation(0.f);
-                break;
-            case ArrowDirection::Right:
-                m_sprite.setRotation(180.f);
-                break;
-            case ArrowDirection::Up:
-                m_sprite.setRotation(90.f);
-                break;
-            case ArrowDirection::Down:
-                m_sprite.setRotation(270.f);
-                break;
-        }
-
-        UpdateSprite();
-    }
 }
 
 /// @brief Correct the texture sprites position and orientation.

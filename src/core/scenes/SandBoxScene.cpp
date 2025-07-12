@@ -287,11 +287,15 @@ void SandBoxScene::MockTitleText(const bool enabled)
     const sf::Vector2f helpPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                   scaleMgr.ScaledReferenceY(0.25f)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(
-        INIT_TEXTLABEL_CONFIG(titleLabel, titlePos, titleFontSize, true, UITextLabelScheme::MintyHerbScheme));
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{.text = titleLabel,
+                                                                         .position = titlePos,
+                                                                         .fontSize = titleFontSize,
+                                                                         .scheme = UITextLabelScheme::MintyHerbScheme});
 
-    m_helpLabel = UIFactory::Instance().CreateTextLabel(
-        INIT_TEXTLABEL_CONFIG(helpLabel, helpPos, helpFontSize, true, UITextLabelScheme::MintyHerbScheme));
+    m_helpLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{.text = helpLabel,
+                                                                        .position = helpPos,
+                                                                        .fontSize = helpFontSize,
+                                                                        .scheme = UITextLabelScheme::MintyHerbScheme});
 
     UIManager::Instance().AddElement(m_titleLabel);
     UIManager::Instance().AddElement(m_helpLabel);
@@ -311,8 +315,7 @@ void SandBoxScene::MockHUDPanel(const bool enabled)
     const sf::Vector2f relativePos{0.f, 0.f};
     const sf::Vector2f relativeSize{1.0f, 0.05f}; // Full width, 8% height
 
-    auto hudPanel = UIFactory::Instance().CreateHUDPanel(
-        INIT_HUDPANEL_CONFIG(relativePos, relativeSize, DEFAULT_HUD_COLOR, DEFAULLT_HUD_BACKGROUND_COLOR, 0.f));
+    auto hudPanel = UIFactory::Instance().CreateHUDPanel(HUDPanelConfig{.position = relativePos, .size = relativeSize});
     hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.15f)); // Space between labels
     hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));     // Padding around edges
     hudPanel->SetLayoutMode(LayoutMode::Horizontal);
@@ -321,14 +324,19 @@ void SandBoxScene::MockHUDPanel(const bool enabled)
     const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
     const sf::Vector2f gaugeRelativeSize = {0.2f, 0.015f}; // Width, Height in screen %
 
-    m_scoreLabel = UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(
-        HUD_SCORE_LABEL_INIT_STR, relativePos, fontSize, false, UITextLabelScheme::DefaultScheme));
-    m_timerLabel = UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(
-        HUD_TIMER_LABEL_INIT_STR, relativePos, fontSize, false, UITextLabelScheme::DefaultScheme));
-    m_healthGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
-        relativePos, gaugeRelativeSize, LayoutMode::Horizontal, GaugeColorScheme::Health, DEFAULT_GAUGE_FULL_VALUE,
-        DEFAULT_GAUGE_BORDER_THICKNESS, DEFAULT_GAUGE_BORDER_COLOR, true, true, HUD_HEALTH_TAG, DEFAULT_GAUGE_FONT_SIZE,
-        UITextLabelScheme::DefaultScheme, GaugeTitlePosition::Left, DEFAULT_GAUGE_TITLE_PADDING));
+    m_scoreLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
+        .text = HUD_SCORE_LABEL_INIT_STR, .position = relativePos, .fontSize = fontSize, .centerOrigin = false});
+    m_timerLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
+        .text = HUD_TIMER_LABEL_INIT_STR, .position = relativePos, .fontSize = fontSize, .centerOrigin = false});
+    m_healthGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = relativePos,
+                                                                      .size = gaugeRelativeSize,
+                                                                      .colorScheme = GaugeColorScheme::Health,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = HUD_HEALTH_TAG});
 
     hudPanel->AddElement(m_healthGauge, HUDSlotAlignment::Left);
     hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
@@ -353,20 +361,37 @@ void SandBoxScene::MockFillableGaugeComponents(const bool enabled)
     sf::Vector2f pos(0.33f, 0.33f);
     sf::Vector2f size(0.015f, 0.2f);
 
-    auto looseGasGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
-        pos, size, LayoutMode::Vertical, GaugeColorScheme::Gas, .33f, DEFAULT_GAUGE_BORDER_THICKNESS,
-        GAUGE_BORDER_COLOR_GOLD, true, true, "Gas-Vert", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::MintyHerbScheme,
-        GaugeTitlePosition::Left, DEFAULT_GAUGE_TITLE_PADDING));
+    auto looseGasGauge = UIFactory::Instance().CreateFillableGauge(
+        FillableGaugeConfig{.position = pos,
+                            .size = size,
+                            .orientation = LayoutMode::Vertical,
+                            .colorScheme = GaugeColorScheme::Gas,
+                            .initialValue = .33f,
+                            .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                            .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+                            .showPercentage = true,
+                            .showTitle = true,
+                            .titleText = "Gas - Vert",
+                            .titleScheme = UITextLabelScheme::MintyHerbScheme});
 
     UIManager::Instance().AddElement(looseGasGauge);
 
     pos = {.5f, .5f};
     size = {0.2f, 0.015f};
 
-    auto looseGasGauge2 = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
-        pos, size, LayoutMode::Horizontal, GaugeColorScheme::Gas, .33f, DEFAULT_GAUGE_BORDER_THICKNESS,
-        GAUGE_BORDER_COLOR_GOLD, true, true, "Gas-Horiz", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::MintyHerbScheme,
-        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
+    auto looseGasGauge2 = UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{
+        .position = pos,
+        .size = size,
+        .colorScheme = GaugeColorScheme::Gas,
+        .initialValue = .33f,
+        .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+        .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+        .showPercentage = true,
+        .showTitle = true,
+        .titleText = "Gas-Horiz",
+        .titleScheme = UITextLabelScheme::MintyHerbScheme,
+        .titlePosition = GaugeTitlePosition::Above,
+    });
 
     UIManager::Instance().AddElement(looseGasGauge2);
 }
@@ -391,35 +416,62 @@ void SandBoxScene::MockShipStatusComponent(const bool enabled)
     const sf::Vector2f relativePos{0.80f, 0.75f};
     const sf::Vector2f relativeSize{0.16f, 0.18f};
 
-    auto groupBox = UIFactory::Instance().CreateGroupBox(INIT_GROUPBOX_CONFIG(
-        relativePos, relativeSize, true, SHIP_STATS_GROUPBOX_LABEL, true, UITextLabelScheme::DefaultScheme));
+    GroupBoxConfig cfg{
+        .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL};
+
+    auto groupBox = UIFactory::Instance().CreateGroupBox(GroupBoxConfig{
+        .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL});
     groupBox->SetLayoutMode(LayoutMode::Horizontal);
     groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
     groupBox->SetCenterChildren(true);
 
     // === HEALTH GAUGE ===
-    auto healthGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
-        pos, size, LayoutMode::Vertical, GaugeColorScheme::Health, .25f, DEFAULT_GAUGE_BORDER_THICKNESS,
-        GAUGE_BORDER_COLOR_GOLD, true, true, "H", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::CougarScheme,
-        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
-
+    auto healthGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
+                                                                      .size = size,
+                                                                      .orientation = LayoutMode::Vertical,
+                                                                      .colorScheme = GaugeColorScheme::Health,
+                                                                      .initialValue = .25f,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "H",
+                                                                      .titleScheme = UITextLabelScheme::CougarScheme,
+                                                                      .titlePosition = GaugeTitlePosition::Above});
     groupBox->AddElement(healthGauge);
 
     // === MANA GAUGE ===
-    auto manaGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
-        pos, size, LayoutMode::Vertical, GaugeColorScheme::Mana, .10f, DEFAULT_GAUGE_BORDER_THICKNESS,
-        GAUGE_BORDER_COLOR_GOLD, true, true, "M", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::MintyHerbScheme,
-        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
-
+    auto manaGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
+                                                                      .size = size,
+                                                                      .orientation = LayoutMode::Vertical,
+                                                                      .colorScheme = GaugeColorScheme::Mana,
+                                                                      .initialValue = .10f,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "M",
+                                                                      .titleScheme = UITextLabelScheme::MintyHerbScheme,
+                                                                      .titlePosition = GaugeTitlePosition::Above});
     groupBox->AddElement(manaGauge);
 
     // === GAS GAUGE ===
-    auto gasGauge = UIFactory::Instance().CreateFillableGauge(INIT_CUSTOM_FILLABLE_GAUGE_CONFIG(
-        pos, size, LayoutMode::Vertical, GaugeColorScheme::Gas, .66f, DEFAULT_GAUGE_BORDER_THICKNESS,
-        GAUGE_BORDER_COLOR_GOLD, true, true, "G", DEFAULT_GAUGE_FONT_SIZE, UITextLabelScheme::BlueSteelScheme,
-        GaugeTitlePosition::Above, DEFAULT_GAUGE_TITLE_PADDING));
-
+    auto gasGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
+                                                                      .size = size,
+                                                                      .orientation = LayoutMode::Vertical,
+                                                                      .colorScheme = GaugeColorScheme::Gas,
+                                                                      .initialValue = .33f,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "G",
+                                                                      .titleScheme = UITextLabelScheme::BlueSteelScheme,
+                                                                      .titlePosition = GaugeTitlePosition::Above});
     groupBox->AddElement(gasGauge);
 
     // when in groupbox, this is required for correct fill orientation
@@ -466,7 +518,8 @@ void SandBoxScene::MockIconComponents(const bool enabled)
         const auto &entry = iconTypesToTest[i];
         sf::Vector2f pos{startX + (i * spacing), startY};
 
-        auto icon = UIFactory::Instance().CreateIcon(INIT_ICON_CONFIG(pos, iconSize, entry.spriteKey, entry.type));
+        auto icon = UIFactory::Instance().CreateIcon(
+            IconConfig{.position = pos, .size = iconSize, .textureKey = entry.spriteKey, .type = entry.type});
         UIManager::Instance().AddElement(icon);
     }
 }
@@ -480,18 +533,17 @@ void SandBoxScene::MockChatBox(const bool enabled)
         return;
     }
 
-    ChatBoxConfig cfg{.position = DEFAULT_CHATBOX_POSITION,
-                      .size = DEFAULT_CHATBOX_SIZE,
-                      .showTitle = true,
-                      .title = "Commander",
-                      .typeSpeed = DEFAULT_CHATBOX_DIALOG_SPEED,
-                      .textScheme = UITextLabelScheme::DefaultScheme,
-                      .titleScheme = UITextLabelScheme::DefaultScheme,
-                      .useSpeakerIcon = true,
-                      .iconTextureKey = SpriteAssets::AstronautSpeakerKey,
-                      .iconType = IconType::SpeakerIcon};
-
-    m_testChatBox = UIFactory::Instance().CreateChatBox(cfg);
+    m_testChatBox =
+        UIFactory::Instance().CreateChatBox(ChatBoxConfig{.position = DEFAULT_CHATBOX_POSITION,
+                                                          .size = DEFAULT_CHATBOX_SIZE,
+                                                          .showTitle = true,
+                                                          .title = "Commander",
+                                                          .typeSpeed = DEFAULT_CHATBOX_DIALOG_SPEED,
+                                                          .textScheme = UITextLabelScheme::DefaultScheme,
+                                                          .titleScheme = UITextLabelScheme::DefaultScheme,
+                                                          .useSpeakerIcon = true,
+                                                          .iconTextureKey = SpriteAssets::AstronautSpeakerKey,
+                                                          .iconType = IconType::SpeakerIcon});
 
     // TODO: Patch will fix magic constants and own the Dialog logic.
     m_testChatBox->AddLine(

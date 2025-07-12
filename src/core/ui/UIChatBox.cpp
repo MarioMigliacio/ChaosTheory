@@ -52,8 +52,11 @@ UIChatBox::UIChatBox(const ChatBoxConfig &config) : m_typeSpeed(config.typeSpeed
     const float scaledBorderSize = scaleMgr.ScaleUniform(ICON_BORDER_SIZE);
 
     // Main container groupbox
-    m_groupBox = UIFactory::Instance().CreateGroupBox(
-        INIT_GROUPBOX_CONFIG(config.position, config.size, config.showTitle, config.title, false, config.titleScheme));
+    m_groupBox = UIFactory::Instance().CreateGroupBox(GroupBoxConfig{.position = config.position,
+                                                                     .size = config.size,
+                                                                     .useTitle = config.showTitle,
+                                                                     .centerOrigin = false,
+                                                                     .scheme = config.titleScheme});
 
     m_groupBox->SetSize(sf::Vector2f(
         scaleMgr.ScaleX((ICON_SIZE.x + scaledBorderSize * 2) * MAIN_GROUPBOX_MULTIPLIER_WIDTH),
@@ -96,9 +99,12 @@ UIChatBox::UIChatBox(const ChatBoxConfig &config) : m_typeSpeed(config.typeSpeed
     }
 
     // Create text label for dialog lines
-    m_textLabel = UIFactory::Instance().CreateTextLabel(INIT_TEXTLABEL_CONFIG(
-        std::string(), sf::Vector2f(0.f, 0.f), ResolutionScaleManager::Instance().ScaleFont(DEFAULT_CHATBOX_FONT_SIZE),
-        false, config.textScheme));
+    m_textLabel = UIFactory::Instance().CreateTextLabel(
+        TextLabelConfig{.text = std::string(),
+                        .position = sf::Vector2f(0.f, 0.f),
+                        .fontSize = ResolutionScaleManager::Instance().ScaleFont(DEFAULT_CHATBOX_FONT_SIZE),
+                        .centerOrigin = false,
+                        .scheme = config.textScheme});
 
     m_groupBox->AddElement(m_textLabel);
 }
