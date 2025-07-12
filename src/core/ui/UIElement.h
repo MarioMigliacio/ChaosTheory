@@ -13,6 +13,13 @@
 
 #include <SFML/Graphics.hpp>
 
+/// @brief Simple enumeration for supported UIGroupBox and HUD Panel Layout types.
+enum class LayoutMode
+{
+    Vertical,
+    Horizontal
+};
+
 // ============================================================================
 //  Class       : UiElement
 //  Purpose     : Provide a base abstraction layer for elements of the UI

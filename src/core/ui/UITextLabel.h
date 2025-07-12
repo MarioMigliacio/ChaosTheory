@@ -26,6 +26,21 @@ enum class UITextLabelScheme
     MintyHerbScheme
 };
 
+/// @brief Data structure holding internal configurations useful for TextLabelConfig construction.
+/// @param text String Label for Text Label.
+/// @param position Vector2f position for Text Label.
+/// @param fontSize unsigned int font size for Text Label.
+/// @param centerOrigin bool should center text origin for Text Label [default true].
+/// @param scheme UITextLabelScheme Color Scheme for Text Label [default default color scheme].
+struct TextLabelConfig
+{
+    std::string text;
+    sf::Vector2f position;
+    unsigned int fontSize;
+    bool centerOrigin = true;
+    UITextLabelScheme scheme = UITextLabelScheme::DefaultScheme;
+};
+
 // ============================================================================
 //  Class       : UITextLabel
 //  Purpose     : Manages this UITextLabel logic at the ui level.

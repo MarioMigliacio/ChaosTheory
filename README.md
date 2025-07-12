@@ -23,6 +23,7 @@ It provides a clean foundation for building interactive and audio-enabled games 
 -   Git
 -   CMake ≥ 3.16
 -   Visual Studio (x64 support)
+-   VS Code alternative, but provide your own compiler settings
 -   SFML **64-bit binaries**
 
 ---
@@ -136,4 +137,17 @@ Batch file support only for the time being
 
 ```
 Free to do as you please with the code, but an aknowledgement would be appreciated.
+```
+
+### Compiler
+
+```
+Simple setup that I use for C++ compiler in vscode -
+https://www.msys2.org/
+
+after installing..
+pacman -Syu
+pacman -S mingw-w64-x86_64-gcc
+..
+Then add C:\msys64\mingw64\bin to PATH.
 ```

@@ -22,6 +22,9 @@ constexpr float TITLE_PAD_X = 10.f;
 
 /// @brief Default alignment padding for UITextLabel.
 constexpr float TITLE_PAD_Y = 5.f;
+
+/// @brief During alignment, account for Title if it exists.
+constexpr float PADDING_OFFSET = 20.f;
 } // namespace
 
 /// @brief Constructor for the UIGroupBox.
@@ -50,12 +53,19 @@ void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsign
     // Compute default title position just above box
     const sf::Vector2f groupBoxPos = m_background.getPosition();
     const float paddingY = ResolutionScaleManager::Instance().ScaleY(TITLE_PAD_Y);
+    const sf::Vector2f pos = {0.f, 0.f};
 
-    // We will adjust the positioning after we determine the length the text field will occupy.
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(title, {0.f, 0.f}, fontSize, centerOrigin, scheme);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
+        .text = title, .position = pos, .fontSize = fontSize, .centerOrigin = centerOrigin, .scheme = scheme});
     sf::Vector2f textSize = m_titleLabel->GetSize();
 
-    const float anchorX = groupBoxPos.x + (m_background.getSize().x / 2);
+    // Compute anchor X
+    float anchorX = groupBoxPos.x + m_edgePadding;
+    if (centerOrigin)
+    {
+        anchorX = groupBoxPos.x + (m_background.getSize().x / 2);
+    }
+
     const float anchorY = groupBoxPos.y - textSize.y - paddingY;
 
     m_titleLabel->SetPosition(sf::Vector2f{anchorX, anchorY});
@@ -85,11 +95,29 @@ void UIGroupBox::AddElement(std::shared_ptr<UIElement> element)
     RealignChildren();
 }
 
+/// @brief Remove the desired element from the collection of child elements.
+/// @param element record to be removed from m_children.
+void UIGroupBox::RemoveElement(const std::shared_ptr<UIElement> &element)
+{
+    auto it = std::find(m_children.begin(), m_children.end(), element);
+
+    if (it != m_children.end())
+    {
+        m_children.erase(it);
+        RealignChildren();
+    }
+}
+
 /// @brief Force the children entities to readjust, useful for resizing.
 void UIGroupBox::RealignChildren()
 {
     const sf::Vector2f basePos = m_background.getPosition();
-    sf::Vector2f currentPos = {basePos.x + m_edgePadding, basePos.y + m_edgePadding + 20.f};
+    sf::Vector2f currentPos = {basePos.x + m_edgePadding, basePos.y + m_edgePadding};
+
+    if (m_titleLabel)
+    {
+        currentPos.y += PADDING_OFFSET;
+    }
 
     for (auto &child : m_children)
     {
@@ -100,7 +128,6 @@ void UIGroupBox::RealignChildren()
             float x = m_centerChildren ? basePos.x + (m_background.getSize().x - childSize.x) / 2.f
                                        : basePos.x + m_edgePadding;
 
-            child->SetSize(childSize);
             child->SetPosition({x, currentPos.y});
             currentPos.y += childSize.y + m_internalPadding;
         }
@@ -114,6 +141,12 @@ void UIGroupBox::RealignChildren()
             currentPos.x += childSize.x + m_internalPadding;
         }
     }
+}
+
+/// @brief Remove all existing children in this GroupBox.
+void UIGroupBox::ClearChildren()
+{
+    m_children.clear();
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -179,6 +212,7 @@ sf::Vector2f UIGroupBox::GetPosition() const
 void UIGroupBox::SetSize(const sf::Vector2f &size)
 {
     m_background.setSize(size);
+    RealignChildren();
 }
 
 /// @brief Gets the size for this UIGroupBox.

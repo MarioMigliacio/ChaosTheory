@@ -15,13 +15,17 @@
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-/// @brief Simple enumeration for supported ArrowDirection types.
-enum class ArrowDirection
+/// @brief Data structure holding internal configurations useful for ArrowConfig construction.
+/// @param position Vector2f position for Arrow.
+/// @param size Vector2f size for Arrow.
+/// @param textureKey string texture key for Arrow.
+/// @param onClick function callback to trigger for Arrow.
+struct ArrowConfig
 {
-    Left,
-    Right,
-    Up,
-    Down
+    sf::Vector2f position;
+    sf::Vector2f size;
+    std::string textureKey;
+    std::function<void()> onClick;
 };
 
 // ============================================================================
@@ -37,7 +41,7 @@ enum class ArrowDirection
 class UIArrow : public UIElement
 {
   public:
-    UIArrow(const sf::Vector2f &position, const sf::Vector2f &size, ArrowDirection direction);
+    UIArrow(const sf::Vector2f &position, const sf::Vector2f &size, const std::string &textureKey);
     ~UIArrow() override = default;
 
     // Disable copy
@@ -61,17 +65,13 @@ class UIArrow : public UIElement
 
     void SetOnClick(std::function<void()> callback);
 
-    const ArrowDirection GetDirection() const;
-
   protected:
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
   private:
-    void SetDirection(ArrowDirection dir);
     void UpdateSprite();
 
   private:
-    ArrowDirection m_direction;
     sf::Sprite m_sprite;
     sf::String m_texture;
     sf::Vector2f m_position;

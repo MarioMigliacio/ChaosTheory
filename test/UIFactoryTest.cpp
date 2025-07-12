@@ -6,6 +6,7 @@
 //  Description : Unit tests for the Chaos Theory UIFactory class
 //
 //  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UIFactory.h"
@@ -45,19 +46,35 @@ class UIFactoryTest : public ::testing::Test
 
 TEST_F(UIFactoryTest, CanCreateClassicButton)
 {
-    auto button = UIFactory::Instance().CreateButton({100.f, 100.f}, {180.f, 40.f}, "TestButton", nullptr);
+    const sf::Vector2f size = {100.f, 100.f};
+    const sf::Vector2f pos = {180.f, 40.f};
+
+    auto button = UIFactory::Instance().CreateButton(
+        ButtonConfig{.position = pos, .size = size, .label = "TestButton", .onClick = nullptr});
     EXPECT_NE(button, nullptr);
 }
 
 TEST_F(UIFactoryTest, CanCreateSelectableButton)
 {
-    auto sb = UIFactory::Instance().CreateSelectableButton({100.f, 100.f}, {180.f, 40.f}, "TestRadio", nullptr);
+    const sf::Vector2f size = {100.f, 100.f};
+    const sf::Vector2f pos = {180.f, 40.f};
+
+    auto sb = UIFactory::Instance().CreateSelectableButton(
+        SelectableButtonConfig{.position = pos, .size = size, .label = "TestRadio", .onClick = nullptr});
     EXPECT_NE(sb, nullptr);
 }
 
 TEST_F(UIFactoryTest, CanCreateSlider)
 {
-    auto slider =
-        UIFactory::Instance().CreateSlider("TestSlider", {100.f, 100.f}, {300.f, 20.f}, 0.f, 100.f, 50.f, nullptr);
+    const sf::Vector2f size = {100.f, 100.f};
+    const sf::Vector2f pos = {300.f, 20.f};
+
+    auto slider = UIFactory::Instance().CreateSlider(SliderConfig{.label = "TestSlider",
+                                                                  .position = pos,
+                                                                  .size = size,
+                                                                  .minValue = 0.f,
+                                                                  .maxValue = 100.f,
+                                                                  .initialValue = 50.f,
+                                                                  .onChange = nullptr});
     EXPECT_NE(slider, nullptr);
 }

@@ -101,6 +101,7 @@
         "ranges": "cpp",
         "valarray": "cpp",
         "future": "cpp",
-        "xutility": "cpp"
+        "xutility": "cpp",
+        "text_encoding": "cpp"
     }
 }

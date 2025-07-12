@@ -12,6 +12,22 @@
 #pragma once
 
 #include "LogManager.h"
+#include "UIArrow.h"
+#include "UIButton.h"
+#include "UIChatBox.h"
+#include "UIFillableGauge.h"
+#include "UIGroupBox.h"
+#include "UIHUDPanel.h"
+#include "UIIcon.h"
+#include "UISelectableButton.h"
+#include "UISkinnableButton.h"
+#include "UISlider.h"
+#include "UITextLabel.h"
+#include "UIToastMessage.h"
+
+///////////////////////////////////////////////////////////////////////////////
+//                          Logger related macros                            //
+///////////////////////////////////////////////////////////////////////////////
 
 #define CT_LOG_TRACE(...) LogManager::Instance().GetLogger()->trace(__VA_ARGS__)
 #define CT_LOG_DEBUG(...) LogManager::Instance().GetLogger()->debug(__VA_ARGS__)

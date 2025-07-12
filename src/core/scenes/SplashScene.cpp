@@ -59,7 +59,7 @@ void SplashScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
 
-    for (const auto &[key, path] : SplashAssets::Fonts)
+    for (const auto &[key, path] : FontAssets::Fonts)
     {
         if (!assets.LoadFont(key, path))
         {

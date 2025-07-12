@@ -18,6 +18,19 @@
 #include <functional>
 #include <string>
 
+/// @brief Data structure holding internal configurations useful for SelectableButtonConfig construction.
+/// @param position Vector2f position for Selectable Button.
+/// @param size Vector2f size for Selectable Button.
+/// @param label string Label for Selectable Button.
+/// @param onClick function callback to trigger for Selectable Button.
+struct SelectableButtonConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    std::string label;
+    std::function<void()> onClick;
+};
+
 // ============================================================================
 //  Class       : UISelectableButton
 //  Purpose     : Manages this Selectable Button logic at the ui level.

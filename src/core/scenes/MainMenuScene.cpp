@@ -87,16 +87,16 @@ void MainMenuScene::Init()
     CT_LOG_INFO("MainMenuScene initialized.");
 }
 
-/// @brief Load any required assets listed in the MainMenuAssets namespace.
+/// @brief Load any required assets relevant to the MainMenuScene.
 void MainMenuScene::LoadRequiredAssets()
 {
     auto &assets = AssetManager::Instance();
 
-    for (const auto &[key, path] : UIAssets::Textures)
+    for (const auto &[key, path] : MainMenuAssets::UI)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
-            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load asset: {}, {}", key, path);
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::UI failed to load asset: {}, {}", key, path);
         }
     }
 
@@ -108,7 +108,7 @@ void MainMenuScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : MainMenuAssets::Fonts)
+    for (const auto &[key, path] : FontAssets::Fonts)
     {
         if (!assets.LoadFont(key, path))
         {
@@ -245,7 +245,8 @@ void MainMenuScene::CreateTitleText()
     const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
                                     scaleMgr.ScaledReferenceY(DEFAULT_TEXT_LABEL_TITLE_HEIGHT_PERCENT)};
 
-    m_titleLabel = UIFactory::Instance().CreateTextLabel(titleText, centerPos, fontSize);
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(
+        TextLabelConfig{.text = titleText, .position = centerPos, .fontSize = fontSize});
 
     UIManager::Instance().AddElement(m_titleLabel);
 }
@@ -261,51 +262,67 @@ void MainMenuScene::CreateButtons()
     const float startY = winSize.y * 0.7f;
     const float centerX = (winSize.x - scaledButtonWidth) / 2.f;
 
+    const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
     const sf::Vector2f playPos{centerX, startY};
     const sf::Vector2f settingsPos{centerX, playPos.y + scaledButtonHeight + scaledSpacing};
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
-    const sf::Vector2f btnSize = {BASE_BUTTON_WIDTH_PIXEL, BASE_BUTTON_HEIGHT_PIXEL};
-
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateSkinnableButton(playPos, btnSize, PLAY_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                                    UIAssets::UISkinButtonBlueHoverKey, UIButtonColorScheme::Blue,
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Play button clicked!");
-                                                        m_hasPendingTransition = true;
-                                                        m_requestedScene = SceneID::SandBox;
-                                                    }));
-
+    // Play button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        settingsPos, btnSize, SETTING_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey, UIAssets::UISkinButtonBlueHoverKey,
-        UIButtonColorScheme::Blue,
-        [this]()
-        {
-            CT_LOG_INFO("Settings button clicked!");
-            m_hasPendingTransition = true;
-            m_requestedScene = SceneID::Settings;
-        }));
+        SkinnableButtonConfig{.position = playPos,
+                              .size = btnSize,
+                              .label = PLAY_BTN_LABEL,
+                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+                              .scheme = UISkinnableButtonColorScheme::Blue,
+                              .onClick = [this]()
+                              {
+                                  CT_LOG_INFO("Play button clicked!");
+                                  m_hasPendingTransition = true;
+                                  m_requestedScene = SceneID::SandBox;
+                              }}));
 
-    UIManager::Instance().AddElement(
-        UIFactory::Instance().CreateSkinnableButton(exitPos, btnSize, EXIT_BTN_LABEL, UIAssets::UISkinButtonBlueIdleKey,
-                                                    UIAssets::UISkinButtonBlueHoverKey, UIButtonColorScheme::Blue,
-                                                    [this]()
-                                                    {
-                                                        CT_LOG_INFO("Exit button clicked!");
-                                                        m_shouldExit = true;
-                                                    }));
+    // Settings button
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
+        SkinnableButtonConfig{.position = settingsPos,
+                              .size = btnSize,
+                              .label = SETTING_BTN_LABEL,
+                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+                              .scheme = UISkinnableButtonColorScheme::Blue,
+                              .onClick = [this]()
+                              {
+                                  CT_LOG_INFO("Settings button clicked!");
+                                  m_hasPendingTransition = true;
+                                  m_requestedScene = SceneID::Settings;
+                              }}));
+
+    // Exit button
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
+        SkinnableButtonConfig{.position = exitPos,
+                              .size = btnSize,
+                              .label = EXIT_BTN_LABEL,
+                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+                              .scheme = UISkinnableButtonColorScheme::Blue,
+                              .onClick = [this]()
+                              {
+                                  CT_LOG_INFO("Exit button clicked!");
+                                  m_shouldExit = true;
+                              }}));
 }
 
 /// @brief Loads the main background images for this MainMenuScene.
 void MainMenuScene::LoadBackground()
 {
     m_background = std::make_unique<Background>();
-    m_background->InitParallax({{"GasPattern1", 2.f}, {"PlainStarBackground", 1.f}, {"GasPattern2", 4.f}});
+    m_background->InitParallax({{BackgroundAssets::GasPattern1BackgroundKey, 2.f},
+                                {BackgroundAssets::PlainStarBackgroundKey, 1.f},
+                                {BackgroundAssets::GasPattern2BackgroundKey, 4.f}});
 
-    m_background->SetLayerMotion("GasPattern1", {-1.f, 0.f});
-    m_background->SetLayerMotion("GasPattern2", {1.f, 0.f});
-    m_background->SetLayerMotion("PlainStarBackground", {1.f, .33f});
+    m_background->SetLayerMotion(BackgroundAssets::GasPattern1BackgroundKey, {-1.f, 0.f});
+    m_background->SetLayerMotion(BackgroundAssets::GasPattern2BackgroundKey, {1.f, 0.f});
+    m_background->SetLayerMotion(BackgroundAssets::PlainStarBackgroundKey, {1.f, .33f});
 
     CT_LOG_INFO("Menu background loaded and scaled.");
 }
@@ -329,7 +346,7 @@ void MainMenuScene::PlayIntroMusic()
 /// @brief Helper method for setting up the travelling spaceship.
 void MainMenuScene::InitShip()
 {
-    auto tex = AssetManager::Instance().GetTexture("PlayerShip");
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipSpriteKey);
 
     if (!tex)
     {
