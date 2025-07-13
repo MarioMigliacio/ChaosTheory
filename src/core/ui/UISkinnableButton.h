@@ -19,11 +19,30 @@
 #include <string>
 
 /// @brief Enumeration field which corresponds to a type of supported UISkinnnableButton texture pack.
-enum class UIButtonColorScheme
+enum class UISkinnableButtonColorScheme
 {
     Blue,
     Green,
     Red
+};
+
+/// @brief Data structure holding internal configurations useful for SinnableButtonConfig construction.
+/// @param position Vector2f position for Skinnable Button.
+/// @param size Vector2f size for Skinnable Button.
+/// @param label string Label for Skinnable Button.
+/// @param idleTexture string idle texture for Skinnable Button.
+/// @param hoverTexture string hover texture for Skinnable Button.
+/// @param scheme UISkinnableButtonColorScheme color scheme combination for Skinnable Button.
+/// @param onClick function callback to trigger for Skinnable Button.
+struct SkinnableButtonConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    std::string label;
+    std::string idleTexture;
+    std::string hoverTexture;
+    UISkinnableButtonColorScheme scheme;
+    std::function<void()> onClick;
 };
 
 // ============================================================================
@@ -65,13 +84,14 @@ class UISkinnableButton : public UIElement
 
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
-    void ApplySpriteTransform();
-    void ApplySkinnableButtonTextStyle(UIButtonColorScheme scheme);
+
+    void ApplySkinnableButtonTextStyle(UISkinnableButtonColorScheme scheme);
 
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     bool Contains(const sf::Vector2i &point) const override;
 
   private:
+    void ApplySpriteTransform();
     void CenterLabel();
     void UpdateTextColor();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

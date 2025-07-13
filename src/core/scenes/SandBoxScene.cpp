@@ -14,31 +14,41 @@
 #include "Assets.h"
 #include "AudioManager.h"
 #include "InputManager.h"
-#include "Macros.h"
 #include "MainMenuScene.h"
+#include "PauseScene.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
 #include "UIFactory.h"
 #include "UIManager.h"
-#include "UIPresets.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout the SandBoxScene.
 namespace
 {
-/// @brief Fixed name constant for the play button label.
-constexpr auto PLAY_BTN_LABEL = "Play";
+/// @brief Fixed name constant for the title of the Sandbox Scene.
+constexpr auto TITLE_SCREEN_LABEL = "Sandbox Scene";
 
-/// @brief Fixed name constant for the Settings button label.
-constexpr auto SETTING_BTN_LABEL = "Settings";
+/// @brief Fixed name constant for a helpful placeholder to pause the game.
+constexpr auto PAUSE_GAME_LABEL = "Press Escape to Pause";
 
-/// @brief Fixed name constant for the Quit button label.
-constexpr auto QUIT_BTN_LABEL = "Quit";
+/// @brief Fixed name constant to be used with BindActionKey to setup a pause key.
+constexpr auto PAUSE_BUTTON_KEY = "Pause";
 
-constexpr auto TOGGLE_BUTTON_KEY = "Toggle";
+/// @brief Fixed name constant to be used with BindActionKey to setup the skip chatbox dialog.
+constexpr auto SKIP_CHAT_KEY = "Space";
 
-constexpr auto RETURN_BUTTON_KEY = "Return";
+/// @brief Fixed name constant to be used with the ship stats group label box.
+constexpr auto SHIP_STATS_GROUPBOX_LABEL = "Ship Stats";
+
+/// @brief Quick enabling of method.
+constexpr bool TEST_ENABLED = true;
+
+/// @brief Quick disabling of method.
+constexpr bool TEST_DISABLED = false;
+
+/// @brief Quickk disabling of HUD methods.
+constexpr bool HUD_MOCK_BOOL = false;
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -47,7 +57,7 @@ SandBoxScene::SandBoxScene(std::shared_ptr<Settings> settings) : m_settings(sett
 {
 }
 
-/// @brief  Initializes the SandBoxScene.
+/// @brief Initializes the SandBoxScene.
 void SandBoxScene::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
@@ -56,6 +66,7 @@ void SandBoxScene::Init()
 
     LoadRequiredAssets();
     BindInputKeys();
+    LoadBackground();
     SetupSceneComponents();
 
     SceneTransitionManager::Instance().StartFadeIn();
@@ -67,7 +78,7 @@ void SandBoxScene::Init()
 /// @brief Load any required assets relevant to the SandBoxScene.
 void SandBoxScene::LoadRequiredAssets()
 {
-    for (const auto &[key, path] : UIAssets::Textures)
+    for (const auto &[key, path] : SandBoxAssets::Backgrounds)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
@@ -75,7 +86,7 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : SandBoxAssets::Textures)
+    for (const auto &[key, path] : SandBoxAssets::Sprites)
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
@@ -83,7 +94,15 @@ void SandBoxScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : SandBoxAssets::Fonts)
+    for (const auto &[key, path] : SandBoxAssets::Sounds)
+    {
+        if (!AssetManager::Instance().LoadSound(key, path))
+        {
+            CT_LOG_ERROR("SandBoxScene failed to load sound asset: {} -> {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : FontAssets::Fonts)
     {
         if (!AssetManager::Instance().LoadFont(key, path))
         {
@@ -108,10 +127,19 @@ void SandBoxScene::Shutdown()
 /// @brief Handles the exit criteria for this scene.
 void SandBoxScene::OnExit()
 {
-    InputManager::Instance().UnbindKey(TOGGLE_BUTTON_KEY);
-    InputManager::Instance().UnbindKey(RETURN_BUTTON_KEY);
+    InputManager::Instance().UnbindKey(PAUSE_BUTTON_KEY);
+    InputManager::Instance().UnbindKey(SKIP_CHAT_KEY);
 
     CT_LOG_INFO("SandBoxScene OnExit.");
+}
+
+/// @brief Resumes Scene in event of a Pause.
+void SandBoxScene::OnResume()
+{
+    UIManager::Instance().Clear();
+    SetupSceneComponents();
+
+    CT_LOG_INFO("SandBoxScene resumed and UI restored.");
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -129,16 +157,19 @@ void SandBoxScene::Update(float dt)
         m_background->Update(dt);
     }
 
-    // new
     CheckActionsPressed();
+    UpdateHUD(dt, HUD_MOCK_BOOL);
 
     // Handle button scene request change
     if (m_hasPendingTransition)
     {
-        CT_LOG_INFO("SandBoxScene Requesting Scene Change to '{}'", SceneIDToString(m_requestedScene));
-        m_hasPendingTransition = false;
-        SceneTransitionManager::Instance().ForceFullyOpaque();
-        SceneManager::Instance().RequestSceneChange(m_requestedScene);
+        if (m_requestedScene == SceneID::Pause)
+        {
+            CT_LOG_INFO("SandBoxScene Pause Event Requested.");
+
+            m_hasPendingTransition = false;
+            SceneManager::Instance().PushScene(std::make_unique<PauseScene>(m_settings));
+        }
     }
 }
 
@@ -168,66 +199,443 @@ void SandBoxScene::Render()
     UIManager::Instance().Render(window);
 }
 
-/// @brief Helper method to initialize necessary Scene components.
-void SandBoxScene::SetupSceneComponents()
-{
-    LoadBackground();
-    CreateTitleText();
-    PlayGameMusic();
-}
-
 /// @brief Helper method to load the Background for this Scene.
 void SandBoxScene::LoadBackground()
 {
     m_background = std::make_unique<Background>();
-    m_background->InitParallax({{"GasPattern1", 2.f}, {"PlainStarBackground", 1.f}});
+    m_background->InitParallax(
+        {{BackgroundAssets::GasPattern1BackgroundKey, 2.f}, {BackgroundAssets::PlainStarBackgroundKey, 1.f}});
 
-    m_background->SetLayerMotion("PlainStarBackground", {0.2f, -0.5f});
-    m_background->SetLayerMotion("GasPattern1", {0.f, -0.1f});
+    m_background->SetLayerMotion(BackgroundAssets::PlainStarBackgroundKey, {0.2f, -0.5f});
+    m_background->SetLayerMotion(BackgroundAssets::GasPattern1BackgroundKey, {0.f, -0.1f});
 }
 
-/// @brief Helper method to create the Title string entity for this scene.
-void SandBoxScene::CreateTitleText()
-{
-    auto &scaleMgr = ResolutionScaleManager::Instance();
-
-    const std::string title = "Sandbox Scene";
-    const unsigned int fontSize = scaleMgr.ScaleFont(48);
-    const sf::Vector2f centerPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
-                                    scaleMgr.ScaledReferenceY(0.08f)};
-
-    m_titleLabel =
-        UIFactory::Instance().CreateTextLabel(title, centerPos, fontSize, true, UITextLabelScheme::MintyHerbScheme);
-    UIManager::Instance().AddElement(m_titleLabel);
-}
-
-/// @brief Helper method to load and play the game music for this scene. (intentionally blank for now)
-void SandBoxScene::PlayGameMusic()
-{
-}
-
+/// @brief Sets up keyboard inputs that can be picked up during scene lifetime.
 void SandBoxScene::BindInputKeys()
 {
-    InputManager::Instance().BindKey(TOGGLE_BUTTON_KEY, sf::Keyboard::Key::Space);
-    InputManager::Instance().BindKey(RETURN_BUTTON_KEY, sf::Keyboard::Key::Enter);
+    InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Escape);
+    InputManager::Instance().BindKey(SKIP_CHAT_KEY, sf::Keyboard::Key::Space);
 }
 
+/// @brief Determines if any configured keyboard input has been pressed during scene update.
 void SandBoxScene::CheckActionsPressed()
 {
     auto &input = InputManager::Instance();
 
-    if (input.IsKeyJustPressed(TOGGLE_BUTTON_KEY))
+    if (input.IsKeyJustPressed(PAUSE_BUTTON_KEY))
     {
-        m_toggler = !m_toggler;
+        CT_LOG_INFO("SandBoxScene: Pause Button Pressed.");
 
-        CT_LOG_INFO("SandBoxScene: Toggle switch: {}", m_toggler);
+        m_hasPendingTransition = true;
+        m_requestedScene = SceneID::Pause;
     }
 
-    if (input.IsKeyJustPressed(RETURN_BUTTON_KEY))
+    if (m_testChatBox)
     {
-        m_hasPendingTransition = true;
-        m_requestedScene = SceneID::MainMenu;
+        if (input.IsKeyJustPressed(SKIP_CHAT_KEY))
+        {
+            // Chatbox is not finished with its line; skip to line end.
+            if (!m_testChatBox->IsTypingComplete())
+            {
+                m_testChatBox->SkipTyping();
+            }
 
-        CT_LOG_INFO("SandBoxScene: Enter event handled.");
+            // Chatbox is at the end of a line, and there's more dialog; skip to next line.
+            else if (m_testChatBox->HasMoreLines())
+            {
+                m_testChatBox->StartNextLine();
+            }
+
+            // Chatbox is at the end of a dialog, but there may be another dialog in the queue; skip to next dialog.
+            else if (m_dialogQueue.HasNext())
+            {
+                DialogLine next = m_dialogQueue.Next();
+
+                // Reconfigure title & icon first
+                m_testChatBox->SetSpeaker(next.speakerName, next.showTitle, next.iconTextureKey, next.iconType);
+
+                // Then clear any previous lines
+                m_testChatBox->Clear();
+
+                // Then add the new line text
+                m_testChatBox->AddLine(next.text);
+            }
+
+            // Fully done - remove chatbox
+            else
+            {
+                m_testChatBox->Clear();
+                UIManager::Instance().RemoveElement(m_testChatBox);
+                m_testChatBox.reset();
+            }
+        }
+    }
+}
+
+/// @brief Helper method to initialize necessary Scene components.
+void SandBoxScene::SetupSceneComponents()
+{
+    PlayGameMusic();
+    MockTitleText(TEST_DISABLED);
+    MockHUDPanel(HUD_MOCK_BOOL);
+    MockFillableGaugeComponents(TEST_DISABLED);
+    MockShipStatusComponent(TEST_ENABLED);
+    MockIconComponents(TEST_ENABLED);
+    MockChatBox(TEST_ENABLED);
+}
+
+/// @brief Helper method to create the Title string entity for this scene.
+void SandBoxScene::MockTitleText(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    const std::string titleLabel = TITLE_SCREEN_LABEL;
+    const unsigned int titleFontSize = scaleMgr.ScaleFont(48);
+    const sf::Vector2f titlePos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                   scaleMgr.ScaledReferenceY(0.15f)};
+
+    const std::string helpLabel = PAUSE_GAME_LABEL;
+    const unsigned int helpFontSize = scaleMgr.ScaleFont(20);
+    const sf::Vector2f helpPos = {WindowManager::Instance().GetWindow().getSize().x / 2.f,
+                                  scaleMgr.ScaledReferenceY(0.25f)};
+
+    m_titleLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{.text = titleLabel,
+                                                                         .position = titlePos,
+                                                                         .fontSize = titleFontSize,
+                                                                         .scheme = UITextLabelScheme::MintyHerbScheme});
+
+    m_helpLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{.text = helpLabel,
+                                                                        .position = helpPos,
+                                                                        .fontSize = helpFontSize,
+                                                                        .scheme = UITextLabelScheme::MintyHerbScheme});
+
+    UIManager::Instance().AddElement(m_titleLabel);
+    UIManager::Instance().AddElement(m_helpLabel);
+}
+
+/// @brief Initializes the HUD Panel ui component.
+void SandBoxScene::MockHUDPanel(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+
+    // Relative position and size (top bar)
+    const sf::Vector2f relativePos{0.f, 0.f};
+    const sf::Vector2f relativeSize{1.0f, 0.05f}; // Full width, 8% height
+
+    auto hudPanel = UIFactory::Instance().CreateHUDPanel(HUDPanelConfig{.position = relativePos, .size = relativeSize});
+    hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.15f)); // Space between labels
+    hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));     // Padding around edges
+    hudPanel->SetLayoutMode(LayoutMode::Horizontal);
+    hudPanel->SetCenterChildren(false);
+
+    const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
+    const sf::Vector2f gaugeRelativeSize = {0.2f, 0.015f}; // Width, Height in screen %
+
+    m_scoreLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
+        .text = HUD_SCORE_LABEL_INIT_STR, .position = relativePos, .fontSize = fontSize, .centerOrigin = false});
+    m_timerLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
+        .text = HUD_TIMER_LABEL_INIT_STR, .position = relativePos, .fontSize = fontSize, .centerOrigin = false});
+    m_healthGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = relativePos,
+                                                                      .size = gaugeRelativeSize,
+                                                                      .colorScheme = GaugeColorScheme::Health,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = HUD_HEALTH_TAG});
+
+    hudPanel->AddElement(m_healthGauge, HUDSlotAlignment::Left);
+    hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
+    hudPanel->AddElement(m_scoreLabel, HUDSlotAlignment::Right);
+
+    m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(HUD_SCORE_LABEL_START_VALUE));
+    m_timerLabel->SetText(HUD_TIMER_START_VALUE);
+
+    UIManager::Instance().AddElement(hudPanel);
+}
+
+/// @brief Mocks single gauges that are not embedded in any GroupBox or HUD containers.
+/// @param enabled Whether or not to use this MOCK component in SandBox.
+void SandBoxScene::MockFillableGaugeComponents(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    // --- NON HUD FillableGauge testing --- //
+    sf::Vector2f pos(0.33f, 0.33f);
+    sf::Vector2f size(0.015f, 0.2f);
+
+    auto looseGasGauge = UIFactory::Instance().CreateFillableGauge(
+        FillableGaugeConfig{.position = pos,
+                            .size = size,
+                            .orientation = LayoutMode::Vertical,
+                            .colorScheme = GaugeColorScheme::Gas,
+                            .initialValue = .33f,
+                            .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                            .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+                            .showPercentage = true,
+                            .showTitle = true,
+                            .titleText = "Gas - Vert",
+                            .titleScheme = UITextLabelScheme::MintyHerbScheme});
+
+    UIManager::Instance().AddElement(looseGasGauge);
+
+    pos = {.5f, .5f};
+    size = {0.2f, 0.015f};
+
+    auto looseGasGauge2 = UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{
+        .position = pos,
+        .size = size,
+        .colorScheme = GaugeColorScheme::Gas,
+        .initialValue = .33f,
+        .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+        .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+        .showPercentage = true,
+        .showTitle = true,
+        .titleText = "Gas-Horiz",
+        .titleScheme = UITextLabelScheme::MintyHerbScheme,
+        .titlePosition = GaugeTitlePosition::Above,
+    });
+
+    UIManager::Instance().AddElement(looseGasGauge2);
+}
+
+/// @brief Helper method to test fillable gauge ui components.
+/// @param enabled Whether or not to use this MOCK in SandBox.
+void SandBoxScene::MockShipStatusComponent(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    sf::Vector2f pos{0, 0};
+    sf::Vector2f size{0.015f, 0.1f};
+
+    // ----- Testing Groupbox ------ //
+    auto &scaleMgr = ResolutionScaleManager::Instance();
+    const auto &windowSize = WindowManager::Instance().GetWindow().getSize();
+
+    // === GroupBox relative setup ===
+    const sf::Vector2f relativePos{0.80f, 0.75f};
+    const sf::Vector2f relativeSize{0.16f, 0.18f};
+
+    GroupBoxConfig cfg{
+        .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL};
+
+    auto groupBox = UIFactory::Instance().CreateGroupBox(GroupBoxConfig{
+        .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL});
+    groupBox->SetLayoutMode(LayoutMode::Horizontal);
+    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
+    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
+    groupBox->SetCenterChildren(true);
+
+    // === HEALTH GAUGE ===
+    auto healthGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
+                                                                      .size = size,
+                                                                      .orientation = LayoutMode::Vertical,
+                                                                      .colorScheme = GaugeColorScheme::Health,
+                                                                      .initialValue = .25f,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "H",
+                                                                      .titleScheme = UITextLabelScheme::CougarScheme,
+                                                                      .titlePosition = GaugeTitlePosition::Above});
+    groupBox->AddElement(healthGauge);
+
+    // === MANA GAUGE ===
+    auto manaGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
+                                                                      .size = size,
+                                                                      .orientation = LayoutMode::Vertical,
+                                                                      .colorScheme = GaugeColorScheme::Mana,
+                                                                      .initialValue = .10f,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "M",
+                                                                      .titleScheme = UITextLabelScheme::MintyHerbScheme,
+                                                                      .titlePosition = GaugeTitlePosition::Above});
+    groupBox->AddElement(manaGauge);
+
+    // === GAS GAUGE ===
+    auto gasGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
+                                                                      .size = size,
+                                                                      .orientation = LayoutMode::Vertical,
+                                                                      .colorScheme = GaugeColorScheme::Gas,
+                                                                      .initialValue = .33f,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "G",
+                                                                      .titleScheme = UITextLabelScheme::BlueSteelScheme,
+                                                                      .titlePosition = GaugeTitlePosition::Above});
+    groupBox->AddElement(gasGauge);
+
+    // when in groupbox, this is required for correct fill orientation
+    healthGauge->SetOrientation(LayoutMode::Vertical);
+    manaGauge->SetOrientation(LayoutMode::Vertical);
+    gasGauge->SetOrientation(LayoutMode::Vertical);
+
+    UIManager::Instance().AddElement(groupBox);
+}
+
+/// @brief Helper method to test Icon ui components.
+/// @param enabled Whether or not to use this MOCK in SandBox.
+void SandBoxScene::MockIconComponents(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    const auto &window = WindowManager::Instance().GetWindow();
+    const float startY = 50.f;
+    const sf::Vector2f iconSize = {32.f, 32.f};
+    const float spacing = 48.f;
+    const float startX = 75.f;
+
+    struct IconSpawnData
+    {
+        IconType type;
+        std::string spriteKey;
+    };
+
+    std::vector<IconSpawnData> iconTypesToTest = {
+        {IconType::AtomicIcon, SpriteAssets::AtomicIconSpriteKey},
+        {IconType::FireRateIcon, SpriteAssets::FireRateIconSpriteKey},
+        {IconType::GasIcon, SpriteAssets::GasIconSpriteKey},
+        {IconType::LifeIcon, SpriteAssets::LifeIconSpriteKey},
+        {IconType::PowerIcon, SpriteAssets::PowerIconSpriteKey},
+        {IconType::UpgradeIcon, SpriteAssets::UpgradeIconSpriteKey},
+        {IconType::WarpIcon, SpriteAssets::WarpIconSpriteKey},
+    };
+
+    for (std::size_t i = 0; i < iconTypesToTest.size(); i++)
+    {
+        const auto &entry = iconTypesToTest[i];
+        sf::Vector2f pos{startX + (i * spacing), startY};
+
+        auto icon = UIFactory::Instance().CreateIcon(
+            IconConfig{.position = pos, .size = iconSize, .textureKey = entry.spriteKey, .type = entry.type});
+        UIManager::Instance().AddElement(icon);
+    }
+}
+
+/// @brief Composes a UIChatBox entity and runs a mock dialog.
+/// @param enabled Whether or not to use this MOCK in SandBox.
+void SandBoxScene::MockChatBox(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    // Clear any previous
+    m_dialogQueue.Clear();
+
+    // Add all lines from predefined vector
+    for (const auto &line : DialogConstants::IntroDialog::INTRO_SEQUENCE)
+    {
+        m_dialogQueue.AddLine(line);
+    }
+
+    if (m_dialogQueue.HasNext())
+    {
+        DialogLine next = m_dialogQueue.Next();
+
+        m_testChatBox =
+            UIFactory::Instance().CreateChatBox(ChatBoxConfig{.position = DEFAULT_CHATBOX_POSITION,
+                                                              .size = DEFAULT_CHATBOX_SIZE,
+                                                              .showTitle = next.showTitle,
+                                                              .title = next.speakerName,
+                                                              .typeSpeed = DEFAULT_CHATBOX_DIALOG_SPEED,
+                                                              .textScheme = UITextLabelScheme::DefaultScheme,
+                                                              .titleScheme = UITextLabelScheme::DefaultScheme,
+                                                              .useSpeakerIcon = !next.iconTextureKey.empty(),
+                                                              .iconTextureKey = next.iconTextureKey,
+                                                              .iconType = next.iconType});
+
+        m_testChatBox->AddLine(next.text);
+        UIManager::Instance().AddElement(m_testChatBox);
+    }
+}
+
+/// @brief Helper method to load and play the game music for this scene.
+void SandBoxScene::PlayGameMusic()
+{
+    if (!AudioManager::Instance().IsMusicPlaying() ||
+        AudioManager::Instance().GetCurrentMusicName() != SandBoxAssets::GameTrack)
+    {
+        CT_LOG_INFO("SandBoxScene: Starting or resuming menu music.");
+        AudioManager::Instance().PlayMusic(SandBoxAssets::GameTrack, true);
+    }
+
+    else
+    {
+        CT_LOG_INFO("SandBoxScene: Menu music already playing, no action needed.");
+    }
+}
+
+/// @brief Updates the HUD Panel and all children entities.
+/// @param dt Delta time since last update.
+/// @param enabled Whether or not the HUD is enabled or not for this SandBox.
+void SandBoxScene::UpdateHUD(float dt, const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    // Update HUD timers and simulate game state
+    m_elapsedTime += dt;
+
+    if (m_elapsedTime >= 1.f)
+    {
+        m_secondsPassed += 1;
+        m_elapsedTime = 0.f;
+
+        // Update timer display
+        int minutes = m_secondsPassed / 60;
+        int seconds = m_secondsPassed % 60;
+
+        // place a cap on timer
+        if (minutes > 99)
+        {
+            minutes = 99;
+            seconds = 0;
+        }
+
+        std::stringstream ss;
+        ss << HUD_TIMER_TAG << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0')
+           << seconds;
+        m_timerLabel->SetText(ss.str());
+
+        m_currentHealth = std::max(0, m_currentHealth - 1);
+        m_currentScore += 100;
+        m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
+
+        float normalized = static_cast<float>(m_currentHealth) / 100.f;
+        normalized = std::clamp(normalized, 0.f, 1.f); // Ensure within [0, 1]
+        m_healthGauge->SetValue(normalized);
     }
 }

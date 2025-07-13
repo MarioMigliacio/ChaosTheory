@@ -14,6 +14,7 @@
 #include "GameScene.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
+#include "PauseScene.h"
 #include "SandBoxScene.h"
 #include "SettingsScene.h"
 #include "SplashScene.h"
@@ -47,13 +48,13 @@ void SceneManager::Shutdown()
 
     while (!m_scenes.empty())
     {
-        if (m_scenes.top())
+        if (m_scenes.back())
         {
-            m_scenes.top()->OnExit();
-            m_scenes.top()->Shutdown();
+            m_scenes.back()->OnExit();
+            m_scenes.back()->Shutdown();
         }
 
-        m_scenes.pop();
+        m_scenes.pop_back();
     }
 
     m_settings.reset();
@@ -78,8 +79,14 @@ void SceneManager::Update(float dt)
 
     if (!m_scenes.empty())
     {
-        auto &scene = m_scenes.top();
+        auto &scene = m_scenes.back();
         scene->Update(dt);
+    }
+
+    if (m_deferredPop)
+    {
+        PopScene();
+        m_deferredPop = false;
     }
 }
 
@@ -91,7 +98,7 @@ void SceneManager::HandleEvent(const sf::Event &event)
 
     if (!m_scenes.empty())
     {
-        m_scenes.top()->HandleEvent(event);
+        m_scenes.back()->HandleEvent(event);
     }
 }
 
@@ -100,10 +107,19 @@ void SceneManager::Render()
 {
     CT_WARN_IF_UNINITIALIZED("SceneManager", "Render");
 
-    if (!m_scenes.empty())
+    if (m_scenes.empty())
     {
-        m_scenes.top()->Render();
+        return;
     }
+
+    // If there's more than one scene, render the one below the top (background) in the case of "PauseScene"
+    if (m_scenes.size() >= 2)
+    {
+        m_scenes[m_scenes.size() - 2]->Render(); // background scene
+    }
+
+    // Always render the top scene
+    m_scenes.back()->Render();
 }
 
 /// @brief Registers a callback function for a scene by ID.
@@ -131,6 +147,7 @@ void SceneManager::RegisterAllDefaultScenes()
     Register(SceneID::Settings, [this]() { return std::make_unique<SettingsScene>(m_settings); });
     Register(SceneID::SandBox, [this]() { return std::make_unique<SandBoxScene>(m_settings); });
     Register(SceneID::Game, [this]() { return std::make_unique<GameScene>(m_settings); });
+    Register(SceneID::Pause, [this]() { return std::make_unique<PauseScene>(m_settings); });
 
     CT_LOG_INFO("All default scenes registered.");
 }
@@ -163,8 +180,10 @@ void SceneManager::PushScene(std::unique_ptr<Scene> scene)
     {
         scene->Init();
         CT_LOG_INFO("Pushing new scene: {}", typeid(*scene).name());
-        m_scenes.push(std::move(scene));
+        m_scenes.push_back(std::move(scene));
     }
+
+    CT_LOG_INFO("Scene stack size is now {}", m_scenes.size());
 }
 
 /// @brief Remove the top scene from the collection of scenes.
@@ -174,11 +193,24 @@ void SceneManager::PopScene()
 
     if (!m_scenes.empty())
     {
-        CT_LOG_INFO("Popping scene: {}", typeid(*m_scenes.top()).name());
-        m_scenes.top()->OnExit();
-        m_scenes.top()->Shutdown();
-        m_scenes.pop();
+        CT_LOG_INFO("Popping scene: {}", typeid(*m_scenes.back()).name());
+        m_scenes.back()->OnExit();
+        m_scenes.back()->Shutdown();
+        m_scenes.pop_back();
+
+        if (!m_scenes.empty())
+        {
+            m_scenes.back()->OnResume();
+        }
     }
+
+    CT_LOG_INFO("Scene stack size is now {}", m_scenes.size());
+}
+
+/// @brief Mechanism to pop a scene at the end of a update cycle for guaranteed safety.
+void SceneManager::DeferPopScene()
+{
+    m_deferredPop = true;
 }
 
 /// @brief Current scene is removed, and then newScene is added to the m_scenes list
@@ -198,9 +230,9 @@ void SceneManager::ClearScenes()
 
     while (!m_scenes.empty())
     {
-        m_scenes.top()->OnExit();
-        m_scenes.top().reset();
-        m_scenes.pop();
+        m_scenes.back()->OnExit();
+        m_scenes.back()->Shutdown();
+        m_scenes.pop_back();
     }
 
     CT_LOG_INFO("All scenes cleared.");
@@ -244,7 +276,7 @@ Scene *SceneManager::GetActiveScene() const
         return nullptr;
     }
 
-    return m_scenes.top().get();
+    return m_scenes.back().get();
 }
 
 /// @brief Request that a scene transition based on ID immediately take place. Generally used by individual Scenes logic

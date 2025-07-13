@@ -12,3 +12,4 @@ Makefile
 *.sln
 *.vcxproj*
 config.json
+.vscode/c_cpp_properties.json

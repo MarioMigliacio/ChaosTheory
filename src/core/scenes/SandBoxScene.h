@@ -12,10 +12,14 @@
 #pragma once
 
 #include "Background.h"
+#include "DialogConstants.h"
+#include "DialogLine.h"
+#include "DialogQueue.h"
+#include "Macros.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
-#include "UITextLabel.h"
+#include "UIPresets.h"
 #include <memory>
 
 // ============================================================================
@@ -43,6 +47,7 @@ class SandBoxScene final : public Scene
     void LoadRequiredAssets() override;
     void Shutdown() override;
     void OnExit() override;
+    void OnResume() override;
 
     void Update(float dt) override;
     void HandleEvent(const sf::Event &event) override;
@@ -50,18 +55,38 @@ class SandBoxScene final : public Scene
     void Render() override;
 
   private:
-    void SetupSceneComponents();
     void LoadBackground();
-    void CreateTitleText();
-    void PlayGameMusic();
     void BindInputKeys();
     void CheckActionsPressed();
+
+    void SetupSceneComponents();
+    void MockTitleText(const bool enabled);
+    void MockHUDPanel(const bool enabled);
+    void MockFillableGaugeComponents(const bool enabled);
+    void MockShipStatusComponent(const bool enabled);
+    void MockIconComponents(const bool enabled);
+    void MockChatBox(const bool enabled);
+
+    void PlayGameMusic();
+    void UpdateHUD(float dt, const bool enabled);
 
   private:
     std::shared_ptr<Settings> m_settings;
     std::shared_ptr<UITextLabel> m_titleLabel;
+    std::shared_ptr<UITextLabel> m_helpLabel;
+    std::shared_ptr<UIChatBox> m_testChatBox;
     std::unique_ptr<Background> m_background;
-    SceneID m_requestedScene;
+    std::shared_ptr<UITextLabel> m_scoreLabel;
+    std::shared_ptr<UITextLabel> m_timerLabel;
+    std::shared_ptr<UIFillableGauge> m_healthGauge;
 
-    bool m_toggler = true;
+    DialogQueue m_dialogQueue;
+
+    // Simple test variables for the time being. TODO: Cleanup this to the proper structure later.
+    float m_elapsedTime = 0.f;
+    int m_secondsPassed = 0;
+    int m_currentHealth = HUD_HEALTH_LABEL_START_VALUE;
+    int m_currentScore = HUD_SCORE_LABEL_START_VALUE;
+
+    SceneID m_requestedScene;
 };

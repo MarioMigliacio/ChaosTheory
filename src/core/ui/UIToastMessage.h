@@ -11,11 +11,28 @@
 
 #pragma once
 
+#include "Macros.h"
 #include "UIElement.h"
 #include "UIPresets.h"
-#include "UITextLabel.h"
 #include <SFML/Graphics.hpp>
 #include <string>
+
+/// @brief Data structure holding internal configurations useful for ToastConfig construction.
+/// @param text String Label for Toast.
+/// @param position Vector2f position for Toast.
+/// @param duration float duration for Toast.
+/// @param baseFontSize unsigned int original font size for Toast.
+/// @param centerOrigin bool should center text origin for Toast.
+/// @param scheme UITextLabelScheme Color Scheme for Toast.
+struct ToastMessageConfig
+{
+    std::string text;
+    sf::Vector2f position;
+    float duration;
+    unsigned int baseFontSize;
+    bool centerOrigin;
+    UITextLabelScheme scheme;
+};
 
 // ============================================================================
 //  Class       : UIToastMessage

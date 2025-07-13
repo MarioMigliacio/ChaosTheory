@@ -18,6 +18,19 @@
 #include <functional>
 #include <string>
 
+/// @brief Data structure holding internal configurations useful for ButtonConfig construction.
+/// @param position Vector2f position for Button.
+/// @param size Vector2f size for Button.
+/// @param label string Label for Button.
+/// @param onClick function callback to trigger for Button.
+struct ButtonConfig
+{
+    sf::Vector2f position;
+    sf::Vector2f size;
+    std::string label;
+    std::function<void()> onClick;
+};
+
 // ============================================================================
 //  Class       : UIButton
 //  Purpose     : Manages this UIButton logic at the ui level.
