@@ -60,6 +60,7 @@ class MainMenuScene final : public Scene
     void LoadBackground();
     void PlayIntroMusic();
     void InitShip();
+    void RandomizeShipTexture();
     void UpdateShip(float dt);
 
   private:

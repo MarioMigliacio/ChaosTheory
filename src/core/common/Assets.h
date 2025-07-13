@@ -174,8 +174,23 @@ static auto LazerGreenSpriteKey = "LazerGreen";
 /// @brief Key to the LazerRedSpriteKey Sprite Asset.
 static auto LazerRedSpriteKey = "LazerRed";
 
-/// @brief Key to the PlayerShipSpriteKey Sprite Asset.
-static auto PlayerShipSpriteKey = "PlayerShip";
+/// @brief Key to the PlayerShipBlackKey Sprite Asset.
+static auto PlayerShipBlackKey = "PlayerShipBlack";
+
+/// @brief Key to the PlayerShipBlueKey Sprite Asset.
+static auto PlayerShipBlueKey = "PlayerShipBlue";
+
+/// @brief Key to the PlayerShipGoldKey Sprite Asset.
+static auto PlayerShipGoldKey = "PlayerShipGold";
+
+/// @brief Key to the PlayerShipGreenKey Sprite Asset.
+static auto PlayerShipGreenKey = "PlayerShipGreen";
+
+/// @brief Key to the PlayerShipRedKey Sprite Asset.
+static auto PlayerShipRedKey = "PlayerShipRed";
+
+/// @brief Key to the PlayerShipWhiteKey Sprite Asset.
+static auto PlayerShipWhiteKey = "PlayerShipWhite";
 
 /// @brief Key to the PowerIconSpriteKey Sprite Asset.
 static auto PowerIconSpriteKey = "PowerIcon";
@@ -200,33 +215,38 @@ static auto WideLazerRedSpriteKey = "WideLazerRed";
 
 /// @brief Sprites contain a Key and Value pair collection of sprite assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"AlienShip", "assets/sprites/AlienShip.png"},
-    {"AstronautSpeakerBlack", "assets/sprites/AstronautSpeakerBlack.png"},
-    {"AstronautSpeakerBlue", "assets/sprites/AstronautSpeakerBlue.png"},
-    {"AstronautSpeakerGreen", "assets/sprites/AstronautSpeakerGreen.png"},
-    {"AstronautSpeakerRed", "assets/sprites/AstronautSpeakerRed.png"},
-    {"AstronautSpeakerWhite", "assets/sprites/AstronautSpeakerWhite.png"},
-    {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
-    {"BasicShip", "assets/sprites/BasicShip.png"},
-    {"BombBlastFinal", "assets/sprites/BombBlastFinal.png"},
-    {"BombBlastOriginal", "assets/sprites/BombBlastOriginal.png"},
-    {"BulletBlue", "assets/sprites/BulletBlue.png"},
-    {"BulletGreen", "assets/sprites/BulletGreen.png"},
-    {"BulletRed", "assets/sprites/BulletRed.png"},
-    {"FireRateIcon", "assets/sprites/FireRateIcon.png"},
-    {"GasIcon", "assets/sprites/GasIcon.png"},
-    {"HomingRocket", "assets/sprites/HomingRocket.png"},
-    {"LazerBlue", "assets/sprites/LazerBlue.png"},
-    {"LazerGreen", "assets/sprites/LazerGreen.png"},
-    {"LazerRed", "assets/sprites/LazerRed.png"},
-    {"PlayerShip", "assets/sprites/PlayerShip.png"},
-    {"PowerIcon", "assets/sprites/PowerIcon.png"},
-    {"LifeIcon", "assets/sprites/LifeIcon.png"},
-    {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},
-    {"WarpIcon", "assets/sprites/WarpIcon.png"},
-    {"WideLazerBlue", "assets/sprites/WideLazerBlue.png"},
-    {"WideLazerGreen", "assets/sprites/WideLazerGreen.png"},
-    {"WideLazerRed", "assets/sprites/WideLazerRed.png"},
+    {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
+    {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
+    {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGreen", "assets/sprites/players/AstronautSpeakerGreen.png"},
+    {"AstronautSpeakerRed", "assets/sprites/players/AstronautSpeakerRed.png"},
+    {"AstronautSpeakerWhite", "assets/sprites/players/AstronautSpeakerWhite.png"},
+    {"AtomicIcon", "assets/sprites/icons/AtomicIcon.png"},
+    {"BasicShip", "assets/sprites/enemies/BasicShip.png"},
+    {"BombBlastFinal", "assets/sprites/projectiles/BombBlastFinal.png"},
+    {"BombBlastOriginal", "assets/sprites/projectiles/BombBlastOriginal.png"},
+    {"BulletBlue", "assets/sprites/projectiles/BulletBlue.png"},
+    {"BulletGreen", "assets/sprites/projectiles/BulletGreen.png"},
+    {"BulletRed", "assets/sprites/projectiles/BulletRed.png"},
+    {"FireRateIcon", "assets/sprites/icons/FireRateIcon.png"},
+    {"GasIcon", "assets/sprites/icons/GasIcon.png"},
+    {"HomingRocket", "assets/sprites/projectiles/HomingRocket.png"},
+    {"LazerBlue", "assets/sprites/projectiles/LazerBlue.png"},
+    {"LazerGreen", "assets/sprites/projectiles/LazerGreen.png"},
+    {"LazerRed", "assets/sprites/projectiles/LazerRed.png"},
+    {"PlayerShipBlack", "assets/sprites/players/PlayerShipBlack.png"},
+    {"PlayerShipBlue", "assets/sprites/players/PlayerShipBlue.png"},
+    {"PlayerShipGold", "assets/sprites/players/PlayerShipGold.png"},
+    {"PlayerShipGreen", "assets/sprites/players/PlayerShipGreen.png"},
+    {"PlayerShipRed", "assets/sprites/players/PlayerShipRed.png"},
+    {"PlayerShipWhite", "assets/sprites/players/PlayerShipWhite.png"},
+    {"LifeIcon", "assets/sprites/icons/LifeIcon.png"},
+    {"PowerIcon", "assets/sprites/icons/PowerIcon.png"},
+    {"UpgradeIcon", "assets/sprites/icons/UpgradeIcon.png"},
+    {"WarpIcon", "assets/sprites/icons/WarpIcon.png"},
+    {"WideLazerBlue", "assets/sprites/projectiles/WideLazerBlue.png"},
+    {"WideLazerGreen", "assets/sprites/projectiles/WideLazerGreen.png"},
+    {"WideLazerRed", "assets/sprites/projectiles/WideLazerRed.png"},
 };
 } // namespace SpriteAssets
 
@@ -329,7 +349,12 @@ static const std::unordered_map<std::string, std::string> Textures = {
     {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
     {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
     {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
-    {"PlayerShip", "assets/sprites/PlayerShip.png"},
+    {"PlayerShipBlack", "assets/sprites/players/PlayerShipBlack.png"},
+    {"PlayerShipBlue", "assets/sprites/players/PlayerShipBlue.png"},
+    {"PlayerShipGold", "assets/sprites/players/PlayerShipGold.png"},
+    {"PlayerShipGreen", "assets/sprites/players/PlayerShipGreen.png"},
+    {"PlayerShipRed", "assets/sprites/players/PlayerShipRed.png"},
+    {"PlayerShipWhite", "assets/sprites/players/PlayerShipWhite.png"},
 };
 
 /// @brief UI contain a Key and Value pair collection of ui assets
@@ -377,20 +402,20 @@ static const std::unordered_map<std::string, std::string> Backgrounds = {
 
 /// @brief Textures contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"AlienShip", "assets/sprites/AlienShip.png"},
-    {"AstronautSpeakerBlack", "assets/sprites/AstronautSpeakerBlack.png"},
-    {"AstronautSpeakerBlue", "assets/sprites/AstronautSpeakerBlue.png"},
-    {"AstronautSpeakerGreen", "assets/sprites/AstronautSpeakerGreen.png"},
-    {"AstronautSpeakerRed", "assets/sprites/AstronautSpeakerRed.png"},
-    {"AstronautSpeakerWhite", "assets/sprites/AstronautSpeakerWhite.png"},
-    {"AtomicIcon", "assets/sprites/AtomicIcon.png"},
-    {"BasicShip", "assets/sprites/BasicShip.png"},
-    {"FireRateIcon", "assets/sprites/FireRateIcon.png"},
-    {"GasIcon", "assets/sprites/GasIcon.png"},
-    {"PowerIcon", "assets/sprites/PowerIcon.png"},
-    {"LifeIcon", "assets/sprites/LifeIcon.png"},
-    {"UpgradeIcon", "assets/sprites/UpgradeIcon.png"},
-    {"WarpIcon", "assets/sprites/WarpIcon.png"},
+    {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
+    {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
+    {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGreen", "assets/sprites/players/AstronautSpeakerGreen.png"},
+    {"AstronautSpeakerRed", "assets/sprites/players/AstronautSpeakerRed.png"},
+    {"AstronautSpeakerWhite", "assets/sprites/players/AstronautSpeakerWhite.png"},
+    {"AtomicIcon", "assets/sprites/icons/AtomicIcon.png"},
+    {"BasicShip", "assets/sprites/enemies/BasicShip.png"},
+    {"FireRateIcon", "assets/sprites/icons/FireRateIcon.png"},
+    {"GasIcon", "assets/sprites/icons/GasIcon.png"},
+    {"LifeIcon", "assets/sprites/icons/LifeIcon.png"},
+    {"PowerIcon", "assets/sprites/icons/PowerIcon.png"},
+    {"UpgradeIcon", "assets/sprites/icons/UpgradeIcon.png"},
+    {"WarpIcon", "assets/sprites/icons/WarpIcon.png"},
 };
 
 /// @brief Sounds contain a Key and Value pair collection of image assets
