@@ -12,6 +12,7 @@
 
 #include "SceneManager.h"
 #include "GameScene.h"
+#include "IntroductionScene.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
 #include "PauseScene.h"
@@ -145,6 +146,7 @@ void SceneManager::RegisterAllDefaultScenes()
     Register(SceneID::Splash, [this]() { return std::make_unique<SplashScene>(m_settings); });
     Register(SceneID::MainMenu, [this]() { return std::make_unique<MainMenuScene>(m_settings); });
     Register(SceneID::Settings, [this]() { return std::make_unique<SettingsScene>(m_settings); });
+    Register(SceneID::Introduction, [this]() { return std::make_unique<IntroductionScene>(m_settings); });
     Register(SceneID::SandBox, [this]() { return std::make_unique<SandBoxScene>(m_settings); });
     Register(SceneID::Game, [this]() { return std::make_unique<GameScene>(m_settings); });
     Register(SceneID::Pause, [this]() { return std::make_unique<PauseScene>(m_settings); });

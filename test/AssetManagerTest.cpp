@@ -48,7 +48,7 @@ class AssetManagerTest : public ::testing::Test
 
 TEST_F(AssetManagerTest, CanLoadAndRetrieveTextureFontAndSounds)
 {
-    AssetManager::Instance().LoadTexture("PlayerShip", "assets/sprites/playerShip.png");
+    AssetManager::Instance().LoadTexture("PlayerShip", "assets/sprites/players/playerShipWhite.png");
     const auto &texture = *AssetManager::Instance().GetTexture("PlayerShip");
     EXPECT_NE(&texture, nullptr);
 

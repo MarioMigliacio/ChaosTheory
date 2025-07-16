@@ -37,8 +37,6 @@ UIGroupBox::UIGroupBox(const sf::Vector2f &position, const sf::Vector2f &size)
     m_background.setFillColor(DEFAULT_GROUPBOX_FILL_COLOR);
     m_background.setOutlineColor(DEFAULT_GROUPBOX_OUTLINE_COLOR);
     m_background.setOutlineThickness(DEFAULT_GROUPBOX_OUTLINE_THICKNESS);
-
-    CT_LOG_INFO("UIGroupBox created with position: {}x{}, size: {}x{}.", position.x, position.y, size.x, size.y);
 }
 
 /// @brief Set the title corresponding to this GroupBox.
@@ -74,8 +72,6 @@ void UIGroupBox::SetTitle(const std::string &title, const sf::Font &font, unsign
     {
         m_titleLabel->CenterOrigin();
     }
-
-    CT_LOG_INFO("UIGroupBox SetTitle: {}.", title);
 }
 
 /// @brief Provides access to the UITextLabel for altering its color scheme.

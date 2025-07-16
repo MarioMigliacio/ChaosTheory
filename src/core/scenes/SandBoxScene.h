@@ -25,7 +25,7 @@
 // ============================================================================
 //  Class       : SandBoxScene
 //  Purpose     : Leaf node class inheriting interface to define a Scene.
-//                Game scene logic upheld.
+//                Game scene logic tested.
 //
 //  Responsibilities:
 //      - Initializes and shuts down
@@ -58,6 +58,7 @@ class SandBoxScene final : public Scene
     void LoadBackground();
     void BindInputKeys();
     void CheckActionsPressed();
+    void StartNextDialog();
 
     void SetupSceneComponents();
     void MockTitleText(const bool enabled);

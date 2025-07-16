@@ -315,7 +315,7 @@ void UIChatBox::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool i
         m_textLabel->SetText(m_currentText);
     }
 
-    else if (!m_lineQueue.empty() && !m_nextIndicatorIcon)
+    else if (m_typingComplete && !m_nextIndicatorIcon)
     {
         IconConfig cfg{.position = sf::Vector2f(0.f, 0.f),
                        .size = sf::Vector2f(24.f, 24.f),
