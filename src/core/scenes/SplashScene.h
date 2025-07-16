@@ -18,7 +18,8 @@
 
 // ============================================================================
 //  Class       : SplashScene
-//  Purpose     : Scene that displays the Splash entry scene for ChaosTheory.
+//  Purpose     : Leaf node class inheriting interface to define a Scene.
+//                Scene that displays the Splash entry scene for ChaosTheory.
 //
 //  Responsibilities:
 //      - Fade in background image on scene start
@@ -30,7 +31,7 @@ class SplashScene final : public Scene
 {
   public:
     SplashScene(std::shared_ptr<Settings> settings);
-    ~SplashScene() = default;
+    ~SplashScene() override = default;
 
     SplashScene(const SplashScene &) = delete;
     SplashScene &operator=(const SplashScene &) = delete;

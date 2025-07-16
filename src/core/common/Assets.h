@@ -126,6 +126,9 @@ static auto AstronautSpeakerBlackKey = "AstronautSpeakerBlack";
 /// @brief Key to the AstronautSpeakerBlueKey Sprite Asset.
 static auto AstronautSpeakerBlueKey = "AstronautSpeakerBlue";
 
+/// @brief Key to the AstronautSpeakerGoldKey Sprite Asset.
+static auto AstronautSpeakerGoldKey = "AstronautSpeakerGold";
+
 /// @brief Key to the AstronautSpeakerGreenKey Sprite Asset.
 static auto AstronautSpeakerGreenKey = "AstronautSpeakerGreen";
 
@@ -218,6 +221,7 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
     {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
     {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGold", "assets/sprites/players/AstronautSpeakerGold.png"},
     {"AstronautSpeakerGreen", "assets/sprites/players/AstronautSpeakerGreen.png"},
     {"AstronautSpeakerRed", "assets/sprites/players/AstronautSpeakerRed.png"},
     {"AstronautSpeakerWhite", "assets/sprites/players/AstronautSpeakerWhite.png"},
@@ -384,6 +388,43 @@ static const std::unordered_map<std::string, std::string> Textures = {
 } // namespace SplashAssets
 
 // ============================================================================
+// IntroductionScene Preconfigurable Assets for quick loading
+// ============================================================================
+
+/// @brief Exposes Audio, and Texture assets to the SandBoxAssets namespace.
+namespace IntroductionAssets
+{
+/// @brief Textures contain a Key and Value pair collection of image assets
+static const std::unordered_map<std::string, std::string> Backgrounds = {
+    {"PlainStarBackground", "assets/backgrounds/PlainStarBackground.png"},
+    {"GasPattern1", "assets/backgrounds/GasPattern1.png"},
+    {"GasPattern2", "assets/backgrounds/GasPattern2.png"},
+};
+
+/// @brief Textures contain a Key and Value pair collection of image assets
+static const std::unordered_map<std::string, std::string> Sprites = {
+    {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
+    {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGold", "assets/sprites/players/AstronautSpeakerGold.png"},
+    {"AstronautSpeakerGreen", "assets/sprites/players/AstronautSpeakerGreen.png"},
+    {"AstronautSpeakerRed", "assets/sprites/players/AstronautSpeakerRed.png"},
+    {"AstronautSpeakerWhite", "assets/sprites/players/AstronautSpeakerWhite.png"},
+    {"PlayerShipBlack", "assets/sprites/players/PlayerShipBlack.png"},
+    {"PlayerShipBlue", "assets/sprites/players/PlayerShipBlue.png"},
+    {"PlayerShipGold", "assets/sprites/players/PlayerShipGold.png"},
+    {"PlayerShipGreen", "assets/sprites/players/PlayerShipGreen.png"},
+    {"PlayerShipRed", "assets/sprites/players/PlayerShipRed.png"},
+    {"PlayerShipWhite", "assets/sprites/players/PlayerShipWhite.png"},
+    {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
+};
+
+/// @brief Sounds contain a Key and Value pair collection of image assets
+static const std::unordered_map<std::string, std::string> Sounds = {
+    {"ChatBlip", "assets/audio/ChatBlip.wav"},
+};
+} // namespace IntroductionAssets
+
+// ============================================================================
 // SandBoxScene Preconfigurable Assets for quick loading
 // ============================================================================
 
@@ -405,6 +446,7 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
     {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
     {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},
+    {"AstronautSpeakerGold", "assets/sprites/players/AstronautSpeakerGold.png"},
     {"AstronautSpeakerGreen", "assets/sprites/players/AstronautSpeakerGreen.png"},
     {"AstronautSpeakerRed", "assets/sprites/players/AstronautSpeakerRed.png"},
     {"AstronautSpeakerWhite", "assets/sprites/players/AstronautSpeakerWhite.png"},
@@ -416,6 +458,7 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"PowerIcon", "assets/sprites/icons/PowerIcon.png"},
     {"UpgradeIcon", "assets/sprites/icons/UpgradeIcon.png"},
     {"WarpIcon", "assets/sprites/icons/WarpIcon.png"},
+    {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
 };
 
 /// @brief Sounds contain a Key and Value pair collection of image assets

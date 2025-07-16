@@ -16,7 +16,8 @@
 
 // ============================================================================
 //  Class       : PauseScene
-//  Purpose     : Scene that displays over top of the Current Game Scene.
+//  Purpose     : Leaf node class inheriting interface to define a Scene.
+//                Scene that displays over top of the Current Game Scene.
 //                Provides options and halts game sounds and updates.
 //
 //  Responsibilities:
@@ -25,11 +26,11 @@
 //      - Handle user interaction and route scene transitions
 //
 // ============================================================================
-class PauseScene : public Scene
+class PauseScene final : public Scene
 {
   public:
     PauseScene(std::shared_ptr<Settings> settings);
-    ~PauseScene() = default;
+    ~PauseScene() override = default;
 
     PauseScene(const PauseScene &) = delete;
     PauseScene &operator=(const PauseScene &) = delete;

@@ -163,7 +163,7 @@ void MainMenuScene::Update(float dt)
         m_hasPendingTransition = false;
 
         // Game mode will have its own dedicated sound track, but the Settings page can share the track.
-        if (m_requestedScene == SceneID::Game || m_requestedScene == SceneID::SandBox)
+        if (m_requestedScene == SceneID::Game || m_requestedScene == SceneID::Introduction)
         {
             if (AudioManager::Instance().IsInitialized())
             {
@@ -279,7 +279,7 @@ void MainMenuScene::CreateButtons()
                               {
                                   CT_LOG_INFO("Play button clicked!");
                                   m_hasPendingTransition = true;
-                                  m_requestedScene = SceneID::SandBox;
+                                  m_requestedScene = SceneID::Introduction;
                               }}));
 
     // Settings button
@@ -354,8 +354,6 @@ void MainMenuScene::InitShip()
 
     const float startY = m_yDist(m_rng);
     m_shipSprite.setPosition(0.f, startY);
-
-    m_shipVelocity = {SHIP_VELOCITY, 0.f};
     m_shipSineTimer = 0.f;
     m_shipActive = true;
 }
@@ -413,7 +411,7 @@ void MainMenuScene::UpdateShip(float dt)
     m_shipSineTimer += dt;
 
     sf::Vector2f pos = m_shipSprite.getPosition();
-    pos.x += m_shipVelocity.x * dt;
+    pos.x += ResolutionScaleManager::Instance().GetUniformScale() * SHIP_VELOCITY * dt;
 
     // Wave motion: sine-based Y offset
     float waveAmplitude = SINE_WAVE_AMP; // pixels

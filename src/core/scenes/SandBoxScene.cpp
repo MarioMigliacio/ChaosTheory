@@ -48,7 +48,7 @@ constexpr bool TEST_ENABLED = true;
 constexpr bool TEST_DISABLED = false;
 
 /// @brief Quickk disabling of HUD methods.
-constexpr bool HUD_MOCK_BOOL = false;
+constexpr bool HUD_MOCK_BOOL = true;
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -119,6 +119,8 @@ void SandBoxScene::Shutdown()
     CT_WARN_IF_UNINITIALIZED("SandBoxScene", "Shutdown");
 
     m_settings.reset();
+    m_testChatBox.reset();
+    m_dialogQueue.Clear();
     m_isInitialized = false;
 
     CT_LOG_INFO("SandBoxScene shutdown.");
@@ -249,16 +251,7 @@ void SandBoxScene::CheckActionsPressed()
             // Chatbox is at the end of a dialog, but there may be another dialog in the queue; skip to next dialog.
             else if (m_dialogQueue.HasNext())
             {
-                DialogLine next = m_dialogQueue.Next();
-
-                // Reconfigure title & icon first
-                m_testChatBox->SetSpeaker(next.speakerName, next.showTitle, next.iconTextureKey, next.iconType);
-
-                // Then clear any previous lines
-                m_testChatBox->Clear();
-
-                // Then add the new line text
-                m_testChatBox->AddLine(next.text);
+                StartNextDialog();
             }
 
             // Fully done - remove chatbox
@@ -272,16 +265,31 @@ void SandBoxScene::CheckActionsPressed()
     }
 }
 
+/// @brief Update the dialog queue to the next in line.
+void SandBoxScene::StartNextDialog()
+{
+    DialogLine next = m_dialogQueue.Next();
+
+    // Reconfigure title & icon first
+    m_testChatBox->SetSpeaker(next.speakerName, next.showTitle, next.iconTextureKey, next.iconType);
+
+    // Then clear any previous lines
+    m_testChatBox->Clear();
+
+    // Then add the new line text
+    m_testChatBox->AddLine(next.text);
+}
+
 /// @brief Helper method to initialize necessary Scene components.
 void SandBoxScene::SetupSceneComponents()
 {
     PlayGameMusic();
-    MockTitleText(TEST_DISABLED);
+    MockTitleText(TEST_ENABLED);
     MockHUDPanel(HUD_MOCK_BOOL);
     MockFillableGaugeComponents(TEST_DISABLED);
     MockShipStatusComponent(TEST_ENABLED);
     MockIconComponents(TEST_ENABLED);
-    MockChatBox(TEST_ENABLED);
+    MockChatBox(TEST_DISABLED);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
