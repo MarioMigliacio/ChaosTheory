@@ -14,6 +14,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneTransitionManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SettingsManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ShipFactoryTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIArrowTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIFactoryTest.cpp

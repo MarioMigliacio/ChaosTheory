@@ -15,6 +15,7 @@
 #include "ResolutionScaleManager.h"
 #include <cmath>
 
+/// @brief Constants that can be adjusted throughout the UIArrow.
 namespace
 {
 /// @brief Controls the speed at which this UIArrow fades.

@@ -122,6 +122,7 @@ CT/
 ├────core/            → CT essential library core functionality
 ├──────common/        → CT common utility
 ├──────scenes/        → CT scene logic handling
+├──────ships/         → CT ship logic handling
 ├──────ui/            → CT ui elements
 ├── test/             → unit tests
 └── README.md

@@ -12,6 +12,7 @@
 #include "UIIcon.h"
 #include "AssetManager.h"
 #include "Macros.h"
+#include "ResolutionScaleManager.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout this UIIcon.
@@ -135,6 +136,8 @@ void UIIcon::Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMo
 /// @brief Provokes logic for the Icon to begin drifting to lower Y coordinate bounds of screen if Drifting allowed.
 void UIIcon::StartFalling()
 {
+    const float scaleY = ResolutionScaleManager::Instance().GetScaleY();
+
     m_timeAlive = 0.f;
     m_falling = false;
     m_expired = false;
@@ -181,6 +184,8 @@ void UIIcon::StartFalling()
         default:
             break;
     }
+
+    m_driftSpeed = m_driftSpeed * scaleY; // account for bigger resolution windows.
 }
 
 /// @brief Returns the state of if this Icon has drifted off screen, and needs to be removed.

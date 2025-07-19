@@ -53,7 +53,7 @@ constexpr auto DIALOG_INTRO_7 =
 inline const DialogLine INTRO_LINE_1{
     .text = DIALOG_INTRO_1,
     .speakerName = "Commander",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerGoldKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerGoldKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
@@ -62,7 +62,7 @@ inline const DialogLine INTRO_LINE_1{
 inline const DialogLine INTRO_LINE_2{
     .text = DIALOG_INTRO_2,
     .speakerName = "Prometheus",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerBlueKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerBlueKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
@@ -71,7 +71,7 @@ inline const DialogLine INTRO_LINE_2{
 inline const DialogLine INTRO_LINE_3{
     .text = DIALOG_INTRO_3,
     .speakerName = "Juggernaut",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerRedKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerRedKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
@@ -80,7 +80,7 @@ inline const DialogLine INTRO_LINE_3{
 inline const DialogLine INTRO_LINE_4{
     .text = DIALOG_INTRO_4,
     .speakerName = "Scion",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerBlackKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerBlackKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
@@ -89,7 +89,7 @@ inline const DialogLine INTRO_LINE_4{
 inline const DialogLine INTRO_LINE_5{
     .text = DIALOG_INTRO_5,
     .speakerName = "Commander",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerGoldKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerGoldKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
@@ -98,7 +98,7 @@ inline const DialogLine INTRO_LINE_5{
 inline const DialogLine INTRO_LINE_6{
     .text = DIALOG_INTRO_6,
     .speakerName = "Scion",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerBlackKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerBlackKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
@@ -107,7 +107,7 @@ inline const DialogLine INTRO_LINE_6{
 inline const DialogLine INTRO_LINE_7{
     .text = DIALOG_INTRO_7,
     .speakerName = "Obelisk",
-    .iconTextureKey = SpriteAssets::AstronautSpeakerGreenKey,
+    .iconTextureKey = SpriteAssets::PlayerAssets::AstronautSpeakerGreenKey,
     .iconType = IconType::SpeakerIcon,
     .showTitle = true,
 };
