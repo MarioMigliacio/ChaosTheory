@@ -14,6 +14,16 @@
 #include "BaseShip.h"
 #include <random>
 
+// ============================================================================
+//  Class       : AlienShip
+//  Purpose     : An unintelligent spaceship that moves randomly across X axis,
+//                and slowly down Y axis.
+//
+//  Responsibilities:
+//      - Scale upon construction based on game difficulty and window size.
+//      - Update position and aliveness for this spaceship.
+//
+// ============================================================================
 class AlienShip : public BaseShip
 {
   public:

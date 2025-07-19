@@ -28,6 +28,9 @@ constexpr int BASE_HEALTH = 100;
 constexpr float BASE_SPEED = 100.f;
 } // namespace
 
+/// @brief Constructor for a BasicShip type of ship.
+/// @param startPos Position to emplace at.
+/// @param allegiance Allegiance to employ with.
 BasicShip::BasicShip(const sf::Vector2f &startPos, int allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::BasicShipSpriteKey);
@@ -48,6 +51,8 @@ BasicShip::BasicShip(const sf::Vector2f &startPos, int allegiance)
     }
 }
 
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update frame.
 void BasicShip::Update(float dt)
 {
     if (!m_alive)
@@ -70,6 +75,7 @@ void BasicShip::Update(float dt)
     }
 }
 
+/// @brief Scales this BasicShip accordingly based on WindowResolution, and GameDifficulty.
 void BasicShip::ApplyDifficultyScaling()
 {
     const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;

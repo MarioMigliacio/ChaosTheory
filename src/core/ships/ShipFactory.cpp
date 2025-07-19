@@ -17,12 +17,18 @@
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 
+/// @brief Get the current Instance for this ShipFactory singleton.
+/// @return reference to existing ShipFactory interface.
 ShipFactory &ShipFactory::Instance()
 {
     static ShipFactory instance;
     return instance;
 }
 
+/// @brief Creates a BasicShip, scaled appropriately with the window resolution.
+/// @param pos Starting position to emplace ship at.
+/// @param allegiance Allegiance to employ ship with.
+/// @return Safe pointer to a BasicShip, compatible with the BaseShip base class.
 std::shared_ptr<BaseShip> ShipFactory::CreateBasicShip(const sf::Vector2f &pos, int allegiance)
 {
     auto ship = std::make_shared<BasicShip>(pos, allegiance);
@@ -50,6 +56,10 @@ std::shared_ptr<BaseShip> ShipFactory::CreateBasicShip(const sf::Vector2f &pos, 
     return ship;
 }
 
+/// @brief Creates a AlienShip, scaled appropriately with the window resolution.
+/// @param pos Starting position to emplace ship at.
+/// @param allegiance Allegiance to employ ship with.
+/// @return Safe pointer to an AlienShip, compatible with the BaseShip base class.
 std::shared_ptr<BaseShip> ShipFactory::CreateAlienShip(const sf::Vector2f &pos, int allegiance)
 {
     auto ship = std::make_shared<AlienShip>(pos, allegiance);

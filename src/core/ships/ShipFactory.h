@@ -14,6 +14,14 @@
 #include "BaseShip.h"
 #include <memory>
 
+// ============================================================================
+//  Class       : ShipFactory
+//  Purpose     : Singleton class that manages the generation of Ship elements.
+//
+//  Responsibilities:
+//      - Scale texture sizes and generate safe pointer Ship objects.
+//
+// ============================================================================
 class ShipFactory
 {
   public:

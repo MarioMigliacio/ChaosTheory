@@ -32,6 +32,9 @@ constexpr float BASE_SPEED = 150.f;
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
 } // namespace
 
+/// @brief Constructor for an AlienShip type of ship.
+/// @param startPos Position to emplace at.
+/// @param allegiance Allegiance to employ with.
 AlienShip::AlienShip(const sf::Vector2f &startPos, int allegiance) : m_rng(std::random_device{}())
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::AlienShipSpriteKey);
@@ -53,6 +56,8 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, int allegiance) : m_rng(std::
     }
 }
 
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update frame.
 void AlienShip::Update(float dt)
 {
     if (!m_alive)
@@ -99,6 +104,7 @@ void AlienShip::Update(float dt)
     }
 }
 
+/// @brief Scales this AlienShip accordingly based on WindowResolution, and GameDifficulty.
 void AlienShip::ApplyDifficultyScaling()
 {
     const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;

@@ -13,6 +13,15 @@
 
 #include "BaseShip.h"
 
+// ============================================================================
+//  Class       : BasicShip
+//  Purpose     : An unintelligent spaceship that moves moderately fast down Y axis.
+//
+//  Responsibilities:
+//      - Scale upon construction based on game difficulty and window size.
+//      - Update position and aliveness for this spaceship.
+//
+// ============================================================================
 class BasicShip : public BaseShip
 {
   public:

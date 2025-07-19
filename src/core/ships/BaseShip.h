@@ -13,6 +13,16 @@
 
 #include <SFML/Graphics.hpp>
 
+// ============================================================================
+//  Class       : BaseShip
+//  Purpose     : A versatile abstraction for common ship behaviors.
+//
+//  Responsibilities:
+//      - Provide Draw, Render, Update interface.
+//      - Provide Accessors and Setters, including:
+//          - Health, Position, Aliveness, Allegiance.
+//
+// ============================================================================
 class BaseShip
 {
   public:
@@ -27,6 +37,16 @@ class BaseShip
         {
             target.draw(m_sprite);
         }
+    }
+
+    virtual int GetHealth() const
+    {
+        return m_health;
+    }
+
+    virtual void SetHealth(const int maxHealth)
+    {
+        m_health = maxHealth;
     }
 
     virtual void TakeDamage(int amount)
@@ -50,9 +70,19 @@ class BaseShip
         return m_allegiance;
     }
 
+    virtual void SetAllegiance(const int allegiance)
+    {
+        m_allegiance = allegiance;
+    }
+
     virtual sf::Vector2f GetPosition() const
     {
         return m_sprite.getPosition();
+    }
+
+    virtual void SetPosition(const sf::Vector2f &pos)
+    {
+        m_sprite.setPosition(pos);
     }
 
     virtual sf::FloatRect GetBounds() const
