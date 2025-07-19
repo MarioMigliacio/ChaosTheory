@@ -416,7 +416,7 @@ void MainMenuScene::UpdateShip(float dt)
     m_shipSineTimer += dt;
 
     sf::Vector2f pos = m_shipSprite.getPosition();
-    pos.x += ResolutionScaleManager::Instance().GetUniformScale() * SHIP_VELOCITY * dt;
+    pos.x += ResolutionScaleManager::Instance().GetScaleX() * SHIP_VELOCITY * dt;
 
     // Wave motion: sine-based Y offset
     float waveAmplitude = SINE_WAVE_AMP; // pixels
