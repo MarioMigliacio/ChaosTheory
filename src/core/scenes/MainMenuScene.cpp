@@ -38,9 +38,6 @@ constexpr auto SETTING_BTN_LABEL = "Settings";
 /// @brief Fixed name constant for the Exit button label.
 constexpr auto EXIT_BTN_LABEL = "Exit";
 
-/// @brief Simple math constant for PI.
-constexpr float PI = 3.14159f;
-
 /// @brief Height of amplitude/trough for sinusoidal ship movement.
 constexpr float SINE_WAVE_AMP = 50.f;
 
@@ -100,11 +97,19 @@ void MainMenuScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : MainMenuAssets::Textures)
+    for (const auto &[key, path] : MainMenuAssets::Backgrounds)
     {
         if (!assets.LoadTexture(key, path))
         {
-            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::Backgrounds failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : MainMenuAssets::Sprites)
+    {
+        if (!assets.LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::Sprites failed to load Asset: {}, {}", key, path);
         }
     }
 
@@ -268,19 +273,19 @@ void MainMenuScene::CreateButtons()
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
     // Play button
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        SkinnableButtonConfig{.position = playPos,
-                              .size = btnSize,
-                              .label = PLAY_BTN_LABEL,
-                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
-                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
-                              .scheme = UISkinnableButtonColorScheme::Blue,
-                              .onClick = [this]()
-                              {
-                                  CT_LOG_INFO("Play button clicked!");
-                                  m_hasPendingTransition = true;
-                                  m_requestedScene = SceneID::Introduction;
-                              }}));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(SkinnableButtonConfig{
+        .position = playPos,
+        .size = btnSize,
+        .label = PLAY_BTN_LABEL,
+        .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+        .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+        .scheme = UISkinnableButtonColorScheme::Blue,
+        .onClick = [this]()
+        {
+            CT_LOG_INFO("Play button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::SandBox; // TODO: Revert to IntroductionScene when not rapid testing.
+        }}));
 
     // Settings button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
@@ -370,22 +375,22 @@ void MainMenuScene::RandomizeShipTexture()
     {
         case 0:
         default:
-            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipWhiteKey);
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey);
             break;
         case 1:
-            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipBlackKey);
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipBlackKey);
             break;
         case 2:
-            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipBlueKey);
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipBlueKey);
             break;
         case 3:
-            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipGoldKey);
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipGoldKey);
             break;
         case 4:
-            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipGreenKey);
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipGreenKey);
             break;
         case 5:
-            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipRedKey);
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipRedKey);
             break;
     }
 

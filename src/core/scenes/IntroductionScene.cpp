@@ -56,9 +56,6 @@ constexpr auto SKIP_CHAT_KEY = "Space";
 
 /// @brief Fixed name constant to be used with BindActionKey to setup a termination key.
 constexpr auto EXIT_BUTTON_KEY = "Exit";
-
-/// @brief PI constant.
-constexpr float PI = 3.14159f;
 } // namespace
 
 /// @brief Constructor for the IntroductionScene.
@@ -387,19 +384,19 @@ void IntroductionScene::SetupFormation()
         switch (i)
         {
             case 0:
-                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipBlueKey);
+                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipBlueKey);
                 break;
             case 1:
-                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipBlackKey);
+                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipBlackKey);
                 break;
             case 2:
-                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipWhiteKey);
+                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey);
                 break;
             case 3:
-                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipGreenKey);
+                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipGreenKey);
                 break;
             case 4:
-                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipRedKey);
+                tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipRedKey);
                 break;
         }
 

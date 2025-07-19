@@ -12,6 +12,7 @@
 #pragma once
 
 #include "Background.h"
+#include "BaseShip.h"
 #include "DialogConstants.h"
 #include "DialogLine.h"
 #include "DialogQueue.h"
@@ -68,6 +69,10 @@ class SandBoxScene final : public Scene
     void MockIconComponents(const bool enabled);
     void MockChatBox(const bool enabled);
 
+    void MockUnitSpawns(const bool enabled);
+    void UpdateMockUnits(float dt, const bool enabled);
+    void DrawMockUnits(sf::RenderTarget &target, const bool enabled);
+
     void PlayGameMusic();
     void UpdateHUD(float dt, const bool enabled);
 
@@ -80,6 +85,7 @@ class SandBoxScene final : public Scene
     std::shared_ptr<UITextLabel> m_scoreLabel;
     std::shared_ptr<UITextLabel> m_timerLabel;
     std::shared_ptr<UIFillableGauge> m_healthGauge;
+    std::vector<std::shared_ptr<BaseShip>> m_mockShips;
 
     DialogQueue m_dialogQueue;
 
