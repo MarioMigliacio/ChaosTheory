@@ -18,6 +18,7 @@ inline std::shared_ptr<Settings> CreateTestSettings()
 {
     auto settings = std::make_shared<Settings>();
     settings->m_resolution = ResolutionSetting::Res720p;
+    settings->m_gameDifficulty = GameDifficultySetting::Normal;
     settings->m_windowWidth = 1280;
     settings->m_windowHeight = 720;
     settings->m_targetFramerate = 60;
