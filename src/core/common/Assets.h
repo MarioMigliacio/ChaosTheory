@@ -527,6 +527,7 @@ static const std::unordered_map<std::string, std::string> Backgrounds = {
 
 /// @brief Sprites contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Sprites = {
+    {"BulletWhite", "assets/sprites/projectiles/BulletWhite.png"},
     {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
     {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
     {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},

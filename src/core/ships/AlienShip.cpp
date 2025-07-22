@@ -12,7 +12,9 @@
 #include "AlienShip.h"
 #include "AssetManager.h"
 #include "Assets.h"
+#include "BasicGun.h"
 #include "Macros.h"
+#include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include "ShipPresets.h"
@@ -35,7 +37,7 @@ constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
 /// @brief Constructor for an AlienShip type of ship.
 /// @param startPos Position to emplace at.
 /// @param allegiance Allegiance to employ with.
-AlienShip::AlienShip(const sf::Vector2f &startPos, int allegiance) : m_rng(std::random_device{}())
+AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rng(std::random_device{}())
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::AlienShipSpriteKey);
 
@@ -54,6 +56,8 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, int allegiance) : m_rng(std::
     {
         CT_LOG_ERROR("AlienShip texture not found.");
     }
+
+    m_gun = std::make_shared<BasicGun>(1.f, Allegiance::Enemy); // cooldown, allegiance
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -65,6 +69,40 @@ void AlienShip::Update(float dt)
         return;
     }
 
+    UpdateMovementLogic(dt);
+    UpdateGunLogic(dt);
+}
+
+/// @brief Scales this AlienShip accordingly based on WindowResolution, and GameDifficulty.
+void AlienShip::ApplyDifficultyScaling()
+{
+    const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
+    const float scaleY = ResolutionScaleManager::Instance().GetScaleY();
+
+    switch (difficulty)
+    {
+        case GameDifficultySetting::Easy:
+            m_health = static_cast<int>(BASE_HEALTH * EASY_HEALTH_SCALE);
+            m_speed = BASE_SPEED * EASY_SPEED_SCALE * scaleY;
+            m_sprite.setColor(EASY_TINT);
+            break;
+
+        case GameDifficultySetting::Normal:
+            m_health = BASE_HEALTH * NORMAL_HEALTH_SCALE;
+            m_speed = BASE_SPEED * NORMAL_SPEED_SCALE * scaleY;
+            m_sprite.setColor(NORMAL_TINT);
+            break;
+
+        case GameDifficultySetting::Hard:
+            m_health = static_cast<int>(BASE_HEALTH * HARD_HEALTH_SCALE);
+            m_speed = BASE_SPEED * HARD_SPEED_SCALE * scaleY;
+            m_sprite.setColor(HARD_TINT);
+            break;
+    }
+}
+
+void AlienShip::UpdateMovementLogic(const float dt)
+{
     auto pos = m_sprite.getPosition();
 
     // Handle random horizontal movement direction switch
@@ -104,30 +142,32 @@ void AlienShip::Update(float dt)
     }
 }
 
-/// @brief Scales this AlienShip accordingly based on WindowResolution, and GameDifficulty.
-void AlienShip::ApplyDifficultyScaling()
+void AlienShip::UpdateGunLogic(const float dt)
 {
-    const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
-    const float scaleY = ResolutionScaleManager::Instance().GetScaleY();
-
-    switch (difficulty)
+    if (!m_gun)
     {
-        case GameDifficultySetting::Easy:
-            m_health = static_cast<int>(BASE_HEALTH * EASY_HEALTH_SCALE);
-            m_speed = BASE_SPEED * EASY_SPEED_SCALE * scaleY;
-            m_sprite.setColor(EASY_TINT);
-            break;
+        return;
+    }
 
-        case GameDifficultySetting::Normal:
-            m_health = BASE_HEALTH * NORMAL_HEALTH_SCALE;
-            m_speed = BASE_SPEED * NORMAL_SPEED_SCALE * scaleY;
-            m_sprite.setColor(NORMAL_TINT);
-            break;
+    m_gun->SetOwnerPosition(GetPosition());
+    m_gun->Update(dt);
 
-        case GameDifficultySetting::Hard:
-            m_health = static_cast<int>(BASE_HEALTH * HARD_HEALTH_SCALE);
-            m_speed = BASE_SPEED * HARD_SPEED_SCALE * scaleY;
-            m_sprite.setColor(HARD_TINT);
-            break;
+    if (m_initialHoldTime > 0.f)
+    {
+        m_initialHoldTime -= dt;
+
+        return;
+    }
+
+    m_fireCooldown -= dt;
+
+    if (m_fireCooldown <= 0.f)
+    {
+        auto proj = m_gun->TryFire();
+
+        if (proj)
+        {
+            m_fireCooldown = m_fireDelayDist(m_rng); // Cooldown reset
+        }
     }
 }

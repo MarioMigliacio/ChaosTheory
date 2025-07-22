@@ -16,6 +16,7 @@
 #include "InputManager.h"
 #include "Macros.h"
 #include "MainMenuScene.h"
+#include "ProjectileManager.h"
 #include "SceneFactory.h"
 #include "SceneManager.h"
 #include "SceneTransitionManager.h"
@@ -45,6 +46,7 @@ void Application::Init()
     AssetManager::Instance().Init(m_settings);
     AudioManager::Instance().Init(m_settings);
     SceneManager::Instance().Init(m_settings);
+    ProjectileManager::Instance().Init(m_settings);
 
     SceneManager::Instance().PushScene(SceneManager::Instance().Create(SceneID::Splash));
 
@@ -92,6 +94,7 @@ void Application::Shutdown()
     SceneManager::Instance().Shutdown();
     AudioManager::Instance().Shutdown();
     UIManager::Instance().Shutdown();
+    ProjectileManager::Instance().Shutdown();
 
     CT_LOG_INFO("Application shutting down.");
     LogManager::Instance().Shutdown();

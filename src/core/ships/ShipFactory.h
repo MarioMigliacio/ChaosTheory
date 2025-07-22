@@ -27,8 +27,8 @@ class ShipFactory
   public:
     static ShipFactory &Instance();
 
-    std::shared_ptr<BaseShip> CreateBasicShip(const sf::Vector2f &pos, int allegiance);
-    std::shared_ptr<BaseShip> CreateAlienShip(const sf::Vector2f &pos, int allegiance);
+    std::shared_ptr<BaseShip> CreateBasicShip(const sf::Vector2f &pos, Allegiance allegiance);
+    std::shared_ptr<BaseShip> CreateAlienShip(const sf::Vector2f &pos, Allegiance allegiance);
 
   private:
     ShipFactory() = default;

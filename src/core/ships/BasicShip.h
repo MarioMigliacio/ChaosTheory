@@ -25,7 +25,7 @@
 class BasicShip : public BaseShip
 {
   public:
-    BasicShip(const sf::Vector2f &startPos, int allegiance);
+    BasicShip(const sf::Vector2f &startPos, Allegiance allegiance);
     ~BasicShip() override = default;
 
     void Update(float dt) override;

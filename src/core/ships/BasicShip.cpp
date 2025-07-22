@@ -31,7 +31,7 @@ constexpr float BASE_SPEED = 100.f;
 /// @brief Constructor for a BasicShip type of ship.
 /// @param startPos Position to emplace at.
 /// @param allegiance Allegiance to employ with.
-BasicShip::BasicShip(const sf::Vector2f &startPos, int allegiance)
+BasicShip::BasicShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::BasicShipSpriteKey);
 

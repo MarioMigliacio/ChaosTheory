@@ -11,7 +11,9 @@
 
 #include "ShipFactory.h"
 #include "AlienShip.h"
+#include "Allegiance.h"
 #include "AssetManager.h"
+#include "Assets.h"
 #include "BasicShip.h"
 #include "Macros.h"
 #include "SettingsManager.h"
@@ -34,12 +36,16 @@ class ShipFactoryTest : public ::testing::Test
             LogManager::Instance().Init();
         }
 
-        if (!AssetManager::Instance().IsInitialized())
+        if (AssetManager::Instance().IsInitialized())
         {
-            AssetManager::Instance().Init(m_settings);
-            AssetManager::Instance().LoadTexture("BasicShip", "assets/sprites/enemies/BasicShip.png");
-            AssetManager::Instance().LoadTexture("AlienShip", "assets/sprites/enemies/AlienShip.png");
+            AssetManager::Instance().Shutdown();
         }
+
+        AssetManager::Instance().Init(m_settings);
+        AssetManager::Instance().LoadTexture(SpriteAssets::EnemyAssets::BasicShipSpriteKey,
+                                             "assets/sprites/enemies/BasicShip.png");
+        AssetManager::Instance().LoadTexture(SpriteAssets::EnemyAssets::AlienShipSpriteKey,
+                                             "assets/sprites/enemies/AlienShip.png");
     }
 
     void TearDown() override
@@ -56,30 +62,30 @@ class ShipFactoryTest : public ::testing::Test
 
 TEST_F(ShipFactoryTest, CanCreateBasicShip)
 {
-    auto ship = ShipFactory::Instance().CreateBasicShip({400.f, 100.f}, 0);
+    auto ship = ShipFactory::Instance().CreateBasicShip({400.f, 100.f}, Allegiance::Enemy);
     EXPECT_NE(ship, nullptr);
     EXPECT_TRUE(ship->IsAlive());
-    EXPECT_EQ(ship->GetAllegiance(), 0);
+    EXPECT_EQ(ship->GetAllegiance(), Allegiance::Enemy);
 }
 
 TEST_F(ShipFactoryTest, BasicShipDiesAfterDamage)
 {
-    auto ship = ShipFactory::Instance().CreateBasicShip({200.f, 150.f}, 0);
+    auto ship = ShipFactory::Instance().CreateBasicShip({200.f, 150.f}, Allegiance::Enemy);
     ship->TakeDamage(500);
     EXPECT_FALSE(ship->IsAlive());
 }
 
 TEST_F(ShipFactoryTest, CanCreateAlienShip)
 {
-    auto ship = ShipFactory::Instance().CreateAlienShip({400.f, 100.f}, 0);
+    auto ship = ShipFactory::Instance().CreateAlienShip({400.f, 100.f}, Allegiance::Enemy);
     EXPECT_NE(ship, nullptr);
     EXPECT_TRUE(ship->IsAlive());
-    EXPECT_EQ(ship->GetAllegiance(), 0);
+    EXPECT_EQ(ship->GetAllegiance(), Allegiance::Enemy);
 }
 
 TEST_F(ShipFactoryTest, AlienShipDiesAfterDamage)
 {
-    auto ship = ShipFactory::Instance().CreateAlienShip({200.f, 150.f}, 0);
+    auto ship = ShipFactory::Instance().CreateAlienShip({200.f, 150.f}, Allegiance::Enemy);
     ship->TakeDamage(500);
     EXPECT_FALSE(ship->IsAlive());
 }

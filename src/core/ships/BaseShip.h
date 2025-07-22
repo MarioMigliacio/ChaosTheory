@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include "Allegiance.h"
+#include "IGun.h"
 #include <SFML/Graphics.hpp>
 
 // ============================================================================
@@ -65,12 +67,12 @@ class BaseShip
         return m_alive;
     }
 
-    virtual int GetAllegiance() const
+    virtual Allegiance GetAllegiance() const
     {
         return m_allegiance;
     }
 
-    virtual void SetAllegiance(const int allegiance)
+    virtual void SetAllegiance(const Allegiance allegiance)
     {
         m_allegiance = allegiance;
     }
@@ -99,11 +101,13 @@ class BaseShip
     virtual void ApplyDifficultyScaling() = 0;
 
   protected:
+    Allegiance m_allegiance = Allegiance::Neutral;
+
+    std::shared_ptr<IGun> m_gun;
     sf::Sprite m_sprite;
 
-    int m_health;
-    float m_speed;
+    float m_speed = 0;
+    int m_health = 0;
 
-    int m_allegiance = 0;
     bool m_alive = true;
 };
