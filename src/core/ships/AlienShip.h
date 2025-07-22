@@ -30,6 +30,14 @@ class AlienShip : public BaseShip
     AlienShip(const sf::Vector2f &startPos, Allegiance allegiance);
     ~AlienShip() override = default;
 
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    AlienShip(const AlienShip &) = delete;
+    AlienShip &operator=(const AlienShip &) = delete;
+
+    AlienShip(AlienShip &&) = delete;
+    AlienShip &operator=(AlienShip &&) = delete;
+
+  public:
     void Update(float dt) override;
 
   protected:

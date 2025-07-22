@@ -12,12 +12,14 @@
 #include "BasicGun.h"
 #include "ProjectileFactory.h"
 #include "ProjectileManager.h"
-#include "WindowManager.h"
 
 BasicGun::BasicGun(float cooldownSeconds, Allegiance allegiance)
-    : m_fireRate(cooldownSeconds), m_cooldown(0.f), m_allegiance(allegiance)
 {
-    m_barrelOffset = ProjectileFactory::Instance().GetDefaultBarrelOffset(allegiance);
+    m_barrelOffset = GetDefaultBarrelOffset(allegiance);
+
+    m_fireRate = cooldownSeconds;
+    m_cooldown = 0.f;
+    m_allegiance = allegiance;
 }
 
 void BasicGun::Update(float dt)
@@ -28,22 +30,6 @@ void BasicGun::Update(float dt)
     {
         m_cooldown = 0.f;
     }
-}
-
-void BasicGun::SetOwnerPosition(const sf::Vector2f &position)
-{
-    m_ownerPosition = position;
-}
-
-sf::Vector2f BasicGun::GetBarrelOffset() const
-{
-    return m_barrelOffset;
-}
-
-void BasicGun::SetAllegiance(Allegiance allegiance)
-{
-    m_allegiance = allegiance;
-    m_barrelOffset = ProjectileFactory::Instance().GetDefaultBarrelOffset(allegiance);
 }
 
 std::shared_ptr<BaseProjectile> BasicGun::TryFire()

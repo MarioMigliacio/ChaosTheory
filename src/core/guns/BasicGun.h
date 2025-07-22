@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-07-19
-//  Description : Base implementation for firearm behavior across all ships.
+//  Description : BasicGun implementation for firearm behavior.
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -12,40 +12,35 @@
 #pragma once
 
 #include "Allegiance.h"
-#include "IGun.h"
+#include "BaseGun.h"
 #include <SFML/Graphics.hpp>
 
 // ============================================================================
 //  Class       : BasicGun
-//  Purpose     : An abstraction layer above IGun interface,
+//  Purpose     : An abstraction layer above BaseGun interface,
 //                for shared common gun behaviors' base implementation.
 //
 //  Responsibilities:
-//      - Provide Draw, Update, TryFire and TryFireTowards interface.
+//      - Provide Update, TryFire and TryFireTowards implementations for BasicGun.
 //      - Manages cooldown and projectile spawning.
 //
 // ============================================================================
-class BasicGun : public IGun
+class BasicGun : public BaseGun
 {
   public:
     BasicGun(float cooldownSeconds, Allegiance allegiance);
     ~BasicGun() override = default;
 
-    void Update(float dt) override;
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    BasicGun(const BasicGun &) = delete;
+    BasicGun &operator=(const BasicGun &) = delete;
 
-    void SetOwnerPosition(const sf::Vector2f &position) override;
-    sf::Vector2f GetBarrelOffset() const;
-    void SetAllegiance(Allegiance allegiance);
+    BasicGun(BasicGun &&) = delete;
+    BasicGun &operator=(BasicGun &&) = delete;
+
+  public:
+    void Update(float dt) override;
 
     std::shared_ptr<BaseProjectile> TryFire() override;
     std::shared_ptr<BaseProjectile> TryFireTowards(const sf::Vector2f &targetPos) override;
-
-  private:
-    Allegiance m_allegiance = Allegiance::Neutral;
-
-    sf::Vector2f m_ownerPosition;
-    sf::Vector2f m_barrelOffset;
-
-    float m_cooldown = 0.f;
-    float m_fireRate = 0.3f;
 };

@@ -20,5 +20,13 @@ class BasicProjectile : public BaseProjectile
                     sf::Color tint);
     ~BasicProjectile() override = default;
 
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    BasicProjectile(const BasicProjectile &) = delete;
+    BasicProjectile &operator=(const BasicProjectile &) = delete;
+
+    BasicProjectile(BasicProjectile &&) = delete;
+    BasicProjectile &operator=(BasicProjectile &&) = delete;
+
+  public:
     void Update(float dt) override;
 };

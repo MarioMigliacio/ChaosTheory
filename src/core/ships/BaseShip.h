@@ -12,7 +12,7 @@
 #pragma once
 
 #include "Allegiance.h"
-#include "IGun.h"
+#include "BaseGun.h"
 #include <SFML/Graphics.hpp>
 
 // ============================================================================
@@ -32,7 +32,6 @@ class BaseShip
 
     virtual void Update(float dt) = 0;
 
-  public:
     virtual void Draw(sf::RenderTarget &target)
     {
         if (m_alive)
@@ -103,7 +102,7 @@ class BaseShip
   protected:
     Allegiance m_allegiance = Allegiance::Neutral;
 
-    std::shared_ptr<IGun> m_gun;
+    std::shared_ptr<BaseGun> m_gun;
     sf::Sprite m_sprite;
 
     float m_speed = 0;
