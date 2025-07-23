@@ -13,6 +13,15 @@
 
 #include "BaseProjectile.h"
 
+// ============================================================================
+//  Class       : BasicProjectile
+//  Purpose     : An abstraction layer above BaseProjectile interface,
+//                for shared common projectile behaviors base implementation.
+//
+//  Responsibilities:
+//      - Provide Update for BasicProjectile.
+//
+// ============================================================================
 class BasicProjectile : public BaseProjectile
 {
   public:

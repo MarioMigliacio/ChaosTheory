@@ -1,3 +1,14 @@
+// ============================================================================
+//  File        : ProjectileManager.h
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-04-11
+//  Description : ProjectileManager is the CT collector of ingame projectiles.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
+// ============================================================================
+
 #pragma once
 
 #include "BaseProjectile.h"
@@ -6,6 +17,14 @@
 #include <memory>
 #include <vector>
 
+// ============================================================================
+//  Class       : ProjectileManager
+//  Purpose     : Singleton class that manages the ingame projectiles.
+//
+//  Responsibilities:
+//      - Initializes, Updates, Draws, and manages projectile collection.
+//
+// ============================================================================
 class ProjectileManager
 {
   public:

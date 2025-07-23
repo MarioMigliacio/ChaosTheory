@@ -22,6 +22,7 @@
 //
 //  Responsibilities:
 //      - Provide Update, TryFire and TryFireTowards interface.
+//      - Implement simple GetBarrelOffset, OwnerPosition, Allegiance etc.
 //
 // ============================================================================
 class BaseGun
@@ -58,11 +59,12 @@ class BaseGun
         switch (allegiance)
         {
             case Allegiance::Player:
+            case Allegiance::Friendly:
                 return {0.f, -offsetY};
             case Allegiance::Enemy:
                 return {0.f, offsetY};
             default:
-                return {0.f, 0.f}; // Neutral/Friendly/Environment don't shoot
+                return {0.f, 0.f}; // Neutral or Environment don't shoot
         }
     }
 

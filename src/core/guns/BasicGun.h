@@ -18,7 +18,7 @@
 // ============================================================================
 //  Class       : BasicGun
 //  Purpose     : An abstraction layer above BaseGun interface,
-//                for shared common gun behaviors' base implementation.
+//                for shared common gun behaviors base implementation.
 //
 //  Responsibilities:
 //      - Provide Update, TryFire and TryFireTowards implementations for BasicGun.

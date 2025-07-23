@@ -15,6 +15,12 @@
 #include "Macros.h"
 #include "WindowManager.h"
 
+/// @brief Constructor for a BasicProjectile.
+/// @param startPos Vector x,y cooridnate position to emplace at.
+/// @param velocity Velocity factor for this projectile to start with.
+/// @param damage Damage value for this projectile to start with.
+/// @param allegiance Allegiance value for this projectile.
+/// @param tint Color tint adjustment for this projectile.
 BasicProjectile::BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity, int damage,
                                  Allegiance allegiance, sf::Color tint)
 {
@@ -38,6 +44,8 @@ BasicProjectile::BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2
     m_allegiance = allegiance;
 }
 
+/// @brief Performs update on internal members during an update frame.
+/// @param dt delta time since last update frame.
 void BasicProjectile::Update(float dt)
 {
     if (!m_alive)

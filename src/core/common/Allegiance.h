@@ -31,6 +31,9 @@ enum class Allegiance
     Environment,
 };
 
+/// @brief Provides a convinient Allegiance To String.
+/// @param a Allegiance enumeration to convert to string.
+/// @return const char* representation for an Allegiance enumeration.
 inline const char *ToString(Allegiance a)
 {
     switch (a)

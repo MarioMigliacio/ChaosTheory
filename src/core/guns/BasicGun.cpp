@@ -13,6 +13,9 @@
 #include "ProjectileFactory.h"
 #include "ProjectileManager.h"
 
+/// @brief Constructor for a BasicGun
+/// @param cooldownSeconds Amount of delta time to pass before able to successfully TryFire variants.
+/// @param allegiance Allegiance for the unit this Gun is attached to.
 BasicGun::BasicGun(float cooldownSeconds, Allegiance allegiance)
 {
     m_barrelOffset = GetDefaultBarrelOffset(allegiance);
@@ -22,6 +25,8 @@ BasicGun::BasicGun(float cooldownSeconds, Allegiance allegiance)
     m_allegiance = allegiance;
 }
 
+/// @brief Updates cooldown logic during a frame.
+/// @param dt delta time since last update frame.
 void BasicGun::Update(float dt)
 {
     m_cooldown -= dt;
@@ -32,6 +37,8 @@ void BasicGun::Update(float dt)
     }
 }
 
+/// @brief Attempts to Try firing a projectile from this gun.
+/// @return a safe pointer to a base class projectile, or nullptr if not ready to fire.
 std::shared_ptr<BaseProjectile> BasicGun::TryFire()
 {
     if (m_cooldown > 0.f)
@@ -51,6 +58,9 @@ std::shared_ptr<BaseProjectile> BasicGun::TryFire()
     return projectile;
 }
 
+/// @brief Attempts to Try firing a projectile towards a target position from this gun.
+/// @param targetPos The Vector position this projectile will try to fire towards.
+/// @return a safe pointer to a base class projectile, or nullptr if not ready to fire.
 std::shared_ptr<BaseProjectile> BasicGun::TryFireTowards(const sf::Vector2f &targetPos)
 {
     if (m_cooldown > 0.f)

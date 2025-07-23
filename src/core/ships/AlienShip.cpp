@@ -101,6 +101,8 @@ void AlienShip::ApplyDifficultyScaling()
     }
 }
 
+/// @brief Helper method to move this AlienShip based on update time.
+/// @param dt delta time since last update frame.
 void AlienShip::UpdateMovementLogic(const float dt)
 {
     auto pos = m_sprite.getPosition();
@@ -142,6 +144,8 @@ void AlienShip::UpdateMovementLogic(const float dt)
     }
 }
 
+/// @brief Helper method to update this AlienShip based on update time.
+/// @param dt delta time since last update frame.
 void AlienShip::UpdateGunLogic(const float dt)
 {
     if (!m_gun)
@@ -167,7 +171,7 @@ void AlienShip::UpdateGunLogic(const float dt)
 
         if (proj)
         {
-            m_fireCooldown = m_fireDelayDist(m_rng); // Cooldown reset
+            m_fireCooldown = m_fireDelayDist(m_rng);
         }
     }
 }

@@ -14,6 +14,14 @@
 #include "Allegiance.h"
 #include <SFML/Graphics.hpp>
 
+// ============================================================================
+//  Class       : BaseProjectile
+//  Purpose     : A versatile abstraction for common projectile behaviors.
+//
+//  Responsibilities:
+//      - Provide Update, TryFire and TryFireTowards interface.
+//
+// ============================================================================
 class BaseProjectile
 {
   public:

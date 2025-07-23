@@ -51,14 +51,13 @@ class ProjectileFactory
   public:
     static ProjectileFactory &Instance();
 
-    sf::Vector2f GetDefaultFireDirection(Allegiance allegiance);
-    sf::Vector2f GetDefaultBarrelOffset(Allegiance allegiance);
-
     std::shared_ptr<BaseProjectile> CreateBasicProjectile(const sf::Vector2f &pos, ProjectileCategory type,
                                                           Allegiance allegiance);
     std::shared_ptr<BaseProjectile> CreateBasicProjectile(const sf::Vector2f &pos, const sf::Vector2f &dir,
                                                           ProjectileCategory type, Allegiance allegiance);
-    ProjectileStats GetStats(ProjectileCategory type);
+
+    ProjectileStats GetStats(ProjectileCategory type) const;
+    sf::Vector2f GetDefaultFireDirection(Allegiance allegiance) const;
 
   private:
     ProjectileStats ApplyDifficultyScaling(ProjectileStats stats, Allegiance allegiance);

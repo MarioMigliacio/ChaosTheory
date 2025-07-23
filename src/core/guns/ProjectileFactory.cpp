@@ -12,11 +12,14 @@
 #include "ProjectileFactory.h"
 #include "AssetManager.h"
 #include "Assets.h"
+#include "BaseGun.h"
 #include "BasicProjectile.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include <cmath>
 
+/// @brief Get the current Instance for this ProjectileFactory singleton.
+/// @return reference to existing ProjectileFactory interface.
 ProjectileFactory &ProjectileFactory::Instance()
 {
     static ProjectileFactory instance;
@@ -24,35 +27,11 @@ ProjectileFactory &ProjectileFactory::Instance()
     return instance;
 }
 
-sf::Vector2f ProjectileFactory::GetDefaultFireDirection(Allegiance allegiance)
-{
-    switch (allegiance)
-    {
-        case Allegiance::Player:
-        case Allegiance::Friendly:
-            return {0.f, -1.f}; // Upward
-        case Allegiance::Enemy:
-            return {0.f, 1.f}; // Downward
-        default:
-            return {0.f, 0.f}; // No direction
-    }
-}
-
-sf::Vector2f ProjectileFactory::GetDefaultBarrelOffset(Allegiance allegiance)
-{
-    constexpr float offsetY = 8.f; // TODO: Know that some ships barrel may be 32.f
-
-    switch (allegiance)
-    {
-        case Allegiance::Player:
-            return {0.f, -offsetY};
-        case Allegiance::Enemy:
-            return {0.f, offsetY};
-        default:
-            return {0.f, 0.f}; // Neutral/Friendly/Environment don't shoot
-    }
-}
-
+/// @brief Creates a basic projectile that will travel based on Allegiance.
+/// @param pos Position to originate from.
+/// @param type ProjectileCategory type to apply for this projectile.
+/// @param allegiance Allegiance to instantiate with.
+/// @return A safe pointer to a BasicProjectile object, inheriting from BaseProjectile base class.
 std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const sf::Vector2f &pos,
                                                                          ProjectileCategory type, Allegiance allegiance)
 {
@@ -75,6 +54,12 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const s
     return projectile;
 }
 
+/// @brief Creates a basic projectile that will be fired in a vector direction based on a target, typically AI driven.
+/// @param pos Position to originate from.
+/// @param dir Directional vector to target and update towards.
+/// @param type ProjectileCategory type to apply for this projectile.
+/// @param allegiance Allegiance to instantiate with.
+/// @return A safe pointer to a BasicProjectile object, inheriting from BaseProjectile base class.
 std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const sf::Vector2f &pos,
                                                                          const sf::Vector2f &dir,
                                                                          ProjectileCategory type, Allegiance allegiance)
@@ -112,7 +97,10 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const s
     return projectile;
 }
 
-ProjectileStats ProjectileFactory::GetStats(ProjectileCategory type)
+/// @brief Returns configurable default stats for Projectiles based on category.
+/// @param type ProjectileCategory to calculate based off of.
+/// @return Structure of ProjectileStats based on type.
+ProjectileStats ProjectileFactory::GetStats(ProjectileCategory type) const
 {
     switch (type)
     {
@@ -130,6 +118,27 @@ ProjectileStats ProjectileFactory::GetStats(ProjectileCategory type)
     }
 }
 
+/// @brief Get default firing direction based on Allegiance.
+/// @param allegiance Allegiance to base direction off of.
+/// @return Vector direction that projectile should target.
+sf::Vector2f ProjectileFactory::GetDefaultFireDirection(Allegiance allegiance) const
+{
+    switch (allegiance)
+    {
+        case Allegiance::Player:
+        case Allegiance::Friendly:
+            return {0.f, -1.f}; // Upward
+        case Allegiance::Enemy:
+            return {0.f, 1.f}; // Downward
+        default:
+            return {0.f, 0.f}; // No direction
+    }
+}
+
+/// @brief Helper method to scale stats based on game difficulty.
+/// @param stats Stats to update.
+/// @param allegiance Only applicable to enemy units for difficulty scaling.
+/// @return Inline scales ProjectileStats structure.
 ProjectileStats ProjectileFactory::ApplyDifficultyScaling(ProjectileStats stats, Allegiance allegiance)
 {
     if (allegiance != Allegiance::Enemy)
