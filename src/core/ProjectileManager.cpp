@@ -14,7 +14,7 @@
 #include <algorithm>
 
 /// @brief Get the current Instance for this ProjectileManager singleton.
-/// @return reference to existing InputManager interface.
+/// @return reference to existing ProjectileManager interface.
 ProjectileManager &ProjectileManager::Instance()
 {
     static ProjectileManager instance;

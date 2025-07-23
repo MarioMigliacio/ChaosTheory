@@ -46,6 +46,15 @@ struct ProjectileStats
     sf::Color tint;
 };
 
+// ============================================================================
+//  Class       : ProjectileFactory
+//  Purpose     : Singleton class that manages the generation of Projectile elements.
+//
+//  Responsibilities:
+//      - Scale texture sizes and generate safe pointer Projectile objects.
+//      - Scale damage and velocity baseed on game difficulty.
+//
+// ============================================================================
 class ProjectileFactory
 {
   public:
