@@ -15,6 +15,7 @@
 #include "BaseProjectile.h"
 #include "BasicGun.h"
 #include "Macros.h"
+#include "ProjectilePresets.h"
 #include "SettingsManager.h"
 #include "TestHelpers.h"
 #include <gtest/gtest.h>
@@ -78,8 +79,8 @@ TEST_F(ProjectileFactoryTest, CreateBasicProjectile_Enemy_HardDifficulty)
     EXPECT_TRUE(projectile->IsAlive());
 
     const auto stats = ProjectileFactory::Instance().GetStats(ProjectileCategory::Red);
-    const float expectedSpeed = stats.speed * 1.1f;
-    const int expectedDamage = static_cast<int>(stats.damage * 1.25f);
+    const float expectedSpeed = stats.speed * HARD_PROJECTILE_SPEED_SCALE;
+    const int expectedDamage = static_cast<int>(stats.damage * HARD_PROJECTILE_DAMAGE_SCALE);
 
     EXPECT_EQ(projectile->GetDamage(), expectedDamage);
     EXPECT_FLOAT_EQ(projectile->GetVelocity().y, expectedSpeed);

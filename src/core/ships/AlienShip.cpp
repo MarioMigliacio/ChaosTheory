@@ -32,6 +32,15 @@ constexpr float BASE_SPEED = 150.f;
 
 /// @brief Configurable time for ship to randomly try changing x-direction.
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
+
+/// @brief Configurable time for ship to apply to its owned gun.
+constexpr float INTERNAL_GUN_COOLDOWN = 1.0f;
+
+/// @brief Divide the y-direction speed of this spaceship to slow its descent.
+constexpr float INTERNAL_Y_DIRECTION_DAMPENER = 4.f;
+
+/// @brief Divide the x-direction speed of this spaceship to slow its strafing.
+constexpr float INTERNAL_X_DIRECTION_DAMPENER = .5f;
 } // namespace
 
 /// @brief Constructor for an AlienShip type of ship.
@@ -57,7 +66,7 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
         CT_LOG_ERROR("AlienShip texture not found.");
     }
 
-    m_gun = std::make_shared<BasicGun>(1.f, Allegiance::Enemy); // cooldown, allegiance
+    m_gun = std::make_shared<BasicGun>(INTERNAL_GUN_COOLDOWN, Allegiance::Enemy); // cooldown, allegiance
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -117,8 +126,8 @@ void AlienShip::UpdateMovementLogic(const float dt)
     }
 
     // Move horizontally and vertically
-    pos.x += m_currentDirection * m_speed * 0.5f * dt;
-    pos.y += (m_speed / 4.f) * dt; // prefer ship to travel slowly in y-direction.
+    pos.x += m_currentDirection * m_speed * INTERNAL_X_DIRECTION_DAMPENER * dt;
+    pos.y += (m_speed / INTERNAL_Y_DIRECTION_DAMPENER) * dt; // prefer ship to travel slowly in y-direction.
     m_sprite.setPosition(pos);
 
     // Keep within screen bounds horizontally

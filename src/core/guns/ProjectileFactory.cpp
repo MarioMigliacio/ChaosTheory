@@ -14,6 +14,7 @@
 #include "Assets.h"
 #include "BaseGun.h"
 #include "BasicProjectile.h"
+#include "ProjectilePresets.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include <cmath>
@@ -106,15 +107,15 @@ ProjectileStats ProjectileFactory::GetStats(ProjectileCategory type) const
     {
         case ProjectileCategory::White:
         default:
-            return {150.f, 10, sf::Color::White};
+            return {WHITE_PROJECTILE_DEFAULT_SPD, WHITE_PROJECTILE_DEFAULT_DMG, sf::Color::White};
         case ProjectileCategory::Red:
-            return {250.f, 8, sf::Color(255, 60, 60)};
+            return {RED_PROJECTILE_DEFAULT_SPD, RED_PROJECTILE_DEFAULT_DMG, sf::Color::Red};
         case ProjectileCategory::Blue:
-            return {100.f, 15, sf::Color(100, 100, 255)};
+            return {BLUE_PROJECTILE_DEFAULT_SPD, BLUE_PROJECTILE_DEFAULT_DMG, sf::Color::Blue};
         case ProjectileCategory::Green:
-            return {200.f, 12, sf::Color(60, 255, 60)};
+            return {GREEN_PROJECTILE_DEFAULT_SPD, GREEN_PROJECTILE_DEFAULT_DMG, sf::Color::Green};
         case ProjectileCategory::Yellow:
-            return {250.f, 12, sf::Color(255, 255, 100)};
+            return {YELLOW_PROJECTILE_DEFAULT_SPD, YELLOW_PROJECTILE_DEFAULT_DMG, sf::Color::Yellow};
     }
 }
 
@@ -149,17 +150,18 @@ ProjectileStats ProjectileFactory::ApplyDifficultyScaling(ProjectileStats stats,
     switch (SettingsManager::Instance().GetSettings()->m_gameDifficulty)
     {
         case GameDifficultySetting::Easy:
-            stats.speed *= 0.9f;
-            stats.damage = static_cast<int>(stats.damage * 0.75f);
+            stats.speed *= EASY_PROJECTILE_SPEED_SCALE;
+            stats.damage = static_cast<int>(stats.damage * EASY_PROJECTILE_DAMAGE_SCALE);
             break;
 
         case GameDifficultySetting::Normal:
-
+            stats.speed *= NORMAL_PROJECTILE_SPEED_SCALE;
+            stats.damage = static_cast<int>(stats.damage * NORMAL_PROJECTILE_DAMAGE_SCALE);
             break;
 
         case GameDifficultySetting::Hard:
-            stats.speed *= 1.1f;
-            stats.damage = static_cast<int>(stats.damage * 1.25f);
+            stats.speed *= HARD_PROJECTILE_SPEED_SCALE;
+            stats.damage = static_cast<int>(stats.damage * HARD_PROJECTILE_DAMAGE_SCALE);
             break;
     }
 

@@ -34,6 +34,9 @@ enum class ProjectileCategory
 };
 
 /// @brief Structure which holds speed, damage and color tint.
+/// @param speed float velocity for projectile.
+/// @param damage int damage for projectile.
+/// @param tint sf::Color to layer projectile with.
 struct ProjectileStats
 {
     /// @brief Speed statistic for this ProjectileStats.
