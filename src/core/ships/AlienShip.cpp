@@ -12,7 +12,9 @@
 #include "AlienShip.h"
 #include "AssetManager.h"
 #include "Assets.h"
+#include "BasicGun.h"
 #include "Macros.h"
+#include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include "ShipPresets.h"
@@ -30,12 +32,21 @@ constexpr float BASE_SPEED = 150.f;
 
 /// @brief Configurable time for ship to randomly try changing x-direction.
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
+
+/// @brief Configurable time for ship to apply to its owned gun.
+constexpr float INTERNAL_GUN_COOLDOWN = 1.0f;
+
+/// @brief Divide the y-direction speed of this spaceship to slow its descent.
+constexpr float INTERNAL_Y_DIRECTION_DAMPENER = 4.f;
+
+/// @brief Divide the x-direction speed of this spaceship to slow its strafing.
+constexpr float INTERNAL_X_DIRECTION_DAMPENER = .5f;
 } // namespace
 
 /// @brief Constructor for an AlienShip type of ship.
 /// @param startPos Position to emplace at.
 /// @param allegiance Allegiance to employ with.
-AlienShip::AlienShip(const sf::Vector2f &startPos, int allegiance) : m_rng(std::random_device{}())
+AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rng(std::random_device{}())
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::AlienShipSpriteKey);
 
@@ -54,6 +65,8 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, int allegiance) : m_rng(std::
     {
         CT_LOG_ERROR("AlienShip texture not found.");
     }
+
+    m_gun = std::make_shared<BasicGun>(INTERNAL_GUN_COOLDOWN, Allegiance::Enemy); // cooldown, allegiance
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -65,43 +78,8 @@ void AlienShip::Update(float dt)
         return;
     }
 
-    auto pos = m_sprite.getPosition();
-
-    // Handle random horizontal movement direction switch
-    m_directionChangeCooldown -= dt;
-
-    if (m_directionChangeCooldown <= 0.f)
-    {
-        m_directionChangeCooldown = DIRECTION_CHANGE_INTERVAL;
-        m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
-    }
-
-    // Move horizontally and vertically
-    pos.x += m_currentDirection * m_speed * 0.5f * dt;
-    pos.y += (m_speed / 4.f) * dt; // prefer ship to travel slowly in y-direction.
-    m_sprite.setPosition(pos);
-
-    // Keep within screen bounds horizontally
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    const float leftEdge = m_sprite.getGlobalBounds().left;
-    const float rightEdge = leftEdge + m_sprite.getGlobalBounds().width;
-
-    if (leftEdge < 0.f)
-    {
-        m_sprite.move(-leftEdge, 0.f);
-    }
-
-    if (rightEdge > windowSize.x)
-    {
-        m_sprite.move(windowSize.x - rightEdge, 0.f);
-    }
-
-    // Destroy when off bottom
-    if (pos.y - m_sprite.getGlobalBounds().height / 2.f > static_cast<float>(windowSize.y))
-    {
-        m_alive = false;
-        CT_LOG_DEBUG("AlienShip: Destroyed after exiting screen.");
-    }
+    UpdateMovementLogic(dt);
+    UpdateGunLogic(dt);
 }
 
 /// @brief Scales this AlienShip accordingly based on WindowResolution, and GameDifficulty.
@@ -129,5 +107,80 @@ void AlienShip::ApplyDifficultyScaling()
             m_speed = BASE_SPEED * HARD_SPEED_SCALE * scaleY;
             m_sprite.setColor(HARD_TINT);
             break;
+    }
+}
+
+/// @brief Helper method to move this AlienShip based on update time.
+/// @param dt delta time since last update frame.
+void AlienShip::UpdateMovementLogic(const float dt)
+{
+    auto pos = m_sprite.getPosition();
+
+    // Handle random horizontal movement direction switch
+    m_directionChangeCooldown -= dt;
+
+    if (m_directionChangeCooldown <= 0.f)
+    {
+        m_directionChangeCooldown = DIRECTION_CHANGE_INTERVAL;
+        m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
+    }
+
+    // Move horizontally and vertically
+    pos.x += m_currentDirection * m_speed * INTERNAL_X_DIRECTION_DAMPENER * dt;
+    pos.y += (m_speed / INTERNAL_Y_DIRECTION_DAMPENER) * dt; // prefer ship to travel slowly in y-direction.
+    m_sprite.setPosition(pos);
+
+    // Keep within screen bounds horizontally
+    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
+    const float leftEdge = m_sprite.getGlobalBounds().left;
+    const float rightEdge = leftEdge + m_sprite.getGlobalBounds().width;
+
+    if (leftEdge < 0.f)
+    {
+        m_sprite.move(-leftEdge, 0.f);
+    }
+
+    if (rightEdge > windowSize.x)
+    {
+        m_sprite.move(windowSize.x - rightEdge, 0.f);
+    }
+
+    // Destroy when off bottom
+    if (pos.y - m_sprite.getGlobalBounds().height / 2.f > static_cast<float>(windowSize.y))
+    {
+        m_alive = false;
+        CT_LOG_DEBUG("AlienShip: Destroyed after exiting screen.");
+    }
+}
+
+/// @brief Helper method to update this AlienShip based on update time.
+/// @param dt delta time since last update frame.
+void AlienShip::UpdateGunLogic(const float dt)
+{
+    if (!m_gun)
+    {
+        return;
+    }
+
+    m_gun->SetOwnerPosition(GetPosition());
+    m_gun->Update(dt);
+
+    if (m_initialHoldTime > 0.f)
+    {
+        m_initialHoldTime -= dt;
+
+        return;
+    }
+
+    m_fireCooldown -= dt;
+
+    if (m_fireCooldown <= 0.f)
+    {
+        auto proj = m_gun->TryFire();
+
+        if (proj)
+        {
+            m_fireCooldown = m_fireDelayDist(m_rng);
+        }
     }
 }

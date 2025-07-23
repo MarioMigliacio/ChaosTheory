@@ -10,12 +10,14 @@
 // ============================================================================
 
 #include "SandBoxScene.h"
+#include "Allegiance.h"
 #include "AssetManager.h"
 #include "Assets.h"
 #include "AudioManager.h"
 #include "InputManager.h"
 #include "MainMenuScene.h"
 #include "PauseScene.h"
+#include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
@@ -605,17 +607,17 @@ void SandBoxScene::MockUnitSpawns(const bool enabled)
     }
 
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    const sf::Vector2f startPos = sf::Vector2f(winSize.x * 0.25f, -50.f);
+    const sf::Vector2f startPos = sf::Vector2f(winSize.x * 0.25f, 25.f);
 
     for (int i = 0; i < 5; ++i)
     {
-        auto ship = ShipFactory::Instance().CreateBasicShip({startPos.x + i * 100.f, startPos.y}, 1);
+        auto ship = ShipFactory::Instance().CreateBasicShip({startPos.x + i * 100.f, startPos.y}, Allegiance::Enemy);
         m_mockShips.push_back(ship);
     }
 
     for (int i = 5; i < 10; ++i)
     {
-        auto ship = ShipFactory::Instance().CreateAlienShip({startPos.x + i * 100.f, startPos.y}, 1);
+        auto ship = ShipFactory::Instance().CreateAlienShip({startPos.x + i * 100.f, startPos.y}, Allegiance::Enemy);
         m_mockShips.push_back(ship);
     }
 }
@@ -647,6 +649,8 @@ void SandBoxScene::UpdateMockUnits(float dt, const bool enabled)
             ++it;
         }
     }
+
+    ProjectileManager::Instance().Update(dt);
 }
 
 /// @brief Renders any existing mocked ships to the render target.
@@ -666,6 +670,8 @@ void SandBoxScene::DrawMockUnits(sf::RenderTarget &target, const bool enabled)
             ship->Draw(target);
         }
     }
+
+    ProjectileManager::Instance().Draw(target);
 }
 
 /// @brief Helper method to load and play the game music for this scene.

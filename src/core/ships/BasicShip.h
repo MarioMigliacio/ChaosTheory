@@ -25,9 +25,17 @@
 class BasicShip : public BaseShip
 {
   public:
-    BasicShip(const sf::Vector2f &startPos, int allegiance);
+    BasicShip(const sf::Vector2f &startPos, Allegiance allegiance);
     ~BasicShip() override = default;
 
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    BasicShip(const BasicShip &) = delete;
+    BasicShip &operator=(const BasicShip &) = delete;
+
+    BasicShip(BasicShip &&) = delete;
+    BasicShip &operator=(BasicShip &&) = delete;
+
+  public:
     void Update(float dt) override;
 
   protected:

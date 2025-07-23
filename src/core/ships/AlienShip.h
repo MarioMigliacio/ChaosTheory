@@ -27,18 +27,33 @@
 class AlienShip : public BaseShip
 {
   public:
-    AlienShip(const sf::Vector2f &startPos, int allegiance);
+    AlienShip(const sf::Vector2f &startPos, Allegiance allegiance);
     ~AlienShip() override = default;
 
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    AlienShip(const AlienShip &) = delete;
+    AlienShip &operator=(const AlienShip &) = delete;
+
+    AlienShip(AlienShip &&) = delete;
+    AlienShip &operator=(AlienShip &&) = delete;
+
+  public:
     void Update(float dt) override;
 
   protected:
     void ApplyDifficultyScaling() override;
 
   private:
+    void UpdateMovementLogic(const float dt);
+    void UpdateGunLogic(const float dt);
+
+  private:
     std::default_random_engine m_rng;
     std::uniform_int_distribution<int> m_directionDist{0, 1};
+    std::uniform_real_distribution<float> m_fireDelayDist{1.0f, 1.5f};
 
     float m_directionChangeCooldown = 0.f;
     float m_currentDirection = 1.f;
+    float m_initialHoldTime = 1.f;
+    float m_fireCooldown = 1.f;
 };
