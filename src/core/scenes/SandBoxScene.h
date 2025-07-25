@@ -17,6 +17,7 @@
 #include "DialogLine.h"
 #include "DialogQueue.h"
 #include "Macros.h"
+#include "PlayerShip.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
@@ -73,6 +74,8 @@ class SandBoxScene final : public Scene
     void UpdateMockUnits(float dt, const bool enabled);
     void DrawMockUnits(sf::RenderTarget &target, const bool enabled);
 
+    void MockPlayerUnit(const bool enabled);
+
     void PlayGameMusic();
     void UpdateHUD(float dt, const bool enabled);
 
@@ -85,6 +88,7 @@ class SandBoxScene final : public Scene
     std::shared_ptr<UITextLabel> m_scoreLabel;
     std::shared_ptr<UITextLabel> m_timerLabel;
     std::shared_ptr<UIFillableGauge> m_healthGauge;
+    std::shared_ptr<PlayerShip> m_player;
     std::vector<std::shared_ptr<BaseShip>> m_mockShips;
 
     DialogQueue m_dialogQueue;

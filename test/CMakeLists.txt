@@ -11,6 +11,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PlayerShipTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ProjectileFactoryTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ProjectileManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneFactoryTest.cpp

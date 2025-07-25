@@ -1,24 +1,26 @@
 // ============================================================================
-//  File        : ProjectileManager.cpp
+//  File        : PlayerShipTest.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
-//  Created     : 2025-07-22
-//  Description : Unit tests for the ProjectileManager
-
+//  Created     : 2025-07-25
+//  Description : Unit tests for the PlayerShip
+//
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "ProjectileManager.h"
+#include "PlayerShip.h"
 #include "AssetManager.h"
-#include "Assets.h"
-#include "BasicGun.h"
+#include "InputManager.h"
+#include "LogManager.h"
 #include "Macros.h"
+#include "ProjectileManager.h"
 #include "SettingsManager.h"
 #include "TestHelpers.h"
+
 #include <gtest/gtest.h>
 
-class ProjectileManagerTest : public ::testing::Test
+class PlayerShipTest : public ::testing::Test
 {
   protected:
     std::shared_ptr<Settings> m_settings;
@@ -27,12 +29,12 @@ class ProjectileManagerTest : public ::testing::Test
     {
         m_settings = CreateTestSettings();
 
-        SettingsManager::Instance().Init(m_settings);
-
         if (!LogManager::Instance().IsInitialized())
         {
             LogManager::Instance().Init();
         }
+
+        SettingsManager::Instance().Init(m_settings);
 
         if (AssetManager::Instance().IsInitialized())
         {
@@ -40,46 +42,56 @@ class ProjectileManagerTest : public ::testing::Test
         }
 
         AssetManager::Instance().Init(m_settings);
+        AssetManager::Instance().LoadTexture("PlayerShipWhite", "assets/sprites/players/PlayerShipWhite.png");
         AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
 
         ProjectileManager::Instance().Init(m_settings);
+        InputManager::Instance().Init(m_settings);
     }
 
     void TearDown() override
     {
         ProjectileManager::Instance().Shutdown();
         AssetManager::Instance().Shutdown();
+        InputManager::Instance().Shutdown();
         SettingsManager::Instance().Shutdown();
     }
 };
 
-TEST_F(ProjectileManagerTest, TryFireAddsOnlyOneProjectile)
+TEST_F(PlayerShipTest, PlayerShipInitialState)
 {
-    BasicGun gun(0.1f, Allegiance::Enemy);
-    gun.SetOwnerPosition({100.f, 100.f});
-
-    size_t before = ProjectileManager::Instance().GetProjectiles().size();
-
-    auto projectile = gun.TryFire();
-
-    ASSERT_NE(projectile, nullptr);
-
-    size_t after = ProjectileManager::Instance().GetProjectiles().size();
-    EXPECT_EQ(after - before, 1);
+    PlayerShip player;
+    EXPECT_TRUE(player.IsAlive());
+    EXPECT_EQ(player.GetHealth(), 100);
+    EXPECT_GT(player.GetGas(), 0.0f);
 }
 
-TEST_F(ProjectileManagerTest, TryFireTowardsAddsOnlyOneProjectile)
+TEST_F(PlayerShipTest, PlayerShipTakesDamage)
 {
-    BasicGun gun(0.1f, Allegiance::Enemy);
-    gun.SetOwnerPosition({100.f, 100.f});
+    PlayerShip player;
+    player.TakeDamage(50);
+    EXPECT_EQ(player.GetHealth(), 50);
 
+    player.TakeDamage(100);
+    EXPECT_FALSE(player.IsAlive());
+    EXPECT_EQ(player.GetHealth(), 0);
+}
+
+TEST_F(PlayerShipTest, GasReplenishmentDoesNotExceedMax)
+{
+    PlayerShip player;
+    player.ReplenishGas(1000.0f);
+    EXPECT_LE(player.GetGas(), 100.0f);
+}
+
+TEST_F(PlayerShipTest, TryFireSpawnsProjectile)
+{
+    PlayerShip player;
+    player.SetPosition({200.f, 200.f});
     size_t before = ProjectileManager::Instance().GetProjectiles().size();
 
-    sf::Vector2f target(200.f, 100.f); // Rightward direction
-
-    auto projectile = gun.TryFireTowards(target);
-
-    ASSERT_NE(projectile, nullptr);
+    auto proj = player.TryFire();
+    ASSERT_NE(proj, nullptr);
 
     size_t after = ProjectileManager::Instance().GetProjectiles().size();
     EXPECT_EQ(after - before, 1);

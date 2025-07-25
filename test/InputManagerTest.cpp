@@ -54,7 +54,10 @@ TEST_F(InputManagerTest, InitializesCorrectly)
 TEST_F(InputManagerTest, CanBindAndRetrieveKey)
 {
     InputManager::Instance().BindKey("Shoot", sf::Keyboard::F);
-    EXPECT_EQ(InputManager::Instance().GetBoundKey("Shoot"), sf::Keyboard::F);
+    const auto &keys = InputManager::Instance().GetBoundKeys("Shoot");
+
+    ASSERT_EQ(keys.size(), 1);
+    EXPECT_EQ(keys[0], sf::Keyboard::F);
 }
 
 TEST_F(InputManagerTest, CanUnbindKey)
@@ -62,11 +65,13 @@ TEST_F(InputManagerTest, CanUnbindKey)
     InputManager::Instance().BindKey("Jump", sf::Keyboard::Space);
     InputManager::Instance().UnbindKey("Jump");
 
-    EXPECT_EQ(InputManager::Instance().GetBoundKey("Jump"), sf::Keyboard::Unknown);
+    EXPECT_TRUE(InputManager::Instance().GetBoundKeys("Jump").empty());
 }
 
 TEST_F(InputManagerTest, KeyPressTracking)
 {
+    InputManager::Instance().BindKey("MoveLeft", sf::Keyboard::A);
+
     sf::Event event;
     event.type = sf::Event::KeyPressed;
     event.key.code = sf::Keyboard::A;
@@ -80,6 +85,8 @@ TEST_F(InputManagerTest, KeyPressTracking)
 
 TEST_F(InputManagerTest, KeyJustPressedDetected)
 {
+    InputManager::Instance().BindKey("MoveRight", sf::Keyboard::D);
+
     sf::Event event;
     event.type = sf::Event::KeyPressed;
     event.key.code = sf::Keyboard::D;
@@ -107,9 +114,9 @@ TEST_F(InputManagerTest, KeyReleasedState)
     EXPECT_FALSE(InputManager::Instance().IsKeyJustPressed("MoveRight"));
 }
 
-TEST_F(InputManagerTest, UnboundActionReturnsUnknownKey)
+TEST_F(InputManagerTest, UnboundActionReturnsEmptyKey)
 {
-    EXPECT_EQ(InputManager::Instance().GetBoundKey("Fly"), sf::Keyboard::Unknown);
+    EXPECT_TRUE(InputManager::Instance().GetBoundKeys("Fly").empty());
 }
 
 TEST_F(InputManagerTest, MousePositionTrackingWorks)

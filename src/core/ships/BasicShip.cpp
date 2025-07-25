@@ -62,7 +62,7 @@ void BasicShip::Update(float dt)
 
     // Move downward
     sf::Vector2f pos = m_sprite.getPosition();
-    pos.y += m_speed * dt;
+    pos.y += m_speed.y * dt;
     m_sprite.setPosition(pos);
 
     // Destroy when off-screen
@@ -85,19 +85,19 @@ void BasicShip::ApplyDifficultyScaling()
     {
         case GameDifficultySetting::Easy:
             m_health = static_cast<int>(BASE_HEALTH * EASY_HEALTH_SCALE);
-            m_speed = BASE_SPEED * EASY_SPEED_SCALE * scaleY;
+            m_speed = {0.f, BASE_SPEED * EASY_SPEED_SCALE * scaleY};
             m_sprite.setColor(EASY_TINT);
             break;
 
         case GameDifficultySetting::Normal:
             m_health = BASE_HEALTH * NORMAL_HEALTH_SCALE;
-            m_speed = BASE_SPEED * NORMAL_SPEED_SCALE * scaleY;
+            m_speed = {0.f, BASE_SPEED * NORMAL_SPEED_SCALE * scaleY};
             m_sprite.setColor(NORMAL_TINT);
             break;
 
         case GameDifficultySetting::Hard:
             m_health = static_cast<int>(BASE_HEALTH * HARD_HEALTH_SCALE);
-            m_speed = BASE_SPEED * HARD_SPEED_SCALE * scaleY;
+            m_speed = {0.f, BASE_SPEED * HARD_SPEED_SCALE * scaleY};
             m_sprite.setColor(HARD_TINT);
             break;
     }

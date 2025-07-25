@@ -24,7 +24,7 @@
 BasicProjectile::BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity, int damage,
                                  Allegiance allegiance, sf::Color tint)
 {
-    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BulletWhiteSpriteKey);
+    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BasicBulletSpriteKey);
 
     if (tex)
     {

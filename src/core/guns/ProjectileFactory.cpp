@@ -41,7 +41,7 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const s
 
     auto projectile = std::make_shared<BasicProjectile>(pos, dir * stats.speed, stats.damage, allegiance, stats.tint);
 
-    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BulletWhiteSpriteKey);
+    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BasicBulletSpriteKey);
 
     if (tex)
     {
@@ -84,7 +84,7 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const s
     auto projectile =
         std::make_shared<BasicProjectile>(pos, normalizedDir * stats.speed, stats.damage, allegiance, stats.tint);
 
-    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BulletWhiteSpriteKey);
+    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BasicBulletSpriteKey);
 
     if (tex)
     {
