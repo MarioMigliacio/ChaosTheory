@@ -11,6 +11,7 @@
 // ============================================================================
 
 #include "InputManager.h"
+#include "KeyBindings.h"
 #include "Macros.h"
 
 /// @brief Get the current Instance for this InputManager singleton.
@@ -28,8 +29,6 @@ void InputManager::Init(std::shared_ptr<Settings> settings)
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     m_settings = settings;
-    LoadBindings();
-
     m_isInitialized = true;
 
     CT_LOG_INFO("InputManager initialized.");
@@ -134,9 +133,15 @@ bool InputManager::IsKeyPressed(const std::string &action) const
         return false;
     }
 
-    sf::Keyboard::Key key = m_keyBindings.at(action);
+    for (const auto &key : m_keyBindings.at(action))
+    {
+        if (m_currentState.contains(key) && m_currentState.at(key))
+        {
+            return true;
+        }
+    }
 
-    return m_currentState.contains(key) ? m_currentState.at(key) : false;
+    return false;
 }
 
 /// @brief Returns the state of if a key has just been pressed, based on the input action.
@@ -151,12 +156,18 @@ bool InputManager::IsKeyJustPressed(const std::string &action) const
         return false;
     }
 
-    sf::Keyboard::Key key = m_keyBindings.at(action);
+    for (const auto &key : m_keyBindings.at(action))
+    {
+        const bool curr = m_currentState.contains(key) ? m_currentState.at(key) : false;
+        const bool prev = m_previousState.contains(key) ? m_previousState.at(key) : false;
 
-    const bool curr = m_currentState.contains(key) ? m_currentState.at(key) : false;
-    const bool prev = m_previousState.contains(key) ? m_previousState.at(key) : false;
+        if (curr && !prev)
+        {
+            return true;
+        }
+    }
 
-    return curr && !prev;
+    return false;
 }
 
 /// @brief Returns the state of if a key has just been released, based on the input action.
@@ -171,12 +182,18 @@ bool InputManager::IsKeyJustReleased(const std::string &action) const
         return false;
     }
 
-    sf::Keyboard::Key key = m_keyBindings.at(action);
+    for (const auto &key : m_keyBindings.at(action))
+    {
+        const bool curr = m_currentState.contains(key) ? m_currentState.at(key) : false;
+        const bool prev = m_previousState.contains(key) ? m_previousState.at(key) : false;
 
-    const bool curr = m_currentState.contains(key) ? m_currentState.at(key) : false;
-    const bool prev = m_previousState.contains(key) ? m_previousState.at(key) : false;
+        if (!curr && prev)
+        {
+            return true;
+        }
+    }
 
-    return !curr && prev;
+    return false;
 }
 
 /// @brief Returns the currently tracked position of the mouse.
@@ -265,7 +282,12 @@ void InputManager::BindKey(const std::string &action, sf::Keyboard::Key key)
 {
     CT_WARN_IF_UNINITIALIZED("InputManager", "BindKey");
 
-    m_keyBindings[action] = key;
+    auto &keys = m_keyBindings[action];
+
+    if (std::find(keys.begin(), keys.end(), key) == keys.end())
+    {
+        keys.push_back(key);
+    }
 
     CT_LOG_DEBUG("InputManager Bound key: {}.", action);
 }
@@ -284,25 +306,50 @@ void InputManager::UnbindKey(const std::string &action)
 /// @brief Returns the matching SFML Key if the supplied action maps correctly to the internal unordered map.
 /// @param action The string representation for the action.
 /// @return The keyboard key which is mapped to the action.
-sf::Keyboard::Key InputManager::GetBoundKey(const std::string &action) const
+std::vector<sf::Keyboard::Key> InputManager::GetBoundKeys(const std::string &action) const
 {
-    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "GetBoundKey", sf::Keyboard::Unknown);
+    CT_WARN_IF_UNINITIALIZED_RET("InputManager", "GetBoundKey", {});
 
     if (m_keyBindings.contains(action))
     {
         return m_keyBindings.at(action);
     }
 
-    return sf::Keyboard::Unknown;
+    return {}; // empty vector if nothing bound
 }
 
-/// @brief Applies synchronization between the manager settings of SFML Key bindings and the Settings object.
-void InputManager::LoadBindings()
+/// @brief Completely clears all bindings for all actions.
+void InputManager::ClearAllBindings()
 {
-    // TODO, provide additional key bindings for various scenes. This merely loads some easy defaults.
-    // Initialize key bindings from settings or defaults
-    m_keyBindings["MoveUp"] = sf::Keyboard::W;
-    m_keyBindings["MoveDown"] = sf::Keyboard::S;
-    m_keyBindings["MoveLeft"] = sf::Keyboard::A;
-    m_keyBindings["MoveRight"] = sf::Keyboard::D;
+    CT_WARN_IF_UNINITIALIZED("InputManager", "ClearAllBindings");
+
+    m_keyBindings.clear();
+
+    CT_LOG_DEBUG("InputManager cleared all bindings.");
+}
+
+/// @brief Helper method to load Player related key bindings.
+void InputManager::LoadPlayerInput()
+{
+    BindKey(KeyBindings::MoveUpConstantKey, sf::Keyboard::W);
+    BindKey(KeyBindings::MoveDownConstantKey, sf::Keyboard::S);
+    BindKey(KeyBindings::MoveLeftConstantKey, sf::Keyboard::A);
+    BindKey(KeyBindings::MoveRightConstantKey, sf::Keyboard::D);
+    BindKey(KeyBindings::AccelerateConstantKey, sf::Keyboard::LShift);
+    BindKey(KeyBindings::AccelerateConstantKey, sf::Keyboard::RShift);
+    BindKey(KeyBindings::FireGunConstantKey, sf::Keyboard::Space);
+    BindKey(KeyBindings::LaunchBombConstantKey, sf::Keyboard::LControl);
+    BindKey(KeyBindings::LaunchBombConstantKey, sf::Keyboard::RControl);
+}
+
+/// @brief Helper method to unload Player related key bindings.
+void InputManager::UnloadPlayerInput()
+{
+    UnbindKey(KeyBindings::MoveUpConstantKey);
+    UnbindKey(KeyBindings::MoveDownConstantKey);
+    UnbindKey(KeyBindings::MoveLeftConstantKey);
+    UnbindKey(KeyBindings::MoveRightConstantKey);
+    UnbindKey(KeyBindings::AccelerateConstantKey);
+    UnbindKey(KeyBindings::FireGunConstantKey);
+    UnbindKey(KeyBindings::LaunchBombConstantKey);
 }

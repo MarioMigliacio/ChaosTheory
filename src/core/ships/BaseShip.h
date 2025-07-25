@@ -86,6 +86,11 @@ class BaseShip
         m_sprite.setPosition(pos);
     }
 
+    virtual void Move(const sf::Vector2f &offset)
+    {
+        m_sprite.move(offset);
+    }
+
     virtual sf::FloatRect GetBounds() const
     {
         return m_sprite.getGlobalBounds();
@@ -96,6 +101,16 @@ class BaseShip
         m_sprite.setScale(scaleX, scaleY);
     }
 
+    virtual sf::Vector2f GetSpeed() const
+    {
+        return m_speed;
+    }
+
+    virtual void SetSpeed(const sf::Vector2f &speed)
+    {
+        m_speed = speed;
+    }
+
   protected:
     virtual void ApplyDifficultyScaling() = 0;
 
@@ -104,9 +119,8 @@ class BaseShip
 
     std::shared_ptr<BaseGun> m_gun;
     sf::Sprite m_sprite;
+    sf::Vector2f m_speed;
 
-    float m_speed = 0;
     int m_health = 0;
-
     bool m_alive = true;
 };

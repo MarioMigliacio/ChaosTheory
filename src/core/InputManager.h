@@ -17,6 +17,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 // ============================================================================
 //  Class       : InputManager
@@ -55,7 +56,11 @@ class InputManager
 
     void BindKey(const std::string &action, sf::Keyboard::Key key);
     void UnbindKey(const std::string &action);
-    sf::Keyboard::Key GetBoundKey(const std::string &action) const;
+    std::vector<sf::Keyboard::Key> GetBoundKeys(const std::string &action) const;
+    void ClearAllBindings();
+
+    void LoadPlayerInput();
+    void UnloadPlayerInput();
 
   private:
     InputManager() = default;
@@ -64,10 +69,8 @@ class InputManager
     InputManager(const InputManager &) = delete;
     InputManager &operator=(const InputManager &) = delete;
 
-    void LoadBindings();
-
   private:
-    std::unordered_map<std::string, sf::Keyboard::Key> m_keyBindings;
+    std::unordered_map<std::string, std::vector<sf::Keyboard::Key>> m_keyBindings;
     std::unordered_map<sf::Keyboard::Key, bool> m_currentState;
     std::unordered_map<sf::Keyboard::Key, bool> m_previousState;
 

@@ -55,6 +55,9 @@ constexpr bool HUD_MOCK_BOOL = true;
 
 /// @brief Quick disabling of UNITS test methods.
 constexpr bool UNITS_MOCK_BOOL = true;
+
+/// @brief Quick disabling of PLAYER test methods.
+constexpr bool PLAYER_MOCK_BOOL = true;
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -137,6 +140,7 @@ void SandBoxScene::OnExit()
 {
     InputManager::Instance().UnbindKey(PAUSE_BUTTON_KEY);
     InputManager::Instance().UnbindKey(SKIP_CHAT_KEY);
+    InputManager::Instance().UnloadPlayerInput();
 
     CT_LOG_INFO("SandBoxScene OnExit.");
 }
@@ -168,6 +172,11 @@ void SandBoxScene::Update(float dt)
     CheckActionsPressed();
     UpdateHUD(dt, HUD_MOCK_BOOL);
     UpdateMockUnits(dt, UNITS_MOCK_BOOL);
+
+    if (PLAYER_MOCK_BOOL && m_player)
+    {
+        m_player->Update(dt);
+    }
 
     // Handle button scene request change
     if (m_hasPendingTransition)
@@ -205,6 +214,11 @@ void SandBoxScene::Render()
         m_background->Draw(window);
     }
 
+    if (PLAYER_MOCK_BOOL && m_player)
+    {
+        m_player->Draw(window);
+    }
+
     DrawMockUnits(window, UNITS_MOCK_BOOL);
     UIManager::Instance().Render(window);
 }
@@ -225,6 +239,7 @@ void SandBoxScene::BindInputKeys()
 {
     InputManager::Instance().BindKey(PAUSE_BUTTON_KEY, sf::Keyboard::Key::Escape);
     InputManager::Instance().BindKey(SKIP_CHAT_KEY, sf::Keyboard::Key::Space);
+    InputManager::Instance().LoadPlayerInput();
 }
 
 /// @brief Determines if any configured keyboard input has been pressed during scene update.
@@ -299,6 +314,7 @@ void SandBoxScene::SetupSceneComponents()
     MockIconComponents(TEST_ENABLED);
     MockChatBox(TEST_DISABLED);
     MockUnitSpawns(UNITS_MOCK_BOOL);
+    MockPlayerUnit(PLAYER_MOCK_BOOL);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -672,6 +688,19 @@ void SandBoxScene::DrawMockUnits(sf::RenderTarget &target, const bool enabled)
     }
 
     ProjectileManager::Instance().Draw(target);
+}
+
+void SandBoxScene::MockPlayerUnit(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    auto winSize = WindowManager::Instance().GetWindow().getSize();
+
+    m_player = std::make_shared<PlayerShip>();
+    m_player->SetPosition({winSize.x / 2.f, winSize.y - 100.f});
 }
 
 /// @brief Helper method to load and play the game music for this scene.

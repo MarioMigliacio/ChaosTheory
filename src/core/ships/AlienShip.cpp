@@ -86,25 +86,26 @@ void AlienShip::Update(float dt)
 void AlienShip::ApplyDifficultyScaling()
 {
     const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
-    const float scaleY = ResolutionScaleManager::Instance().GetScaleY();
+    const auto scaleX = ResolutionScaleManager::Instance().GetScaleX();
+    const auto scaleY = ResolutionScaleManager::Instance().GetScaleY();
 
     switch (difficulty)
     {
         case GameDifficultySetting::Easy:
             m_health = static_cast<int>(BASE_HEALTH * EASY_HEALTH_SCALE);
-            m_speed = BASE_SPEED * EASY_SPEED_SCALE * scaleY;
+            m_speed = {BASE_SPEED * EASY_SPEED_SCALE * scaleX, BASE_SPEED * EASY_SPEED_SCALE * scaleY};
             m_sprite.setColor(EASY_TINT);
             break;
 
         case GameDifficultySetting::Normal:
             m_health = BASE_HEALTH * NORMAL_HEALTH_SCALE;
-            m_speed = BASE_SPEED * NORMAL_SPEED_SCALE * scaleY;
+            m_speed = {BASE_SPEED * NORMAL_SPEED_SCALE * scaleX, BASE_SPEED * NORMAL_SPEED_SCALE * scaleY};
             m_sprite.setColor(NORMAL_TINT);
             break;
 
         case GameDifficultySetting::Hard:
             m_health = static_cast<int>(BASE_HEALTH * HARD_HEALTH_SCALE);
-            m_speed = BASE_SPEED * HARD_SPEED_SCALE * scaleY;
+            m_speed = {BASE_SPEED * HARD_SPEED_SCALE * scaleX, BASE_SPEED * HARD_SPEED_SCALE * scaleY};
             m_sprite.setColor(HARD_TINT);
             break;
     }
@@ -126,8 +127,8 @@ void AlienShip::UpdateMovementLogic(const float dt)
     }
 
     // Move horizontally and vertically
-    pos.x += m_currentDirection * m_speed * INTERNAL_X_DIRECTION_DAMPENER * dt;
-    pos.y += (m_speed / INTERNAL_Y_DIRECTION_DAMPENER) * dt; // prefer ship to travel slowly in y-direction.
+    pos.x += m_currentDirection * m_speed.x * INTERNAL_X_DIRECTION_DAMPENER * dt;
+    pos.y += (m_speed.y / INTERNAL_Y_DIRECTION_DAMPENER) * dt; // prefer ship to travel slowly in y-direction.
     m_sprite.setPosition(pos);
 
     // Keep within screen bounds horizontally

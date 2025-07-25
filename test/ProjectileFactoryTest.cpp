@@ -39,7 +39,7 @@ class ProjectileFactoryTest : public ::testing::Test
         if (!AssetManager::Instance().IsInitialized())
         {
             AssetManager::Instance().Init(m_settings);
-            AssetManager::Instance().LoadTexture("BulletWhite", "assets/sprites/projectiles/BulletWhite.png");
+            AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
         }
     }
 
