@@ -28,12 +28,13 @@ class PlayerShipTest : public ::testing::Test
     void SetUp() override
     {
         m_settings = CreateTestSettings();
-        SettingsManager::Instance().Init(m_settings);
 
         if (!LogManager::Instance().IsInitialized())
         {
             LogManager::Instance().Init();
         }
+
+        SettingsManager::Instance().Init(m_settings);
 
         if (AssetManager::Instance().IsInitialized())
         {

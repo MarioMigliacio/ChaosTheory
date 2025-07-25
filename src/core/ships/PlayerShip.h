@@ -33,7 +33,6 @@ class PlayerShip : public BaseShip
     ~PlayerShip() override = default;
 
     void Update(float dt) override;
-    void ApplyDifficultyScaling() override; // No-op
     void Move(const sf::Vector2f &offset) override;
     std::shared_ptr<BaseProjectile> TryFire();
 
@@ -42,14 +41,16 @@ class PlayerShip : public BaseShip
     float GetGas() const;
     void ReplenishGas(float amount);
 
+    void ApplyDifficultyScaling() override;
+
   private:
     void HandleGunUpdate(float dt);
 
   private:
-    float m_gas = 100.f; // default gas reserve
-    const float m_maxGas = 100.f;
-
-    const float m_accelerationMultiplier = 1.75f; // or 2.0f for high boost
-    const float m_gasDrainRate = 20.f;            // gas units per second
-    const float m_baseSpeed = 200.f;
+    float m_gas;
+    float m_maxGas;
+    float m_maxHealth;
+    float m_accelerationMultiplier;
+    float m_gasDrainRate;
+    float m_baseSpeed;
 };

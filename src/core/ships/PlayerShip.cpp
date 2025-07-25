@@ -15,37 +15,58 @@
 #include "BasicGun.h"
 #include "InputManager.h"
 #include "KeyBindings.h"
+#include "Macros.h"
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "WindowManager.h"
 #include <cmath>
 
+/// @brief Constants that can be adjusted throughout the PlayerShip.
+namespace
+{
+constexpr float INITIAL_GAS_MAX = 100.f;
+
+constexpr int INITIAL_HEALTH_MAX = 100;
+
+constexpr float GAS_DRAIN_RATE = 20.f;
+
+constexpr float ACCEL_VELOCITY_MULTIPLIER = 2.f;
+
+constexpr float BASE_SHIP_VELOCITY = 200.f;
+} // namespace
+
+/// @brief Constructor for the PlayerShip.
 PlayerShip::PlayerShip()
 {
     m_allegiance = Allegiance::Player;
     m_sprite.setTexture(*AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey));
     m_sprite.setScale(1.0f, 1.0f);
 
-    SetHealth(100);
+    m_health = m_maxHealth = INITIAL_HEALTH_MAX;
+    m_gas = m_maxGas = INITIAL_GAS_MAX;
+
+    m_gasDrainRate = GAS_DRAIN_RATE;
+    m_accelerationMultiplier = ACCEL_VELOCITY_MULTIPLIER;
+    m_baseSpeed = BASE_SHIP_VELOCITY;
 
     m_speed = {m_baseSpeed * ResolutionScaleManager::Instance().GetScaleX(),
                m_baseSpeed * ResolutionScaleManager::Instance().GetScaleY()};
 
-    // Initialize gun
     m_gun = std::make_shared<BasicGun>(1.f, m_allegiance);
+
+    CT_LOG_DEBUG("PlayerShip constructed.");
 }
 
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update frame.
 void PlayerShip::Update(float dt)
 {
     ProcessInput(dt);
     HandleGunUpdate(dt);
 }
 
-void PlayerShip::ApplyDifficultyScaling()
-{
-    // Intentionally no-op for PlayerShip
-}
-
+/// @brief Performs a sprite position movement based on offset and current position.
+/// @param offset Position to offset the current sprite.
 void PlayerShip::Move(const sf::Vector2f &offset)
 {
     auto newPos = GetPosition() + offset;
@@ -58,6 +79,8 @@ void PlayerShip::Move(const sf::Vector2f &offset)
     SetPosition(newPos);
 }
 
+/// @brief Call the attached gun to perform its TryFire logic. If null, return nullptr.
+/// @return Safe pointer to a BaseProjectile entity.
 std::shared_ptr<BaseProjectile> PlayerShip::TryFire()
 {
     if (m_gun)
@@ -74,21 +97,36 @@ std::shared_ptr<BaseProjectile> PlayerShip::TryFire()
     return nullptr;
 }
 
+/// @brief The primary input interaction between PlayerShip and keyboard input.
+/// @param dt delta time since last update.
 void PlayerShip::ProcessInput(const float dt)
 {
     if (!IsAlive())
+    {
         return;
+    }
 
     sf::Vector2f dir{0.f, 0.f};
 
     if (InputManager::Instance().IsKeyPressed(KeyBindings::MoveUpConstantKey))
+    {
         dir.y -= 1.f;
+    }
+
     if (InputManager::Instance().IsKeyPressed(KeyBindings::MoveDownConstantKey))
+    {
         dir.y += 1.f;
+    }
+
     if (InputManager::Instance().IsKeyPressed(KeyBindings::MoveLeftConstantKey))
+    {
         dir.x -= 1.f;
+    }
+
     if (InputManager::Instance().IsKeyPressed(KeyBindings::MoveRightConstantKey))
+    {
         dir.x += 1.f;
+    }
 
     // Normalize movement vector (diagonal fix)
     if (dir.x != 0.f || dir.y != 0.f)
@@ -103,7 +141,7 @@ void PlayerShip::ProcessInput(const float dt)
     // Fire gun button (cooldown handled in gun)
     if (InputManager::Instance().IsKeyPressed(KeyBindings::FireGunConstantKey))
     {
-        TryFire(); // gun cooldown ensures safety
+        TryFire();
     }
 
     // Fire bomb button
@@ -134,16 +172,22 @@ void PlayerShip::ProcessInput(const float dt)
     }
 }
 
+/// @brief Returns the current tracked Gas amount for this PlayerShip.
+/// @return m_gas.
 float PlayerShip::GetGas() const
 {
     return m_gas;
 }
 
+/// @brief Replenish the PlayerShip's current Gas, used for acceleration.
+/// @param amount Float gas to replenish.
 void PlayerShip::ReplenishGas(float amount)
 {
     m_gas = std::min(m_maxGas, m_gas + amount);
 }
 
+/// @brief Request the Gun to update for this PlayerShip.
+/// @param dt delta time since last update.
 void PlayerShip::HandleGunUpdate(float dt)
 {
     if (m_gun)
@@ -151,4 +195,9 @@ void PlayerShip::HandleGunUpdate(float dt)
         m_gun->SetOwnerPosition(m_sprite.getPosition());
         m_gun->Update(dt);
     }
+}
+
+/// @brief No-Op for player, this is an interface override generally meant for every enemy ship.
+void PlayerShip::ApplyDifficultyScaling()
+{
 }
