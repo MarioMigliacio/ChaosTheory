@@ -42,7 +42,7 @@ class ProjectileManagerTest : public ::testing::Test
         AssetManager::Instance().Init(m_settings);
         AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
 
-        ProjectileManager::Instance().Init(m_settings);
+        ProjectileManager::Instance().Init();
     }
 
     void TearDown() override

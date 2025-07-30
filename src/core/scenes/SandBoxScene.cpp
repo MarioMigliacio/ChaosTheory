@@ -14,6 +14,8 @@
 #include "AssetManager.h"
 #include "Assets.h"
 #include "AudioManager.h"
+#include "CollectableIconManager.h"
+#include "CollisionManager.h"
 #include "InputManager.h"
 #include "MainMenuScene.h"
 #include "PauseScene.h"
@@ -22,6 +24,7 @@
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
 #include "ShipFactory.h"
+#include "ShipManager.h"
 #include "UIFactory.h"
 #include "UIManager.h"
 #include "WindowManager.h"
@@ -72,6 +75,26 @@ void SandBoxScene::Init()
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
 
     UIManager::Instance().Clear();
+
+    if (!CollisionManager::Instance().IsInitialized())
+    {
+        CollisionManager::Instance().Init(128.f);
+    }
+
+    if (!ShipManager::Instance().IsInitialized())
+    {
+        ShipManager::Instance().Init();
+    }
+
+    if (!ProjectileManager::Instance().IsInitialized())
+    {
+        ProjectileManager::Instance().Init();
+    }
+
+    if (!CollectableIconManager::Instance().IsInitialized())
+    {
+        CollectableIconManager::Instance().Init();
+    }
 
     LoadRequiredAssets();
     BindInputKeys();
@@ -127,6 +150,10 @@ void SandBoxScene::Shutdown()
 {
     CT_WARN_IF_UNINITIALIZED("SandBoxScene", "Shutdown");
 
+    ShipManager::Instance().Shutdown();
+    ProjectileManager::Instance().Shutdown();
+    CollectableIconManager::Instance().Shutdown();
+
     m_settings.reset();
     m_testChatBox.reset();
     m_dialogQueue.Clear();
@@ -171,12 +198,19 @@ void SandBoxScene::Update(float dt)
 
     CheckActionsPressed();
     UpdateHUD(dt, HUD_MOCK_BOOL);
-    UpdateMockUnits(dt, UNITS_MOCK_BOOL);
 
-    if (PLAYER_MOCK_BOOL && m_player)
-    {
-        m_player->Update(dt);
-    }
+    ShipManager::Instance().Update(dt);
+    ProjectileManager::Instance().Update(dt);
+    CollectableIconManager::Instance().Update(dt);
+
+    CollisionManager &collisionMgr = CollisionManager::Instance();
+    collisionMgr.Clear();
+
+    ShipManager::Instance().RegisterForCollision(collisionMgr);
+    ProjectileManager::Instance().RegisterForCollision(collisionMgr);
+    CollectableIconManager::Instance().RegisterForCollision(collisionMgr);
+
+    collisionMgr.Update(dt);
 
     // Handle button scene request change
     if (m_hasPendingTransition)
@@ -214,12 +248,10 @@ void SandBoxScene::Render()
         m_background->Draw(window);
     }
 
-    if (PLAYER_MOCK_BOOL && m_player)
-    {
-        m_player->Draw(window);
-    }
+    ShipManager::Instance().Draw(window);
+    ProjectileManager::Instance().Draw(window);
+    CollectableIconManager::Instance().Draw(window);
 
-    DrawMockUnits(window, UNITS_MOCK_BOOL);
     UIManager::Instance().Render(window);
 }
 
@@ -309,12 +341,11 @@ void SandBoxScene::SetupSceneComponents()
     PlayGameMusic();
     MockTitleText(TEST_ENABLED);
     MockHUDPanel(HUD_MOCK_BOOL);
-    MockFillableGaugeComponents(TEST_DISABLED);
     MockShipStatusComponent(TEST_ENABLED);
     MockIconComponents(TEST_ENABLED);
     MockChatBox(TEST_DISABLED);
-    MockUnitSpawns(UNITS_MOCK_BOOL);
     MockPlayerUnit(PLAYER_MOCK_BOOL);
+    MockSpawnTestShips(UNITS_MOCK_BOOL);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -398,54 +429,6 @@ void SandBoxScene::MockHUDPanel(const bool enabled)
     UIManager::Instance().AddElement(hudPanel);
 }
 
-/// @brief Mocks single gauges that are not embedded in any GroupBox or HUD containers.
-/// @param enabled Whether or not to use this MOCK component in SandBox.
-void SandBoxScene::MockFillableGaugeComponents(const bool enabled)
-{
-    if (!enabled)
-    {
-        return;
-    }
-
-    // --- NON HUD FillableGauge testing --- //
-    sf::Vector2f pos(0.33f, 0.33f);
-    sf::Vector2f size(0.015f, 0.2f);
-
-    auto looseGasGauge = UIFactory::Instance().CreateFillableGauge(
-        FillableGaugeConfig{.position = pos,
-                            .size = size,
-                            .orientation = LayoutMode::Vertical,
-                            .colorScheme = GaugeColorScheme::Gas,
-                            .initialValue = .33f,
-                            .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
-                            .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
-                            .showPercentage = true,
-                            .showTitle = true,
-                            .titleText = "Gas - Vert",
-                            .titleScheme = UITextLabelScheme::MintyHerbScheme});
-
-    UIManager::Instance().AddElement(looseGasGauge);
-
-    pos = {.5f, .5f};
-    size = {0.2f, 0.015f};
-
-    auto looseGasGauge2 = UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{
-        .position = pos,
-        .size = size,
-        .colorScheme = GaugeColorScheme::Gas,
-        .initialValue = .33f,
-        .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
-        .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
-        .showPercentage = true,
-        .showTitle = true,
-        .titleText = "Gas-Horiz",
-        .titleScheme = UITextLabelScheme::MintyHerbScheme,
-        .titlePosition = GaugeTitlePosition::Above,
-    });
-
-    UIManager::Instance().AddElement(looseGasGauge2);
-}
-
 /// @brief Helper method to test fillable gauge ui components.
 /// @param enabled Whether or not to use this MOCK in SandBox.
 void SandBoxScene::MockShipStatusComponent(const bool enabled)
@@ -466,6 +449,7 @@ void SandBoxScene::MockShipStatusComponent(const bool enabled)
     const sf::Vector2f relativePos{0.80f, 0.75f};
     const sf::Vector2f relativeSize{0.16f, 0.18f};
 
+    // TODO - link with the ship health/gas values.
     GroupBoxConfig cfg{
         .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL};
 
@@ -492,22 +476,6 @@ void SandBoxScene::MockShipStatusComponent(const bool enabled)
                                                                       .titlePosition = GaugeTitlePosition::Above});
     groupBox->AddElement(healthGauge);
 
-    // === MANA GAUGE ===
-    auto manaGauge =
-        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
-                                                                      .size = size,
-                                                                      .orientation = LayoutMode::Vertical,
-                                                                      .colorScheme = GaugeColorScheme::Mana,
-                                                                      .initialValue = .10f,
-                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
-                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
-                                                                      .showPercentage = true,
-                                                                      .showTitle = true,
-                                                                      .titleText = "M",
-                                                                      .titleScheme = UITextLabelScheme::MintyHerbScheme,
-                                                                      .titlePosition = GaugeTitlePosition::Above});
-    groupBox->AddElement(manaGauge);
-
     // === GAS GAUGE ===
     auto gasGauge =
         UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
@@ -526,7 +494,6 @@ void SandBoxScene::MockShipStatusComponent(const bool enabled)
 
     // when in groupbox, this is required for correct fill orientation
     healthGauge->SetOrientation(LayoutMode::Vertical);
-    manaGauge->SetOrientation(LayoutMode::Vertical);
     gasGauge->SetOrientation(LayoutMode::Vertical);
 
     UIManager::Instance().AddElement(groupBox);
@@ -541,19 +508,12 @@ void SandBoxScene::MockIconComponents(const bool enabled)
         return;
     }
 
-    const auto &window = WindowManager::Instance().GetWindow();
     const float startY = 50.f;
-    const sf::Vector2f iconSize = {32.f, 32.f};
-    const float spacing = 48.f;
     const float startX = 75.f;
+    const float spacing = 48.f;
+    const sf::Vector2f iconSize = {32.f, 32.f};
 
-    struct IconSpawnData
-    {
-        IconType type;
-        std::string spriteKey;
-    };
-
-    std::vector<IconSpawnData> iconTypesToTest = {
+    std::vector<std::pair<IconType, std::string>> iconTypes = {
         {IconType::AtomicIcon, SpriteAssets::IconAssets::AtomicIconSpriteKey},
         {IconType::FireRateIcon, SpriteAssets::IconAssets::FireRateIconSpriteKey},
         {IconType::GasIcon, SpriteAssets::IconAssets::GasIconSpriteKey},
@@ -563,14 +523,10 @@ void SandBoxScene::MockIconComponents(const bool enabled)
         {IconType::WarpIcon, SpriteAssets::IconAssets::WarpIconSpriteKey},
     };
 
-    for (std::size_t i = 0; i < iconTypesToTest.size(); i++)
+    for (size_t i = 0; i < iconTypes.size(); i++)
     {
-        const auto &entry = iconTypesToTest[i];
         sf::Vector2f pos{startX + (i * spacing), startY};
-
-        auto icon = UIFactory::Instance().CreateIcon(
-            IconConfig{.position = pos, .size = iconSize, .textureKey = entry.spriteKey, .type = entry.type});
-        UIManager::Instance().AddElement(icon);
+        CollectableIconManager::Instance().SpawnIcon({pos, iconSize, iconTypes[i].second, iconTypes[i].first});
     }
 }
 
@@ -613,9 +569,7 @@ void SandBoxScene::MockChatBox(const bool enabled)
     }
 }
 
-/// @brief Mocking method to spawn a few Ships in a wave formation.
-/// @param enabled Whether or not to use this MOCK in SandBox.
-void SandBoxScene::MockUnitSpawns(const bool enabled)
+void SandBoxScene::MockSpawnTestShips(const bool enabled)
 {
     if (!enabled)
     {
@@ -623,71 +577,17 @@ void SandBoxScene::MockUnitSpawns(const bool enabled)
     }
 
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    const sf::Vector2f startPos = sf::Vector2f(winSize.x * 0.25f, 25.f);
+    const sf::Vector2f startPos = {winSize.x * 0.25f, 25.f};
 
     for (int i = 0; i < 5; ++i)
     {
-        auto ship = ShipFactory::Instance().CreateBasicShip({startPos.x + i * 100.f, startPos.y}, Allegiance::Enemy);
-        m_mockShips.push_back(ship);
+        ShipManager::Instance().SpawnBasicEnemy({startPos.x + i * 100.f, startPos.y});
     }
 
     for (int i = 5; i < 10; ++i)
     {
-        auto ship = ShipFactory::Instance().CreateAlienShip({startPos.x + i * 100.f, startPos.y}, Allegiance::Enemy);
-        m_mockShips.push_back(ship);
+        ShipManager::Instance().SpawnAlienEnemy({startPos.x + i * 100.f, startPos.y});
     }
-}
-
-/// @brief Helps update any existing mocked ships.
-/// @param dt Ddelta time since last update.
-/// @param enabled Whether or not to use this MOCK in SandBox.
-void SandBoxScene::UpdateMockUnits(float dt, const bool enabled)
-{
-    if (!enabled)
-    {
-        return;
-    }
-
-    for (auto &ship : m_mockShips)
-    {
-        ship->Update(dt);
-    }
-
-    // Manual cleanup loop (clearer than std::erase_if)
-    for (auto it = m_mockShips.begin(); it != m_mockShips.end();)
-    {
-        if (!(*it)->IsAlive())
-        {
-            it = m_mockShips.erase(it);
-        }
-        else
-        {
-            ++it;
-        }
-    }
-
-    ProjectileManager::Instance().Update(dt);
-}
-
-/// @brief Renders any existing mocked ships to the render target.
-/// @param target the render target window.
-/// @param enabled whether or not mock is enabled for this.
-void SandBoxScene::DrawMockUnits(sf::RenderTarget &target, const bool enabled)
-{
-    if (!enabled)
-    {
-        return;
-    }
-
-    for (auto &ship : m_mockShips)
-    {
-        if (ship->IsAlive())
-        {
-            ship->Draw(target);
-        }
-    }
-
-    ProjectileManager::Instance().Draw(target);
 }
 
 void SandBoxScene::MockPlayerUnit(const bool enabled)
@@ -699,8 +599,8 @@ void SandBoxScene::MockPlayerUnit(const bool enabled)
 
     auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    m_player = std::make_shared<PlayerShip>();
-    m_player->SetPosition({winSize.x / 2.f, winSize.y - 100.f});
+    // Spawn player through ShipManager to ensure it is tracked and registered for collisions
+    ShipManager::Instance().SpawnPlayer({winSize.x / 2.f, winSize.y - 100.f});
 }
 
 /// @brief Helper method to load and play the game music for this scene.

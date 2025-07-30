@@ -12,23 +12,28 @@
 #pragma once
 
 #include "Allegiance.h"
+#include "BaseCollidable.h"
 #include <SFML/Graphics.hpp>
 
 // ============================================================================
 //  Class       : BaseProjectile
-//  Purpose     : A versatile abstraction for common projectile behaviors.
+//  Purpose     : A versatile abstraction for common projectile behavior and
+//                implements the BaseCollidable interface for collision
+//                management.
 //
 //  Responsibilities:
 //      - Provide Update, TryFire and TryFireTowards interface.
 //
 // ============================================================================
-class BaseProjectile
+class BaseProjectile : public BaseCollidable
 {
   public:
     virtual ~BaseProjectile() = default;
 
+    /// @brief Called every frame to update projectile movement and state.
     virtual void Update(float dt) = 0;
 
+    /// @brief Draws the projectile if still alive.
     virtual void Draw(sf::RenderTarget &target)
     {
         if (m_alive)
@@ -37,64 +42,82 @@ class BaseProjectile
         }
     }
 
+    /// @brief Get current position.
     virtual sf::Vector2f GetPosition() const
     {
         return m_sprite.getPosition();
     }
 
+    /// @brief Set projectile position.
     virtual void SetPosition(const sf::Vector2f &pos)
     {
         m_sprite.setPosition(pos);
     }
 
-    virtual sf::FloatRect GetBounds() const
+    /// @brief Implements BaseCollidable::GetBounds().
+    sf::FloatRect GetBounds() const override
     {
         return m_sprite.getGlobalBounds();
     }
 
-    virtual bool IsAlive() const
+    /// @brief Implements BaseCollidable::IsAlive().
+    bool IsAlive() const override
     {
         return m_alive;
     }
 
+    /// @brief Kill this projectile.
     virtual void Kill()
     {
         m_alive = false;
     }
 
+    /// @brief Return allegiance (Player, Enemy, etc.)
     virtual Allegiance GetAllegiance() const
     {
         return m_allegiance;
     }
 
+    /// @brief Set allegiance.
     virtual void SetAllegiance(const Allegiance allegiance)
     {
         m_allegiance = allegiance;
     }
 
+    /// @brief Get the damage value.
     virtual int GetDamage() const
     {
         return m_damage;
     }
 
+    /// @brief Set damage value.
     virtual void SetDamage(const int dmg)
     {
         m_damage = dmg;
     }
 
+    /// @brief Get projectile velocity.
     virtual sf::Vector2f GetVelocity() const
     {
         return m_velocity;
     }
 
+    /// @brief Set projectile velocity.
     virtual void SetVelocity(const sf::Vector2f velocity)
     {
         m_velocity = velocity;
     }
 
+    /// @brief Set render scale.
     virtual void SetScale(float scaleX, float scaleY)
     {
         m_sprite.setScale(scaleX, scaleY);
+    }
+
+    /// @brief Implements BaseCollidable::GetCollisionCategory().
+    CollisionCategory GetCollisionCategory() const override
+    {
+        return CollisionCategory::Projectile;
     }
 
   protected:
@@ -104,6 +127,5 @@ class BaseProjectile
     sf::Vector2f m_velocity;
 
     int m_damage = 0;
-
     bool m_alive = true;
 };

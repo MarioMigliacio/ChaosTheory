@@ -22,10 +22,10 @@
 namespace
 {
 /// @brief Base Health before scaling.
-constexpr int BASE_HEALTH = 100;
+constexpr int BASE_HEALTH = 50;
 
 /// @brief Base Speed before scaling.
-constexpr float BASE_SPEED = 100.f;
+constexpr float BASE_SPEED = 75.f;
 } // namespace
 
 /// @brief Constructor for a BasicShip type of ship.

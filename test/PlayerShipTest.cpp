@@ -45,7 +45,7 @@ class PlayerShipTest : public ::testing::Test
         AssetManager::Instance().LoadTexture("PlayerShipWhite", "assets/sprites/players/PlayerShipWhite.png");
         AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
 
-        ProjectileManager::Instance().Init(m_settings);
+        ProjectileManager::Instance().Init();
         InputManager::Instance().Init(m_settings);
     }
 
