@@ -33,6 +33,8 @@ constexpr float GAS_DRAIN_RATE = 20.f;
 constexpr float ACCEL_VELOCITY_MULTIPLIER = 2.f;
 
 constexpr float BASE_SHIP_VELOCITY = 200.f;
+
+constexpr float BASE_PLAYER_GUN_FIRE_COOLDOWN = .5f;
 } // namespace
 
 /// @brief Constructor for the PlayerShip.
@@ -52,7 +54,7 @@ PlayerShip::PlayerShip()
     m_speed = {m_baseSpeed * ResolutionScaleManager::Instance().GetScaleX(),
                m_baseSpeed * ResolutionScaleManager::Instance().GetScaleY()};
 
-    m_gun = std::make_shared<BasicGun>(1.f, m_allegiance);
+    m_gun = std::make_shared<BasicGun>(BASE_PLAYER_GUN_FIRE_COOLDOWN, m_allegiance);
 
     CT_LOG_DEBUG("PlayerShip constructed.");
 }

@@ -21,13 +21,10 @@ ProjectileManager &ProjectileManager::Instance()
     return instance;
 }
 
-/// @brief Initializes the ProjectileManager using the provided settings.
-/// @param settings Settings object to initalize with.
-void ProjectileManager::Init(std::shared_ptr<const Settings> settings)
+/// @brief Initializes the ProjectileManager.
+void ProjectileManager::Init()
 {
     CF_EXIT_EARLY_IF_ALREADY_INITIALIZED();
-
-    m_settings = settings;
 
     if (!m_isInitialized)
     {
@@ -36,6 +33,13 @@ void ProjectileManager::Init(std::shared_ptr<const Settings> settings)
     }
 
     CT_LOG_INFO("ProjectileManager initialized.");
+}
+
+/// @brief Returns whether the ProjectileManager has been initialized.
+/// @return m_isInitialized.
+bool ProjectileManager::IsInitialized() const
+{
+    return m_isInitialized;
 }
 
 /// @brief Shuts down the ProjectileManager and resets internal state.
@@ -52,11 +56,10 @@ void ProjectileManager::Shutdown()
     CT_LOG_INFO("ProjectileManager shutdown.");
 }
 
-/// @brief Returns whether the ProjectileManager has been initialized.
-/// @return m_isInitialized.
-bool ProjectileManager::IsInitialized() const
+/// @brief Removes all existing objects from the managed collection.
+void ProjectileManager::Clear()
 {
-    return m_isInitialized;
+    m_projectiles.clear();
 }
 
 /// @brief Adds the requested BaseProjectile interfacing projectile to the collection to be managed.
@@ -74,12 +77,6 @@ void ProjectileManager::AddProjectile(const std::shared_ptr<BaseProjectile> &pro
 void ProjectileManager::RemoveProjectile(const std::shared_ptr<BaseProjectile> &projectile)
 {
     m_projectiles.erase(std::remove(m_projectiles.begin(), m_projectiles.end(), projectile), m_projectiles.end());
-}
-
-/// @brief Removes all existing objects from the managed collection.
-void ProjectileManager::ClearAllProjectiles()
-{
-    m_projectiles.clear();
 }
 
 /// @brief Returns the list of collected Projectiles.
@@ -125,6 +122,19 @@ void ProjectileManager::Draw(sf::RenderTarget &target)
         if (p && p->IsAlive())
         {
             p->Draw(target);
+        }
+    }
+}
+
+/// @brief Forward the managed list of projectiles to be registered with CollisionManager.
+/// @param cm CollisionManager instance, instead of CollisionManager::Instance().<x>
+void ProjectileManager::RegisterForCollision(CollisionManager &cm)
+{
+    for (auto &proj : m_projectiles)
+    {
+        if (proj && proj->IsAlive())
+        {
+            cm.RegisterObject(proj);
         }
     }
 }

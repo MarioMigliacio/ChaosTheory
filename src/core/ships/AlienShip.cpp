@@ -25,16 +25,16 @@
 namespace
 {
 /// @brief Base Health before scaling.
-constexpr int BASE_HEALTH = 125;
+constexpr int BASE_HEALTH = 30;
 
 /// @brief Base Speed before scaling.
-constexpr float BASE_SPEED = 150.f;
+constexpr float BASE_SPEED = 100.f;
 
 /// @brief Configurable time for ship to randomly try changing x-direction.
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
 
 /// @brief Configurable time for ship to apply to its owned gun.
-constexpr float INTERNAL_GUN_COOLDOWN = 1.0f;
+constexpr float INTERNAL_GUN_COOLDOWN = 1.5f;
 
 /// @brief Divide the y-direction speed of this spaceship to slow its descent.
 constexpr float INTERNAL_Y_DIRECTION_DAMPENER = 4.f;
@@ -66,7 +66,7 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
         CT_LOG_ERROR("AlienShip texture not found.");
     }
 
-    m_gun = std::make_shared<BasicGun>(INTERNAL_GUN_COOLDOWN, Allegiance::Enemy); // cooldown, allegiance
+    m_gun = std::make_shared<BasicGun>(INTERNAL_GUN_COOLDOWN, m_allegiance);
 }
 
 /// @brief Performs internal state management during a single frame.

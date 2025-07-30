@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "BaseCollidable.h"
 #include "UIElement.h"
 #include <SFML/Graphics.hpp>
 #include <functional>
@@ -50,6 +51,38 @@ enum class IconType
     DialogNextIcon,
 };
 
+/// @brief Provides a convinient IconType To String.
+/// @param i IconType enumeration to convert to string.
+/// @return const char* representation for an IconType enumeration.
+inline const char *ToString(IconType i)
+{
+    switch (i)
+    {
+        case IconType::None:
+            return "None";
+        case IconType::AtomicIcon:
+            return "AtomicIcon";
+        case IconType::FireRateIcon:
+            return "FireRateIcon";
+        case IconType::GasIcon:
+            return "GasIcon";
+        case IconType::LifeIcon:
+            return "LifeIcon";
+        case IconType::PowerIcon:
+            return "PowerIcon";
+        case IconType::UpgradeIcon:
+            return "UpgradeIcon";
+        case IconType::WarpIcon:
+            return "WarpIcon";
+        case IconType::SpeakerIcon:
+            return "SpeakerIcon";
+        case IconType::DialogNextIcon:
+            return "DialogNextIcon";
+        default:
+            return "Unknown";
+    }
+}
+
 /// @brief Data structure holding internal configurations useful for IconConfig construction.
 /// @param position Vector2f position for Icon Config.
 /// @param size Vector2f size for Icon Config.
@@ -66,7 +99,8 @@ struct IconConfig
 // ============================================================================
 //  Class       : UIIcon
 //  Purpose     : Handles the logic for ui Icon elements providing robust
-//                Enhancements during gameplay.
+//                Enhancements during gameplay. Also supports collision
+//                detection via BaseCollidable interface.
 //
 //  Responsibilities:
 //      - Initializes and expires.
@@ -74,7 +108,7 @@ struct IconConfig
 //      - Update based on time.
 //
 // ============================================================================
-class UIIcon : public UIElement
+class UIIcon : public UIElement, public BaseCollidable
 {
   public:
     UIIcon(const sf::Vector2f &size, const sf::Vector2f &position);
@@ -95,6 +129,7 @@ class UIIcon : public UIElement
     void Update(const sf::Vector2i &mousePos, bool isMousePressed, bool isMouseJustPressed, float dt) override;
     void StartFalling();
     bool IsExpired() const;
+    void Expire();
 
     sf::FloatRect GetGlobalBounds() const;
     bool Contains(const sf::Vector2i &point) const override;
@@ -105,10 +140,15 @@ class UIIcon : public UIElement
     void SetSize(const sf::Vector2f &size) override;
     sf::Vector2f GetSize() const override;
 
+    sf::FloatRect GetBounds() const override;
+    bool IsAlive() const override;
+    CollisionCategory GetCollisionCategory() const override;
+
   private:
     void ApplySpriteTransform();
     void ApplyAlphaPulse();
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+    bool IsWorldIcon() const;
 
   private:
     sf::Sprite m_sprite;

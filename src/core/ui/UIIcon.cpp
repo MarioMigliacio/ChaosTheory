@@ -195,6 +195,12 @@ bool UIIcon::IsExpired() const
     return m_expired;
 }
 
+/// @brief Method to force expiration for this ui icon.
+void UIIcon::Expire()
+{
+    m_expired = true;
+}
+
 /// @brief Returns the bounds of the internal sprite of this UIIcon.
 /// @return rectangle surrounding m_sprite.
 sf::FloatRect UIIcon::GetGlobalBounds() const
@@ -240,6 +246,29 @@ sf::Vector2f UIIcon::GetSize() const
     return m_size;
 }
 
+/// @brief Implements BaseCollidable::GetBounds() only if it's a world-space icon.
+sf::FloatRect UIIcon::GetBounds() const
+{
+    if (IsWorldIcon())
+    {
+        return m_sprite.getGlobalBounds();
+    }
+
+    return {}; // empty rect if not collidable
+}
+
+/// @brief Implements BaseCollidable::IsAlive().
+bool UIIcon::IsAlive() const
+{
+    return IsWorldIcon() && !m_expired;
+}
+
+/// @brief Implements BaseCollidable::GetCollisionCategory().
+CollisionCategory UIIcon::GetCollisionCategory() const
+{
+    return IsWorldIcon() ? CollisionCategory::Icon : CollisionCategory::None;
+}
+
 /// @brief Adjust dynamically for size, and positioning of this UIIcon.
 void UIIcon::ApplySpriteTransform()
 {
@@ -276,4 +305,12 @@ void UIIcon::draw(sf::RenderTarget &target, sf::RenderStates states) const
     {
         target.draw(m_sprite, states);
     }
+}
+
+/// @brief Helper to determine if this icon should participate in collisions.
+bool UIIcon::IsWorldIcon() const
+{
+    return m_iconType == IconType::AtomicIcon || m_iconType == IconType::FireRateIcon ||
+           m_iconType == IconType::GasIcon || m_iconType == IconType::LifeIcon || m_iconType == IconType::WarpIcon ||
+           m_iconType == IconType::PowerIcon || m_iconType == IconType::UpgradeIcon;
 }

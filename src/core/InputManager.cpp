@@ -332,12 +332,22 @@ void InputManager::ClearAllBindings()
 void InputManager::LoadPlayerInput()
 {
     BindKey(KeyBindings::MoveUpConstantKey, sf::Keyboard::W);
+    BindKey(KeyBindings::MoveUpConstantKey, sf::Keyboard::Up);
+
     BindKey(KeyBindings::MoveDownConstantKey, sf::Keyboard::S);
+    BindKey(KeyBindings::MoveDownConstantKey, sf::Keyboard::Down);
+
     BindKey(KeyBindings::MoveLeftConstantKey, sf::Keyboard::A);
+    BindKey(KeyBindings::MoveLeftConstantKey, sf::Keyboard::Left);
+
     BindKey(KeyBindings::MoveRightConstantKey, sf::Keyboard::D);
+    BindKey(KeyBindings::MoveRightConstantKey, sf::Keyboard::Right);
+
     BindKey(KeyBindings::AccelerateConstantKey, sf::Keyboard::LShift);
     BindKey(KeyBindings::AccelerateConstantKey, sf::Keyboard::RShift);
+
     BindKey(KeyBindings::FireGunConstantKey, sf::Keyboard::Space);
+
     BindKey(KeyBindings::LaunchBombConstantKey, sf::Keyboard::LControl);
     BindKey(KeyBindings::LaunchBombConstantKey, sf::Keyboard::RControl);
 }

@@ -61,19 +61,14 @@ class SandBoxScene final : public Scene
     void BindInputKeys();
     void CheckActionsPressed();
     void StartNextDialog();
-
     void SetupSceneComponents();
+
     void MockTitleText(const bool enabled);
     void MockHUDPanel(const bool enabled);
-    void MockFillableGaugeComponents(const bool enabled);
     void MockShipStatusComponent(const bool enabled);
     void MockIconComponents(const bool enabled);
     void MockChatBox(const bool enabled);
-
-    void MockUnitSpawns(const bool enabled);
-    void UpdateMockUnits(float dt, const bool enabled);
-    void DrawMockUnits(sf::RenderTarget &target, const bool enabled);
-
+    void MockSpawnTestShips(const bool enabled);
     void MockPlayerUnit(const bool enabled);
 
     void PlayGameMusic();
@@ -89,7 +84,6 @@ class SandBoxScene final : public Scene
     std::shared_ptr<UITextLabel> m_timerLabel;
     std::shared_ptr<UIFillableGauge> m_healthGauge;
     std::shared_ptr<PlayerShip> m_player;
-    std::vector<std::shared_ptr<BaseShip>> m_mockShips;
 
     DialogQueue m_dialogQueue;
 

@@ -35,22 +35,26 @@ class BaseGun
     virtual std::shared_ptr<BaseProjectile> TryFireTowards(const sf::Vector2f &targetPos) = 0;
 
   public:
+    /// @brief Returns the offset for attaching this gun to a unit.
     virtual sf::Vector2f GetBarrelOffset() const
     {
         return m_barrelOffset;
     }
 
+    /// @brief Sets the position for this gun.
     virtual void SetOwnerPosition(const sf::Vector2f &position)
     {
         m_ownerPosition = position;
     }
 
+    /// @brief Sets the allegiance for this gun.
     void SetAllegiance(Allegiance allegiance)
     {
         m_allegiance = allegiance;
         m_barrelOffset = GetDefaultBarrelOffset(allegiance);
     }
 
+    /// @brief Returns the barrel offset based on ship allegiance.
     virtual sf::Vector2f GetDefaultBarrelOffset(Allegiance allegiance) const
     {
         // TODO: Know that some ships barrel may be 32.f later -> add parameter based on ship type.
