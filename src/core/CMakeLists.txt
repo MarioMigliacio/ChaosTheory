@@ -14,6 +14,7 @@ target_include_directories(core PUBLIC
     ${PROJECT_SOURCE_DIR}/src/core
     ${PROJECT_SOURCE_DIR}/src/core/common
     ${PROJECT_SOURCE_DIR}/src/core/guns
+    ${PROJECT_SOURCE_DIR}/src/core/managers
     ${PROJECT_SOURCE_DIR}/src/core/scenes
     ${PROJECT_SOURCE_DIR}/src/core/ships
     ${PROJECT_SOURCE_DIR}/src/core/ui

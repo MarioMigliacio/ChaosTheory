@@ -48,6 +48,18 @@ cd script
 ```
 *Support included for agnostic script execution location*
 
+The new preferred build option is to use .\build_advanced.bat
+with optional flags like:
+        /ct      - build main CT application only
+        /test    - build test suite only
+        /all     - build both CT and test suite (instead of /ct or /test)
+        /clean   - clean build directory
+    ex:
+    .\build_advanced.bat /ct
+        - builds only the chaos theory executable for fastest runable solution.
+    .\build_advanced.bat /clean /all
+        - clears any build artifacts, then builds target for debug(default) Test AND CT executable.
+
 .\script\build.bat           :: builds Debug
 .\script\build.bat release   :: builds Release
 
@@ -60,14 +72,7 @@ cd script
 [CLEAN] options included:
 .\script\clean.bat           :: removes build, log, and install artifacts
 
-The new preferred build option is to use .\build_advanced.bat
-with optional flags like:
-        /ct      - build main CT application only
-        /test    - build test suite only
-        /all     - build both CT and test suite
-        /clean   - clean build directory
-    ex: .\build_advanced.bat /clean /all
-- clears any build artifacts, then builds target for debug(default) Test AND CT executable.
+
 ```
 
 ### Run tests
@@ -121,9 +126,11 @@ CT/
 ├── src/              → main game logic
 ├────core/            → CT essential library core functionality
 ├──────common/        → CT common utility
-├──────scenes/        → CT scene logic handling
-├──────ships/         → CT ship logic handling
-├──────ui/            → CT ui elements
+├──────guns/          → CT gun and projectile logic
+├──────managers/      → CT life cycle and component handling entities
+├──────scenes/        → CT scene logic
+├──────ships/         → CT ship logic
+├──────ui/            → CT ui elements logic
 ├── test/             → unit tests
 └── README.md
 ```
