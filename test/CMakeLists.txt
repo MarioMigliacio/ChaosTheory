@@ -54,6 +54,8 @@ target_include_directories(CT_tests PRIVATE
 # Link directories for SFML
 target_link_directories(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
 
+target_precompile_headers(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/src/core/pch.h)
+
 target_link_libraries(CT_tests
     PRIVATE
     core
