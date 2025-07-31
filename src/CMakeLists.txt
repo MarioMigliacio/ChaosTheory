@@ -8,6 +8,8 @@ add_executable(CT ${SRC_FILES})
 
 target_link_directories(CT PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
 
+target_precompile_headers(CT PRIVATE ${PROJECT_SOURCE_DIR}/src/core/pch.h)
+
 target_include_directories(CT PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/core
