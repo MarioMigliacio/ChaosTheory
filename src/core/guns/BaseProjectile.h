@@ -14,6 +14,7 @@
 #include "Allegiance.h"
 #include "BaseCollidable.h"
 #include <SFML/Graphics.hpp>
+#include <cmath>
 
 // ============================================================================
 //  Class       : BaseProjectile
@@ -85,9 +86,15 @@ class BaseProjectile : public BaseCollidable
     }
 
     /// @brief Get the damage value.
-    virtual int GetDamage() const
+    virtual float GetDamage() const
     {
         return m_damage;
+    }
+
+    /// @brief Get the damage as an int.
+    virtual int GetDamageAsInt() const
+    {
+        return static_cast<int>(std::round(m_damage));
     }
 
     /// @brief Set damage value.
@@ -126,6 +133,6 @@ class BaseProjectile : public BaseCollidable
     sf::Sprite m_sprite;
     sf::Vector2f m_velocity;
 
-    int m_damage = 0;
+    float m_damage = 0;
     bool m_alive = true;
 };

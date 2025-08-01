@@ -225,9 +225,9 @@ bool CollisionManager::HandleCollisionEnemyVsProjectile(CollisionCategory catA, 
         if (projectile && enemy && projectile->GetAllegiance() != enemy->GetAllegiance())
         {
             CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage.",
-                         projectile->GetDamage());
+                         projectile->GetDamageAsInt());
 
-            enemy->TakeDamage(projectile->GetDamage());
+            enemy->TakeDamage(projectile->GetDamageAsInt());
             projectile->Kill();
         }
     }
@@ -268,9 +268,9 @@ bool CollisionManager::HandleCollisionPlayerVsProjectile(CollisionCategory catA,
         if (projectile && player && projectile->GetAllegiance() != player->GetAllegiance())
         {
             CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage.",
-                         projectile->GetDamage());
+                         projectile->GetDamageAsInt());
 
-            player->TakeDamage(projectile->GetDamage());
+            player->TakeDamage(projectile->GetDamageAsInt());
             projectile->Kill();
         }
     }

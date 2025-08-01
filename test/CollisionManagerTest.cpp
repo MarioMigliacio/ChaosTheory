@@ -68,8 +68,14 @@ class CollisionManagerTest : public ::testing::Test
 TEST_F(CollisionManagerTest, PlayerProjectileDamagesEnemy)
 {
     ShipManager::Instance().SpawnBasicEnemy({300.f, 300.f});
-    auto proj = ProjectileFactory::Instance().CreateBasicProjectile({300.f, 295.f}, {0.f, 1.f},
-                                                                    ProjectileCategory::White, Allegiance::Player);
+
+    ProjectileStats stats;
+    stats.damage = 10.f;
+    stats.speed = 300.f;
+    stats.tint = sf::Color::White;
+
+    auto proj =
+        ProjectileFactory::Instance().CreateBasicProjectile({300.f, 295.f}, {0.f, 1.f}, stats, Allegiance::Player);
     ProjectileManager::Instance().AddProjectile(proj);
 
     auto enemy = ShipManager::Instance().GetEnemies().front();

@@ -12,6 +12,7 @@
 #pragma once
 
 #include "BaseShip.h"
+#include "ShipStatsScaling.h"
 #include <random>
 
 // ============================================================================
@@ -24,7 +25,7 @@
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class AlienShip : public BaseShip
+class AlienShip : public BaseShip, public ShipStatsScaling
 {
   public:
     AlienShip(const sf::Vector2f &startPos, Allegiance allegiance);
@@ -40,12 +41,10 @@ class AlienShip : public BaseShip
   public:
     void Update(float dt) override;
 
-  protected:
-    void ApplyDifficultyScaling() override;
-
   private:
     void UpdateMovementLogic(const float dt);
     void UpdateGunLogic(const float dt);
+    void InitializeGunStats() override;
 
   private:
     std::default_random_engine m_rng;
@@ -55,5 +54,4 @@ class AlienShip : public BaseShip
     float m_directionChangeCooldown = 0.f;
     float m_currentDirection = 1.f;
     float m_initialHoldTime = 1.f;
-    float m_fireCooldown = 1.f;
 };

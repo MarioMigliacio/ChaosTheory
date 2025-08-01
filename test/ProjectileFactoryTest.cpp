@@ -13,7 +13,6 @@
 #include "AssetManager.h"
 #include "Assets.h"
 #include "BaseProjectile.h"
-#include "BasicGun.h"
 #include "Macros.h"
 #include "ProjectilePresets.h"
 #include "SettingsManager.h"
@@ -24,7 +23,6 @@ class ProjectileFactoryTest : public ::testing::Test
 {
   protected:
     std::shared_ptr<Settings> m_settings;
-    std::shared_ptr<BasicGun> gun;
 
     void SetUp() override
     {
@@ -39,8 +37,9 @@ class ProjectileFactoryTest : public ::testing::Test
         if (!AssetManager::Instance().IsInitialized())
         {
             AssetManager::Instance().Init(m_settings);
-            AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
         }
+
+        AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
     }
 
     void TearDown() override
@@ -49,40 +48,47 @@ class ProjectileFactoryTest : public ::testing::Test
     }
 };
 
-TEST_F(ProjectileFactoryTest, CreateBasicProjectile_Player)
+TEST_F(ProjectileFactoryTest, CreateProjectile_Player_ValidStats)
 {
+    ProjectileStats stats;
+    stats.fireRate = 0.5f;
+    stats.damage = 12.5f;
+    stats.speed = 300.f;
+    stats.tint = sf::Color::Green;
+    stats.projectilesPerShot = 1;
+
     sf::Vector2f position(100.f, 200.f);
+    sf::Vector2f direction(0.f, -1.f);
+
     auto projectile =
-        ProjectileFactory::Instance().CreateBasicProjectile(position, ProjectileCategory::White, Allegiance::Player);
+        ProjectileFactory::Instance().CreateBasicProjectile(position, direction, stats, Allegiance::Player);
 
     ASSERT_NE(projectile, nullptr);
     EXPECT_EQ(projectile->GetAllegiance(), Allegiance::Player);
     EXPECT_TRUE(projectile->IsAlive());
     EXPECT_EQ(projectile->GetPosition(), position);
-
-    // Get base stats from factory for comparison
-    const auto stats = ProjectileFactory::Instance().GetStats(ProjectileCategory::White);
-    EXPECT_EQ(projectile->GetDamage(), stats.damage);
-    EXPECT_FLOAT_EQ(projectile->GetVelocity().y, -stats.speed);
+    EXPECT_FLOAT_EQ(projectile->GetDamage(), stats.damage);
 }
 
-TEST_F(ProjectileFactoryTest, CreateBasicProjectile_Enemy_HardDifficulty)
+TEST_F(ProjectileFactoryTest, CreateProjectile_Enemy_CustomStats)
 {
-    SettingsManager::Instance().GetSettings()->m_gameDifficulty = GameDifficultySetting::Hard;
+    ProjectileStats stats;
+    stats.fireRate = 1.0f;
+    stats.damage = 8.f;
+    stats.speed = 250.f;
+    stats.tint = sf::Color::Red;
+    stats.projectilesPerShot = 1;
 
     sf::Vector2f position(300.f, 400.f);
+    sf::Vector2f direction(0.f, 1.f); // Enemy fires downward
+
     auto projectile =
-        ProjectileFactory::Instance().CreateBasicProjectile(position, ProjectileCategory::Red, Allegiance::Enemy);
+        ProjectileFactory::Instance().CreateBasicProjectile(position, direction, stats, Allegiance::Enemy);
 
     ASSERT_NE(projectile, nullptr);
     EXPECT_EQ(projectile->GetAllegiance(), Allegiance::Enemy);
     EXPECT_TRUE(projectile->IsAlive());
-
-    const auto stats = ProjectileFactory::Instance().GetStats(ProjectileCategory::Red);
-    const float expectedSpeed = stats.speed * HARD_PROJECTILE_SPEED_SCALE;
-    const int expectedDamage = static_cast<int>(stats.damage * HARD_PROJECTILE_DAMAGE_SCALE);
-
-    EXPECT_EQ(projectile->GetDamage(), expectedDamage);
-    EXPECT_FLOAT_EQ(projectile->GetVelocity().y, expectedSpeed);
     EXPECT_EQ(projectile->GetPosition(), position);
+    EXPECT_FLOAT_EQ(projectile->GetDamage(), stats.damage);
+    EXPECT_FLOAT_EQ(projectile->GetVelocity().y, stats.speed);
 }

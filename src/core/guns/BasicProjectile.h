@@ -25,7 +25,7 @@
 class BasicProjectile : public BaseProjectile
 {
   public:
-    BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity, int damage, Allegiance allegiance,
+    BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity, float damage, Allegiance allegiance,
                     sf::Color tint);
     ~BasicProjectile() override = default;
 

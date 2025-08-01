@@ -11,11 +11,12 @@
 
 #include "ProjectileManager.h"
 #include "AssetManager.h"
-#include "Assets.h"
-#include "BasicGun.h"
+#include "BaseProjectile.h"
+#include "EnemyGun.h"
 #include "Macros.h"
 #include "SettingsManager.h"
 #include "TestHelpers.h"
+#include "UpgradableGun.h"
 #include <gtest/gtest.h>
 
 class ProjectileManagerTest : public ::testing::Test
@@ -53,34 +54,84 @@ class ProjectileManagerTest : public ::testing::Test
     }
 };
 
-TEST_F(ProjectileManagerTest, TryFireAddsOnlyOneProjectile)
+TEST_F(ProjectileManagerTest, UpgradableGun_AddsSingleProjectile)
 {
-    BasicGun gun(0.1f, Allegiance::Enemy);
+    ProjectileStats stats;
+    stats.fireRate = 0.1f;
+    stats.damage = 10.f;
+    stats.speed = 300.f;
+
+    UpgradableGun gun(stats);
     gun.SetOwnerPosition({100.f, 100.f});
+    gun.SetAllegiance(Allegiance::Player);
 
     size_t before = ProjectileManager::Instance().GetProjectiles().size();
 
-    auto projectile = gun.TryFire();
-
-    ASSERT_NE(projectile, nullptr);
+    auto proj = gun.TryFire();
+    ASSERT_NE(proj, nullptr);
 
     size_t after = ProjectileManager::Instance().GetProjectiles().size();
     EXPECT_EQ(after - before, 1);
 }
 
-TEST_F(ProjectileManagerTest, TryFireTowardsAddsOnlyOneProjectile)
+TEST_F(ProjectileManagerTest, UpgradableGun_MultiShotAddsMultipleProjectiles)
 {
-    BasicGun gun(0.1f, Allegiance::Enemy);
-    gun.SetOwnerPosition({100.f, 100.f});
+    ProjectileStats stats;
+    stats.fireRate = 0.1f;
+    stats.damage = 5.f;
+    stats.speed = 250.f;
+    stats.projectilesPerShot = 3;
+
+    UpgradableGun gun(stats);
+    gun.SetOwnerPosition({200.f, 200.f});
+
+    size_t before = ProjectileManager::Instance().GetProjectiles().size();
+    auto proj = gun.TryFire();
+    ASSERT_NE(proj, nullptr);
+
+    size_t after = ProjectileManager::Instance().GetProjectiles().size();
+    EXPECT_EQ(after - before, 3);
+}
+
+TEST_F(ProjectileManagerTest, EnemyGun_AddsProjectileWithDifficultyScaling)
+{
+    SettingsManager::Instance().GetSettings()->m_gameDifficulty = GameDifficultySetting::Hard;
+
+    ProjectileStats stats;
+    stats.fireRate = 0.1f;
+    stats.damage = 5.f;
+    stats.speed = 200.f;
+
+    EnemyGun gun(stats);
+    gun.SetOwnerPosition({300.f, 300.f});
+    gun.SetAllegiance(Allegiance::Enemy);
 
     size_t before = ProjectileManager::Instance().GetProjectiles().size();
 
-    sf::Vector2f target(200.f, 100.f); // Rightward direction
-
-    auto projectile = gun.TryFireTowards(target);
-
-    ASSERT_NE(projectile, nullptr);
+    auto proj = gun.TryFire();
+    ASSERT_NE(proj, nullptr);
 
     size_t after = ProjectileManager::Instance().GetProjectiles().size();
     EXPECT_EQ(after - before, 1);
+    EXPECT_GT(proj->GetDamage(), 5.f); // scaling applied
+}
+
+TEST_F(ProjectileManagerTest, ManagerRemovesDeadProjectiles)
+{
+    ProjectileStats stats;
+    stats.fireRate = 0.1f;
+    stats.damage = 5.f;
+    stats.speed = 200.f;
+
+    UpgradableGun gun(stats);
+    gun.SetOwnerPosition({400.f, 400.f});
+
+    auto proj = gun.TryFire();
+    ASSERT_NE(proj, nullptr);
+
+    proj->Kill(); // mark it as dead
+    ProjectileManager::Instance().Update(0.016f);
+
+    auto projectiles = ProjectileManager::Instance().GetProjectiles();
+    EXPECT_TRUE(std::none_of(projectiles.begin(), projectiles.end(), [](const auto &p) { return !p->IsAlive(); }));
 }

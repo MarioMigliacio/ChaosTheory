@@ -42,7 +42,10 @@ BasicShip::BasicShip(const sf::Vector2f &startPos, Allegiance allegiance)
         m_sprite.setOrigin(tex->getSize().x / 2.f, tex->getSize().y / 2.f);
         m_allegiance = allegiance;
 
-        ApplyDifficultyScaling();
+        m_health = BASE_HEALTH;
+        m_speed = {0.f, BASE_SPEED};
+
+        ApplyDifficultyScaling(m_health, m_speed, m_sprite);
     }
 
     else
@@ -75,30 +78,14 @@ void BasicShip::Update(float dt)
     }
 }
 
-/// @brief Scales this BasicShip accordingly based on WindowResolution, and GameDifficulty.
-void BasicShip::ApplyDifficultyScaling()
+/// @brief Initialize gun stats. Not used for a BasicShip.
+void BasicShip::InitializeGunStats()
 {
-    const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
-    const float scaleY = ResolutionScaleManager::Instance().GetScaleY();
-
-    switch (difficulty)
-    {
-        case GameDifficultySetting::Easy:
-            m_health = static_cast<int>(BASE_HEALTH * EASY_HEALTH_SCALE);
-            m_speed = {0.f, BASE_SPEED * EASY_SPEED_SCALE * scaleY};
-            m_sprite.setColor(EASY_TINT);
-            break;
-
-        case GameDifficultySetting::Normal:
-            m_health = BASE_HEALTH * NORMAL_HEALTH_SCALE;
-            m_speed = {0.f, BASE_SPEED * NORMAL_SPEED_SCALE * scaleY};
-            m_sprite.setColor(NORMAL_TINT);
-            break;
-
-        case GameDifficultySetting::Hard:
-            m_health = static_cast<int>(BASE_HEALTH * HARD_HEALTH_SCALE);
-            m_speed = {0.f, BASE_SPEED * HARD_SPEED_SCALE * scaleY};
-            m_sprite.setColor(HARD_TINT);
-            break;
-    }
+    m_gunStats.damage = 0.f;
+    m_gunStats.fireRate = 0.f;
+    m_gunStats.homing = false;
+    m_gunStats.piercing = false;
+    m_gunStats.projectilesPerShot = 0;
+    m_gunStats.speed = 0.f;
+    m_gunStats.tint = sf::Color::White;
 }
