@@ -5,8 +5,6 @@
 
 #pragma once
 
-#include "ProjectilePresets.h"
-
 /// @brief Provides a clean data structure that makes ConfigurableGun customizable.
 /// @param fireRate Float value for adjusting the rate which gun is capable of firing.
 /// @param damage Float value for scaling single projectile damage. Generally casted to int for trading damage.

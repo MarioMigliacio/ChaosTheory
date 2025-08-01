@@ -14,7 +14,6 @@
 #include "Assets.h"
 #include "BaseGun.h"
 #include "BasicProjectile.h"
-#include "ProjectilePresets.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 #include <cmath>

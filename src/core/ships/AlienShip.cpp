@@ -17,7 +17,6 @@
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
-#include "ShipPresets.h"
 #include "WindowManager.h"
 #include <random>
 

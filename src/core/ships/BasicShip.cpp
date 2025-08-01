@@ -15,7 +15,6 @@
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
-#include "ShipPresets.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout the BasicShip.
