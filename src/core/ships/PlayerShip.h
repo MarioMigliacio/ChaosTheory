@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "BaseGun.h"
 #include "BaseShip.h"
 
 // ============================================================================
@@ -41,10 +42,9 @@ class PlayerShip : public BaseShip
     float GetGas() const;
     void ReplenishGas(float amount);
 
-    void ApplyDifficultyScaling() override;
-
   private:
     void HandleGunUpdate(float dt);
+    void InitializeGunStats() override;
 
   private:
     float m_gas;

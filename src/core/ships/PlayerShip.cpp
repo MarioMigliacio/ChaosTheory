@@ -12,29 +12,47 @@
 #include "PlayerShip.h"
 #include "AssetManager.h"
 #include "Assets.h"
-#include "BasicGun.h"
 #include "InputManager.h"
 #include "KeyBindings.h"
 #include "Macros.h"
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
+#include "UpgradableGun.h"
 #include "WindowManager.h"
 #include <cmath>
 
 /// @brief Constants that can be adjusted throughout the PlayerShip.
 namespace
 {
+/// @brief Configurable constant for the ships base gas.
 constexpr float INITIAL_GAS_MAX = 100.f;
 
-constexpr int INITIAL_HEALTH_MAX = 100;
-
+/// @brief Configurable constant for the ships gas drain rate when accelerating.
 constexpr float GAS_DRAIN_RATE = 20.f;
 
-constexpr float ACCEL_VELOCITY_MULTIPLIER = 2.f;
+/// @brief Configurable constant for the ships base life.
+constexpr int INITIAL_HEALTH_MAX = 100;
 
+/// @brief Configurable constant for the ships base velocity.
 constexpr float BASE_SHIP_VELOCITY = 200.f;
 
-constexpr float BASE_PLAYER_GUN_FIRE_COOLDOWN = .5f;
+/// @brief Configurable constant for adjustment to velocity when accelerating.
+constexpr float ACCEL_VELOCITY_MULTIPLIER = 2.f;
+
+/// @brief Configurable constant for Gun FireRate.
+constexpr float BASE_PLAYER_PROJECTILE_FIRERATE = .5f;
+
+/// @brief Configurable constant for Gun Speed.
+constexpr float BASE_PLAYER_PROJECTILE_SPEED = 250.f;
+
+/// @brief Configurable constant for Gun Damage.
+constexpr float BASE_PLAYER_PROJECTILE_DAMAGE = 10.f;
+
+/// @brief Configurable constant for Gun Projectile color.
+const sf::Color BASE_PLAYER_PROJECTILE_COLOR = sf::Color::White;
+
+/// @brief Configurable constant for Gun Shots per fire.
+constexpr int BASE_PLAYER_PROJECTILE_SHOTS_PER_FIRE = 1;
 } // namespace
 
 /// @brief Constructor for the PlayerShip.
@@ -54,7 +72,7 @@ PlayerShip::PlayerShip()
     m_speed = {m_baseSpeed * ResolutionScaleManager::Instance().GetScaleX(),
                m_baseSpeed * ResolutionScaleManager::Instance().GetScaleY()};
 
-    m_gun = std::make_shared<BasicGun>(BASE_PLAYER_GUN_FIRE_COOLDOWN, m_allegiance);
+    InitializeGunStats();
 
     CT_LOG_DEBUG("PlayerShip constructed.");
 }
@@ -91,7 +109,6 @@ std::shared_ptr<BaseProjectile> PlayerShip::TryFire()
 
         if (projectile)
         {
-            // We might logically reset some internal timers here in the future.
             return projectile;
         }
     }
@@ -199,7 +216,17 @@ void PlayerShip::HandleGunUpdate(float dt)
     }
 }
 
-/// @brief No-Op for player, this is an interface override generally meant for every enemy ship.
-void PlayerShip::ApplyDifficultyScaling()
+/// @brief Initialize gun stats
+void PlayerShip::InitializeGunStats()
 {
+    m_gunStats.fireRate = BASE_PLAYER_PROJECTILE_FIRERATE;
+    m_gunStats.damage = BASE_PLAYER_PROJECTILE_DAMAGE;
+    m_gunStats.speed = BASE_PLAYER_PROJECTILE_SPEED;
+    m_gunStats.projectilesPerShot = BASE_PLAYER_PROJECTILE_SHOTS_PER_FIRE;
+    m_gunStats.tint = BASE_PLAYER_PROJECTILE_COLOR;
+    m_gunStats.homing = false;
+    m_gunStats.piercing = false;
+
+    m_gun = std::make_unique<UpgradableGun>(m_gunStats);
+    m_gun->SetAllegiance(Allegiance::Player);
 }

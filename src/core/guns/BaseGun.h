@@ -8,6 +8,7 @@
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
+
 #pragma once
 
 #include "Allegiance.h"

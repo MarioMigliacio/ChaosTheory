@@ -12,6 +12,7 @@
 #pragma once
 
 #include "BaseShip.h"
+#include "ShipStatsScaling.h"
 
 // ============================================================================
 //  Class       : BasicShip
@@ -22,7 +23,7 @@
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class BasicShip : public BaseShip
+class BasicShip : public BaseShip, public ShipStatsScaling
 {
   public:
     BasicShip(const sf::Vector2f &startPos, Allegiance allegiance);
@@ -38,6 +39,6 @@ class BasicShip : public BaseShip
   public:
     void Update(float dt) override;
 
-  protected:
-    void ApplyDifficultyScaling() override;
+  private:
+    void InitializeGunStats() override;
 };

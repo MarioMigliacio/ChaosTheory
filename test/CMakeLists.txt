@@ -7,9 +7,9 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AudioManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BackgroundTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/BasicGunTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CollectableIconManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CollisionManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EnemyGunTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
@@ -34,6 +34,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/UISkinnableButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UISliderTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UITextLabelTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UpgradableGunTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/WindowManagerTest.cpp
     # add others here if needed
 )

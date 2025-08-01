@@ -21,7 +21,7 @@
 /// @param damage Damage value for this projectile to start with.
 /// @param allegiance Allegiance value for this projectile.
 /// @param tint Color tint adjustment for this projectile.
-BasicProjectile::BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity, int damage,
+BasicProjectile::BasicProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity, float damage,
                                  Allegiance allegiance, sf::Color tint)
 {
     auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::BasicBulletSpriteKey);

@@ -13,8 +13,9 @@
 
 #include "Allegiance.h"
 #include "BaseCollidable.h"
-#include "BaseGun.h"
+#include "ConfigurableGun.h"
 #include "Macros.h"
+#include "ProjectileStats.h"
 #include <SFML/Graphics.hpp>
 
 // ============================================================================
@@ -35,6 +36,9 @@ class BaseShip : public BaseCollidable
 
     /// @brief Update logic per frame.
     virtual void Update(float dt) = 0;
+
+    /// @brief Allows unit to customize the base gun stats they spawn with.
+    virtual void InitializeGunStats() = 0;
 
     /// @brief Draw the ship if it is alive.
     virtual void Draw(sf::RenderTarget &target)
@@ -136,6 +140,18 @@ class BaseShip : public BaseCollidable
         m_speed = speed;
     }
 
+    /// @brief Get the current Gun for this Ship.
+    virtual ConfigurableGun *GetGun()
+    {
+        return m_gun.get();
+    }
+
+    /// @brief Const version for Gun safety, get gun for readonly.
+    virtual const ConfigurableGun *GetGun() const
+    {
+        return m_gun.get();
+    }
+
     /// @brief Implements BaseCollidable::GetCollisionCategory().
     virtual CollisionCategory GetCollisionCategory() const override
     {
@@ -143,12 +159,9 @@ class BaseShip : public BaseCollidable
     }
 
   protected:
-    virtual void ApplyDifficultyScaling() = 0;
-
-  protected:
     Allegiance m_allegiance = Allegiance::Neutral;
-
-    std::shared_ptr<BaseGun> m_gun;
+    ProjectileStats m_gunStats;
+    std::unique_ptr<ConfigurableGun> m_gun;
     sf::Sprite m_sprite;
     sf::Vector2f m_speed;
 

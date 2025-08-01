@@ -12,7 +12,7 @@
 #include "AlienShip.h"
 #include "AssetManager.h"
 #include "Assets.h"
-#include "BasicGun.h"
+#include "EnemyGun.h"
 #include "Macros.h"
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
@@ -25,22 +25,34 @@
 namespace
 {
 /// @brief Base Health before scaling.
-constexpr int BASE_HEALTH = 30;
+constexpr int ALIEN_BASE_HEALTH = 30;
 
 /// @brief Base Speed before scaling.
-constexpr float BASE_SPEED = 100.f;
+constexpr float ALIEN_BASE_SPEED = 100.f;
 
 /// @brief Configurable time for ship to randomly try changing x-direction.
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
-
-/// @brief Configurable time for ship to apply to its owned gun.
-constexpr float INTERNAL_GUN_COOLDOWN = 1.5f;
 
 /// @brief Divide the y-direction speed of this spaceship to slow its descent.
 constexpr float INTERNAL_Y_DIRECTION_DAMPENER = 4.f;
 
 /// @brief Divide the x-direction speed of this spaceship to slow its strafing.
 constexpr float INTERNAL_X_DIRECTION_DAMPENER = .5f;
+
+/// @brief Configurable constant for Gun FireRate.
+constexpr float ALIEN_PROJECTILE_FIRERATE = 1.5f;
+
+/// @brief Configurable constant for Gun Speed.
+constexpr float ALIEN_PROJECTILE_SPEED = 150.f;
+
+/// @brief Configurable constant for Gun Damage.
+constexpr float ALIEN_PROJECTILE_DAMAGE = 10.f;
+
+/// @brief Configurable constant for Gun Projectile color.
+const sf::Color ALIEN_PROJECTILE_COLOR = sf::Color::Red;
+
+/// @brief Configurable constant for Gun Shots per fire.
+constexpr int ALIEN_PROJECTILE_SHOTS_PER_FIRE = 1;
 } // namespace
 
 /// @brief Constructor for an AlienShip type of ship.
@@ -58,7 +70,11 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
         m_allegiance = allegiance;
 
         m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
-        ApplyDifficultyScaling();
+
+        m_health = ALIEN_BASE_HEALTH;
+        m_speed = {ALIEN_BASE_SPEED, ALIEN_BASE_SPEED};
+
+        ApplyDifficultyScaling(m_health, m_speed, m_sprite);
     }
 
     else
@@ -66,7 +82,7 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
         CT_LOG_ERROR("AlienShip texture not found.");
     }
 
-    m_gun = std::make_shared<BasicGun>(INTERNAL_GUN_COOLDOWN, m_allegiance);
+    InitializeGunStats();
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -80,35 +96,6 @@ void AlienShip::Update(float dt)
 
     UpdateMovementLogic(dt);
     UpdateGunLogic(dt);
-}
-
-/// @brief Scales this AlienShip accordingly based on WindowResolution, and GameDifficulty.
-void AlienShip::ApplyDifficultyScaling()
-{
-    const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
-    const auto scaleX = ResolutionScaleManager::Instance().GetScaleX();
-    const auto scaleY = ResolutionScaleManager::Instance().GetScaleY();
-
-    switch (difficulty)
-    {
-        case GameDifficultySetting::Easy:
-            m_health = static_cast<int>(BASE_HEALTH * EASY_HEALTH_SCALE);
-            m_speed = {BASE_SPEED * EASY_SPEED_SCALE * scaleX, BASE_SPEED * EASY_SPEED_SCALE * scaleY};
-            m_sprite.setColor(EASY_TINT);
-            break;
-
-        case GameDifficultySetting::Normal:
-            m_health = BASE_HEALTH * NORMAL_HEALTH_SCALE;
-            m_speed = {BASE_SPEED * NORMAL_SPEED_SCALE * scaleX, BASE_SPEED * NORMAL_SPEED_SCALE * scaleY};
-            m_sprite.setColor(NORMAL_TINT);
-            break;
-
-        case GameDifficultySetting::Hard:
-            m_health = static_cast<int>(BASE_HEALTH * HARD_HEALTH_SCALE);
-            m_speed = {BASE_SPEED * HARD_SPEED_SCALE * scaleX, BASE_SPEED * HARD_SPEED_SCALE * scaleY};
-            m_sprite.setColor(HARD_TINT);
-            break;
-    }
 }
 
 /// @brief Helper method to move this AlienShip based on update time.
@@ -173,15 +160,28 @@ void AlienShip::UpdateGunLogic(const float dt)
         return;
     }
 
-    m_fireCooldown -= dt;
+    // Simply call TryFire each frame, EnemyGun controls its fire rate
+    auto proj = m_gun->TryFire();
 
-    if (m_fireCooldown <= 0.f)
+    // Optional: boss phase logic or random fire rate adjustment
+    if (proj)
     {
-        auto proj = m_gun->TryFire();
-
-        if (proj)
-        {
-            m_fireCooldown = m_fireDelayDist(m_rng);
-        }
+        // Example: during phase, speed up fire rate
+        ProjectileManager::Instance().AddProjectile(proj);
     }
+}
+
+/// @brief Initialize gun stats
+void AlienShip::InitializeGunStats()
+{
+    m_gunStats.fireRate = ALIEN_PROJECTILE_FIRERATE;
+    m_gunStats.damage = ALIEN_PROJECTILE_DAMAGE;
+    m_gunStats.speed = ALIEN_PROJECTILE_SPEED;
+    m_gunStats.projectilesPerShot = ALIEN_PROJECTILE_SHOTS_PER_FIRE;
+    m_gunStats.tint = ALIEN_PROJECTILE_COLOR;
+    m_gunStats.homing = false;
+    m_gunStats.piercing = false;
+
+    m_gun = std::make_unique<EnemyGun>(m_gunStats);
+    m_gun->SetAllegiance(Allegiance::Enemy);
 }
