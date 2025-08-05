@@ -25,8 +25,9 @@
 class UpgradableGun : public ConfigurableGun
 {
   public:
-    UpgradableGun(const ProjectileStats &initialStats);
-
-    std::shared_ptr<BaseProjectile> TryFire() override;
-    std::shared_ptr<BaseProjectile> TryFireTowards(const sf::Vector2f &targetPos) override;
+    /// @brief Constructor for the UpgradableGun, Constructed first from ConfigurableGun for the common base.
+    /// @param baseStats Stats structure for the Gun to base with.
+    UpgradableGun(const ProjectileStats &initialStats) : ConfigurableGun(initialStats)
+    {
+    }
 };

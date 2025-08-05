@@ -513,10 +513,34 @@ void SandBoxScene::MockIconComponents(const bool enabled)
     const float spacing = 48.f;
     const sf::Vector2f iconSize = {32.f, 32.f};
 
+    // Map each IconType to an IconEffectType directly
+    auto GetEffectForIcon = [](IconType type) -> IconEffectType
+    {
+        switch (type)
+        {
+            case IconType::AtomicIcon:
+                return IconEffectType::BombQuantityBoost;
+            case IconType::FireRateIcon:
+                return IconEffectType::GunFireRateBoost;
+            case IconType::GasBoostIcon:
+                return IconEffectType::GasRestore;
+            case IconType::LifeIcon:
+                return IconEffectType::HealthRestore;
+            case IconType::PowerIcon:
+                return IconEffectType::GunDamageBoost;
+            case IconType::UpgradeIcon:
+                return IconEffectType::GunUpgradeBoost;
+            case IconType::WarpIcon:
+                return IconEffectType::Teleport;
+            default:
+                return IconEffectType::None;
+        }
+    };
+
     std::vector<std::pair<IconType, std::string>> iconTypes = {
         {IconType::AtomicIcon, SpriteAssets::IconAssets::AtomicIconSpriteKey},
         {IconType::FireRateIcon, SpriteAssets::IconAssets::FireRateIconSpriteKey},
-        {IconType::GasIcon, SpriteAssets::IconAssets::GasIconSpriteKey},
+        {IconType::GasBoostIcon, SpriteAssets::IconAssets::GasBoostIconSpriteKey},
         {IconType::LifeIcon, SpriteAssets::IconAssets::LifeIconSpriteKey},
         {IconType::PowerIcon, SpriteAssets::IconAssets::PowerIconSpriteKey},
         {IconType::UpgradeIcon, SpriteAssets::IconAssets::UpgradeIconSpriteKey},
@@ -526,7 +550,11 @@ void SandBoxScene::MockIconComponents(const bool enabled)
     for (size_t i = 0; i < iconTypes.size(); i++)
     {
         sf::Vector2f pos{startX + (i * spacing), startY};
-        CollectableIconManager::Instance().SpawnIcon({pos, iconSize, iconTypes[i].second, iconTypes[i].first});
+
+        IconConfig cfg{pos, iconSize, iconTypes[i].second, iconTypes[i].first};
+        cfg.effectType = GetEffectForIcon(iconTypes[i].first);
+
+        CollectableIconManager::Instance().SpawnIcon(cfg);
     }
 }
 

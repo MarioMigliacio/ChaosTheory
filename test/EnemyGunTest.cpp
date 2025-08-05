@@ -61,7 +61,7 @@ TEST_F(EnemyGunTest, FiresSingleProjectileDownward)
 
     EnemyGun gun(stats);
     gun.SetOwnerPosition({100.f, 200.f});
-    gun.SetAllegiance(Allegiance::Enemy);
+    gun.SetAllegiance(Allegiance::Enemy, {8.f, 8.f});
 
     gun.Update(0.016f);
     auto proj = gun.TryFire();
@@ -98,9 +98,9 @@ TEST_F(EnemyGunTest, CanUpgradeDuringBossPhase)
     gun.SetOwnerPosition({50.f, 50.f});
 
     // Phase upgrade
-    gun.UpgradeFireRate(0.5f); // fires faster
-    gun.UpgradeDamage(2.0f);   // double damage
-    gun.SetProjectilesPerShot(3);
+    gun.UpgradeFireRate(0.5f);     // fires faster
+    gun.UpgradeDamageByFlat(2.0f); // double damage
+    gun.SetPattern(GunPattern::HomingRocket);
 
     auto proj = gun.TryFire();
     ASSERT_NE(proj, nullptr);

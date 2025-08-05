@@ -30,10 +30,10 @@ constexpr float FIRERATE_ICON_DRIFT_SPEED = 70.f;
 /// @brief Default fall delay for the FireRateIcon.
 constexpr float FIRERATE_ICON_FALL_DELAY = 4.f;
 
-/// @brief Default drifting speed of the GasIcon.
+/// @brief Default drifting speed of the GasBoostIcon.
 constexpr float GAS_ICON_DRIFT_SPEED = 50.f;
 
-/// @brief Default fall delay for the GasIcon.
+/// @brief Default fall delay for the GasBoostIcon.
 constexpr float GAS_ICON_FALL_DELAY = 5.f;
 
 /// @brief Default drifting speed of the LifeIcon.
@@ -154,7 +154,7 @@ void UIIcon::StartFalling()
             m_driftSpeed = FIRERATE_ICON_DRIFT_SPEED;
             m_fallDelay = FIRERATE_ICON_FALL_DELAY;
             break;
-        case IconType::GasIcon:
+        case IconType::GasBoostIcon:
             m_driftSpeed = GAS_ICON_DRIFT_SPEED;
             m_fallDelay = GAS_ICON_FALL_DELAY;
             break;
@@ -269,6 +269,19 @@ CollisionCategory UIIcon::GetCollisionCategory() const
     return IsWorldIcon() ? CollisionCategory::Icon : CollisionCategory::None;
 }
 
+/// @brief Gets the effect type this icon represents for power up purposes.
+/// @return IconEffectType enum representing the icon power up type.
+IconEffectType UIIcon::GetEffectType() const
+{
+    return m_effectType;
+}
+
+/// @brief Sets the internal effectType this UI Icon represents for power up purposes
+void UIIcon::SetEffectType(const IconEffectType type)
+{
+    m_effectType = type;
+}
+
 /// @brief Adjust dynamically for size, and positioning of this UIIcon.
 void UIIcon::ApplySpriteTransform()
 {
@@ -311,6 +324,6 @@ void UIIcon::draw(sf::RenderTarget &target, sf::RenderStates states) const
 bool UIIcon::IsWorldIcon() const
 {
     return m_iconType == IconType::AtomicIcon || m_iconType == IconType::FireRateIcon ||
-           m_iconType == IconType::GasIcon || m_iconType == IconType::LifeIcon || m_iconType == IconType::WarpIcon ||
+           m_iconType == IconType::GasBoostIcon || m_iconType == IconType::LifeIcon || m_iconType == IconType::WarpIcon ||
            m_iconType == IconType::PowerIcon || m_iconType == IconType::UpgradeIcon;
 }

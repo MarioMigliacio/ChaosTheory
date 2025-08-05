@@ -83,8 +83,6 @@ void BasicShip::InitializeGunStats()
     m_gunStats.damage = 0.f;
     m_gunStats.fireRate = 0.f;
     m_gunStats.homing = false;
-    m_gunStats.piercing = false;
-    m_gunStats.projectilesPerShot = 0;
     m_gunStats.speed = 0.f;
     m_gunStats.tint = sf::Color::White;
 }

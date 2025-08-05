@@ -18,7 +18,6 @@
 #include "BaseProjectile.h"
 #include "BaseShip.h"
 #include "Macros.h"
-#include "UIIcon.h"
 #include <algorithm>
 
 /// @brief Get the current Instance for this CollisionManager singleton.
@@ -327,19 +326,19 @@ bool CollisionManager::HandleCollisionPlayerVsIcon(CollisionCategory catA, Colli
 {
     bool check = false;
     std::shared_ptr<UIIcon> icon;
-    std::shared_ptr<BaseShip> player;
+    std::shared_ptr<PlayerShip> player;
 
     if (catA == CollisionCategory::Player && catB == CollisionCategory::Icon)
     {
         check = true;
-        player = std::dynamic_pointer_cast<BaseShip>(a);
+        player = std::dynamic_pointer_cast<PlayerShip>(a);
         icon = std::dynamic_pointer_cast<UIIcon>(b);
     }
 
     else if (catA == CollisionCategory::Icon && catB == CollisionCategory::Player)
     {
         check = true;
-        player = std::dynamic_pointer_cast<BaseShip>(b);
+        player = std::dynamic_pointer_cast<PlayerShip>(b);
         icon = std::dynamic_pointer_cast<UIIcon>(a);
     }
 
@@ -347,10 +346,9 @@ bool CollisionManager::HandleCollisionPlayerVsIcon(CollisionCategory catA, Colli
     {
         if (player && icon)
         {
-            CT_LOG_DEBUG("CollisionManager: Player interaction with {}.", ToString(icon->GetIconType()));
+            CT_LOG_DEBUG("CollisionManager: Player picked up icon {}.", ToString(icon->GetIconType()));
 
-            // TODO: Trigger icon effect (to be implemented in icon logic)
-            icon->Expire();
+            player->ApplyIconEffect(icon);
         }
     }
 

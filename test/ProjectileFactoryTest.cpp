@@ -54,7 +54,6 @@ TEST_F(ProjectileFactoryTest, CreateProjectile_Player_ValidStats)
     stats.damage = 12.5f;
     stats.speed = 300.f;
     stats.tint = sf::Color::Green;
-    stats.projectilesPerShot = 1;
 
     sf::Vector2f position(100.f, 200.f);
     sf::Vector2f direction(0.f, -1.f);
@@ -76,7 +75,6 @@ TEST_F(ProjectileFactoryTest, CreateProjectile_Enemy_CustomStats)
     stats.damage = 8.f;
     stats.speed = 250.f;
     stats.tint = sf::Color::Red;
-    stats.projectilesPerShot = 1;
 
     sf::Vector2f position(300.f, 400.f);
     sf::Vector2f direction(0.f, 1.f); // Enemy fires downward

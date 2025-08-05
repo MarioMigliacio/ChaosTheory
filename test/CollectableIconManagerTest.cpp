@@ -34,7 +34,7 @@ class CollectableIconManagerTest : public ::testing::Test
 
         SettingsManager::Instance().Init(m_settings);
         AssetManager::Instance().Init(m_settings);
-        AssetManager::Instance().LoadTexture("GasIcon", "assets/sprites/icons/GasIcon.png");
+        AssetManager::Instance().LoadTexture("GasRestoreIcon", "assets/sprites/icons/GasRestoreIcon.png");
 
         CollectableIconManager::Instance().Init();
     }
@@ -49,8 +49,10 @@ class CollectableIconManagerTest : public ::testing::Test
 
 TEST_F(CollectableIconManagerTest, SpawnAndExpireIcon)
 {
-    IconConfig cfg{
-        .position = {100.f, 100.f}, .size = {32.f, 32.f}, .textureKey = "GasIcon", .type = IconType::GasIcon};
+    IconConfig cfg{.position = {100.f, 100.f},
+                   .size = {32.f, 32.f},
+                   .textureKey = "GasRestoreIcon",
+                   .type = IconType::GasRestoreIcon};
     CollectableIconManager::Instance().SpawnIcon(cfg);
     EXPECT_FALSE(CollectableIconManager::Instance().GetIcons().empty());
 

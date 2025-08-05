@@ -17,6 +17,7 @@
 #include "Macros.h"
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
+#include "UIIcon.h"
 #include "UpgradableGun.h"
 #include "WindowManager.h"
 #include <cmath>
@@ -24,6 +25,9 @@
 /// @brief Constants that can be adjusted throughout the PlayerShip.
 namespace
 {
+/// @brief Configurable constant for player lives before game over.
+constexpr int PLAYER_STARTING_LIVES = 3;
+
 /// @brief Configurable constant for the ships base gas.
 constexpr float INITIAL_GAS_MAX = 100.f;
 
@@ -50,31 +54,31 @@ constexpr float BASE_PLAYER_PROJECTILE_DAMAGE = 10.f;
 
 /// @brief Configurable constant for Gun Projectile color.
 const sf::Color BASE_PLAYER_PROJECTILE_COLOR = sf::Color::White;
-
-/// @brief Configurable constant for Gun Shots per fire.
-constexpr int BASE_PLAYER_PROJECTILE_SHOTS_PER_FIRE = 1;
 } // namespace
 
 /// @brief Constructor for the PlayerShip.
 PlayerShip::PlayerShip()
 {
     m_allegiance = Allegiance::Player;
-    m_sprite.setTexture(*AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey));
-    m_sprite.setScale(1.0f, 1.0f);
 
-    m_health = m_maxHealth = INITIAL_HEALTH_MAX;
-    m_gas = m_maxGas = INITIAL_GAS_MAX;
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey);
 
-    m_gasDrainRate = GAS_DRAIN_RATE;
-    m_accelerationMultiplier = ACCEL_VELOCITY_MULTIPLIER;
-    m_baseSpeed = BASE_SHIP_VELOCITY;
+    if (tex)
+    {
+        m_sprite.setTexture(*tex);
+        m_sprite.setOrigin(tex->getSize().x / 2.f, tex->getSize().y / 2.f);
+        m_sprite.setScale(1.0f, 1.0f);
 
-    m_speed = {m_baseSpeed * ResolutionScaleManager::Instance().GetScaleX(),
-               m_baseSpeed * ResolutionScaleManager::Instance().GetScaleY()};
+        InitializeGenericStats();
+        InitializeGunStats();
 
-    InitializeGunStats();
+        CT_LOG_DEBUG("PlayerShip constructed.");
+    }
 
-    CT_LOG_DEBUG("PlayerShip constructed.");
+    else
+    {
+        CT_LOG_ERROR("PlayerShip: ERROR - texture not found.");
+    }
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -114,6 +118,74 @@ std::shared_ptr<BaseProjectile> PlayerShip::TryFire()
     }
 
     return nullptr;
+}
+
+/// @brief Sync with the collision of a UIIcon and get a boost for the player.
+/// @param icon UIIcon to check effect against.
+void PlayerShip::ApplyIconEffect(const std::shared_ptr<UIIcon> &icon)
+{
+    if (!icon)
+    {
+        return;
+    }
+
+    auto *gun = GetGun();
+
+    switch (icon->GetEffectType())
+    {
+        case IconEffectType::GunDamageBoost:
+            if (auto *gun = dynamic_cast<ConfigurableGun *>(GetGun()))
+            {
+                gun->UpgradeDamageByFlat(2);
+            }
+            break;
+        case IconEffectType::GunFireRateBoost:
+            if (auto *gun = dynamic_cast<ConfigurableGun *>(GetGun()))
+            {
+                gun->UpgradeFireRate(.90f);
+            }
+            break;
+        case IconEffectType::GunVelocityBoost:
+            if (auto *gun = dynamic_cast<ConfigurableGun *>(GetGun()))
+            {
+                gun->UpgradeVelocity(12.5f);
+            }
+            break;
+        case IconEffectType::GunUpgradeBoost:
+            if (auto *gun = dynamic_cast<ConfigurableGun *>(GetGun()))
+            {
+                gun->UpgradePattern();
+            }
+            break;
+        case IconEffectType::BombQuantityBoost:
+            GainBombCount();
+            break;
+        case IconEffectType::HealthRestore:
+            ReplenishHealth(20.f);
+            break;
+        case IconEffectType::HealthBoost:
+            BoostMaxHealth(10.f);
+            break;
+        case IconEffectType::LifeIncrease:
+            GainLifeCount();
+            break;
+        case IconEffectType::GasRestore:
+            ReplenishGas(20.f);
+            break;
+        case IconEffectType::GasBoost:
+            BoostMaxGas(10.f);
+            break;
+        case IconEffectType::Teleport:
+            // TODO: implement a teleport to warp icon pair method.
+            // WarpToLocation(icon->GetIntValue());
+            break;
+
+        default:
+            CT_LOG_WARN("PlayerShip: Unhandled IconEffectType {}", ToString(icon->GetIconType()));
+            break;
+    }
+
+    icon->Expire();
 }
 
 /// @brief The primary input interaction between PlayerShip and keyboard input.
@@ -200,9 +272,93 @@ float PlayerShip::GetGas() const
 
 /// @brief Replenish the PlayerShip's current Gas, used for acceleration.
 /// @param amount Float gas to replenish.
-void PlayerShip::ReplenishGas(float amount)
+void PlayerShip::ReplenishGas(const float amount)
 {
     m_gas = std::min(m_maxGas, m_gas + amount);
+}
+
+/// @brief Boosts the max end gas for this PlayerShip.
+/// @param amount Amount to increase maximum by.
+void PlayerShip::BoostMaxGas(const float amount)
+{
+    m_maxGas += amount;
+}
+
+/// @brief Restores current player health.
+/// @param amount Amount to heal.
+void PlayerShip::ReplenishHealth(float amount)
+{
+    m_health = std::min(m_maxHealth, m_health + amount);
+}
+
+/// @brief Boosts the max end life for this PlayerShip.
+/// @param amount Amount to increase maximum by.
+void PlayerShip::BoostMaxHealth(const float amount)
+{
+    m_maxHealth += amount;
+}
+
+/// @brief Override the default TakeDamage method to account for Player Lives and GameOver logic.
+/// @param amount Damage to be taken.
+void PlayerShip::TakeDamage(int amount)
+{
+    m_health -= amount;
+
+    if (m_health <= 0)
+    {
+        m_health = 0;
+
+        LoseLife();
+    }
+}
+
+/// @brief Increment the current player lives count.
+void PlayerShip::GainLifeCount()
+{
+    m_lives++;
+}
+
+/// @brief Decrement the current player lives count, and signals for game over if player has no lives left.
+void PlayerShip::LoseLife()
+{
+    m_lives--;
+
+    CT_LOG_DEBUG("PlayerShip lost a life in combat, lives remaining: {}", m_lives);
+
+    if (m_lives == 0)
+    {
+        m_gameOver = true;
+    }
+}
+
+/// @brief Simple getter for the player lives count.
+/// @return m_lives.
+int PlayerShip::GetLifeCount() const
+{
+    return m_lives;
+}
+
+/// @brief Signal to external management that player lives are negative, game is over.
+/// @return m_gameOver.
+bool PlayerShip::IsGameOver() const
+{
+    return m_gameOver;
+}
+
+/// @brief Increment the current player bombs count.
+void PlayerShip::GainBombCount()
+{
+    m_bombs++;
+}
+
+/// @brief Method to send signal to fire a bomb.
+void PlayerShip::TryFireBomb()
+{
+    if (m_bombs > 0)
+    {
+        // TODO: Firing bombs will be a feature to add later on.
+        m_bombs--;
+    }
 }
 
 /// @brief Request the Gun to update for this PlayerShip.
@@ -222,11 +378,28 @@ void PlayerShip::InitializeGunStats()
     m_gunStats.fireRate = BASE_PLAYER_PROJECTILE_FIRERATE;
     m_gunStats.damage = BASE_PLAYER_PROJECTILE_DAMAGE;
     m_gunStats.speed = BASE_PLAYER_PROJECTILE_SPEED;
-    m_gunStats.projectilesPerShot = BASE_PLAYER_PROJECTILE_SHOTS_PER_FIRE;
     m_gunStats.tint = BASE_PLAYER_PROJECTILE_COLOR;
     m_gunStats.homing = false;
-    m_gunStats.piercing = false;
 
     m_gun = std::make_unique<UpgradableGun>(m_gunStats);
-    m_gun->SetAllegiance(Allegiance::Player);
+
+    sf::Vector2f spriteSize(static_cast<float>(m_sprite.getTexture()->getSize().x),
+                            static_cast<float>(m_sprite.getTexture()->getSize().y));
+
+    m_gun->SetAllegiance(Allegiance::Player, spriteSize);
+}
+
+/// @brief A helper method to clean up the PlayerShip constructor. Initializes health, gas, and rates.
+void PlayerShip::InitializeGenericStats()
+{
+    m_lives = PLAYER_STARTING_LIVES;
+    m_health = m_maxHealth = INITIAL_HEALTH_MAX;
+    m_gas = m_maxGas = INITIAL_GAS_MAX;
+
+    m_gasDrainRate = GAS_DRAIN_RATE;
+    m_accelerationMultiplier = ACCEL_VELOCITY_MULTIPLIER;
+    m_baseSpeed = BASE_SHIP_VELOCITY;
+
+    m_speed = {m_baseSpeed * ResolutionScaleManager::Instance().GetScaleX(),
+               m_baseSpeed * ResolutionScaleManager::Instance().GetScaleY()};
 }

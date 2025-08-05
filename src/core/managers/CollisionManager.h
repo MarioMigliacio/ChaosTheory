@@ -56,7 +56,9 @@
 #pragma once
 
 #include "BaseCollidable.h"
+#include "PlayerShip.h"
 #include "SpatialGrid.h"
+#include "UIIcon.h"
 #include <memory>
 #include <vector>
 
