@@ -38,9 +38,6 @@ constexpr auto SETTING_BTN_LABEL = "Settings";
 /// @brief Fixed name constant for the Exit button label.
 constexpr auto EXIT_BTN_LABEL = "Exit";
 
-/// @brief Simple math constant for PI.
-constexpr float PI = 3.14159f;
-
 /// @brief Height of amplitude/trough for sinusoidal ship movement.
 constexpr float SINE_WAVE_AMP = 50.f;
 
@@ -100,11 +97,19 @@ void MainMenuScene::LoadRequiredAssets()
         }
     }
 
-    for (const auto &[key, path] : MainMenuAssets::Textures)
+    for (const auto &[key, path] : MainMenuAssets::Backgrounds)
     {
         if (!assets.LoadTexture(key, path))
         {
-            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::Backgrounds failed to load Asset: {}, {}", key, path);
+        }
+    }
+
+    for (const auto &[key, path] : MainMenuAssets::Sprites)
+    {
+        if (!assets.LoadTexture(key, path))
+        {
+            CT_LOG_ERROR("MainMenuScene::LoadRequiredAssets::Sprites failed to load Asset: {}, {}", key, path);
         }
     }
 
@@ -163,7 +168,7 @@ void MainMenuScene::Update(float dt)
         m_hasPendingTransition = false;
 
         // Game mode will have its own dedicated sound track, but the Settings page can share the track.
-        if (m_requestedScene == SceneID::Game || m_requestedScene == SceneID::SandBox)
+        if (m_requestedScene == SceneID::Game || m_requestedScene == SceneID::Introduction)
         {
             if (AudioManager::Instance().IsInitialized())
             {
@@ -268,19 +273,19 @@ void MainMenuScene::CreateButtons()
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
     // Play button
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        SkinnableButtonConfig{.position = playPos,
-                              .size = btnSize,
-                              .label = PLAY_BTN_LABEL,
-                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
-                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
-                              .scheme = UISkinnableButtonColorScheme::Blue,
-                              .onClick = [this]()
-                              {
-                                  CT_LOG_INFO("Play button clicked!");
-                                  m_hasPendingTransition = true;
-                                  m_requestedScene = SceneID::SandBox;
-                              }}));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(SkinnableButtonConfig{
+        .position = playPos,
+        .size = btnSize,
+        .label = PLAY_BTN_LABEL,
+        .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+        .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+        .scheme = UISkinnableButtonColorScheme::Blue,
+        .onClick = [this]()
+        {
+            CT_LOG_INFO("Play button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::Introduction; // TODO: Revert to SandBox for rapid testing.
+        }}));
 
     // Settings button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
@@ -346,11 +351,52 @@ void MainMenuScene::PlayIntroMusic()
 /// @brief Helper method for setting up the travelling spaceship.
 void MainMenuScene::InitShip()
 {
-    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerShipSpriteKey);
+    auto winSize = WindowManager::Instance().GetWindow().getSize();
+    m_yDist = std::uniform_real_distribution<float>(winSize.y * 0.2f, winSize.y * 0.8f); // avoid top/bottom edges
+    m_rng.seed(static_cast<unsigned>(time(nullptr)));
+
+    RandomizeShipTexture();
+
+    const float startY = m_yDist(m_rng);
+    m_shipSprite.setPosition(0.f, startY);
+    m_shipSineTimer = 0.f;
+    m_shipActive = true;
+}
+
+/// @brief Helper method to draw from a pool of available player ship color variants for spice.
+void MainMenuScene::RandomizeShipTexture()
+{
+    auto shipTypeIndex = std::uniform_int_distribution<int>(0, 5);
+    const int i = shipTypeIndex(m_rng);
+
+    sf::Texture *tex;
+
+    switch (i)
+    {
+        case 0:
+        default:
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey);
+            break;
+        case 1:
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipBlackKey);
+            break;
+        case 2:
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipBlueKey);
+            break;
+        case 3:
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipGoldKey);
+            break;
+        case 4:
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipGreenKey);
+            break;
+        case 5:
+            tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipRedKey);
+            break;
+    }
 
     if (!tex)
     {
-        CT_LOG_ERROR("MainMenuScene: InitShip Failed to load PlayerShip texture.");
+        CT_LOG_ERROR("MainMenuScene: RandomizeShipTexture Failed to load PlayerShip texture.");
         return;
     }
 
@@ -361,17 +407,6 @@ void MainMenuScene::InitShip()
     const float baseSize = tex->getSize().x; // the ship is even in width and height, just need one.
     float scale = ResolutionScaleManager::Instance().ScaleX(baseSize) / baseSize;
     m_shipSprite.setScale(scale, scale);
-
-    auto winSize = WindowManager::Instance().GetWindow().getSize();
-    m_yDist = std::uniform_real_distribution<float>(winSize.y * 0.2f, winSize.y * 0.8f); // avoid top/bottom edges
-    m_rng.seed(static_cast<unsigned>(time(nullptr)));
-
-    const float startY = m_yDist(m_rng);
-    m_shipSprite.setPosition(0.f, startY);
-
-    m_shipVelocity = {SHIP_VELOCITY, 0.f};
-    m_shipSineTimer = 0.f;
-    m_shipActive = true;
 }
 
 /// @brief Helper method to update the travelling spaceship.
@@ -381,7 +416,7 @@ void MainMenuScene::UpdateShip(float dt)
     m_shipSineTimer += dt;
 
     sf::Vector2f pos = m_shipSprite.getPosition();
-    pos.x += m_shipVelocity.x * dt;
+    pos.x += ResolutionScaleManager::Instance().GetScaleX() * SHIP_VELOCITY * dt;
 
     // Wave motion: sine-based Y offset
     float waveAmplitude = SINE_WAVE_AMP; // pixels
@@ -394,6 +429,7 @@ void MainMenuScene::UpdateShip(float dt)
 
     if (pos.x > windowWidth + SHIP_BOUNDARY) // Wrap around logic
     {
+        RandomizeShipTexture();
         pos.x = -SHIP_BOUNDARY;
         pos.y = m_yDist(m_rng); // new randomized Y
         m_shipSineTimer = 0.f;  // reset wave cycle

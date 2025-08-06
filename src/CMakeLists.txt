@@ -8,11 +8,17 @@ add_executable(CT ${SRC_FILES})
 
 target_link_directories(CT PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
 
+target_precompile_headers(CT PRIVATE ${PROJECT_SOURCE_DIR}/src/core/pch.h)
+
 target_include_directories(CT PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/core
-    ${PROJECT_SOURCE_DIR}/src/core/scenes
     ${PROJECT_SOURCE_DIR}/src/core/common
+    ${PROJECT_SOURCE_DIR}/src/core/guns
+    ${PROJECT_SOURCE_DIR}/src/core/managers
+    ${PROJECT_SOURCE_DIR}/src/core/scenes
+    ${PROJECT_SOURCE_DIR}/src/core/ships
+    ${PROJECT_SOURCE_DIR}/src/core/ui
     ${PROJECT_SOURCE_DIR}/external/spdlog/include
     ${PROJECT_SOURCE_DIR}/external/sfml/include
 )

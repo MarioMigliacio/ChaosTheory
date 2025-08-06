@@ -69,7 +69,7 @@ TEST_F(UIIconTest, SetSizeUpdatesCorrectly)
 
 TEST_F(UIIconTest, ContainsDetectionWorks)
 {
-    AssetManager::Instance().LoadTexture("test_icon", "assets/sprites/AtomicIcon.png");
+    AssetManager::Instance().LoadTexture("test_icon", "assets/sprites/icons/AtomicIcon.png");
     UIIcon icon({32.f, 32.f}, {50.f, 50.f});
 
     icon.SetTextureSkin("test_icon");

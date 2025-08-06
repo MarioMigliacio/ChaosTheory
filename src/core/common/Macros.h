@@ -55,3 +55,10 @@
         CT_LOG_WARN("{}: Attempted to {} without initialization!", context, task);                                     \
         return retval;                                                                                                 \
     }
+
+///////////////////////////////////////////////
+/// Universal Constants unrelated to any module
+///////////////////////////////////////////////
+/// @brief Simple math constant for PI.
+constexpr float PI = 3.14159f;
+///////////////////////////////////////////////
