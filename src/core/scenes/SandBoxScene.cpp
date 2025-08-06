@@ -475,9 +475,9 @@ void SandBoxScene::MockIconComponents(const bool enabled)
             case IconType::FireRateIcon:
                 return IconEffectType::GunFireRateBoost;
             case IconType::GasBoostIcon:
-                return IconEffectType::GasRestore;
-            case IconType::GasRestoreIcon:
                 return IconEffectType::GasBoost;
+            case IconType::GasRestoreIcon:
+                return IconEffectType::GasRestore;
             case IconType::HealthBoostIcon:
                 return IconEffectType::HealthBoost;
             case IconType::HealthRestoreIcon:
