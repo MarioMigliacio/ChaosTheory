@@ -96,14 +96,14 @@ TEST_F(CollisionManagerTest, PlayerCollidesWithEnemyKillsPlayer)
     ShipManager::Instance().SpawnAlienEnemy({400.f, 400.f});
 
     auto player = ShipManager::Instance().GetPlayer();
-    EXPECT_TRUE(player->IsAlive());
+    EXPECT_TRUE(player->GetLifeCount() == 3);
 
     CollisionManager &cm = CollisionManager::Instance();
     cm.Clear();
     ShipManager::Instance().RegisterForCollision(cm);
     cm.Update(0.016f);
 
-    EXPECT_FALSE(player->IsAlive());
+    EXPECT_FALSE(player->GetLifeCount() == 3);
 }
 
 TEST_F(CollisionManagerTest, PlayerCollectsIconExpiresIt)
