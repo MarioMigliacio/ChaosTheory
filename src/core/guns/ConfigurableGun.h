@@ -11,6 +11,7 @@
 #pragma once
 
 #include "BaseGun.h"
+#include "GunPattern.h"
 #include "ProjectileManager.h"
 #include "ProjectileStats.h"
 
@@ -23,87 +24,39 @@
 //      - Provides ProjectileStats for inheriting classes.
 //      - Provides interface for Upgrade stats on the internal ProjectileStats.
 //      - Provides common update method.
-//      - Provides FireProjectiles shared logic so that inheriting classes
+//      - Provides Projectile firing shared logic so that inheriting classes
 //        TryFire, and TryFireTowards is vastly simplified.
 //
 // ============================================================================
 class ConfigurableGun : public BaseGun
 {
   public:
-    /// @brief Constructor which registers the ProjectileStats for this ConfigurableGun.
-    /// @param stats ProjectileStats struct which holds gun attributes for projectiles.
-    ConfigurableGun(const ProjectileStats &stats) : m_stats(stats)
-    {
-    }
+    ConfigurableGun(const ProjectileStats &stats);
+    virtual ~ConfigurableGun() = default;
 
-    /// @brief Sets the potential projectile FireRate.
-    void UpgradeFireRate(float factor)
-    {
-        m_stats.fireRate *= factor;
-    }
+    virtual std::shared_ptr<BaseProjectile> TryFire() override;
+    virtual std::shared_ptr<BaseProjectile> TryFireTowards(const sf::Vector2f &targetPos) override;
 
-    /// @brief Sets the potential projectile Damage.
-    void UpgradeDamage(float factor)
-    {
-        m_stats.damage *= factor;
-    }
+    void UpgradeFireRate(float factor);
+    void UpgradeVelocity(float value);
+    void UpgradeDamageRate(float factor);
+    void UpgradeDamageByFlat(float amount);
+    void UpgradePattern();
 
-    /// @brief Sets the potential projectile Velocity.
-    void UpgradeVelocity(float factor)
-    {
-        m_stats.speed *= factor;
-    }
+    GunPattern GetPattern() const;
+    void SetPattern(const GunPattern pattern);
 
-    /// @brief Sets the potential amount of ProjectilesPerShot.
-    void SetProjectilesPerShot(int count)
-    {
-        m_stats.projectilesPerShot = std::max(1, count);
-    }
+    sf::Vector2f GetDefaultDirection() const;
 
-    /// @brief Perform routine update logic on cooldowns during a frame.
-    void Update(float dt) override
-    {
-        if (m_cooldown > 0.f)
-        {
-            m_cooldown -= dt;
-        }
-    }
+    void Update(float dt) override;
 
   protected:
-    /// @brief Shared firing logic — can be reused by UpgradableGun and EnemyGun
-    /// @param firePos Vector position from which projectile spawns from.
-    /// @param baseDir Vector direction for which projectile will travel at.
-    /// @return Safe pointer to a BaseProjectile.
-    std::shared_ptr<BaseProjectile> FireProjectiles(const sf::Vector2f &firePos, const sf::Vector2f &baseDir)
-    {
-        std::shared_ptr<BaseProjectile> lastProjectile = nullptr;
-
-        if (m_stats.projectilesPerShot <= 1)
-        {
-            lastProjectile =
-                ProjectileFactory::Instance().CreateBasicProjectile(firePos, baseDir, m_stats, m_allegiance);
-            ProjectileManager::Instance().AddProjectile(lastProjectile);
-
-            return lastProjectile;
-        }
-
-        float spreadAngle = 8.f * (m_stats.projectilesPerShot - 1);
-        float startAngle = -spreadAngle / 2.f;
-        float angleStep = spreadAngle / (m_stats.projectilesPerShot - 1);
-        float baseAngle = std::atan2(baseDir.y, baseDir.x);
-
-        for (int i = 0; i < m_stats.projectilesPerShot; ++i)
-        {
-            float angle = baseAngle + (startAngle + i * angleStep) * (3.14159f / 180.f);
-            sf::Vector2f spreadDir(std::cos(angle), std::sin(angle));
-
-            lastProjectile =
-                ProjectileFactory::Instance().CreateBasicProjectile(firePos, spreadDir, m_stats, m_allegiance);
-            ProjectileManager::Instance().AddProjectile(lastProjectile);
-        }
-
-        return lastProjectile;
-    }
+    std::shared_ptr<BaseProjectile> FireBasic(const sf::Vector2f &pos, const sf::Vector2f &dir);
+    void FireSpread(const sf::Vector2f &pos, const sf::Vector2f &baseDir, const std::vector<float> &angles);
+    std::shared_ptr<BaseProjectile> FireHomingRocket(const sf::Vector2f &pos);
+    std::shared_ptr<BaseProjectile> FireGrowingBullet(const sf::Vector2f &pos);
+    std::shared_ptr<BaseProjectile> FireLazerBeam(const sf::Vector2f &pos);
+    void FireUltimateArc(const sf::Vector2f &pos);
 
   protected:
     ProjectileStats m_stats;

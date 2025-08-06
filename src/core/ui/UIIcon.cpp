@@ -19,22 +19,46 @@
 namespace
 {
 /// @brief Default drifting speed of the AtomicIcon.
-constexpr float ATOMIC_ICON_DRIFT_SPEED = 60.f;
+constexpr float ATOMIC_ICON_DRIFT_SPEED = 80.f;
 
 /// @brief Default fall delay for the AtomicIcon.
-constexpr float ATOMIC_ICON_FALL_DELAY = 3.5f;
+constexpr float ATOMIC_ICON_FALL_DELAY = 3.f;
 
 /// @brief Default drifting speed of the FireRateIcon.
-constexpr float FIRERATE_ICON_DRIFT_SPEED = 70.f;
+constexpr float FIRERATE_ICON_DRIFT_SPEED = 170.f;
 
 /// @brief Default fall delay for the FireRateIcon.
-constexpr float FIRERATE_ICON_FALL_DELAY = 4.f;
+constexpr float FIRERATE_ICON_FALL_DELAY = 1.f;
 
-/// @brief Default drifting speed of the GasIcon.
-constexpr float GAS_ICON_DRIFT_SPEED = 50.f;
+/// @brief Default drifting speed of the GasBoostIcon.
+constexpr float GAS_BOOST_ICON_DRIFT_SPEED = 150.f;
 
-/// @brief Default fall delay for the GasIcon.
-constexpr float GAS_ICON_FALL_DELAY = 5.f;
+/// @brief Default fall delay for the GasBoostIcon.
+constexpr float GAS_BOOST_ICON_FALL_DELAY = 1.f;
+
+/// @brief Default drifting speed of the GasRestoreIcon.
+constexpr float GAS_RESTORE_ICON_DRIFT_SPEED = 100.f;
+
+/// @brief Default fall delay for the GasRestoreIcon.
+constexpr float GAS_RESTORE_ICON_FALL_DELAY = 1.5f;
+
+/// @brief Default drifting speed of the HealthBoostIcon.
+constexpr float HEALTH_BOOST_ICON_DRIFT_SPEED = 150.f;
+
+/// @brief Default fall delay for the HealthBoostIcon.
+constexpr float HEALTH_BOOST_ICON_FALL_DELAY = 1.f;
+
+/// @brief Default drifting speed of the HealthRestoreIcon.
+constexpr float HEALTH_RESTORE_ICON_DRIFT_SPEED = 100.f;
+
+/// @brief Default fall delay for the HealthRestoreIcon.
+constexpr float HEALTH_RESTORE_ICON_FALL_DELAY = 1.5f;
+
+/// @brief Default drifting speed of the VelocityIcon.
+constexpr float VELOCITY_ICON_DRIFT_SPEED = 100.f;
+
+/// @brief Default fall delay for the VelocityIcon.
+constexpr float VELOCITY_ICON_FALL_DELAY = 2.f;
 
 /// @brief Default drifting speed of the LifeIcon.
 constexpr float LIFE_ICON_DRIFT_SPEED = 100.f;
@@ -43,16 +67,16 @@ constexpr float LIFE_ICON_DRIFT_SPEED = 100.f;
 constexpr float LIFE_ICON_FALL_DELAY = 3.f;
 
 /// @brief Default drifting speed of the PowerIcon.
-constexpr float POWER_ICON_DRIFT_SPEED = 80.f;
+constexpr float POWER_ICON_DRIFT_SPEED = 180.f;
 
 /// @brief Default fall delay for the PowerIcon.
-constexpr float POWER_ICON_FALL_DELAY = 2.5f;
+constexpr float POWER_ICON_FALL_DELAY = 1.25f;
 
-/// @brief Default drifting speed of the UpgradeIcon.IconType
-constexpr float UPGRADE_ICON_DRIFT_SPEED = 90.f;
+/// @brief Default drifting speed of the UpgradeIcon.
+constexpr float UPGRADE_ICON_DRIFT_SPEED = 190.f;
 
 /// @brief Default fall delay for the UpgradeIcon.
-constexpr float UPGRADE_ICON_FALL_DELAY = 2.f;
+constexpr float UPGRADE_ICON_FALL_DELAY = 1.f;
 
 /// @brief Adjustment for variance of sine phasing with alpha pulse.
 constexpr float ALPHA_PULSE_VARIANCE_CONST = 6.f;
@@ -154,9 +178,21 @@ void UIIcon::StartFalling()
             m_driftSpeed = FIRERATE_ICON_DRIFT_SPEED;
             m_fallDelay = FIRERATE_ICON_FALL_DELAY;
             break;
-        case IconType::GasIcon:
-            m_driftSpeed = GAS_ICON_DRIFT_SPEED;
-            m_fallDelay = GAS_ICON_FALL_DELAY;
+        case IconType::GasBoostIcon:
+            m_driftSpeed = GAS_BOOST_ICON_DRIFT_SPEED;
+            m_fallDelay = GAS_BOOST_ICON_FALL_DELAY;
+            break;
+        case IconType::GasRestoreIcon:
+            m_driftSpeed = GAS_RESTORE_ICON_DRIFT_SPEED;
+            m_fallDelay = GAS_RESTORE_ICON_FALL_DELAY;
+            break;
+        case IconType::HealthBoostIcon:
+            m_driftSpeed = HEALTH_BOOST_ICON_DRIFT_SPEED;
+            m_fallDelay = HEALTH_BOOST_ICON_FALL_DELAY;
+            break;
+        case IconType::HealthRestoreIcon:
+            m_driftSpeed = HEALTH_RESTORE_ICON_DRIFT_SPEED;
+            m_fallDelay = HEALTH_RESTORE_ICON_FALL_DELAY;
             break;
         case IconType::LifeIcon:
             m_driftSpeed = LIFE_ICON_DRIFT_SPEED;
@@ -169,6 +205,10 @@ void UIIcon::StartFalling()
         case IconType::UpgradeIcon:
             m_driftSpeed = UPGRADE_ICON_DRIFT_SPEED;
             m_fallDelay = UPGRADE_ICON_FALL_DELAY;
+            break;
+        case IconType::VelocityIcon:
+            m_driftSpeed = VELOCITY_ICON_DRIFT_SPEED;
+            m_fallDelay = VELOCITY_ICON_FALL_DELAY;
             break;
         case IconType::WarpIcon:
             m_driftEnabled = false;
@@ -269,6 +309,19 @@ CollisionCategory UIIcon::GetCollisionCategory() const
     return IsWorldIcon() ? CollisionCategory::Icon : CollisionCategory::None;
 }
 
+/// @brief Gets the effect type this icon represents for power up purposes.
+/// @return IconEffectType enum representing the icon power up type.
+IconEffectType UIIcon::GetEffectType() const
+{
+    return m_effectType;
+}
+
+/// @brief Sets the internal effectType this UI Icon represents for power up purposes
+void UIIcon::SetEffectType(const IconEffectType type)
+{
+    m_effectType = type;
+}
+
 /// @brief Adjust dynamically for size, and positioning of this UIIcon.
 void UIIcon::ApplySpriteTransform()
 {
@@ -311,6 +364,8 @@ void UIIcon::draw(sf::RenderTarget &target, sf::RenderStates states) const
 bool UIIcon::IsWorldIcon() const
 {
     return m_iconType == IconType::AtomicIcon || m_iconType == IconType::FireRateIcon ||
-           m_iconType == IconType::GasIcon || m_iconType == IconType::LifeIcon || m_iconType == IconType::WarpIcon ||
-           m_iconType == IconType::PowerIcon || m_iconType == IconType::UpgradeIcon;
+           m_iconType == IconType::GasBoostIcon || m_iconType == IconType::GasRestoreIcon ||
+           m_iconType == IconType::HealthBoostIcon || m_iconType == IconType::HealthRestoreIcon ||
+           m_iconType == IconType::LifeIcon || m_iconType == IconType::VelocityIcon ||
+           m_iconType == IconType::WarpIcon || m_iconType == IconType::PowerIcon || m_iconType == IconType::UpgradeIcon;
 }

@@ -48,7 +48,7 @@ class CollisionManagerTest : public ::testing::Test
         AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
         AssetManager::Instance().LoadTexture("BasicShip", "assets/sprites/enemies/BasicShip.png");
         AssetManager::Instance().LoadTexture("AlienShip", "assets/sprites/enemies/AlienShip.png");
-        AssetManager::Instance().LoadTexture("GasIcon", "assets/sprites/icons/GasIcon.png");
+        AssetManager::Instance().LoadTexture("GasRestoreIcon", "assets/sprites/icons/GasRestoreIcon.png");
 
         CollisionManager::Instance().Init(64.f);
         ProjectileManager::Instance().Init();
@@ -110,8 +110,10 @@ TEST_F(CollisionManagerTest, PlayerCollectsIconExpiresIt)
 {
     ShipManager::Instance().SpawnPlayer({250.f, 250.f});
 
-    IconConfig cfg{
-        .position = {250.f, 250.f}, .size = {32.f, 32.f}, .textureKey = "GasIcon", .type = IconType::GasIcon};
+    IconConfig cfg{.position = {250.f, 250.f},
+                   .size = {32.f, 32.f},
+                   .textureKey = "GasRestoreIcon",
+                   .type = IconType::GasBoostIcon};
     CollectableIconManager::Instance().SpawnIcon(cfg);
 
     auto icon = CollectableIconManager::Instance().GetIcons().front();

@@ -63,7 +63,7 @@ TEST_F(ProjectileManagerTest, UpgradableGun_AddsSingleProjectile)
 
     UpgradableGun gun(stats);
     gun.SetOwnerPosition({100.f, 100.f});
-    gun.SetAllegiance(Allegiance::Player);
+    gun.SetAllegiance(Allegiance::Player, {8.f, 8.f});
 
     size_t before = ProjectileManager::Instance().GetProjectiles().size();
 
@@ -80,17 +80,16 @@ TEST_F(ProjectileManagerTest, UpgradableGun_MultiShotAddsMultipleProjectiles)
     stats.fireRate = 0.1f;
     stats.damage = 5.f;
     stats.speed = 250.f;
-    stats.projectilesPerShot = 3;
+    stats.pattern = GunPattern::DoubleShot;
 
     UpgradableGun gun(stats);
     gun.SetOwnerPosition({200.f, 200.f});
 
     size_t before = ProjectileManager::Instance().GetProjectiles().size();
     auto proj = gun.TryFire();
-    ASSERT_NE(proj, nullptr);
 
     size_t after = ProjectileManager::Instance().GetProjectiles().size();
-    EXPECT_EQ(after - before, 3);
+    EXPECT_EQ(after - before, 2);
 }
 
 TEST_F(ProjectileManagerTest, EnemyGun_AddsProjectileWithDifficultyScaling)
@@ -104,7 +103,7 @@ TEST_F(ProjectileManagerTest, EnemyGun_AddsProjectileWithDifficultyScaling)
 
     EnemyGun gun(stats);
     gun.SetOwnerPosition({300.f, 300.f});
-    gun.SetAllegiance(Allegiance::Enemy);
+    gun.SetAllegiance(Allegiance::Enemy, {8.f, 8.f});
 
     size_t before = ProjectileManager::Instance().GetProjectiles().size();
 

@@ -184,8 +184,17 @@ static auto AtomicIconSpriteKey = "AtomicIcon";
 /// @brief Key to the FireRateIconSpriteKey Sprite Asset.
 static auto FireRateIconSpriteKey = "FireRateIcon";
 
-/// @brief Key to the GasIconSpriteKey Sprite Asset.
-static auto GasIconSpriteKey = "GasIcon";
+/// @brief Key to the GasBoostIconSpriteKey Sprite Asset.
+static auto GasBoostIconSpriteKey = "GasBoostIcon";
+
+/// @brief Key to the GasRestoreIconSpriteKey Sprite Asset.
+static auto GasRestoreIconSpriteKey = "GasRestoreIcon";
+
+/// @brief Key to the HealthBoostIconSpriteKey Sprite Asset.
+static auto HealthBoostIconSpriteKey = "HealthBoostIcon";
+
+/// @brief Key to the HealthRestoreIconSpriteKey Sprite Asset.
+static auto HealthRestoreIconSpriteKey = "HealthRestoreIcon";
 
 /// @brief Key to the LifeIconSpriteKey Sprite Asset.
 static auto LifeIconSpriteKey = "LifeIcon";
@@ -196,14 +205,24 @@ static auto PowerIconSpriteKey = "PowerIcon";
 /// @brief Key to the UpgradeIconSpriteKey Sprite Asset.
 static auto UpgradeIconSpriteKey = "UpgradeIcon";
 
+/// @brief Key to the VelocityIconSpriteKey Sprite Asset.
+static auto VelocityIconSpriteKey = "VelocityIcon";
+
 /// @brief Key to the WarpIconSpriteKey Sprite Asset.
 static auto WarpIconSpriteKey = "WarpIcon";
 
 /// @brief Sprites contain a Key and Value pair collection of sprite assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"AtomicIcon", "assets/sprites/icons/AtomicIcon.png"}, {"FireRateIcon", "assets/sprites/icons/FireRateIcon.png"},
-    {"GasIcon", "assets/sprites/icons/GasIcon.png"},       {"LifeIcon", "assets/sprites/icons/LifeIcon.png"},
-    {"PowerIcon", "assets/sprites/icons/PowerIcon.png"},   {"UpgradeIcon", "assets/sprites/icons/UpgradeIcon.png"},
+    {"AtomicIcon", "assets/sprites/icons/AtomicIcon.png"},
+    {"FireRateIcon", "assets/sprites/icons/FireRateIcon.png"},
+    {"GasBoostIcon", "assets/sprites/icons/GasBoostIcon.png"},
+    {"GasRestoreIcon", "assets/sprites/icons/GasRestoreIcon.png"},
+    {"HealthBoostIcon", "assets/sprites/icons/HealthBoostIcon.png"},
+    {"HealthRestoreIcon", "assets/sprites/icons/HealthRestoreIcon.png"},
+    {"LifeIcon", "assets/sprites/icons/LifeIcon.png"},
+    {"PowerIcon", "assets/sprites/icons/PowerIcon.png"},
+    {"UpgradeIcon", "assets/sprites/icons/UpgradeIcon.png"},
+    {"VelocityIcon", "assets/sprites/icons/VelocityIcon.png"},
     {"WarpIcon", "assets/sprites/icons/WarpIcon.png"},
 };
 
@@ -499,13 +518,17 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"AstronautSpeakerGreen", "assets/sprites/players/AstronautSpeakerGreen.png"},
     {"AstronautSpeakerRed", "assets/sprites/players/AstronautSpeakerRed.png"},
     {"AstronautSpeakerWhite", "assets/sprites/players/AstronautSpeakerWhite.png"},
-    {"AtomicIcon", "assets/sprites/icons/AtomicIcon.png"},
     {"BasicShip", "assets/sprites/enemies/BasicShip.png"},
+    {"AtomicIcon", "assets/sprites/icons/AtomicIcon.png"},
     {"FireRateIcon", "assets/sprites/icons/FireRateIcon.png"},
-    {"GasIcon", "assets/sprites/icons/GasIcon.png"},
+    {"GasBoostIcon", "assets/sprites/icons/GasBoostIcon.png"},
+    {"GasRestoreIcon", "assets/sprites/icons/GasRestoreIcon.png"},
+    {"HealthBoostIcon", "assets/sprites/icons/HealthBoostIcon.png"},
+    {"HealthRestoreIcon", "assets/sprites/icons/HealthRestoreIcon.png"},
     {"LifeIcon", "assets/sprites/icons/LifeIcon.png"},
     {"PowerIcon", "assets/sprites/icons/PowerIcon.png"},
     {"UpgradeIcon", "assets/sprites/icons/UpgradeIcon.png"},
+    {"VelocityIcon", "assets/sprites/icons/VelocityIcon.png"},
     {"WarpIcon", "assets/sprites/icons/WarpIcon.png"},
     {"UIArrowDown", "assets/ui/arrow/UIArrowDown.png"},
 };

@@ -29,8 +29,17 @@ enum class IconType
     /// @brief FireRate Icon grants faster shooting capability.
     FireRateIcon,
 
-    /// @brief Gas Icon grants replenished Fuel meter.
-    GasIcon,
+    /// @brief Gas Boost Icon grants permanent increased Fuel meter.
+    GasBoostIcon,
+
+    /// @brief Gas Restore Icon replenishes lost gas up to a certain amount.
+    GasRestoreIcon,
+
+    /// @brief Health Boost Icon grants permanent increased Health gauge.
+    HealthBoostIcon,
+
+    /// @brief Health Restore Icon replenishes lost health up to a certain amount.
+    HealthRestoreIcon,
 
     /// @brief Life Icon grants an additional life.
     LifeIcon,
@@ -40,6 +49,9 @@ enum class IconType
 
     /// @brief Upgrade Icon grants enhanced damage signature pattern.
     UpgradeIcon,
+
+    /// @brief Velocity Icon grants increased bullet travel speed.
+    VelocityIcon,
 
     /// @brief Warp Icon allows for teleportation to matching warp icon.
     WarpIcon,
@@ -64,14 +76,22 @@ inline const char *ToString(IconType i)
             return "AtomicIcon";
         case IconType::FireRateIcon:
             return "FireRateIcon";
-        case IconType::GasIcon:
-            return "GasIcon";
+        case IconType::GasBoostIcon:
+            return "GasBoostIcon";
+        case IconType::GasRestoreIcon:
+            return "GasRestoreIcon";
+        case IconType::HealthBoostIcon:
+            return "HealthBoostIcon";
+        case IconType::HealthRestoreIcon:
+            return "HealthRestoreIcon";
         case IconType::LifeIcon:
             return "LifeIcon";
         case IconType::PowerIcon:
             return "PowerIcon";
         case IconType::UpgradeIcon:
             return "UpgradeIcon";
+        case IconType::VelocityIcon:
+            return "VelocityIcon";
         case IconType::WarpIcon:
             return "WarpIcon";
         case IconType::SpeakerIcon:
@@ -82,6 +102,46 @@ inline const char *ToString(IconType i)
             return "Unknown";
     }
 }
+
+/// @brief Enumeration class useful for applying icon effect to player.
+enum class IconEffectType
+{
+    /// @brief No effect.
+    None,
+
+    /// @brief Increment player bomb count.
+    BombQuantityBoost,
+
+    /// @brief Decrease time it takes to fire gun.
+    GunFireRateBoost,
+
+    /// @brief Boosts permanent gas maximum.
+    GasBoost,
+
+    /// @brief Restores current gas value.
+    GasRestore,
+
+    /// @brief  Boosts permanent health maximum.
+    HealthBoost,
+
+    /// @brief Restores current health value.
+    HealthRestore,
+
+    /// @brief Grants player an additional life.
+    LifeIncrease,
+
+    /// @brief Boosts raw power of projectiles fired by gun.
+    GunDamageBoost,
+
+    /// @brief Upgrades GunPattern fire type for gun.
+    GunUpgradeBoost,
+
+    /// @brief Boosts the speed of projectiles fired by gun.
+    GunVelocityBoost,
+
+    /// @brief Teleports the player to a new location.
+    Teleport,
+};
 
 /// @brief Data structure holding internal configurations useful for IconConfig construction.
 /// @param position Vector2f position for Icon Config.
@@ -94,6 +154,7 @@ struct IconConfig
     sf::Vector2f size;
     std::string textureKey;
     IconType type = IconType::None;
+    IconEffectType effectType = IconEffectType::None;
 };
 
 // ============================================================================
@@ -144,6 +205,9 @@ class UIIcon : public UIElement, public BaseCollidable
     bool IsAlive() const override;
     CollisionCategory GetCollisionCategory() const override;
 
+    IconEffectType GetEffectType() const;
+    void SetEffectType(const IconEffectType type);
+
   private:
     void ApplySpriteTransform();
     void ApplyAlphaPulse();
@@ -156,6 +220,7 @@ class UIIcon : public UIElement, public BaseCollidable
     std::string m_textureKey;
 
     IconType m_iconType = IconType::None;
+    IconEffectType m_effectType = IconEffectType::None;
 
     float m_fallDelay;
     float m_timeAlive;

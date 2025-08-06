@@ -57,7 +57,7 @@ TEST_F(UpgradableGunTest, FiresProjectileUpward)
 
     UpgradableGun gun(stats);
     gun.SetOwnerPosition({200.f, 300.f});
-    gun.SetAllegiance(Allegiance::Player);
+    gun.SetAllegiance(Allegiance::Player, {8.f, 8.f});
 
     gun.Update(0.016f);
     auto proj = gun.TryFire();
@@ -72,15 +72,14 @@ TEST_F(UpgradableGunTest, MultiShotFiresMultipleProjectiles)
     ProjectileStats stats;
     stats.damage = 5.f;
     stats.speed = 300.f;
-    stats.projectilesPerShot = 3;
+    stats.pattern = GunPattern::DoubleShot;
 
     UpgradableGun gun(stats);
     gun.SetOwnerPosition({100.f, 100.f});
 
     auto proj = gun.TryFire();
-    ASSERT_NE(proj, nullptr); // last projectile
-    // Manager should now contain 3 projectiles
-    EXPECT_EQ(ProjectileManager::Instance().GetProjectiles().size(), 3);
+
+    EXPECT_EQ(ProjectileManager::Instance().GetProjectiles().size(), 2);
 }
 
 TEST_F(UpgradableGunTest, UpgradesIncreaseStats)
@@ -91,7 +90,7 @@ TEST_F(UpgradableGunTest, UpgradesIncreaseStats)
     stats.fireRate = 1.0f;
 
     UpgradableGun gun(stats);
-    gun.UpgradeDamage(2.0f);
+    gun.UpgradeDamageByFlat(2);
     gun.UpgradeVelocity(1.5f);
     gun.UpgradeFireRate(0.5f);
 

@@ -18,7 +18,6 @@
 #include "BaseProjectile.h"
 #include "BaseShip.h"
 #include "Macros.h"
-#include "UIIcon.h"
 #include <algorithm>
 
 /// @brief Get the current Instance for this CollisionManager singleton.
@@ -224,10 +223,11 @@ bool CollisionManager::HandleCollisionEnemyVsProjectile(CollisionCategory catA, 
     {
         if (projectile && enemy && projectile->GetAllegiance() != enemy->GetAllegiance())
         {
-            CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage.",
-                         projectile->GetDamageAsInt());
-
             enemy->TakeDamage(projectile->GetDamageAsInt());
+
+            CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage. Health: ({} / {}).",
+                         projectile->GetDamageAsInt(), enemy->GetHealth(), enemy->GetMaxHealth());
+
             projectile->Kill();
         }
     }
@@ -267,10 +267,11 @@ bool CollisionManager::HandleCollisionPlayerVsProjectile(CollisionCategory catA,
     {
         if (projectile && player && projectile->GetAllegiance() != player->GetAllegiance())
         {
-            CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage.",
-                         projectile->GetDamageAsInt());
-
             player->TakeDamage(projectile->GetDamageAsInt());
+
+            CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage. Health: ({} / {}).",
+                         projectile->GetDamageAsInt(), player->GetHealth(), player->GetMaxHealth());
+
             projectile->Kill();
         }
     }
@@ -292,22 +293,12 @@ bool CollisionManager::HandleCollisionEnemyVsPlayer(CollisionCategory catA, Coll
     std::shared_ptr<BaseShip> enemy;
     std::shared_ptr<BaseShip> player;
 
-    // For now, player will die when collision takes place.
-    // Enemy dealt a large amount of damage.
-    if (catA == CollisionCategory::Player && catB == CollisionCategory::Enemy)
+    if (catA == CollisionCategory::Player && catB == CollisionCategory::Enemy ||
+        catA == CollisionCategory::Enemy && catB == CollisionCategory::Player)
     {
         check = true;
         std::dynamic_pointer_cast<BaseShip>(a)->Kill();
-        std::dynamic_pointer_cast<BaseShip>(b)->TakeDamage(200);
-
-        CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
-    }
-
-    else if (catA == CollisionCategory::Enemy && catB == CollisionCategory::Player)
-    {
-        check = true;
         std::dynamic_pointer_cast<BaseShip>(b)->Kill();
-        std::dynamic_pointer_cast<BaseShip>(a)->TakeDamage(200);
 
         CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
     }
@@ -327,19 +318,19 @@ bool CollisionManager::HandleCollisionPlayerVsIcon(CollisionCategory catA, Colli
 {
     bool check = false;
     std::shared_ptr<UIIcon> icon;
-    std::shared_ptr<BaseShip> player;
+    std::shared_ptr<PlayerShip> player;
 
     if (catA == CollisionCategory::Player && catB == CollisionCategory::Icon)
     {
         check = true;
-        player = std::dynamic_pointer_cast<BaseShip>(a);
+        player = std::dynamic_pointer_cast<PlayerShip>(a);
         icon = std::dynamic_pointer_cast<UIIcon>(b);
     }
 
     else if (catA == CollisionCategory::Icon && catB == CollisionCategory::Player)
     {
         check = true;
-        player = std::dynamic_pointer_cast<BaseShip>(b);
+        player = std::dynamic_pointer_cast<PlayerShip>(b);
         icon = std::dynamic_pointer_cast<UIIcon>(a);
     }
 
@@ -347,10 +338,9 @@ bool CollisionManager::HandleCollisionPlayerVsIcon(CollisionCategory catA, Colli
     {
         if (player && icon)
         {
-            CT_LOG_DEBUG("CollisionManager: Player interaction with {}.", ToString(icon->GetIconType()));
+            CT_LOG_DEBUG("CollisionManager: Player picked up icon {}.", ToString(icon->GetIconType()));
 
-            // TODO: Trigger icon effect (to be implemented in icon logic)
-            icon->Expire();
+            player->ApplyIconEffect(icon);
         }
     }
 

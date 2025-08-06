@@ -66,15 +66,19 @@ TEST_F(PlayerShipTest, PlayerShipInitialState)
     EXPECT_GT(player.GetGas(), 0.0f);
 }
 
-TEST_F(PlayerShipTest, PlayerShipTakesDamage)
+TEST_F(PlayerShipTest, PlayerShipTakesDamageLosesLife)
 {
     PlayerShip player;
+
+    int before = player.GetLifeCount();
+
     player.TakeDamage(50);
     EXPECT_EQ(player.GetHealth(), 50);
 
     player.TakeDamage(100);
-    EXPECT_FALSE(player.IsAlive());
-    EXPECT_EQ(player.GetHealth(), 0);
+    int after = player.GetLifeCount();
+
+    EXPECT_FALSE(before == after);
 }
 
 TEST_F(PlayerShipTest, GasReplenishmentDoesNotExceedMax)

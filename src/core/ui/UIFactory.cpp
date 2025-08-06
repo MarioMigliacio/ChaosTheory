@@ -249,6 +249,7 @@ std::shared_ptr<UIIcon> UIFactory::CreateIcon(const IconConfig &cfg)
     auto icon = std::make_shared<UIIcon>(scaledSize, cfg.position);
     icon->SetTextureSkin(cfg.textureKey);
     icon->SetIconType(cfg.type);
+    icon->SetEffectType(cfg.effectType);
     icon->StartFalling();
 
     return icon;

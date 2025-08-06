@@ -37,20 +37,44 @@ class PlayerShip : public BaseShip
     void Move(const sf::Vector2f &offset) override;
     std::shared_ptr<BaseProjectile> TryFire();
 
+    void ApplyIconEffect(const std::shared_ptr<UIIcon> &icon);
     void ProcessInput(const float dt);
 
     float GetGas() const;
-    void ReplenishGas(float amount);
+    float GetMaxGas() const;
+    void ReplenishGas(const float amount);
+    void BoostMaxGas(const float amount);
+
+    void ReplenishHealth(const int amount);
+    void BoostMaxHealth(const int amount);
+
+    void TakeDamage(const int amount) override;
+    void Kill() override;
+
+    void GainLifeCount();
+    void LoseLife();
+    int GetLifeCount() const;
+
+    bool IsGameOver() const;
+
+    int GetBombCount() const;
+    void GainBombCount();
+    void TryFireBomb();
 
   private:
     void HandleGunUpdate(float dt);
     void InitializeGunStats() override;
+    void InitializeGenericStats();
 
   private:
-    float m_gas;
-    float m_maxGas;
-    float m_maxHealth;
-    float m_accelerationMultiplier;
-    float m_gasDrainRate;
-    float m_baseSpeed;
+    int m_lives = 0;
+    int m_bombs = 0;
+
+    float m_gas = 0.f;
+    float m_maxGas = 0.f;
+    float m_accelerationMultiplier = 0.f;
+    float m_gasDrainRate = 0.f;
+    float m_baseSpeed = 0.f;
+
+    bool m_gameOver = false;
 };

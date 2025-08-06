@@ -27,7 +27,7 @@ namespace
 constexpr int ALIEN_BASE_HEALTH = 30;
 
 /// @brief Base Speed before scaling.
-constexpr float ALIEN_BASE_SPEED = 100.f;
+const sf::Vector2f ALIEN_BASE_SPEED = {100.f, 100.f};
 
 /// @brief Configurable time for ship to randomly try changing x-direction.
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
@@ -49,9 +49,6 @@ constexpr float ALIEN_PROJECTILE_DAMAGE = 10.f;
 
 /// @brief Configurable constant for Gun Projectile color.
 const sf::Color ALIEN_PROJECTILE_COLOR = sf::Color::Red;
-
-/// @brief Configurable constant for Gun Shots per fire.
-constexpr int ALIEN_PROJECTILE_SHOTS_PER_FIRE = 1;
 } // namespace
 
 /// @brief Constructor for an AlienShip type of ship.
@@ -70,18 +67,16 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
 
         m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
 
-        m_health = ALIEN_BASE_HEALTH;
-        m_speed = {ALIEN_BASE_SPEED, ALIEN_BASE_SPEED};
-
-        ApplyDifficultyScaling(m_health, m_speed, m_sprite);
+        m_health = m_maxHealth = ScaleHealthToDifficulty(ALIEN_BASE_HEALTH);
+        m_speed = ScaleSpeedToDifficulty(ALIEN_BASE_SPEED);
+        SetSpriteColorFromDifficulty(m_sprite);
+        InitializeGunStats();
     }
 
     else
     {
         CT_LOG_ERROR("AlienShip texture not found.");
     }
-
-    InitializeGunStats();
 }
 
 /// @brief Performs internal state management during a single frame.
@@ -176,11 +171,13 @@ void AlienShip::InitializeGunStats()
     m_gunStats.fireRate = ALIEN_PROJECTILE_FIRERATE;
     m_gunStats.damage = ALIEN_PROJECTILE_DAMAGE;
     m_gunStats.speed = ALIEN_PROJECTILE_SPEED;
-    m_gunStats.projectilesPerShot = ALIEN_PROJECTILE_SHOTS_PER_FIRE;
     m_gunStats.tint = ALIEN_PROJECTILE_COLOR;
     m_gunStats.homing = false;
-    m_gunStats.piercing = false;
 
     m_gun = std::make_unique<EnemyGun>(m_gunStats);
-    m_gun->SetAllegiance(Allegiance::Enemy);
+
+    sf::Vector2f spriteSize(static_cast<float>(m_sprite.getTexture()->getSize().x),
+                            static_cast<float>(m_sprite.getTexture()->getSize().y));
+
+    m_gun->SetAllegiance(Allegiance::Enemy, spriteSize);
 }
