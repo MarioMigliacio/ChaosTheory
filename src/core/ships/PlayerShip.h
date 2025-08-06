@@ -41,19 +41,23 @@ class PlayerShip : public BaseShip
     void ProcessInput(const float dt);
 
     float GetGas() const;
+    float GetMaxGas() const;
     void ReplenishGas(const float amount);
     void BoostMaxGas(const float amount);
 
-    void ReplenishHealth(float amount);
-    void BoostMaxHealth(const float amount);
+    void ReplenishHealth(const int amount);
+    void BoostMaxHealth(const int amount);
 
-    void TakeDamage(int amount) override;
+    void TakeDamage(const int amount) override;
+    void Kill() override;
+
     void GainLifeCount();
     void LoseLife();
     int GetLifeCount() const;
 
     bool IsGameOver() const;
 
+    int GetBombCount() const;
     void GainBombCount();
     void TryFireBomb();
 
@@ -63,14 +67,14 @@ class PlayerShip : public BaseShip
     void InitializeGenericStats();
 
   private:
-    int m_lives;
-    int m_bombs;
-    float m_gas;
-    float m_maxGas;
-    float m_maxHealth;
-    float m_accelerationMultiplier;
-    float m_gasDrainRate;
-    float m_baseSpeed;
+    int m_lives = 0;
+    int m_bombs = 0;
+
+    float m_gas = 0.f;
+    float m_maxGas = 0.f;
+    float m_accelerationMultiplier = 0.f;
+    float m_gasDrainRate = 0.f;
+    float m_baseSpeed = 0.f;
 
     bool m_gameOver = false;
 };

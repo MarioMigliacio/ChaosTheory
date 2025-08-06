@@ -339,13 +339,14 @@ void SandBoxScene::StartNextDialog()
 void SandBoxScene::SetupSceneComponents()
 {
     PlayGameMusic();
-    MockTitleText(TEST_ENABLED);
+    MockTitleText(TEST_DISABLED);
     MockHUDPanel(HUD_MOCK_BOOL);
-    MockShipStatusComponent(TEST_ENABLED);
     MockIconComponents(TEST_ENABLED);
     MockChatBox(TEST_DISABLED);
     MockPlayerUnit(PLAYER_MOCK_BOOL);
     MockSpawnTestShips(UNITS_MOCK_BOOL);
+
+    m_player = ShipManager::Instance().GetPlayer();
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -391,112 +392,63 @@ void SandBoxScene::MockHUDPanel(const bool enabled)
     }
 
     auto &scaleMgr = ResolutionScaleManager::Instance();
+    const sf::Vector2f panelPos{0.f, 0.f};
+    const sf::Vector2f panelSize{1.0f, 0.06f};
 
-    // Relative position and size (top bar)
-    const sf::Vector2f relativePos{0.f, 0.f};
-    const sf::Vector2f relativeSize{1.0f, 0.05f}; // Full width, 8% height
-
-    auto hudPanel = UIFactory::Instance().CreateHUDPanel(HUDPanelConfig{.position = relativePos, .size = relativeSize});
-    hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.15f)); // Space between labels
-    hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));     // Padding around edges
+    auto hudPanel = UIFactory::Instance().CreateHUDPanel(HUDPanelConfig{.position = panelPos, .size = panelSize});
+    hudPanel->SetInternalPadding(scaleMgr.ScaledReferenceY(0.1f));
+    hudPanel->SetEdgePadding(scaleMgr.ScaledReferenceY(0.01f));
     hudPanel->SetLayoutMode(LayoutMode::Horizontal);
     hudPanel->SetCenterChildren(false);
 
     const unsigned int fontSize = ResolutionScaleManager::Instance().ScaleFont(18);
-    const sf::Vector2f gaugeRelativeSize = {0.2f, 0.015f}; // Width, Height in screen %
 
-    m_scoreLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
-        .text = HUD_SCORE_LABEL_INIT_STR, .position = relativePos, .fontSize = fontSize, .centerOrigin = false});
-    m_timerLabel = UIFactory::Instance().CreateTextLabel(TextLabelConfig{
-        .text = HUD_TIMER_LABEL_INIT_STR, .position = relativePos, .fontSize = fontSize, .centerOrigin = false});
+    // === Health Gauge ===
     m_healthGauge =
-        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = relativePos,
-                                                                      .size = gaugeRelativeSize,
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = panelPos,
+                                                                      .size = {0.15f, 0.02f},
                                                                       .colorScheme = GaugeColorScheme::Health,
                                                                       .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
                                                                       .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
                                                                       .showPercentage = true,
                                                                       .showTitle = true,
-                                                                      .titleText = HUD_HEALTH_TAG});
-
+                                                                      .titleText = "HP",
+                                                                      .titlePosition = GaugeTitlePosition::Left});
     hudPanel->AddElement(m_healthGauge, HUDSlotAlignment::Left);
-    hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
+
+    // === Gas Gauge ===
+    m_gasGauge =
+        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = panelPos,
+                                                                      .size = {0.15f, 0.02f},
+                                                                      .colorScheme = GaugeColorScheme::Gas,
+                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
+                                                                      .borderColor = DEFAULT_GAUGE_BORDER_COLOR,
+                                                                      .showPercentage = true,
+                                                                      .showTitle = true,
+                                                                      .titleText = "Gas",
+                                                                      .titlePosition = GaugeTitlePosition::Left});
+    hudPanel->AddElement(m_gasGauge, HUDSlotAlignment::Left);
+
+    // === Lives Counter ===
+    m_lifeCounter = UIFactory::Instance().CreateTextLabel(
+        TextLabelConfig{.text = "Lives: 0", .position = panelPos, .fontSize = fontSize, .centerOrigin = false});
+    hudPanel->AddElement(m_lifeCounter, HUDSlotAlignment::Right);
+
+    // === Bomb Counter ===
+    m_bombCounter = UIFactory::Instance().CreateTextLabel(
+        TextLabelConfig{.text = "Bombs: 0", .position = panelPos, .fontSize = fontSize, .centerOrigin = false});
+    hudPanel->AddElement(m_bombCounter, HUDSlotAlignment::Right);
+
+    // === Score & Timer ===
+    m_scoreLabel = UIFactory::Instance().CreateTextLabel(
+        TextLabelConfig{.text = "Score: 0", .position = panelPos, .fontSize = fontSize, .centerOrigin = false});
     hudPanel->AddElement(m_scoreLabel, HUDSlotAlignment::Right);
 
-    m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(HUD_SCORE_LABEL_START_VALUE));
-    m_timerLabel->SetText(HUD_TIMER_START_VALUE);
+    m_timerLabel = UIFactory::Instance().CreateTextLabel(
+        TextLabelConfig{.text = "xxx00:00xxx", .position = panelPos, .fontSize = fontSize, .centerOrigin = false});
+    hudPanel->AddElement(m_timerLabel, HUDSlotAlignment::Right);
 
     UIManager::Instance().AddElement(hudPanel);
-}
-
-/// @brief Helper method to test fillable gauge ui components.
-/// @param enabled Whether or not to use this MOCK in SandBox.
-void SandBoxScene::MockShipStatusComponent(const bool enabled)
-{
-    if (!enabled)
-    {
-        return;
-    }
-
-    sf::Vector2f pos{0, 0};
-    sf::Vector2f size{0.015f, 0.1f};
-
-    // ----- Testing Groupbox ------ //
-    auto &scaleMgr = ResolutionScaleManager::Instance();
-    const auto &windowSize = WindowManager::Instance().GetWindow().getSize();
-
-    // === GroupBox relative setup ===
-    const sf::Vector2f relativePos{0.80f, 0.75f};
-    const sf::Vector2f relativeSize{0.16f, 0.18f};
-
-    // TODO - link with the ship health/gas values.
-    GroupBoxConfig cfg{
-        .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL};
-
-    auto groupBox = UIFactory::Instance().CreateGroupBox(GroupBoxConfig{
-        .position = relativePos, .size = relativeSize, .useTitle = true, .title = SHIP_STATS_GROUPBOX_LABEL});
-    groupBox->SetLayoutMode(LayoutMode::Horizontal);
-    groupBox->SetInternalPadding(scaleMgr.ScaledReferenceY(0.05f));
-    groupBox->SetEdgePadding(scaleMgr.ScaledReferenceY(0.05f));
-    groupBox->SetCenterChildren(true);
-
-    // === HEALTH GAUGE ===
-    auto healthGauge =
-        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
-                                                                      .size = size,
-                                                                      .orientation = LayoutMode::Vertical,
-                                                                      .colorScheme = GaugeColorScheme::Health,
-                                                                      .initialValue = .25f,
-                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
-                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
-                                                                      .showPercentage = true,
-                                                                      .showTitle = true,
-                                                                      .titleText = "H",
-                                                                      .titleScheme = UITextLabelScheme::CougarScheme,
-                                                                      .titlePosition = GaugeTitlePosition::Above});
-    groupBox->AddElement(healthGauge);
-
-    // === GAS GAUGE ===
-    auto gasGauge =
-        UIFactory::Instance().CreateFillableGauge(FillableGaugeConfig{.position = pos,
-                                                                      .size = size,
-                                                                      .orientation = LayoutMode::Vertical,
-                                                                      .colorScheme = GaugeColorScheme::Gas,
-                                                                      .initialValue = .33f,
-                                                                      .borderThickness = DEFAULT_GAUGE_BORDER_THICKNESS,
-                                                                      .borderColor = GAUGE_BORDER_COLOR_GOLD,
-                                                                      .showPercentage = true,
-                                                                      .showTitle = true,
-                                                                      .titleText = "G",
-                                                                      .titleScheme = UITextLabelScheme::BlueSteelScheme,
-                                                                      .titlePosition = GaugeTitlePosition::Above});
-    groupBox->AddElement(gasGauge);
-
-    // when in groupbox, this is required for correct fill orientation
-    healthGauge->SetOrientation(LayoutMode::Vertical);
-    gasGauge->SetOrientation(LayoutMode::Vertical);
-
-    UIManager::Instance().AddElement(groupBox);
 }
 
 /// @brief Helper method to test Icon ui components.
@@ -509,8 +461,8 @@ void SandBoxScene::MockIconComponents(const bool enabled)
     }
 
     const float startY = 50.f;
-    const float startX = 75.f;
-    const float spacing = 48.f;
+    const float startX = 20.f;
+    const float spacing = 40.f;
     const sf::Vector2f iconSize = {32.f, 32.f};
 
     // Map each IconType to an IconEffectType directly
@@ -524,12 +476,20 @@ void SandBoxScene::MockIconComponents(const bool enabled)
                 return IconEffectType::GunFireRateBoost;
             case IconType::GasBoostIcon:
                 return IconEffectType::GasRestore;
-            case IconType::LifeIcon:
+            case IconType::GasRestoreIcon:
+                return IconEffectType::GasBoost;
+            case IconType::HealthBoostIcon:
+                return IconEffectType::HealthBoost;
+            case IconType::HealthRestoreIcon:
                 return IconEffectType::HealthRestore;
+            case IconType::LifeIcon:
+                return IconEffectType::LifeIncrease;
             case IconType::PowerIcon:
                 return IconEffectType::GunDamageBoost;
             case IconType::UpgradeIcon:
                 return IconEffectType::GunUpgradeBoost;
+            case IconType::VelocityIcon:
+                return IconEffectType::GunVelocityBoost;
             case IconType::WarpIcon:
                 return IconEffectType::Teleport;
             default:
@@ -541,9 +501,13 @@ void SandBoxScene::MockIconComponents(const bool enabled)
         {IconType::AtomicIcon, SpriteAssets::IconAssets::AtomicIconSpriteKey},
         {IconType::FireRateIcon, SpriteAssets::IconAssets::FireRateIconSpriteKey},
         {IconType::GasBoostIcon, SpriteAssets::IconAssets::GasBoostIconSpriteKey},
+        {IconType::GasRestoreIcon, SpriteAssets::IconAssets::GasRestoreIconSpriteKey},
+        {IconType::HealthBoostIcon, SpriteAssets::IconAssets::HealthBoostIconSpriteKey},
+        {IconType::HealthRestoreIcon, SpriteAssets::IconAssets::HealthRestoreIconSpriteKey},
         {IconType::LifeIcon, SpriteAssets::IconAssets::LifeIconSpriteKey},
         {IconType::PowerIcon, SpriteAssets::IconAssets::PowerIconSpriteKey},
         {IconType::UpgradeIcon, SpriteAssets::IconAssets::UpgradeIconSpriteKey},
+        {IconType::VelocityIcon, SpriteAssets::IconAssets::VelocityIconSpriteKey},
         {IconType::WarpIcon, SpriteAssets::IconAssets::WarpIconSpriteKey},
     };
 
@@ -597,6 +561,8 @@ void SandBoxScene::MockChatBox(const bool enabled)
     }
 }
 
+/// @brief Mock enemy units to spawn.
+/// @param enabled is enabled or not
 void SandBoxScene::MockSpawnTestShips(const bool enabled)
 {
     if (!enabled)
@@ -605,19 +571,21 @@ void SandBoxScene::MockSpawnTestShips(const bool enabled)
     }
 
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
-    const sf::Vector2f startPos = {winSize.x * 0.25f, 25.f};
+    const sf::Vector2f startPos = {winSize.x * 0.40f, 25.f};
 
-    for (int i = 0; i < 5; ++i)
+    for (int i = 0; i < 3; ++i)
     {
-        ShipManager::Instance().SpawnBasicEnemy({startPos.x + i * 100.f, startPos.y});
+        ShipManager::Instance().SpawnBasicEnemy({startPos.x + i * 50.f, startPos.y});
     }
 
-    for (int i = 5; i < 10; ++i)
+    for (int i = 4; i < 7; ++i)
     {
         ShipManager::Instance().SpawnAlienEnemy({startPos.x + i * 100.f, startPos.y});
     }
 }
 
+/// @brief Mock player test
+/// @param enabled is enabled or not.
 void SandBoxScene::MockPlayerUnit(const bool enabled)
 {
     if (!enabled)
@@ -652,41 +620,40 @@ void SandBoxScene::PlayGameMusic()
 /// @param enabled Whether or not the HUD is enabled or not for this SandBox.
 void SandBoxScene::UpdateHUD(float dt, const bool enabled)
 {
-    if (!enabled)
+    if (!enabled && !m_player)
     {
         return;
     }
 
-    // Update HUD timers and simulate game state
+    // Health Ratio
+    float healthRatio = static_cast<float>(m_player->GetHealth()) / m_player->GetMaxHealth();
+    m_healthGauge->SetValue(std::clamp(healthRatio, 0.f, 1.f));
+
+    // Gas Ratio
+    float gasRatio = m_player->GetGas() / m_player->GetMaxGas();
+    m_gasGauge->SetValue(std::clamp(gasRatio, 0.f, 1.f));
+
+    // Lives & Bombs
+    m_lifeCounter->SetText("Lives: " + std::to_string(m_player->GetLifeCount()));
+    m_bombCounter->SetText("Bombs: " + std::to_string(m_player->GetBombCount()));
+
+    // Timer Update
     m_elapsedTime += dt;
 
     if (m_elapsedTime >= 1.f)
     {
-        m_secondsPassed += 1;
+        m_secondsPassed++;
         m_elapsedTime = 0.f;
-
-        // Update timer display
-        int minutes = m_secondsPassed / 60;
-        int seconds = m_secondsPassed % 60;
-
-        // place a cap on timer
-        if (minutes > 99)
-        {
-            minutes = 99;
-            seconds = 0;
-        }
-
-        std::stringstream ss;
-        ss << HUD_TIMER_TAG << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2) << std::setfill('0')
-           << seconds;
-        m_timerLabel->SetText(ss.str());
-
-        m_currentHealth = std::max(0, m_currentHealth - 1);
-        m_currentScore += 100;
-        m_scoreLabel->SetText(HUD_SCORE_TAG + std::to_string(m_currentScore));
-
-        float normalized = static_cast<float>(m_currentHealth) / 100.f;
-        normalized = std::clamp(normalized, 0.f, 1.f); // Ensure within [0, 1]
-        m_healthGauge->SetValue(normalized);
     }
+
+    int minutes = m_secondsPassed / 60;
+    int seconds = m_secondsPassed % 60;
+
+    std::ostringstream timerStream;
+    timerStream << HUD_TIMER_TAG << std::setw(2) << std::setfill('0') << minutes << ":" << std::setw(2)
+                << std::setfill('0') << seconds;
+    m_timerLabel->SetText(timerStream.str());
+
+    // Score (TODO: apply score from ship dying by player damage)
+    m_scoreLabel->SetText("Score: " + std::to_string(m_currentScore));
 }

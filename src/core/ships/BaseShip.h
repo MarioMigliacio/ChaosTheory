@@ -62,8 +62,14 @@ class BaseShip : public BaseCollidable
         m_health = maxHealth;
     }
 
+    /// @brief Gets the max health.
+    virtual int GetMaxHealth() const
+    {
+        return m_maxHealth;
+    }
+
     /// @brief Apply damage and check for death.
-    virtual void TakeDamage(int amount)
+    virtual void TakeDamage(const int amount)
     {
         m_health -= amount;
 
@@ -82,7 +88,7 @@ class BaseShip : public BaseCollidable
     }
 
     /// @brief Commandable kill for this Ship.
-    void Kill()
+    virtual void Kill()
     {
         m_alive = false;
     }
@@ -167,5 +173,7 @@ class BaseShip : public BaseCollidable
     sf::Vector2f m_speed;
 
     int m_health = 0;
+    int m_maxHealth = 0;
+
     bool m_alive = true;
 };

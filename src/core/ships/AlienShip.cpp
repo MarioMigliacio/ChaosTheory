@@ -27,7 +27,7 @@ namespace
 constexpr int ALIEN_BASE_HEALTH = 30;
 
 /// @brief Base Speed before scaling.
-constexpr float ALIEN_BASE_SPEED = 100.f;
+const sf::Vector2f ALIEN_BASE_SPEED = {100.f, 100.f};
 
 /// @brief Configurable time for ship to randomly try changing x-direction.
 constexpr float DIRECTION_CHANGE_INTERVAL = 1.0f;
@@ -67,10 +67,9 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
 
         m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
 
-        m_health = ALIEN_BASE_HEALTH;
-        m_speed = {ALIEN_BASE_SPEED, ALIEN_BASE_SPEED};
-
-        ApplyDifficultyScaling(m_health, m_speed, m_sprite);
+        m_health = m_maxHealth = ScaleHealthToDifficulty(ALIEN_BASE_HEALTH);
+        m_speed = ScaleSpeedToDifficulty(ALIEN_BASE_SPEED);
+        SetSpriteColorFromDifficulty(m_sprite);
         InitializeGunStats();
     }
 

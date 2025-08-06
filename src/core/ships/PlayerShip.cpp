@@ -129,8 +129,6 @@ void PlayerShip::ApplyIconEffect(const std::shared_ptr<UIIcon> &icon)
         return;
     }
 
-    auto *gun = GetGun();
-
     switch (icon->GetEffectType())
     {
         case IconEffectType::GunDamageBoost:
@@ -161,10 +159,10 @@ void PlayerShip::ApplyIconEffect(const std::shared_ptr<UIIcon> &icon)
             GainBombCount();
             break;
         case IconEffectType::HealthRestore:
-            ReplenishHealth(20.f);
+            ReplenishHealth(20);
             break;
         case IconEffectType::HealthBoost:
-            BoostMaxHealth(10.f);
+            BoostMaxHealth(10);
             break;
         case IconEffectType::LifeIncrease:
             GainLifeCount();
@@ -270,6 +268,13 @@ float PlayerShip::GetGas() const
     return m_gas;
 }
 
+/// @brief Returns the maximum value for player gas.
+/// @return m_maxGas.
+float PlayerShip::GetMaxGas() const
+{
+    return m_maxGas;
+}
+
 /// @brief Replenish the PlayerShip's current Gas, used for acceleration.
 /// @param amount Float gas to replenish.
 void PlayerShip::ReplenishGas(const float amount)
@@ -286,14 +291,14 @@ void PlayerShip::BoostMaxGas(const float amount)
 
 /// @brief Restores current player health.
 /// @param amount Amount to heal.
-void PlayerShip::ReplenishHealth(float amount)
+void PlayerShip::ReplenishHealth(int amount)
 {
     m_health = std::min(m_maxHealth, m_health + amount);
 }
 
 /// @brief Boosts the max end life for this PlayerShip.
 /// @param amount Amount to increase maximum by.
-void PlayerShip::BoostMaxHealth(const float amount)
+void PlayerShip::BoostMaxHealth(const int amount)
 {
     m_maxHealth += amount;
 }
@@ -306,10 +311,17 @@ void PlayerShip::TakeDamage(int amount)
 
     if (m_health <= 0)
     {
-        m_health = 0;
-
         LoseLife();
+
+        m_health = m_maxHealth;
+        m_gas = m_maxGas;
     }
+}
+
+/// @brief Outside hook to kill player by making player take its maxHealth at once.
+void PlayerShip::Kill()
+{
+    TakeDamage(m_maxHealth);
 }
 
 /// @brief Increment the current player lives count.
@@ -321,12 +333,13 @@ void PlayerShip::GainLifeCount()
 /// @brief Decrement the current player lives count, and signals for game over if player has no lives left.
 void PlayerShip::LoseLife()
 {
-    m_lives--;
+    m_lives = std::max(0, m_lives - 1);
 
     CT_LOG_DEBUG("PlayerShip lost a life in combat, lives remaining: {}", m_lives);
 
     if (m_lives == 0)
     {
+        m_alive = false;
         m_gameOver = true;
     }
 }
@@ -343,6 +356,13 @@ int PlayerShip::GetLifeCount() const
 bool PlayerShip::IsGameOver() const
 {
     return m_gameOver;
+}
+
+/// @brief Returns the count of current bombs player has.
+/// @return m_bombs.
+int PlayerShip::GetBombCount() const
+{
+    return m_bombs;
 }
 
 /// @brief Increment the current player bombs count.

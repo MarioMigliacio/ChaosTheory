@@ -223,10 +223,11 @@ bool CollisionManager::HandleCollisionEnemyVsProjectile(CollisionCategory catA, 
     {
         if (projectile && enemy && projectile->GetAllegiance() != enemy->GetAllegiance())
         {
-            CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage.",
-                         projectile->GetDamageAsInt());
-
             enemy->TakeDamage(projectile->GetDamageAsInt());
+
+            CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage. Health: ({} / {}).",
+                         projectile->GetDamageAsInt(), enemy->GetHealth(), enemy->GetMaxHealth());
+
             projectile->Kill();
         }
     }
@@ -266,10 +267,11 @@ bool CollisionManager::HandleCollisionPlayerVsProjectile(CollisionCategory catA,
     {
         if (projectile && player && projectile->GetAllegiance() != player->GetAllegiance())
         {
-            CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage.",
-                         projectile->GetDamageAsInt());
-
             player->TakeDamage(projectile->GetDamageAsInt());
+
+            CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage. Health: ({} / {}).",
+                         projectile->GetDamageAsInt(), player->GetHealth(), player->GetMaxHealth());
+
             projectile->Kill();
         }
     }
@@ -291,22 +293,12 @@ bool CollisionManager::HandleCollisionEnemyVsPlayer(CollisionCategory catA, Coll
     std::shared_ptr<BaseShip> enemy;
     std::shared_ptr<BaseShip> player;
 
-    // For now, player will die when collision takes place.
-    // Enemy dealt a large amount of damage.
-    if (catA == CollisionCategory::Player && catB == CollisionCategory::Enemy)
+    if (catA == CollisionCategory::Player && catB == CollisionCategory::Enemy ||
+        catA == CollisionCategory::Enemy && catB == CollisionCategory::Player)
     {
         check = true;
         std::dynamic_pointer_cast<BaseShip>(a)->Kill();
-        std::dynamic_pointer_cast<BaseShip>(b)->TakeDamage(200);
-
-        CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
-    }
-
-    else if (catA == CollisionCategory::Enemy && catB == CollisionCategory::Player)
-    {
-        check = true;
         std::dynamic_pointer_cast<BaseShip>(b)->Kill();
-        std::dynamic_pointer_cast<BaseShip>(a)->TakeDamage(200);
 
         CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
     }

@@ -24,7 +24,7 @@ namespace
 constexpr int BASE_HEALTH = 50;
 
 /// @brief Base Speed before scaling.
-constexpr float BASE_SPEED = 75.f;
+const sf::Vector2f BASE_SPEED = {0.f, 75.f};
 } // namespace
 
 /// @brief Constructor for a BasicShip type of ship.
@@ -41,10 +41,9 @@ BasicShip::BasicShip(const sf::Vector2f &startPos, Allegiance allegiance)
         m_sprite.setOrigin(tex->getSize().x / 2.f, tex->getSize().y / 2.f);
         m_allegiance = allegiance;
 
-        m_health = BASE_HEALTH;
-        m_speed = {0.f, BASE_SPEED};
-
-        ApplyDifficultyScaling(m_health, m_speed, m_sprite);
+        m_health = m_maxHealth = ScaleHealthToDifficulty(BASE_HEALTH);
+        m_speed = ScaleSpeedToDifficulty(BASE_SPEED);
+        SetSpriteColorFromDifficulty(m_sprite);
     }
 
     else
