@@ -284,7 +284,7 @@ void MainMenuScene::CreateButtons()
         {
             CT_LOG_INFO("Play button clicked!");
             m_hasPendingTransition = true;
-            m_requestedScene = SceneID::SandBox; // TODO: Revert to IntroductionScene when not rapid testing.
+            m_requestedScene = SceneID::Introduction; // TODO: Revert to SandBox for rapid testing.
         }}));
 
     // Settings button
