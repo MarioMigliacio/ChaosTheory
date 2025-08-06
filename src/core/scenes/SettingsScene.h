@@ -26,14 +26,20 @@
 /// @brief Simple enumeration for supported SettingsPage types.
 enum class SettingsPage
 {
+    /// @brief The Audio Page for the SettingsScene.
     Audio,
+
+    /// @brief The Video Page for the SettingsScene.
     Video,
+
+    /// @brief The Difficulty Page for the SettingsScene.
     Difficulty
 };
 
 // ============================================================================
 //  Class       : SettingsScene
-//  Purpose     : Scene that displays the default configurable settings
+//  Purpose     : Leaf node class inheriting interface to define a Scene.
+//                Scene that displays the default configurable settings
 //                and provides ability to save settings.
 //
 //  Responsibilities:
@@ -42,13 +48,13 @@ enum class SettingsPage
 //      - Handle user interaction and route back to main menu
 //
 // ============================================================================
-class SettingsScene : public Scene
+class SettingsScene final : public Scene
 {
   public:
     using ReturnCallback = std::function<void()>;
 
     SettingsScene(std::shared_ptr<Settings> settings, bool includeDifficulty = true, ReturnCallback onReturn = nullptr);
-    ~SettingsScene() = default;
+    ~SettingsScene() override = default;
 
     SettingsScene(const SettingsScene &) = delete;
     SettingsScene &operator=(const SettingsScene &) = delete;

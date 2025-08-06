@@ -12,10 +12,12 @@
 #pragma once
 
 #include "Background.h"
+#include "BaseShip.h"
 #include "DialogConstants.h"
 #include "DialogLine.h"
 #include "DialogQueue.h"
 #include "Macros.h"
+#include "PlayerShip.h"
 #include "Scene.h"
 #include "SceneManager.h"
 #include "Settings.h"
@@ -25,7 +27,7 @@
 // ============================================================================
 //  Class       : SandBoxScene
 //  Purpose     : Leaf node class inheriting interface to define a Scene.
-//                Game scene logic upheld.
+//                Game scene logic tested.
 //
 //  Responsibilities:
 //      - Initializes and shuts down
@@ -58,35 +60,41 @@ class SandBoxScene final : public Scene
     void LoadBackground();
     void BindInputKeys();
     void CheckActionsPressed();
-
+    void StartNextDialog();
     void SetupSceneComponents();
+
     void MockTitleText(const bool enabled);
     void MockHUDPanel(const bool enabled);
-    void MockFillableGaugeComponents(const bool enabled);
-    void MockShipStatusComponent(const bool enabled);
     void MockIconComponents(const bool enabled);
     void MockChatBox(const bool enabled);
+    void MockSpawnTestShips(const bool enabled);
+    void MockPlayerUnit(const bool enabled);
 
     void PlayGameMusic();
     void UpdateHUD(float dt, const bool enabled);
 
   private:
     std::shared_ptr<Settings> m_settings;
+    std::unique_ptr<Background> m_background;
+    std::shared_ptr<UIChatBox> m_testChatBox;
     std::shared_ptr<UITextLabel> m_titleLabel;
     std::shared_ptr<UITextLabel> m_helpLabel;
-    std::shared_ptr<UIChatBox> m_testChatBox;
-    std::unique_ptr<Background> m_background;
+
     std::shared_ptr<UITextLabel> m_scoreLabel;
     std::shared_ptr<UITextLabel> m_timerLabel;
     std::shared_ptr<UIFillableGauge> m_healthGauge;
+    std::shared_ptr<UIFillableGauge> m_gasGauge;
+    std::shared_ptr<UITextLabel> m_lifeCounter;
+    std::shared_ptr<UITextLabel> m_bombCounter;
+
+    std::shared_ptr<PlayerShip> m_player;
 
     DialogQueue m_dialogQueue;
 
-    // Simple test variables for the time being. TODO: Cleanup this to the proper structure later.
     float m_elapsedTime = 0.f;
     int m_secondsPassed = 0;
-    int m_currentHealth = HUD_HEALTH_LABEL_START_VALUE;
-    int m_currentScore = HUD_SCORE_LABEL_START_VALUE;
+    int m_currentHealth = HUD_HEALTH_LABEL_START_VALUE; // remove if no longer used
+    int m_currentScore = HUD_SCORE_LABEL_START_VALUE;   // remove if no longer used
 
     SceneID m_requestedScene;
 };

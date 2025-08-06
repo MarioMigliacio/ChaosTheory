@@ -7,13 +7,21 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AudioManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BackgroundTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CollectableIconManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/CollisionManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/EnemyGunTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/PlayerShipTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ProjectileFactoryTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ProjectileManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneFactoryTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SceneTransitionManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/SettingsManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ShipFactoryTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ShipManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIArrowTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIFactoryTest.cpp
@@ -26,6 +34,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/UISkinnableButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UISliderTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UITextLabelTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/UpgradableGunTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/WindowManagerTest.cpp
     # add others here if needed
 )
@@ -45,6 +54,8 @@ target_include_directories(CT_tests PRIVATE
 
 # Link directories for SFML
 target_link_directories(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/external/sfml/lib)
+
+target_precompile_headers(CT_tests PRIVATE ${PROJECT_SOURCE_DIR}/src/core/pch.h)
 
 target_link_libraries(CT_tests
     PRIVATE

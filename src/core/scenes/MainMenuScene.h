@@ -24,7 +24,8 @@
 
 // ============================================================================
 //  Class       : MainMenuScene
-//  Purpose     : Scene that displays the interactive main menu.
+//  Purpose     : Leaf node class inheriting interface to define a Scene.
+//                Scene that displays the interactive main menu.
 //                Contains background, title, and Play/Exit buttons.
 //
 //  Responsibilities:
@@ -38,7 +39,7 @@ class MainMenuScene final : public Scene
 {
   public:
     MainMenuScene(std::shared_ptr<Settings> settings);
-    ~MainMenuScene() = default;
+    ~MainMenuScene() override = default;
 
     MainMenuScene(const MainMenuScene &) = delete;
     MainMenuScene &operator=(const MainMenuScene &) = delete;
@@ -60,6 +61,7 @@ class MainMenuScene final : public Scene
     void LoadBackground();
     void PlayIntroMusic();
     void InitShip();
+    void RandomizeShipTexture();
     void UpdateShip(float dt);
 
   private:
@@ -68,7 +70,6 @@ class MainMenuScene final : public Scene
     std::shared_ptr<UITextLabel> m_titleLabel;
 
     sf::Sprite m_shipSprite;
-    sf::Vector2f m_shipVelocity;
 
     std::default_random_engine m_rng;
     std::uniform_real_distribution<float> m_yDist;

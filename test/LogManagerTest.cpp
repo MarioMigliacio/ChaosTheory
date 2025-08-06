@@ -9,8 +9,8 @@
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "core/LogManager.h"
-#include "core/Settings.h"
+#include "LogManager.h"
+#include "Settings.h"
 #include <gtest/gtest.h>
 #include <spdlog/spdlog.h>
 

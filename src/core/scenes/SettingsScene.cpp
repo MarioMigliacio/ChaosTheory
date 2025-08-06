@@ -119,15 +119,15 @@ void SettingsScene::LoadRequiredAssets()
     {
         if (!AssetManager::Instance().LoadTexture(key, path))
         {
-            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadTexture failed to load asset: {}, {}", key, path);
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::UI failed to load asset: {}, {}", key, path);
         }
     }
 
-    for (const auto &[key, path] : SettingsAssets::Textures)
+    for (const auto &[key, path] : SettingsAssets::Backgrounds)
     {
         if (!assets.LoadTexture(key, path))
         {
-            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadTexture failed to load Asset: {}, {}", key, path);
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::Backgrounds failed to load Asset: {}, {}", key, path);
         }
     }
 
@@ -135,7 +135,7 @@ void SettingsScene::LoadRequiredAssets()
     {
         if (!assets.LoadSound(key, path))
         {
-            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::LoadSound failed to load Asset: {}, {}", key, path);
+            CT_LOG_ERROR("SettingsScene::LoadRequiredAssets::Sounds failed to load Asset: {}, {}", key, path);
         }
     }
 

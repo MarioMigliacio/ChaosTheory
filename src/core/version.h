@@ -18,7 +18,12 @@
 #define CT_VERSION_MINOR 4
 
 /// @brief Patch Version of Chaos Theory to date.
-#define CT_VERSION_PATCH 0
+#define CT_VERSION_PATCH 9
+
+// Helper macros to convert numbers to strings
+#define CT_STRINGIFY(x) #x
+#define CT_TOSTRING(x) CT_STRINGIFY(x)
 
 /// @brief String representation for Chaos Theory version.
-#define CT_VERSION_STRING "1.4.0"
+#define CT_VERSION_STRING                                                                                              \
+    CT_TOSTRING(CT_VERSION_MAJOR) "." CT_TOSTRING(CT_VERSION_MINOR) "." CT_TOSTRING(CT_VERSION_PATCH)
