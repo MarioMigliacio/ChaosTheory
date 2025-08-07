@@ -104,8 +104,11 @@ void PlayerShip::Move(const sf::Vector2f &offset)
     auto bounds = m_sprite.getGlobalBounds();
     auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    newPos.x = std::max(0.f, std::min(newPos.x, winSize.x - bounds.width));
-    newPos.y = std::max(0.f, std::min(newPos.y, winSize.y - bounds.height));
+    const float halfWidth = bounds.width / 2.f;
+    const float halfHeight = bounds.height / 2.f;
+
+    newPos.x = std::max(halfWidth, std::min(newPos.x, winSize.x - halfWidth));
+    newPos.y = std::max(halfHeight, std::min(newPos.y, winSize.y - halfHeight));
 
     SetPosition(newPos);
 }
