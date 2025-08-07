@@ -54,8 +54,6 @@ class PlayerShip : public BaseShip
     void GainLifeCount();
     void LoseLife();
     int GetLifeCount() const;
-    void Respawn();
-    bool GetInvincibleStatus() const;
 
     bool IsGameOver() const;
 
@@ -64,8 +62,7 @@ class PlayerShip : public BaseShip
     void TryFireBomb();
 
   private:
-    void HandleGunUpdate(const float dt);
-    void HandleRespawnUpdate(const float dt);
+    void HandleGunUpdate(float dt);
     void InitializeGunStats() override;
     void InitializeGenericStats();
 
@@ -78,10 +75,6 @@ class PlayerShip : public BaseShip
     float m_accelerationMultiplier = 0.f;
     float m_gasDrainRate = 0.f;
     float m_baseSpeed = 0.f;
-    float m_invincibilityTimer = 0.f;
-    float m_blinkTimer = 0.f;
 
     bool m_gameOver = false;
-    bool m_invincible = false;
-    bool m_visible = true;
 };

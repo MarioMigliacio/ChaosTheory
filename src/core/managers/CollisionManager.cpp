@@ -293,30 +293,14 @@ bool CollisionManager::HandleCollisionEnemyVsPlayer(CollisionCategory catA, Coll
     std::shared_ptr<BaseShip> enemy;
     std::shared_ptr<BaseShip> player;
 
-    if (catA == CollisionCategory::Player && catB == CollisionCategory::Enemy)
+    if (catA == CollisionCategory::Player && catB == CollisionCategory::Enemy ||
+        catA == CollisionCategory::Enemy && catB == CollisionCategory::Player)
     {
         check = true;
+        std::dynamic_pointer_cast<BaseShip>(a)->Kill();
+        std::dynamic_pointer_cast<BaseShip>(b)->Kill();
 
-        if (!std::dynamic_pointer_cast<PlayerShip>(a)->GetInvincibleStatus())
-        {
-            std::dynamic_pointer_cast<PlayerShip>(a)->Kill();
-            std::dynamic_pointer_cast<BaseShip>(b)->Kill();
-
-            CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
-        }
-    }
-
-    else if (catA == CollisionCategory::Enemy && catB == CollisionCategory::Player)
-    {
-        check = true;
-
-        if (!std::dynamic_pointer_cast<PlayerShip>(b)->GetInvincibleStatus())
-        {
-            std::dynamic_pointer_cast<BaseShip>(a)->Kill();
-            std::dynamic_pointer_cast<PlayerShip>(b)->Kill();
-
-            CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
-        }
+        CT_LOG_DEBUG("CollisionManager: Player crashed into enemy ship; received fatal damage.");
     }
 
     return check;
