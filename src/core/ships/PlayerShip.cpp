@@ -54,12 +54,6 @@ constexpr float BASE_PLAYER_PROJECTILE_DAMAGE = 10.f;
 
 /// @brief Configurable constant for Gun Projectile color.
 const sf::Color BASE_PLAYER_PROJECTILE_COLOR = sf::Color::White;
-
-/// @brief Configurable time constant for respawn invincible period.
-constexpr static float RESPAWN_INVINCIBILITY_DURATION = 2.f;
-
-/// @brief Configurable time constant for fading in and out during respawn period.
-constexpr static float BLINK_INTERVAL = 0.25f;
 } // namespace
 
 /// @brief Constructor for the PlayerShip.
@@ -93,7 +87,6 @@ void PlayerShip::Update(float dt)
 {
     ProcessInput(dt);
     HandleGunUpdate(dt);
-    HandleRespawnUpdate(dt);
 }
 
 /// @brief Performs a sprite position movement based on offset and current position.
@@ -314,28 +307,20 @@ void PlayerShip::BoostMaxHealth(const int amount)
 /// @param amount Damage to be taken.
 void PlayerShip::TakeDamage(int amount)
 {
-    if (m_invincible)
-    {
-        return;
-    }
-
     m_health -= amount;
 
     if (m_health <= 0)
     {
         LoseLife();
-        Respawn();
+
+        m_health = m_maxHealth;
+        m_gas = m_maxGas;
     }
 }
 
 /// @brief Outside hook to kill player by making player take its maxHealth at once.
 void PlayerShip::Kill()
 {
-    if (m_invincible)
-    {
-        return;
-    }
-
     TakeDamage(m_maxHealth);
 }
 
@@ -364,30 +349,6 @@ void PlayerShip::LoseLife()
 int PlayerShip::GetLifeCount() const
 {
     return m_lives;
-}
-
-/// @brief Help respawn the player with proper effects during a death.
-void PlayerShip::Respawn()
-{
-    m_sprite.setColor(sf::Color::White);
-
-    m_health = m_maxHealth;
-    m_gas = m_maxGas;
-
-    m_invincible = true;
-    m_invincibilityTimer = RESPAWN_INVINCIBILITY_DURATION;
-    m_blinkTimer = BLINK_INTERVAL;
-    m_visible = true;
-
-    const auto &winSize = WindowManager::Instance().GetWindow().getSize();
-    SetPosition(sf::Vector2f(winSize.x / 2.f, winSize.y - m_sprite.getTexture()->getSize().y / 2 - 25));
-}
-
-/// @brief Return the state of if this player is invincible or not.
-/// @return true / false
-bool PlayerShip::GetInvincibleStatus() const
-{
-    return m_invincible;
 }
 
 /// @brief Signal to external management that player lives are negative, game is over.
@@ -428,30 +389,6 @@ void PlayerShip::HandleGunUpdate(float dt)
     {
         m_gun->SetOwnerPosition(m_sprite.getPosition());
         m_gun->Update(dt);
-    }
-}
-
-/// @brief Helper method to blink during periods of invulnerability during a respawn.
-/// @param dt delta time since last update.
-void PlayerShip::HandleRespawnUpdate(const float dt)
-{
-    if (m_invincible)
-    {
-        m_invincibilityTimer -= dt;
-        m_blinkTimer -= dt;
-
-        if (m_blinkTimer <= 0.f)
-        {
-            m_visible = !m_visible;
-            m_sprite.setColor(m_visible ? sf::Color::White : sf::Color(255, 255, 255, 64));
-            m_blinkTimer = BLINK_INTERVAL;
-        }
-
-        if (m_invincibilityTimer <= 0.f)
-        {
-            m_invincible = false;
-            m_sprite.setColor(sf::Color::White);
-        }
     }
 }
 

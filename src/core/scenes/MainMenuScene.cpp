@@ -273,19 +273,19 @@ void MainMenuScene::CreateButtons()
     const sf::Vector2f exitPos{centerX, settingsPos.y + scaledButtonHeight + scaledSpacing};
 
     // Play button
-    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
-        SkinnableButtonConfig{.position = playPos,
-                              .size = btnSize,
-                              .label = PLAY_BTN_LABEL,
-                              .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
-                              .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
-                              .scheme = UISkinnableButtonColorScheme::Blue,
-                              .onClick = [this]()
-                              {
-                                  CT_LOG_INFO("Play button clicked!");
-                                  m_hasPendingTransition = true;
-                                  m_requestedScene = SceneID::SandBox; // TODO: Revert to Introduction for release.
-                              }}));
+    UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(SkinnableButtonConfig{
+        .position = playPos,
+        .size = btnSize,
+        .label = PLAY_BTN_LABEL,
+        .idleTexture = UIAssets::UISkinButtonBlueIdleKey,
+        .hoverTexture = UIAssets::UISkinButtonBlueHoverKey,
+        .scheme = UISkinnableButtonColorScheme::Blue,
+        .onClick = [this]()
+        {
+            CT_LOG_INFO("Play button clicked!");
+            m_hasPendingTransition = true;
+            m_requestedScene = SceneID::Introduction; // TODO: Revert to SandBox for rapid testing.
+        }}));
 
     // Settings button
     UIManager::Instance().AddElement(UIFactory::Instance().CreateSkinnableButton(
