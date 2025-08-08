@@ -12,6 +12,7 @@
 #include "PlayerShip.h"
 #include "AssetManager.h"
 #include "Assets.h"
+#include "BombProjectile.h"
 #include "InputManager.h"
 #include "KeyBindings.h"
 #include "Macros.h"
@@ -60,6 +61,42 @@ constexpr static float RESPAWN_INVINCIBILITY_DURATION = 2.f;
 
 /// @brief Configurable time constant for fading in and out during respawn period.
 constexpr static float BLINK_INTERVAL = 0.25f;
+
+/// @brief Configurable constant for delta time required to be able to fire a 2nd bomb.
+constexpr float BOMB_COOLDOWN_SEC = 1.f;
+
+/// @brief Configurable constant for direction vector of initial bomb projectile.
+const sf::Vector2f BOMB_VELOCITY = {0.f, -320};
+
+/// @brief Configurable constant for time before bomb automatically detonates without hitting a target.
+constexpr float BOMB_FUSE_TIME = 1.5f;
+
+/// @brief Configurable constant for radius in pixels that the bomb explodes with.
+constexpr float BOMB_BLAST_RADIUS = 128.f;
+
+/// @brief Configurable constant for damage that bomb deals to effected units.
+constexpr float BOMB_DAMAGE = 80.f;
+
+/// @brief Configurable constant for updating bomb animation sprite.
+constexpr float BOMB_FRAME_DELAY = 0.05f;
+
+/// @brief Constant for size of launching projectile of bomb. Hard defined.
+constexpr int BOMB_PROJECTILE_FRAME_WIDTH = 64;
+
+/// @brief Constant for size of launchingg projectile of bomb. Hard defined.
+constexpr int BOMB_PROJECTILE_FRAME_HEIGHT = 64;
+
+/// @brief Constant for size of exploding sprite of bomb. Hard defined.
+constexpr int BOMB_EXPLOSION_FRAME_WIDTH = 128;
+
+/// @brief Constant for size of exploding sprite of bomb. Hard defined.
+constexpr int BOMB_EXPLOSION_FRAME_HEIGHT = 128;
+
+/// @brief Constant for size of spritesheet elements in a single row. Hard defined.
+constexpr int BOMB_EXPLOSION_FRAMES_PER_ROW = 4;
+
+/// @brief Constant for total frames contained in the bomb explosion spritesheet. Hard defined.
+constexpr int BOMB_EXPLOSION_TOTAL_FRAMES = 16;
 } // namespace
 
 /// @brief Constructor for the PlayerShip.
@@ -104,8 +141,11 @@ void PlayerShip::Move(const sf::Vector2f &offset)
     auto bounds = m_sprite.getGlobalBounds();
     auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    newPos.x = std::max(0.f, std::min(newPos.x, winSize.x - bounds.width));
-    newPos.y = std::max(0.f, std::min(newPos.y, winSize.y - bounds.height));
+    const float halfWidth = bounds.width / 2.f;
+    const float halfHeight = bounds.height / 2.f;
+
+    newPos.x = std::max(halfWidth, std::min(newPos.x, winSize.x - halfWidth));
+    newPos.y = std::max(halfHeight, std::min(newPos.y, winSize.y - halfHeight));
 
     SetPosition(newPos);
 }
@@ -243,7 +283,7 @@ void PlayerShip::ProcessInput(const float dt)
     // Fire bomb button
     if (InputManager::Instance().IsKeyPressed(KeyBindings::LaunchBombConstantKey))
     {
-        // TODDO: attempt to launch a bomb if available.
+        TryFireBomb();
     }
 
     // Accelerate button
@@ -413,10 +453,31 @@ void PlayerShip::GainBombCount()
 /// @brief Method to send signal to fire a bomb.
 void PlayerShip::TryFireBomb()
 {
-    if (m_bombs > 0)
+    if (m_bombs <= 0 || m_bombCooldown > 0.f)
     {
-        // TODO: Firing bombs will be a feature to add later on.
+        return;
+    }
+
+    auto bomb = ProjectileFactory::Instance().CreateBombProjectile(
+        GetPosition(), BOMB_VELOCITY, m_allegiance,
+        BombProjectileConfig{.fuseTime = BOMB_FUSE_TIME,
+                             .blastRadius = BOMB_BLAST_RADIUS,
+                             .damage = BOMB_DAMAGE,
+                             .frameDelay = BOMB_FRAME_DELAY,
+                             .projFrameWidth = BOMB_PROJECTILE_FRAME_WIDTH,
+                             .projFrameHeight = BOMB_PROJECTILE_FRAME_HEIGHT,
+                             .frameWidth = BOMB_EXPLOSION_FRAME_WIDTH,
+                             .frameHeight = BOMB_EXPLOSION_FRAME_HEIGHT,
+                             .framesPerRow = BOMB_EXPLOSION_FRAMES_PER_ROW,
+                             .totalFrames = BOMB_EXPLOSION_TOTAL_FRAMES});
+
+    if (bomb)
+    {
+        ProjectileManager::Instance().AddProjectile(bomb);
         m_bombs--;
+        m_bombCooldown = BOMB_COOLDOWN_SEC;
+
+        CT_LOG_DEBUG("PlayerShip attempted to launch a Bomb.");
     }
 }
 
@@ -429,6 +490,9 @@ void PlayerShip::HandleGunUpdate(float dt)
         m_gun->SetOwnerPosition(m_sprite.getPosition());
         m_gun->Update(dt);
     }
+
+    // Handling bomb projectile cooldown in HandleGunUpdate as opposed to in direct Update() call.
+    m_bombCooldown = std::max(0.f, m_bombCooldown - dt);
 }
 
 /// @brief Helper method to blink during periods of invulnerability during a respawn.

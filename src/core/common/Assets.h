@@ -288,24 +288,28 @@ static const std::unordered_map<std::string, std::string> Sprites = {
 /// @brief Exposes relevent assets to the ProjectileAssets namespace.
 namespace ProjectileAssets
 {
-/// @brief Key to the BombBlastFinalSpriteKey Sprite Asset.
-static auto BombBlastFinalSpriteKey = "BombBlastFinal";
-
-/// @brief Key to the BombBlastOriginalSpriteKey Sprite Asset.
-static auto BombBlastOriginalSpriteKey = "BombBlastOriginal";
-
 /// @brief Key to the BasicBulletSpriteKey Sprite Asset.
 static auto BasicBulletSpriteKey = "BasicBullet";
 
-/// @brief Key to the HomingRocketSpriteKey Sprite Asset.
-static auto HomingRocketSpriteKey = "HomingRocket";
+/// @brief Key to the BombBlastSpriteKey Sprite Asset.
+static auto BombBlastSpriteKey = "BombBlast";
+
+/// @brief Key to the BombProjectileSpriteKey Sprite Asset.
+static auto BombProjectileSpriteKey = "BombProjectile";
+
+/// @brief Key to the RocketBlastSpriteKey Sprite Asset.
+static auto RocketBlastSpriteKey = "RocketBlast";
+
+/// @brief Key to the RocketProjectileSpriteKey Sprite Asset.
+static auto RocketProjectileSpriteKey = "RocketProjectile";
 
 /// @brief Sprites contain a Key and Value pair collection of sprite assets
 static const std::unordered_map<std::string, std::string> Sprites = {
-    {"BombBlastFinal", "assets/sprites/projectiles/BombBlastFinal.png"},
-    {"BombBlastOriginal", "assets/sprites/projectiles/BombBlastOriginal.png"},
     {"BasicBullet", "assets/sprites/projectiles/BasicBullet.png"},
-    {"HomingRocket", "assets/sprites/projectiles/HomingRocket.png"},
+    {"BombBlast", "assets/sprites/projectiles/BombBlast.png"},
+    {"BombProjectile", "assets/sprites/projectiles/BombProjectile.png"},
+    {"RocketBlast", "assets/sprites/projectiles/RocketBlast.png"},
+    {"RocketProjectile", "assets/sprites/projectiles/RocketProjectile.png"},
 };
 
 } // namespace ProjectileAssets
@@ -511,6 +515,10 @@ static const std::unordered_map<std::string, std::string> Backgrounds = {
 /// @brief Sprites contain a Key and Value pair collection of image assets
 static const std::unordered_map<std::string, std::string> Sprites = {
     {"BasicBullet", "assets/sprites/projectiles/BasicBullet.png"},
+    {"BombBlast", "assets/sprites/projectiles/BombBlast.png"},
+    {"BombProjectile", "assets/sprites/projectiles/BombProjectile.png"},
+    {"RocketBlast", "assets/sprites/projectiles/RocketBlast.png"},
+    {"RocketProjectile", "assets/sprites/projectiles/RocketProjectile.png"},
     {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
     {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
     {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},

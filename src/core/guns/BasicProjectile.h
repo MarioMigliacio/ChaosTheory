@@ -15,8 +15,7 @@
 
 // ============================================================================
 //  Class       : BasicProjectile
-//  Purpose     : An abstraction layer above BaseProjectile interface,
-//                for shared common projectile behaviors base implementation.
+//  Purpose     : A basic in game projectile with configurable stats.
 //
 //  Responsibilities:
 //      - Provide Update for BasicProjectile.
