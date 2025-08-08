@@ -32,7 +32,7 @@ ProjectileFactory &ProjectileFactory::Instance()
 /// @param dir Direction projectile will travel in.
 /// @param stats ProjectileStats struct with this projectiles configuration stats.
 /// @param allegiance Allegiance to instantiate with.
-/// @return A safe pointer to a BasicProjectile object, inheriting from BaseProjectile base class.
+/// @return A safe pointer to a BasicProjectile object.
 std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const sf::Vector2f &pos,
                                                                          const sf::Vector2f &dir,
                                                                          const ProjectileStats &stats,
@@ -64,4 +64,18 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBasicProjectile(const s
     }
 
     return projectile;
+}
+
+/// @brief Creates a Bomb Projectile that travels based on velocity and allegiance.
+/// @param pos Initial spawn location.
+/// @param velocity Vector direction to travel after spawning.
+/// @param allegiance Allegiance to instantiate with.
+/// @param config BombProjectileConfig to initiate custom.
+/// @return A safe pointer to a BasicProjectile object.
+std::shared_ptr<BaseProjectile> ProjectileFactory::CreateBombProjectile(const sf::Vector2f &pos,
+                                                                        const sf::Vector2f &velocity,
+                                                                        Allegiance allegiance,
+                                                                        const BombProjectileConfig &config)
+{
+    return std::make_shared<BombProjectile>(allegiance, pos, velocity, config);
 }

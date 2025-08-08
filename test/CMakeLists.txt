@@ -7,6 +7,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/AssetManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/AudioManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/BackgroundTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/BombProjectileTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CollectableIconManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/CollisionManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/EnemyGunTest.cpp
@@ -22,6 +23,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/SettingsManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ShipFactoryTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ShipManagerTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/SpriteSheetAnimatorTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIArrowTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIButtonTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/UIFactoryTest.cpp

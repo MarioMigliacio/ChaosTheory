@@ -71,8 +71,9 @@ class PlayerShip : public BaseShip
 
   private:
     int m_lives = 0;
-    int m_bombs = 0;
+    int m_bombs = 1;
 
+    float m_bombCooldown = 0.f;
     float m_gas = 0.f;
     float m_maxGas = 0.f;
     float m_accelerationMultiplier = 0.f;

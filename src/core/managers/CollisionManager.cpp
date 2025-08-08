@@ -122,6 +122,105 @@ void CollisionManager::Update(float dt)
     }
 }
 
+/// @brief Provides a handler for checking bomb interactions with enemy or world object.
+/// @param projectile The projectile collidable object entity in question.
+/// @return Whether or not the bomb is in fact in collision state with an enemy or object.
+bool CollisionManager::HandleBombCollisionWithEnemyOrWorld(const BaseCollidable &projectile) const
+{
+    // We only check against currently alive registered objects
+    const auto projBounds = projectile.GetBounds();
+
+    Allegiance projAllegiance = Allegiance::Neutral;
+
+    if (const auto proj = dynamic_cast<const BaseProjectile *>(&projectile))
+    {
+        projAllegiance = proj->GetAllegiance();
+    }
+
+    for (auto &obj : m_objects)
+    {
+        if (!obj || !obj->IsAlive() || obj.get() == &projectile)
+        {
+            continue;
+        }
+
+        // Friendly fire check
+        if (const auto otherProj = dynamic_cast<BaseProjectile *>(obj.get()))
+        {
+            if (otherProj->GetAllegiance() == projAllegiance)
+            {
+                continue;
+            }
+        }
+
+        else if (const auto otherShip = dynamic_cast<BaseShip *>(obj.get()))
+        {
+            if (otherShip->GetAllegiance() == projAllegiance)
+            {
+                continue;
+            }
+        }
+
+        // Valid target: enemy or environment
+        if (obj->GetCollisionCategory() == CollisionCategory::Enemy ||
+            obj->GetCollisionCategory() == CollisionCategory::Environment)
+        {
+            if (projBounds.intersects(obj->GetBounds()))
+            {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+/// @brief Provides a handler for dealing Area Effect damage for explosive damage types.
+/// @param center Origination point.
+/// @param radius Distance from center.
+/// @param damage Damage to apply to units in range of effect.
+/// @param sourceAllegiance Allegiance of origination sourcee.
+void CollisionManager::ApplyAreaDamage(const sf::Vector2f &center, float radius, float damage,
+                                       Allegiance sourceAllegiance)
+{
+    const float radiusSq = radius * radius;
+
+    for (auto &obj : m_objects)
+    {
+        if (!obj || !obj->IsAlive())
+        {
+            continue;
+        }
+
+        if (const auto ship = dynamic_cast<BaseShip *>(obj.get()))
+        {
+            if (ship->GetAllegiance() == sourceAllegiance)
+            {
+                continue;
+            }
+        }
+
+        sf::Vector2f objCenter = {obj->GetBounds().left + obj->GetBounds().width / 2.f,
+                                  obj->GetBounds().top + obj->GetBounds().height / 2.f};
+
+        float dx = objCenter.x - center.x;
+        float dy = objCenter.y - center.y;
+        float distSq = dx * dx + dy * dy;
+
+        if (distSq <= radiusSq)
+        {
+            if (auto ship = dynamic_cast<BaseShip *>(obj.get()))
+            {
+                ship->TakeDamage(static_cast<int>(std::round(damage)));
+
+                CT_LOG_DEBUG("CollisionManager: AoE hit {} for {} damage. Health: ({} / {}).",
+                             (ship->GetAllegiance() == Allegiance::Player ? "Player" : "Enemy"),
+                             static_cast<int>(std::round(damage)), ship->GetHealth(), ship->GetMaxHealth());
+            }
+        }
+    }
+}
+
 /// @brief Return whether or not the candidate CollisionCategory objects can even interact for a collision.
 /// @param a CollisionCategory enumeration field.
 /// @param b CollisionCategory enumeration field.

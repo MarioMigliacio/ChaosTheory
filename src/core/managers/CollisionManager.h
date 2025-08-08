@@ -91,6 +91,9 @@ class CollisionManager
     void RegisterObject(std::shared_ptr<BaseCollidable> obj);
     void Update(float dt);
 
+    bool HandleBombCollisionWithEnemyOrWorld(const BaseCollidable &projectile) const;
+    void ApplyAreaDamage(const sf::Vector2f &center, float radius, float damage, Allegiance sourceAllegiance);
+
   private:
     CollisionManager() = default;
     ~CollisionManager() = default;
