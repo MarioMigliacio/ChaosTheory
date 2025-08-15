@@ -69,7 +69,7 @@ class BaseShip : public BaseCollidable
     }
 
     /// @brief Apply damage and check for death.
-    virtual void TakeDamage(const int amount)
+    virtual void TakeDamage(const float amount)
     {
         m_health -= amount;
 
@@ -172,8 +172,8 @@ class BaseShip : public BaseCollidable
     sf::Sprite m_sprite;
     sf::Vector2f m_speed;
 
-    int m_health = 0;
-    int m_maxHealth = 0;
+    float m_health = 0;
+    float m_maxHealth = 0;
 
     bool m_alive = true;
 };

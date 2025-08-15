@@ -65,7 +65,7 @@ void ShipManager::Clear()
 /// @param pos Coordinate position to spawn at.
 void ShipManager::SpawnPlayer(const sf::Vector2f &pos)
 {
-    m_player = std::make_shared<PlayerShip>();
+    m_player = std::dynamic_pointer_cast<PlayerShip>(ShipFactory::Instance().CreatePlayerShip(pos));
     m_player->SetPosition(pos);
 
     CT_LOG_INFO("PlayerShip spawned.");

@@ -24,14 +24,71 @@ ConfigurableGun::ConfigurableGun(const ProjectileStats &stats) : m_stats(stats)
 /// @return Safe pointer to a BaseProjectile if successful, otherwise nullptr.
 std::shared_ptr<BaseProjectile> ConfigurableGun::TryFire()
 {
+    const sf::Vector2f firePos = m_ownerPosition + m_barrelOffset;
+    const sf::Vector2f dir = GetDefaultDirection();
+
+    // 1) If this pattern includes a beam, spawn the beam shard opportunistically.
+    if (m_stats.pattern == GunPattern::LazerBeam || m_stats.pattern == GunPattern::LazerBeamDoubleShot ||
+        m_stats.pattern == GunPattern::LazerBeamHomingRocket || m_stats.pattern == GunPattern::LazerBeamHybrid)
+    {
+        FireLazerBeam(firePos); // does NOT modify m_cooldown
+    }
+
+    // 2) Now handle the non-beam parts. Standard gating by m_cooldown.
+    switch (m_stats.pattern)
+    {
+        case GunPattern::LazerBeam:
+            // Pure beam: nothing else to do.
+            return nullptr;
+
+        case GunPattern::LazerBeamDoubleShot:
+            if (m_cooldown > 0.f)
+            {
+                return nullptr;
+            }
+
+            m_cooldown = m_stats.fireRate;
+            FireSpread(firePos, dir, {-5.f, 5.f});
+
+            return nullptr;
+
+        case GunPattern::LazerBeamHomingRocket:
+            if (m_cooldown > 0.f)
+            {
+                return nullptr;
+            }
+
+            m_cooldown = m_stats.fireRate;
+            FireHomingRocket(firePos);
+
+            return nullptr;
+
+        case GunPattern::LazerBeamHybrid:
+            if (m_cooldown > 0.f)
+            {
+                return nullptr;
+            }
+
+            m_cooldown = m_stats.fireRate;
+            FireHomingRocket(firePos);
+            FireSpread(firePos, dir, {-10.f, -3.f, 3.f, 10.f});
+            return nullptr;
+
+        case GunPattern::UltimateArcBeam:
+            // TODO: still up in the air..
+            break;
+
+        default:
+            break;
+    }
+
+    // -------- Normal (non-beam) patterns below --------
     if (m_cooldown > 0.f)
     {
         return nullptr;
     }
 
     m_cooldown = m_stats.fireRate;
-
-    sf::Vector2f firePos = m_ownerPosition + m_barrelOffset;
 
     switch (m_stats.pattern)
     {
@@ -44,7 +101,7 @@ std::shared_ptr<BaseProjectile> ConfigurableGun::TryFire()
             return nullptr;
 
         case GunPattern::GrowingBullet:
-            return FireGrowingBullet(firePos);
+            return FireExpandingProjectile(firePos);
 
         case GunPattern::TripleShot:
             FireSpread(firePos, GetDefaultDirection(), {-8.f, 0.f, 8.f});
@@ -59,31 +116,11 @@ std::shared_ptr<BaseProjectile> ConfigurableGun::TryFire()
 
             return nullptr;
 
-        case GunPattern::LazerBeam:
-            return FireLazerBeam(firePos);
-
-        case GunPattern::LazerBeamDoubleShot:
-            FireLazerBeam(firePos);
-            FireSpread(firePos, GetDefaultDirection(), {-5.f, 5.f});
-
-            return nullptr;
-
-        case GunPattern::LazerBeamHomingRocket:
-            FireLazerBeam(firePos);
-            FireHomingRocket(firePos);
-
-            return nullptr;
-
-        case GunPattern::LazerBeamHybrid:
-            FireLazerBeam(firePos);
-            FireHomingRocket(firePos);
-            FireSpread(firePos, GetDefaultDirection(), {-5.f, 5.f});
-
-            return nullptr;
-
-        case GunPattern::UltimateArcBeam:
-            FireUltimateArc(firePos);
-
+        case GunPattern::LazerBeam:             // handled above
+        case GunPattern::LazerBeamDoubleShot:   // handled above
+        case GunPattern::LazerBeamHomingRocket: // handled above
+        case GunPattern::LazerBeamHybrid:       // handled above
+        case GunPattern::UltimateArcBeam:       // handled above
             return nullptr;
     }
 
@@ -165,6 +202,27 @@ sf::Vector2f ConfigurableGun::GetDefaultDirection() const
     return (m_allegiance == Allegiance::Enemy) ? sf::Vector2f(0.f, 1.f) : sf::Vector2f(0.f, -1.f);
 }
 
+/// @brief Sets the internal lazerStream config data struct.
+/// @param cfg LazerBeamStreamConfig struct to be set.
+void ConfigurableGun::SetLazerBeamStreamConfig(const LazerBeamStreamConfig &cfg)
+{
+    m_lazerStreamCfg = cfg;
+}
+
+/// @brief Returns the currently configured lazerStream data struct.
+/// @return m_lazerStreamCfg.
+const LazerBeamStreamConfig &ConfigurableGun::GetLazerBeamStreamConfig() const
+{
+    return m_lazerStreamCfg;
+}
+
+/// @brief Sets the internal lazer beam dampener, effectively clamping damage between 0 and m_stats.damage.
+/// @param val New percentage value, 0.f - 1.f.
+void ConfigurableGun::SetLazerDampener(const float val)
+{
+    m_beamDampenerFactor = val;
+}
+
 /// @brief Performs routine update on the cooldown during a frame.
 /// @param dt delta time since last update.
 void ConfigurableGun::Update(float dt)
@@ -178,6 +236,9 @@ void ConfigurableGun::Update(float dt)
             m_cooldown = 0.f;
         }
     }
+
+    // Beam timer always runs; we’ll decide when to spawn on TryFire()
+    m_beamTimer += dt;
 }
 
 /// @brief Fires the most basic of projectile types, and adds the projectile to the ProjectileManagers collection.
@@ -202,7 +263,7 @@ void ConfigurableGun::FireSpread(const sf::Vector2f &pos, const sf::Vector2f &ba
     for (float angleDeg : angles)
     {
         float baseAngle = std::atan2(baseDir.y, baseDir.x);
-        float rad = angleDeg * 3.14159f / 180.f;
+        float rad = angleDeg * PI / 180.f;
         sf::Vector2f dir(std::cos(baseAngle + rad), std::sin(baseAngle + rad));
 
         auto proj = ProjectileFactory::Instance().CreateBasicProjectile(pos, dir, m_stats, m_allegiance);
@@ -211,33 +272,55 @@ void ConfigurableGun::FireSpread(const sf::Vector2f &pos, const sf::Vector2f &ba
 }
 
 /// @brief Fires a special projectile that will seek out its nearest target and explode.
-/// @note Implementation is still TODO.
 /// @param pos Position to spawn from.
 /// @return A safe pointer to the projectile, useful to indicate success to the caller.
 std::shared_ptr<BaseProjectile> ConfigurableGun::FireHomingRocket(const sf::Vector2f &pos)
 {
-    // TODO: Create a HomingProjectile subclass in future
-    return FireBasic(pos, {0.f, -1.f});
+    const sf::Vector2f dir = GetDefaultDirection();
+    HomingRocketConfig cfg; // defaults, for now
+
+    auto proj = ProjectileFactory::Instance().CreateHomingRocket(pos, dir, m_stats, m_allegiance, cfg);
+    ProjectileManager::Instance().AddProjectile(proj);
+
+    return proj;
 }
 
 /// @brief Fires a special projectile that will expand in size as it traverses space.
-/// @note Implementation is still TODO.
 /// @param pos Position to spawn from.
 /// @return A safe pointer to the projectile, useful to indicate success to the caller.
-std::shared_ptr<BaseProjectile> ConfigurableGun::FireGrowingBullet(const sf::Vector2f &pos)
+std::shared_ptr<BaseProjectile> ConfigurableGun::FireExpandingProjectile(const sf::Vector2f &pos)
 {
-    // TODO: Create GrowingProjectile subclass with scaling update
-    return FireBasic(pos, {0.f, -1.f});
+    const sf::Vector2f dir = GetDefaultDirection();
+
+    auto proj = ProjectileFactory::Instance().CreateExpandingProjectile(pos, dir, m_stats, m_allegiance);
+    ProjectileManager::Instance().AddProjectile(proj);
+
+    return proj;
 }
 
 /// @brief Fires a special projectile that resembles a continuous stream of beaming light.
-/// @note Implementation is still TODO.
 /// @param pos Position to spawn from.
 /// @return A safe pointer to the projectile, useful to indicate success to the caller.
 std::shared_ptr<BaseProjectile> ConfigurableGun::FireLazerBeam(const sf::Vector2f &pos)
 {
-    // TODO: Implement continuous beam entity
-    return FireBasic(pos, {0.f, -1.f});
+    const float fireRate = std::max(0.01f, m_stats.fireRate);
+    const float interval = std::max(m_lazerStreamCfg.minInterval, fireRate * m_lazerStreamCfg.intervalFactor);
+
+    if (m_beamTimer >= interval)
+    {
+        m_beamTimer = 0.f;
+
+        const sf::Vector2f pos = m_ownerPosition + m_barrelOffset;
+        const sf::Vector2f dir = GetDefaultDirection();
+
+        auto seg = ProjectileFactory::Instance().CreateLazerBeamProjectile(pos, dir, m_stats, m_allegiance,
+                                                                           m_beamDampenerFactor);
+        ProjectileManager::Instance().AddProjectile(seg);
+
+        return seg;
+    }
+
+    return nullptr;
 }
 
 /// @brief Fires a penultimate projectile that will do devastation in its wake. Behold it to believe it.
@@ -246,5 +329,5 @@ std::shared_ptr<BaseProjectile> ConfigurableGun::FireLazerBeam(const sf::Vector2
 void ConfigurableGun::FireUltimateArc(const sf::Vector2f &pos)
 {
     // TODO: Fire a sweeping arc pattern + side shots
-    FireSpread(pos, {0.f, -1.f}, {-30.f, -15.f, 0.f, 15.f, 30.f});
+    FireSpread(pos, GetDefaultDirection(), {-30.f, -15.f, 0.f, 15.f, 30.f});
 }

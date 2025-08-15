@@ -13,6 +13,8 @@
 
 #include "BaseProjectile.h"
 #include "BombProjectile.h"
+#include "HomingRocketProjectile.h"
+#include "LazerBeamProjectile.h"
 #include "ProjectileStats.h"
 #include <memory>
 
@@ -33,9 +35,21 @@ class ProjectileFactory
 
     std::shared_ptr<BaseProjectile> CreateBasicProjectile(const sf::Vector2f &pos, const sf::Vector2f &dir,
                                                           const ProjectileStats &stats, Allegiance allegiance);
+
+    std::shared_ptr<BaseProjectile> CreateExpandingProjectile(const sf::Vector2f &pos, const sf::Vector2f &dir,
+                                                              const ProjectileStats &stats, Allegiance allegiance);
+
     std::shared_ptr<BaseProjectile> CreateBombProjectile(const sf::Vector2f &pos, const sf::Vector2f &velocity,
                                                          Allegiance allegiance,
                                                          const BombProjectileConfig &config = BombProjectileConfig{});
+
+    std::shared_ptr<BaseProjectile> CreateHomingRocket(const sf::Vector2f &pos, const sf::Vector2f &dir,
+                                                       const ProjectileStats &stats, Allegiance allegiance,
+                                                       const HomingRocketConfig &cfg = {});
+
+    std::shared_ptr<BaseProjectile> CreateLazerBeamProjectile(const sf::Vector2f &pos, const sf::Vector2f &dir,
+                                                              const ProjectileStats &stats, Allegiance allegiance,
+                                                              float perSegmentDamageFactor = 0.25f);
 
   private:
     ProjectileFactory() = default;

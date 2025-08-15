@@ -47,7 +47,7 @@ class ProjectileFactoryTest : public ::testing::Test
     }
 };
 
-TEST_F(ProjectileFactoryTest, CreateProjectile_Player_ValidStats)
+TEST_F(ProjectileFactoryTest, CreateProjectilePlayerValidStats)
 {
     ProjectileStats stats;
     stats.fireRate = 0.5f;
@@ -68,7 +68,7 @@ TEST_F(ProjectileFactoryTest, CreateProjectile_Player_ValidStats)
     EXPECT_FLOAT_EQ(projectile->GetDamage(), stats.damage);
 }
 
-TEST_F(ProjectileFactoryTest, CreateProjectile_Enemy_CustomStats)
+TEST_F(ProjectileFactoryTest, CreateProjectileEnemyCustomStats)
 {
     ProjectileStats stats;
     stats.fireRate = 1.0f;

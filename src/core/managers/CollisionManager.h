@@ -93,6 +93,7 @@ class CollisionManager
 
     bool HandleBombCollisionWithEnemyOrWorld(const BaseCollidable &projectile) const;
     void ApplyAreaDamage(const sf::Vector2f &center, float radius, float damage, Allegiance sourceAllegiance);
+    std::shared_ptr<BaseCollidable> GetNearestTarget(const sf::Vector2f &from, Allegiance sourceAllegiance) const;
 
   private:
     CollisionManager() = default;

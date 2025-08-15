@@ -55,12 +55,13 @@ void BasicProjectile::Update(float dt)
 
     m_sprite.move(m_velocity * dt);
 
-    const auto &bounds = m_sprite.getGlobalBounds();
-    const auto &winSize = WindowManager::Instance().GetWindow().getSize();
+    // Offscreen cull
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    const auto bounds = m_sprite.getGlobalBounds();
 
-    if (bounds.top + bounds.height < 0 || bounds.top > winSize.y || bounds.left + bounds.width < 0 ||
+    if (bounds.top > winSize.y || bounds.top + bounds.height < 0 || bounds.left + bounds.width < 0 ||
         bounds.left > winSize.x)
     {
-        m_alive = false;
+        Kill();
     }
 }

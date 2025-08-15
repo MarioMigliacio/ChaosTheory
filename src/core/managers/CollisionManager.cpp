@@ -221,6 +221,62 @@ void CollisionManager::ApplyAreaDamage(const sf::Vector2f &center, float radius,
     }
 }
 
+/// @brief For homing directed shots, acquire the nearest target through the Collidable boundaries.
+/// @param from Target source object.
+/// @param sourceAllegiance Alle
+/// @return
+std::shared_ptr<BaseCollidable> CollisionManager::GetNearestTarget(const sf::Vector2f &from,
+                                                                   Allegiance allegiance) const
+{
+    // Determine which collision category we want to target
+    const CollisionCategory targetCategory =
+        (allegiance == Allegiance::Player) ? CollisionCategory::Enemy : CollisionCategory::Player;
+
+    std::shared_ptr<BaseCollidable> nearest = nullptr;
+    float bestDistSq = std::numeric_limits<float>::max();
+
+    for (const auto &obj : m_objects)
+    {
+        if (!obj || !obj->IsAlive())
+        {
+            continue;
+        }
+
+        // Only consider ships of the opposite side
+        const auto cat = obj->GetCollisionCategory();
+
+        if (cat != targetCategory)
+        {
+            continue;
+        }
+
+        // Double-check allegiance when available (BaseShip)
+        if (auto ship = std::dynamic_pointer_cast<BaseShip>(obj))
+        {
+            if (ship->GetAllegiance() == allegiance)
+            {
+                continue; // safety: skip friendlies in case of miscategorized objects
+            }
+        }
+
+        // Distance to the object's center
+        const auto b = obj->GetBounds();
+        const sf::Vector2f center{b.left + b.width * 0.5f, b.top + b.height * 0.5f};
+
+        const float dx = center.x - from.x;
+        const float dy = center.y - from.y;
+        const float distSq = dx * dx + dy * dy;
+
+        if (distSq < bestDistSq)
+        {
+            bestDistSq = distSq;
+            nearest = obj;
+        }
+    }
+
+    return nearest;
+}
+
 /// @brief Return whether or not the candidate CollisionCategory objects can even interact for a collision.
 /// @param a CollisionCategory enumeration field.
 /// @param b CollisionCategory enumeration field.
@@ -322,12 +378,23 @@ bool CollisionManager::HandleCollisionEnemyVsProjectile(CollisionCategory catA, 
     {
         if (projectile && enemy && projectile->GetAllegiance() != enemy->GetAllegiance())
         {
-            enemy->TakeDamage(projectile->GetDamageAsInt());
+            // If the projectile supports impact animation, DO NOT apply direct-hit damage here.
+            // The projectile will apply its own AoE in TriggerImpact() / OnImpact().
+            // Otherwise (basic bullets), apply direct-hit damage and kill it.
+            if (projectile->SupportsImpactAnimation())
+            {
+                projectile->TriggerImpact();
+            }
 
-            CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage. Health: ({} / {}).",
-                         projectile->GetDamageAsInt(), enemy->GetHealth(), enemy->GetMaxHealth());
+            else
+            {
+                enemy->TakeDamage(projectile->GetDamage());
 
-            projectile->Kill();
+                CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage. Health: ({} / {}).",
+                             projectile->GetDamage(), enemy->GetHealth(), enemy->GetMaxHealth());
+
+                projectile->Kill();
+            }
         }
     }
 
@@ -366,12 +433,23 @@ bool CollisionManager::HandleCollisionPlayerVsProjectile(CollisionCategory catA,
     {
         if (projectile && player && projectile->GetAllegiance() != player->GetAllegiance())
         {
-            player->TakeDamage(projectile->GetDamageAsInt());
+            // If the projectile supports impact animation, DO NOT apply direct-hit damage here.
+            // The projectile will apply its own AoE in TriggerImpact() / OnImpact().
+            // Otherwise (basic bullets), apply direct-hit damage and kill it.
+            if (projectile->SupportsImpactAnimation())
+            {
+                projectile->TriggerImpact();
+            }
 
-            CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage. Health: ({} / {}).",
-                         projectile->GetDamageAsInt(), player->GetHealth(), player->GetMaxHealth());
+            else
+            {
+                player->TakeDamage(projectile->GetDamage());
 
-            projectile->Kill();
+                CT_LOG_DEBUG("CollisionManager: Player hit by enemy projectile; received {} damage. Health: ({} / {}).",
+                             projectile->GetDamage(), player->GetHealth(), player->GetMaxHealth());
+
+                projectile->Kill();
+            }
         }
     }
 

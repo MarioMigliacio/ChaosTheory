@@ -21,8 +21,8 @@
 /// @param frameDelay Animaltion frame time.
 /// @param projFrameWidth Frame width of initial bomb projectile before sprite sheet.
 /// @param projFrameHeight Frame height of initial bomb projectile before sprite sheet.
-/// @param frameWidth Frame width in sprite sheet.
-/// @param frameHeight Frame height in sprite sheet.
+/// @param explodeFrameWidth One frame width (sheet is 512x512).
+/// @param explodeFrameHeight One frame height (sheet is 512x512).
 /// @param framesPerRow Frames per row in sprite sheet.
 /// @param totalFrames Total frames in sprite sheet.
 struct BombProjectileConfig
@@ -33,8 +33,8 @@ struct BombProjectileConfig
     float frameDelay = 0.05f;
     int projFrameWidth = 64;
     int projFrameHeight = 64;
-    int frameWidth = 128;
-    int frameHeight = 128;
+    int explodeFrameWidth = 128;
+    int explodeFrameHeight = 128;
     int framesPerRow = 4;
     int totalFrames = 16;
 };
@@ -54,10 +54,29 @@ class BombProjectile final : public BaseProjectile
   public:
     BombProjectile(Allegiance allegiance, const sf::Vector2f &pos, const sf::Vector2f &velocity,
                    const BombProjectileConfig &config);
+    ~BombProjectile() override = default;
 
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    BombProjectile(const BombProjectile &) = delete;
+    BombProjectile &operator=(const BombProjectile &) = delete;
+
+    BombProjectile(BombProjectile &&) = delete;
+    BombProjectile &operator=(BombProjectile &&) = delete;
+
+  public:
     void Update(float dt) override;
-    void Draw(sf::RenderTarget &target) override;
     void OnImpact();
+
+  public:
+    bool SupportsImpactAnimation() const override
+    {
+        return true;
+    }
+
+    void TriggerImpact() override
+    {
+        OnImpact();
+    }
 
   private:
     BombProjectileConfig m_cfg;

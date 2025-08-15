@@ -78,6 +78,6 @@ inline GunPattern GetNextPattern(GunPattern current)
         case GunPattern::LazerBeamHybrid:
             return GunPattern::UltimateArcBeam;
         default:
-            return GunPattern::UltimateArcBeam;
+            return GunPattern::SingleShot;
     }
 }
