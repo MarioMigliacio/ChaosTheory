@@ -12,6 +12,7 @@
 
 #include "BaseGun.h"
 #include "GunPattern.h"
+#include "LazerBeamProjectile.h"
 #include "ProjectileManager.h"
 #include "ProjectileStats.h"
 
@@ -48,16 +49,24 @@ class ConfigurableGun : public BaseGun
 
     sf::Vector2f GetDefaultDirection() const;
 
+    void SetLazerBeamStreamConfig(const LazerBeamStreamConfig &cfg);
+    const LazerBeamStreamConfig &GetLazerBeamStreamConfig() const;
+    void SetLazerDampener(const float val);
+
     void Update(float dt) override;
 
   protected:
     std::shared_ptr<BaseProjectile> FireBasic(const sf::Vector2f &pos, const sf::Vector2f &dir);
     void FireSpread(const sf::Vector2f &pos, const sf::Vector2f &baseDir, const std::vector<float> &angles);
     std::shared_ptr<BaseProjectile> FireHomingRocket(const sf::Vector2f &pos);
-    std::shared_ptr<BaseProjectile> FireGrowingBullet(const sf::Vector2f &pos);
+    std::shared_ptr<BaseProjectile> FireExpandingProjectile(const sf::Vector2f &pos);
     std::shared_ptr<BaseProjectile> FireLazerBeam(const sf::Vector2f &pos);
     void FireUltimateArc(const sf::Vector2f &pos);
 
   protected:
     ProjectileStats m_stats;
+    LazerBeamStreamConfig m_lazerStreamCfg{};
+
+    float m_beamTimer = 0.f;
+    float m_beamDampenerFactor = 0.5f;
 };

@@ -6,6 +6,7 @@
 //  Description : Unit tests for EnemyGun behavior including difficulty scaling.
 //
 //  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "EnemyGun.h"
@@ -38,6 +39,7 @@ class EnemyGunTest : public ::testing::Test
         }
 
         AssetManager::Instance().LoadTexture("BasicBullet", "assets/sprites/projectiles/BasicBullet.png");
+        AssetManager::Instance().LoadTexture("RocketProjectile", "assets/sprites/projectiles/RocketProjectile.png");
         ProjectileManager::Instance().Init();
     }
 
@@ -68,7 +70,7 @@ TEST_F(EnemyGunTest, FiresSingleProjectileDownward)
 
     ASSERT_NE(proj, nullptr);
     EXPECT_EQ(proj->GetAllegiance(), Allegiance::Enemy);
-    EXPECT_FLOAT_EQ(proj->GetDamageAsInt(), stats.damage);
+    EXPECT_FLOAT_EQ(proj->GetDamage(), stats.damage);
     EXPECT_GT(proj->GetVelocity().y, 0.f); // downward
 }
 
@@ -84,7 +86,7 @@ TEST_F(EnemyGunTest, AppliesDifficultyScalingOnInit)
     gun.SetOwnerPosition({0.f, 0.f});
 
     // After scaling, values should increase
-    EXPECT_GT(gun.TryFire()->GetDamageAsInt(), 10.f);
+    EXPECT_GT(gun.TryFire()->GetDamage(), 10.f);
 }
 
 TEST_F(EnemyGunTest, CanUpgradeDuringBossPhase)
@@ -104,5 +106,5 @@ TEST_F(EnemyGunTest, CanUpgradeDuringBossPhase)
 
     auto proj = gun.TryFire();
     ASSERT_NE(proj, nullptr);
-    EXPECT_GT(proj->GetDamageAsInt(), 10.f);
+    EXPECT_GT(proj->GetDamage(), 10.f);
 }

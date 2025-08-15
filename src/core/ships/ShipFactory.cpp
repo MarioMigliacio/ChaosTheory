@@ -15,6 +15,7 @@
 #include "Assets.h"
 #include "BasicShip.h"
 #include "Macros.h"
+#include "PlayerShip.h"
 #include "ResolutionScaleManager.h"
 
 /// @brief Get the current Instance for this ShipFactory singleton.
@@ -23,6 +24,32 @@ ShipFactory &ShipFactory::Instance()
 {
     static ShipFactory instance;
     return instance;
+}
+
+/// @brief Creates a PlayerShip, scaled appropriately with window resolution.
+/// @param pos Starting to position to emplalce ship at.
+/// @return Safe pointer to a PlayerShip, compatible with the BaseShip base class.
+std::shared_ptr<BaseShip> ShipFactory::CreatePlayerShip(const sf::Vector2f &pos)
+{
+    auto ship = std::make_shared<PlayerShip>();
+    ship->SetPosition(pos);
+
+    // Setup resolution-based scaling
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::PlayerAssets::PlayerShipWhiteKey);
+
+    if (tex)
+    {
+        // A little redundant to getSize.x and getSize.y because PlayerShip is a square. But explicit.
+        float textureWidth = static_cast<float>(tex->getSize().x);
+        float textureHeight = static_cast<float>(tex->getSize().y);
+        float scaledWidth = ResolutionScaleManager::Instance().ScaleX(textureWidth);
+        float scaledHeight = ResolutionScaleManager::Instance().ScaleY(textureHeight);
+        float scaleFactorX = scaledWidth / textureWidth;
+        float scaleFactorY = scaledHeight / textureHeight;
+        ship->SetScale(scaleFactorX, scaleFactorY);
+    }
+
+    return ship;
 }
 
 /// @brief Creates a BasicShip, scaled appropriately with the window resolution.

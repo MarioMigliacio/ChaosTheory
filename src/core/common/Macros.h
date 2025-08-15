@@ -62,3 +62,44 @@
 /// @brief Simple math constant for PI.
 constexpr float PI = 3.14159f;
 ///////////////////////////////////////////////
+
+/// @brief Useful namespace exposing somewhat advanced math functions.
+namespace CT_MATH
+{
+/// @brief Dot product between two directional vectors. Projects one vector onto another and scales that projection by
+/// the magnitude of the second vector
+/// @param a Vector 1.
+/// @param b Vector 2.
+/// @return Dot product of Vector a and b.
+inline float Dot(const sf::Vector2f &a, const sf::Vector2f &b)
+{
+    return a.x * b.x + a.y * b.y;
+}
+
+/// @brief Length or magnitude of component vector.
+/// @param v Vector to perform calculation on.
+/// @return The Square of the components squared.
+inline float Length(const sf::Vector2f &v)
+{
+    return std::sqrt(v.x * v.x + v.y * v.y);
+}
+
+/// @brief Translates an angle degree into Radians for computation.
+/// @param d The degree to translate.
+/// @return Radian amount from degree.
+inline float DegToRad(float d)
+{
+    return d * PI / 180.f;
+}
+
+/// @brief Return v normalized to unit length (or zero vector if |v| == 0).
+/// @param v Vector to normalize.
+/// @return Normalized unit vector.
+/// @note If 0, return a default direction that favors the player.
+inline sf::Vector2f Norm(const sf::Vector2f &v)
+{
+    float m = Length(v);
+
+    return (m > 0.f) ? sf::Vector2f(v.x / m, v.y / m) : sf::Vector2f(0.f, -1.f);
+}
+}; // namespace CT_MATH

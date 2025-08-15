@@ -297,6 +297,9 @@ static auto BombBlastSpriteKey = "BombBlast";
 /// @brief Key to the BombProjectileSpriteKey Sprite Asset.
 static auto BombProjectileSpriteKey = "BombProjectile";
 
+/// @brief Key to the LazerBeamProjectileSpriteKey Sprite Asset.
+static auto LazerBeamProjectileSpriteKey = "LazerBeamProjectile";
+
 /// @brief Key to the RocketBlastSpriteKey Sprite Asset.
 static auto RocketBlastSpriteKey = "RocketBlast";
 
@@ -308,6 +311,7 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"BasicBullet", "assets/sprites/projectiles/BasicBullet.png"},
     {"BombBlast", "assets/sprites/projectiles/BombBlast.png"},
     {"BombProjectile", "assets/sprites/projectiles/BombProjectile.png"},
+    {"LazerBeamProjectile", "assets/sprites/projectiles/LazerBeamProjectile.png"},
     {"RocketBlast", "assets/sprites/projectiles/RocketBlast.png"},
     {"RocketProjectile", "assets/sprites/projectiles/RocketProjectile.png"},
 };
@@ -517,6 +521,7 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"BasicBullet", "assets/sprites/projectiles/BasicBullet.png"},
     {"BombBlast", "assets/sprites/projectiles/BombBlast.png"},
     {"BombProjectile", "assets/sprites/projectiles/BombProjectile.png"},
+    {"LazerBeamProjectile", "assets/sprites/projectiles/LazerBeamProjectile.png"},
     {"RocketBlast", "assets/sprites/projectiles/RocketBlast.png"},
     {"RocketProjectile", "assets/sprites/projectiles/RocketProjectile.png"},
     {"AlienShip", "assets/sprites/enemies/AlienShip.png"},

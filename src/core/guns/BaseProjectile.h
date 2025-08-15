@@ -73,6 +73,18 @@ class BaseProjectile : public BaseCollidable
         m_alive = false;
     }
 
+    /// @brief Interface options to allow support for a projectile that explodes upon impact, possibly changing sprite.
+    virtual bool SupportsImpactAnimation() const
+    {
+        return false;
+    }
+
+    /// @brief The action to take place on default, for projectiles that impact a collidable.
+    virtual void TriggerImpact()
+    {
+        Kill();
+    }
+
     /// @brief Return allegiance (Player, Enemy, etc.)
     virtual Allegiance GetAllegiance() const
     {
@@ -89,12 +101,6 @@ class BaseProjectile : public BaseCollidable
     virtual float GetDamage() const
     {
         return m_damage;
-    }
-
-    /// @brief Get the damage as an int.
-    virtual int GetDamageAsInt() const
-    {
-        return static_cast<int>(std::round(m_damage));
     }
 
     /// @brief Set damage value.

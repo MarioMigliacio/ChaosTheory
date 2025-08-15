@@ -61,6 +61,7 @@ void BombProjectile::Update(float dt)
         if (m_lifetime >= m_cfg.fuseTime || CollisionManager::Instance().HandleBombCollisionWithEnemyOrWorld(*this))
         {
             OnImpact();
+            return;
         }
     }
 
@@ -72,16 +73,6 @@ void BombProjectile::Update(float dt)
         {
             Kill();
         }
-    }
-}
-
-/// @brief Renders the projectile or its explosion.
-/// @param target Render target.
-void BombProjectile::Draw(sf::RenderTarget &target)
-{
-    if (m_alive)
-    {
-        target.draw(m_sprite);
     }
 }
 
@@ -101,12 +92,13 @@ void BombProjectile::OnImpact()
 
     if (blastSheet)
     {
-        m_anim.SetSheet(*blastSheet, m_cfg.frameWidth, m_cfg.frameHeight, m_cfg.framesPerRow, m_cfg.totalFrames);
+        m_anim.SetSheet(*blastSheet, m_cfg.explodeFrameWidth, m_cfg.explodeFrameHeight, m_cfg.framesPerRow,
+                        m_cfg.totalFrames);
         m_anim.SetFrameDuration(m_cfg.frameDelay);
         m_anim.SetLooping(false);
         m_anim.SetFrameRange(0, m_cfg.totalFrames - 1);
 
-        m_sprite.setOrigin(m_cfg.frameWidth / 2.f, m_cfg.frameHeight / 2.f);
+        m_sprite.setOrigin(m_cfg.explodeFrameWidth / 2.f, m_cfg.explodeFrameHeight / 2.f);
     }
 
     else

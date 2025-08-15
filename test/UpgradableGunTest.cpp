@@ -6,6 +6,7 @@
 //  Description : Unit tests for UpgradableGun (player weapon) behavior.
 //
 //  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "UpgradableGun.h"

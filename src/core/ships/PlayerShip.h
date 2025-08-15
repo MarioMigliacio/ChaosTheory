@@ -45,10 +45,10 @@ class PlayerShip : public BaseShip
     void ReplenishGas(const float amount);
     void BoostMaxGas(const float amount);
 
-    void ReplenishHealth(const int amount);
-    void BoostMaxHealth(const int amount);
+    void ReplenishHealth(const float amount);
+    void BoostMaxHealth(const float amount);
 
-    void TakeDamage(const int amount) override;
+    void TakeDamage(const float amount) override;
     void Kill() override;
 
     void GainLifeCount();

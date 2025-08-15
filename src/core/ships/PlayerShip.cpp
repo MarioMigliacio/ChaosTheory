@@ -67,36 +67,6 @@ constexpr float BOMB_COOLDOWN_SEC = 1.f;
 
 /// @brief Configurable constant for direction vector of initial bomb projectile.
 const sf::Vector2f BOMB_VELOCITY = {0.f, -320};
-
-/// @brief Configurable constant for time before bomb automatically detonates without hitting a target.
-constexpr float BOMB_FUSE_TIME = 1.5f;
-
-/// @brief Configurable constant for radius in pixels that the bomb explodes with.
-constexpr float BOMB_BLAST_RADIUS = 128.f;
-
-/// @brief Configurable constant for damage that bomb deals to effected units.
-constexpr float BOMB_DAMAGE = 80.f;
-
-/// @brief Configurable constant for updating bomb animation sprite.
-constexpr float BOMB_FRAME_DELAY = 0.05f;
-
-/// @brief Constant for size of launching projectile of bomb. Hard defined.
-constexpr int BOMB_PROJECTILE_FRAME_WIDTH = 64;
-
-/// @brief Constant for size of launchingg projectile of bomb. Hard defined.
-constexpr int BOMB_PROJECTILE_FRAME_HEIGHT = 64;
-
-/// @brief Constant for size of exploding sprite of bomb. Hard defined.
-constexpr int BOMB_EXPLOSION_FRAME_WIDTH = 128;
-
-/// @brief Constant for size of exploding sprite of bomb. Hard defined.
-constexpr int BOMB_EXPLOSION_FRAME_HEIGHT = 128;
-
-/// @brief Constant for size of spritesheet elements in a single row. Hard defined.
-constexpr int BOMB_EXPLOSION_FRAMES_PER_ROW = 4;
-
-/// @brief Constant for total frames contained in the bomb explosion spritesheet. Hard defined.
-constexpr int BOMB_EXPLOSION_TOTAL_FRAMES = 16;
 } // namespace
 
 /// @brief Constructor for the PlayerShip.
@@ -206,10 +176,10 @@ void PlayerShip::ApplyIconEffect(const std::shared_ptr<UIIcon> &icon)
             GainBombCount();
             break;
         case IconEffectType::HealthRestore:
-            ReplenishHealth(20);
+            ReplenishHealth(20.f);
             break;
         case IconEffectType::HealthBoost:
-            BoostMaxHealth(10);
+            BoostMaxHealth(10.f);
             break;
         case IconEffectType::LifeIncrease:
             GainLifeCount();
@@ -338,21 +308,21 @@ void PlayerShip::BoostMaxGas(const float amount)
 
 /// @brief Restores current player health.
 /// @param amount Amount to heal.
-void PlayerShip::ReplenishHealth(int amount)
+void PlayerShip::ReplenishHealth(const float amount)
 {
     m_health = std::min(m_maxHealth, m_health + amount);
 }
 
 /// @brief Boosts the max end life for this PlayerShip.
 /// @param amount Amount to increase maximum by.
-void PlayerShip::BoostMaxHealth(const int amount)
+void PlayerShip::BoostMaxHealth(const float amount)
 {
     m_maxHealth += amount;
 }
 
 /// @brief Override the default TakeDamage method to account for Player Lives and GameOver logic.
 /// @param amount Damage to be taken.
-void PlayerShip::TakeDamage(int amount)
+void PlayerShip::TakeDamage(const float amount)
 {
     if (m_invincible)
     {
@@ -458,18 +428,9 @@ void PlayerShip::TryFireBomb()
         return;
     }
 
-    auto bomb = ProjectileFactory::Instance().CreateBombProjectile(
-        GetPosition(), BOMB_VELOCITY, m_allegiance,
-        BombProjectileConfig{.fuseTime = BOMB_FUSE_TIME,
-                             .blastRadius = BOMB_BLAST_RADIUS,
-                             .damage = BOMB_DAMAGE,
-                             .frameDelay = BOMB_FRAME_DELAY,
-                             .projFrameWidth = BOMB_PROJECTILE_FRAME_WIDTH,
-                             .projFrameHeight = BOMB_PROJECTILE_FRAME_HEIGHT,
-                             .frameWidth = BOMB_EXPLOSION_FRAME_WIDTH,
-                             .frameHeight = BOMB_EXPLOSION_FRAME_HEIGHT,
-                             .framesPerRow = BOMB_EXPLOSION_FRAMES_PER_ROW,
-                             .totalFrames = BOMB_EXPLOSION_TOTAL_FRAMES});
+    BombProjectileConfig cfg{}; // optional to change constants from default.
+
+    auto bomb = ProjectileFactory::Instance().CreateBombProjectile(GetPosition(), BOMB_VELOCITY, m_allegiance, cfg);
 
     if (bomb)
     {

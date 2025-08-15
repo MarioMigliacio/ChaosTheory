@@ -4,6 +4,9 @@
 //  Author      : Mario Migliacio
 //  Created     : 2025-08-08
 //  Description : Unit tests for the BombProjectile (flight, fuse, collision)
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include <gtest/gtest.h>
@@ -71,8 +74,8 @@ TEST_F(BombProjectileTest, FlightMovesStraightByVelocityTimesDt)
                              .frameDelay = 0.05f,
                              .projFrameWidth = 64,
                              .projFrameHeight = 64,
-                             .frameWidth = 128,
-                             .frameHeight = 128,
+                             .explodeFrameWidth = 128,
+                             .explodeFrameHeight = 128,
                              .framesPerRow = 4,
                              .totalFrames = 16};
 
@@ -95,8 +98,8 @@ TEST_F(BombProjectileTest, FuseTriggersExplosionPlaysAnimationThenKills)
                              .frameDelay = 0.01f,
                              .projFrameWidth = 64,
                              .projFrameHeight = 64,
-                             .frameWidth = 128,
-                             .frameHeight = 128,
+                             .explodeFrameWidth = 128,
+                             .explodeFrameHeight = 128,
                              .framesPerRow = 4,
                              .totalFrames = 16};
 
@@ -132,8 +135,8 @@ TEST_F(BombProjectileTest, CollisionWithEnemyTriggersExplosionFlow)
                              .frameDelay = 0.03f,
                              .projFrameWidth = 64,
                              .projFrameHeight = 64,
-                             .frameWidth = 128,
-                             .frameHeight = 128,
+                             .explodeFrameWidth = 128,
+                             .explodeFrameHeight = 128,
                              .framesPerRow = 4,
                              .totalFrames = 16};
 

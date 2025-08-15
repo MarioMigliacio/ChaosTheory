@@ -19,6 +19,7 @@
 //
 //  Responsibilities:
 //      - Provide Update for BasicProjectile.
+//      - Marks itself as not alive when traveling off screen.
 //
 // ============================================================================
 class BasicProjectile : public BaseProjectile
