@@ -92,7 +92,7 @@ inline float DegToRad(float d)
     return d * PI / 180.f;
 }
 
-/// @brief Return v normalized to unit length (or zero vector if |v| == 0).
+/// @brief (Player normalization) Return v normalized to unit length (or zero vector if |v| == 0).
 /// @param v Vector to normalize.
 /// @return Normalized unit vector.
 /// @note If 0, return a default direction that favors the player.
@@ -101,5 +101,16 @@ inline sf::Vector2f Norm(const sf::Vector2f &v)
     float m = Length(v);
 
     return (m > 0.f) ? sf::Vector2f(v.x / m, v.y / m) : sf::Vector2f(0.f, -1.f);
+}
+
+/// @brief (Enemy normalization) Return v normalized to unit length (or zero vector if |v| == 0).
+/// @param v Vector to normalize.
+/// @return Normalized unit vector.
+/// @note If 0, return a default direction that favors the Enemy.
+inline sf::Vector2f Normalize(const sf::Vector2f &v)
+{
+    float m = Length(v);
+
+    return (m > 0.f) ? sf::Vector2f(v.x / m, v.y / m) : sf::Vector2f(0.f, 1.f);
 }
 }; // namespace CT_MATH

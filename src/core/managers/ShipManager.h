@@ -40,6 +40,7 @@ class ShipManager
     void SpawnPlayer(const sf::Vector2f &pos);
     void SpawnBasicEnemy(const sf::Vector2f &pos);
     void SpawnAlienEnemy(const sf::Vector2f &pos);
+    void SpawnBerserkerEnemy(const sf::Vector2f &pos);
 
     std::shared_ptr<PlayerShip> GetPlayer() const;
     const std::vector<std::shared_ptr<BaseShip>> &GetEnemies() const;

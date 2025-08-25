@@ -525,6 +525,7 @@ static const std::unordered_map<std::string, std::string> Sprites = {
     {"RocketBlast", "assets/sprites/projectiles/RocketBlast.png"},
     {"RocketProjectile", "assets/sprites/projectiles/RocketProjectile.png"},
     {"AlienShip", "assets/sprites/enemies/AlienShip.png"},
+    {"BerserkerShip", "assets/sprites/enemies/BerserkerShip.png"},
     {"AstronautSpeakerBlack", "assets/sprites/players/AstronautSpeakerBlack.png"},
     {"AstronautSpeakerBlue", "assets/sprites/players/AstronautSpeakerBlue.png"},
     {"AstronautSpeakerGold", "assets/sprites/players/AstronautSpeakerGold.png"},

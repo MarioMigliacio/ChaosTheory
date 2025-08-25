@@ -10,6 +10,7 @@ target_precompile_headers(core PRIVATE ${PROJECT_SOURCE_DIR}/src/core/pch.h)
 target_include_directories(core PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/core
+    ${PROJECT_SOURCE_DIR}/src/core/AI
     ${PROJECT_SOURCE_DIR}/src/core/common
     ${PROJECT_SOURCE_DIR}/src/core/guns
     ${PROJECT_SOURCE_DIR}/src/core/managers

@@ -14,6 +14,7 @@
 #include "AssetManager.h"
 #include "Assets.h"
 #include "BasicShip.h"
+#include "BerserkerShip.h"
 #include "Macros.h"
 #include "PlayerShip.h"
 #include "ResolutionScaleManager.h"
@@ -83,7 +84,7 @@ std::shared_ptr<BaseShip> ShipFactory::CreateBasicShip(const sf::Vector2f &pos, 
     return ship;
 }
 
-/// @brief Creates a AlienShip, scaled appropriately with the window resolution.
+/// @brief Creates an AlienShip, scaled appropriately with the window resolution.
 /// @param pos Starting position to emplace ship at.
 /// @param allegiance Allegiance to employ ship with.
 /// @return Safe pointer to an AlienShip, compatible with the BaseShip base class.
@@ -109,6 +110,37 @@ std::shared_ptr<BaseShip> ShipFactory::CreateAlienShip(const sf::Vector2f &pos, 
     else
     {
         CT_LOG_ERROR("ShipFactory-AlienShip texture not found during creation!");
+    }
+
+    return ship;
+}
+
+/// @brief Creates a BerserkerShip, scaled appropriately with the window resolution.
+/// @param pos Starting position to emplace ship at.
+/// @param allegiance Allegiance to employ ship with.
+/// @return Safe pointer to a BerserkerShip, compatible with the BaseShip base class.
+std::shared_ptr<BaseShip> ShipFactory::CreateBerserkerShip(const sf::Vector2f &pos, Allegiance allegiance)
+{
+    auto ship = std::make_shared<BerserkerShip>(pos, allegiance);
+
+    // Setup resolution-based scaling
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::BerserkerShipSpriteKey);
+
+    if (tex)
+    {
+        // resolution for BerserkerShip DOES matter, because it is 32 x 64 pixel.
+        float textureWidth = static_cast<float>(tex->getSize().x);
+        float textureHeight = static_cast<float>(tex->getSize().y);
+        float scaledWidth = ResolutionScaleManager::Instance().ScaleX(textureWidth);
+        float scaledHeight = ResolutionScaleManager::Instance().ScaleY(textureHeight);
+        float scaleFactorX = scaledWidth / textureWidth;
+        float scaleFactorY = scaledHeight / textureHeight;
+        ship->SetScale(scaleFactorX, scaleFactorY);
+    }
+
+    else
+    {
+        CT_LOG_ERROR("ShipFactory-BerserkerShip texture not found during creation!");
     }
 
     return ship;
