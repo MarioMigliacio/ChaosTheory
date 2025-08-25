@@ -121,14 +121,14 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateHomingRocket(const sf::
     return proj;
 }
 
-/// @brief Creates an individual LazerBeam Projectile segment that travels based on allegiance.
+/// @brief Creates an individual LaserBeam Projectile segment that travels based on allegiance.
 /// @param pos Position to spawn at.
 /// @param dir Direction to travel at upon spawn.
 /// @param stats ProjectileStats to configure with.
 /// @param allegiance Allegiance to instantiate with.
 /// @param perSegmentDamageFactor Factor to scale damage based on projectile segment.
 /// @return A safe pointer to a BaseProjectile object.
-std::shared_ptr<BaseProjectile> ProjectileFactory::CreateLazerBeamProjectile(const sf::Vector2f &pos,
+std::shared_ptr<BaseProjectile> ProjectileFactory::CreateLaserBeamProjectile(const sf::Vector2f &pos,
                                                                              const sf::Vector2f &dir,
                                                                              const ProjectileStats &stats,
                                                                              Allegiance allegiance,
@@ -136,10 +136,10 @@ std::shared_ptr<BaseProjectile> ProjectileFactory::CreateLazerBeamProjectile(con
 {
     sf::Vector2f normalizedDir = CT_MATH::Norm(dir);
 
-    auto seg = std::make_shared<LazerBeamProjectile>(pos, normalizedDir * stats.speed, stats.damage, allegiance,
+    auto seg = std::make_shared<LaserBeamProjectile>(pos, normalizedDir * stats.speed, stats.damage, allegiance,
                                                      stats.tint, perSegmentDamageFactor);
 
-    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::LazerBeamProjectileSpriteKey);
+    auto *tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::LaserBeamProjectileSpriteKey);
 
     if (tex)
     {

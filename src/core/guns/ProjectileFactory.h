@@ -14,7 +14,7 @@
 #include "BaseProjectile.h"
 #include "BombProjectile.h"
 #include "HomingRocketProjectile.h"
-#include "LazerBeamProjectile.h"
+#include "LaserBeamProjectile.h"
 #include "ProjectileStats.h"
 #include <memory>
 
@@ -47,7 +47,7 @@ class ProjectileFactory
                                                        const ProjectileStats &stats, Allegiance allegiance,
                                                        const HomingRocketConfig &cfg = {});
 
-    std::shared_ptr<BaseProjectile> CreateLazerBeamProjectile(const sf::Vector2f &pos, const sf::Vector2f &dir,
+    std::shared_ptr<BaseProjectile> CreateLaserBeamProjectile(const sf::Vector2f &pos, const sf::Vector2f &dir,
                                                               const ProjectileStats &stats, Allegiance allegiance,
                                                               float perSegmentDamageFactor = 0.25f);
 

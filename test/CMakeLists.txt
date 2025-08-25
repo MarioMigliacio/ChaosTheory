@@ -15,7 +15,7 @@ add_executable(CT_tests
     ${CMAKE_CURRENT_SOURCE_DIR}/ExpandingProjectileTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/HomingRocketProjectileTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/InputManagerTest.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/LazerBeamProjectileTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/LaserBeamProjectileTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/LogManagerTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Main_test.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/PlayerShipTest.cpp
