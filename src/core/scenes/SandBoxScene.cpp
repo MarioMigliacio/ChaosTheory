@@ -330,11 +330,11 @@ void SandBoxScene::SetupSceneComponents()
     MockTitleText(false);
     MockPlayerUnit(true);
     MockHUDPanel(HUD_MOCK_BOOL);
-    MockIconComponents(false);
+    MockIconComponents(true);
     MockChatBox(false);
     MockBasicShipTest(true);
     MockAlienShipTest(true);
-    MockBerserkerShipTest(true);
+    MockBerserkerShipTest(false);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.

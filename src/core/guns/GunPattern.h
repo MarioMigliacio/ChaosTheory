@@ -34,17 +34,17 @@ enum class GunPattern
     /// @brief A spread of four angle-directed shots.
     QuadShot,
 
-    /// @brief A continuous stream of heavy damaging lazer beam.
-    LazerBeam,
+    /// @brief A continuous stream of heavy damaging laser beam.
+    LaserBeam,
 
-    /// @brief A spread of two angle-directed shots, along with a central lazer beam.
-    LazerBeamDoubleShot,
+    /// @brief A spread of two angle-directed shots, along with a central laser beam.
+    LaserBeamDoubleShot,
 
-    /// @brief A single shot that seeks out the nearest target upon spawn time, along with a central lazer beam.
-    LazerBeamHomingRocket,
+    /// @brief A single shot that seeks out the nearest target upon spawn time, along with a central laser beam.
+    LaserBeamHomingRocket,
 
-    /// @brief A plethora of shots accompanying a central lazer beam.
-    LazerBeamHybrid,
+    /// @brief A plethora of shots accompanying a central laser beam.
+    LaserBeamHybrid,
 
     /// @brief A Final-Form spray pattern that is to be witnessed in all its glory.
     UltimateArcBeam
@@ -68,14 +68,16 @@ inline GunPattern GetNextPattern(GunPattern current)
         case GunPattern::HomingRocket:
             return GunPattern::QuadShot;
         case GunPattern::QuadShot:
-            return GunPattern::LazerBeam;
-        case GunPattern::LazerBeam:
-            return GunPattern::LazerBeamDoubleShot;
-        case GunPattern::LazerBeamDoubleShot:
-            return GunPattern::LazerBeamHomingRocket;
-        case GunPattern::LazerBeamHomingRocket:
-            return GunPattern::LazerBeamHybrid;
-        case GunPattern::LazerBeamHybrid:
+            return GunPattern::LaserBeam;
+        case GunPattern::LaserBeam:
+            return GunPattern::LaserBeamDoubleShot;
+        case GunPattern::LaserBeamDoubleShot:
+            return GunPattern::LaserBeamHomingRocket;
+        case GunPattern::LaserBeamHomingRocket:
+            return GunPattern::LaserBeamHybrid;
+        case GunPattern::LaserBeamHybrid:
+            return GunPattern::LaserBeamHybrid; // TODO: when finished with arcbeam, rewire it in here.
+        case GunPattern::UltimateArcBeam:
             return GunPattern::UltimateArcBeam;
         default:
             return GunPattern::SingleShot;

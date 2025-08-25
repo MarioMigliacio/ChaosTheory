@@ -1,9 +1,9 @@
 // ============================================================================
-//  File        : LazerBeamProjectileTest.cpp
+//  File        : LaserBeamProjectileTest.cpp
 //  Project     : ChaosTheory (CT) - Tests
 //  Author      : Mario Migliacio
 //  Created     : 2025-08-13
-//  Description : Unit tests for LazerBeam (segment + stream emission)
+//  Description : Unit tests for LaserBeam (segment + stream emission)
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -20,7 +20,7 @@
 #include "SettingsManager.h"
 #include "TestHelpers.h"
 
-class LazerBeamProjectileTest : public ::testing::Test
+class LaserBeamProjectileTest : public ::testing::Test
 {
   protected:
     std::shared_ptr<Settings> m_settings;
@@ -43,8 +43,8 @@ class LazerBeamProjectileTest : public ::testing::Test
 
         AssetManager::Instance().Init(m_settings);
 
-        AssetManager::Instance().LoadTexture("LazerBeamProjectile",
-                                             "assets/sprites/projectiles/LazerBeamProjectile.png");
+        AssetManager::Instance().LoadTexture("LaserBeamProjectile",
+                                             "assets/sprites/projectiles/LaserBeamProjectile.png");
 
         ProjectileManager::Instance().Init();
     }
@@ -57,11 +57,11 @@ class LazerBeamProjectileTest : public ::testing::Test
     }
 };
 
-TEST_F(LazerBeamProjectileTest, SegmentMovesForwardAndCullsOffscreen)
+TEST_F(LaserBeamProjectileTest, SegmentMovesForwardAndCullsOffscreen)
 {
     // Build a single segment via the factory (like the game would)
     ProjectileStats stats;
-    auto seg = ProjectileFactory::Instance().CreateLazerBeamProjectile({200.f, 300.f}, {0.f, -1.f}, stats,
+    auto seg = ProjectileFactory::Instance().CreateLaserBeamProjectile({200.f, 300.f}, {0.f, -1.f}, stats,
                                                                        Allegiance::Player, 0.25f);
 
     ASSERT_NE(seg, nullptr);
@@ -83,11 +83,11 @@ TEST_F(LazerBeamProjectileTest, SegmentMovesForwardAndCullsOffscreen)
     EXPECT_FALSE(seg->IsAlive());
 }
 
-TEST_F(LazerBeamProjectileTest, StreamEmissionScalesWithFireRate)
+TEST_F(LaserBeamProjectileTest, StreamEmissionScalesWithFireRate)
 {
-    // Set up a gun with LazerBeam pattern and a deterministic stream config
+    // Set up a gun with LaserBeam pattern and a deterministic stream config
     ProjectileStats stats;
-    stats.pattern = GunPattern::LazerBeam;
+    stats.pattern = GunPattern::LaserBeam;
     stats.damage = 10.f;
     stats.speed = 400.f;
 
@@ -96,15 +96,15 @@ TEST_F(LazerBeamProjectileTest, StreamEmissionScalesWithFireRate)
     gun.SetOwnerPosition({320.f, 480.f}); // near bottom of screen
 
     // Tune stream: interval = fireRate * factor (clamped by minInterval)
-    LazerBeamStreamConfig streamCfg;
+    LaserBeamStreamConfig streamCfg;
     streamCfg.intervalFactor = 0.20f;
     streamCfg.minInterval = 0.015f; // allow dense emission
-    gun.SetLazerBeamStreamConfig(streamCfg);
+    gun.SetLaserBeamStreamConfig(streamCfg);
 
     auto countSegments = []() -> size_t { return ProjectileManager::Instance().GetProjectiles().size(); };
 
     // Case A: default fireRate = 0.30s
-    gun.SetPattern(GunPattern::LazerBeam);
+    gun.SetPattern(GunPattern::LaserBeam);
     ProjectileManager::Instance().Clear(); // if you have a helper; otherwise pop them manually
 
     float simTime = 0.f;
@@ -125,7 +125,7 @@ TEST_F(LazerBeamProjectileTest, StreamEmissionScalesWithFireRate)
     ConfigurableGun gunFast(fast);
     gunFast.SetAllegiance(Allegiance::Player, {16.f, 16.f});
     gunFast.SetOwnerPosition({320.f, 480.f});
-    gunFast.SetLazerBeamStreamConfig(streamCfg);
+    gunFast.SetLaserBeamStreamConfig(streamCfg);
 
     // clear projectiles produced by the previous run
     ProjectileManager::Instance().Clear();

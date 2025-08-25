@@ -1,30 +1,30 @@
 // ============================================================================
-//  File        : LazerBeamProjectile.cpp
+//  File        : LaserBeamProjectile.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-08-13
 //  Description : A tiny, very fast projectile used to build a continuous
-//                traveling lazer stream. No AoE, no impact animation.
+//                traveling laser stream. No AoE, no impact animation.
 //
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
-#include "LazerBeamProjectile.h"
 #include "AssetManager.h"
 #include "Assets.h"
+#include "LaserBeamProjectile.h"
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "WindowManager.h"
 
-/// @brief Constructs a Singular segment for a LazerBeamProjectile.
+/// @brief Constructs a Singular segment for a LaserBeamProjectile.
 /// @param startPos Position to spawn at.
 /// @param velocity Speed or direction to travel at upon spawn.
 /// @param baseDamageFromGun Base damage to spawn with.
 /// @param allegiance Allegiance (player/enemy) to spawn with.
 /// @param tint Color tint to apply if relevant.
-/// @param perSegmentDamageFactor Dampening effect for lazer beam, since they collide at much higher frequency.
-LazerBeamProjectile::LazerBeamProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity,
+/// @param perSegmentDamageFactor Dampening effect for laser beam, since they collide at much higher frequency.
+LaserBeamProjectile::LaserBeamProjectile(const sf::Vector2f &startPos, const sf::Vector2f &velocity,
                                          float baseDamageFromGun, Allegiance allegiance, sf::Color tint,
                                          float perSegmentDamageFactor)
 {
@@ -38,7 +38,7 @@ LazerBeamProjectile::LazerBeamProjectile(const sf::Vector2f &startPos, const sf:
     const float segDmg = std::max(0.f, baseDamageFromGun) * perSegmentDamageFactor;
     SetDamage(segDmg);
 
-    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::LazerBeamProjectileSpriteKey);
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::ProjectileAssets::LaserBeamProjectileSpriteKey);
 
     if (tex)
     {
@@ -61,13 +61,13 @@ LazerBeamProjectile::LazerBeamProjectile(const sf::Vector2f &startPos, const sf:
 
     else
     {
-        CT_LOG_ERROR("LazerBeamProjectile: texture not found.");
+        CT_LOG_ERROR("LaserBeamProjectile: texture not found.");
     }
 }
 
 /// @brief Performs routine update during a frame.
 /// @param dt delta time since last update.
-void LazerBeamProjectile::Update(float dt)
+void LaserBeamProjectile::Update(float dt)
 {
     if (!m_alive)
     {
