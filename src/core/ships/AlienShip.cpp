@@ -88,81 +88,8 @@ void AlienShip::Update(float dt)
         return;
     }
 
-    UpdateMovementLogic(dt);
-    UpdateGunLogic(dt);
-}
-
-/// @brief Helper method to move this AlienShip based on update time.
-/// @param dt delta time since last update frame.
-void AlienShip::UpdateMovementLogic(const float dt)
-{
-    auto pos = m_sprite.getPosition();
-
-    // Handle random horizontal movement direction switch
-    m_directionChangeCooldown -= dt;
-
-    if (m_directionChangeCooldown <= 0.f)
-    {
-        m_directionChangeCooldown = DIRECTION_CHANGE_INTERVAL;
-        m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
-    }
-
-    // Move horizontally and vertically
-    pos.x += m_currentDirection * m_speed.x * INTERNAL_X_DIRECTION_DAMPENER * dt;
-    pos.y += (m_speed.y / INTERNAL_Y_DIRECTION_DAMPENER) * dt; // prefer ship to travel slowly in y-direction.
-    m_sprite.setPosition(pos);
-
-    // Keep within screen bounds horizontally
-    const auto windowSize = WindowManager::Instance().GetWindow().getSize();
-    const float leftEdge = m_sprite.getGlobalBounds().left;
-    const float rightEdge = leftEdge + m_sprite.getGlobalBounds().width;
-
-    if (leftEdge < 0.f)
-    {
-        m_sprite.move(-leftEdge, 0.f);
-    }
-
-    if (rightEdge > windowSize.x)
-    {
-        m_sprite.move(windowSize.x - rightEdge, 0.f);
-    }
-
-    // Destroy when off bottom
-    if (pos.y - m_sprite.getGlobalBounds().height / 2.f > static_cast<float>(windowSize.y))
-    {
-        m_alive = false;
-        CT_LOG_DEBUG("AlienShip: Destroyed after exiting screen.");
-    }
-}
-
-/// @brief Helper method to update this AlienShip based on update time.
-/// @param dt delta time since last update frame.
-void AlienShip::UpdateGunLogic(const float dt)
-{
-    if (!m_gun)
-    {
-        return;
-    }
-
-    m_gun->SetOwnerPosition(GetPosition());
-    m_gun->Update(dt);
-
-    if (m_initialHoldTime > 0.f)
-    {
-        m_initialHoldTime -= dt;
-
-        return;
-    }
-
-    // Simply call TryFire each frame, EnemyGun controls its fire rate
-    auto proj = m_gun->TryFire();
-
-    // Optional: boss phase logic or random fire rate adjustment
-    if (proj)
-    {
-        // Example: during phase, speed up fire rate
-        ProjectileManager::Instance().AddProjectile(proj);
-    }
+    UpdateBehavior(*this, dt);
+    CullIfOffscreen();
 }
 
 /// @brief Initialize gun stats

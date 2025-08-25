@@ -41,129 +41,38 @@ class BaseShip : public BaseCollidable
     /// @brief Allows unit to customize the base gun stats they spawn with.
     virtual void InitializeGunStats() = 0;
 
-    /// @brief Draw the ship if it is alive.
-    virtual void Draw(sf::RenderTarget &target)
-    {
-        if (m_alive)
-        {
-            target.draw(m_sprite);
-        }
-    }
+  public:
+    // from BaseCollidable:
 
-    /// @brief Return the health of the ship.
-    virtual int GetHealth() const
-    {
-        return m_health;
-    }
+    bool IsAlive() const override;
+    sf::FloatRect GetBounds() const override;
+    CollisionCategory GetCollisionCategory() const override;
 
-    /// @brief Set ship health.
-    virtual void SetHealth(const int maxHealth)
-    {
-        m_health = maxHealth;
-    }
+  public:
+    virtual void Draw(sf::RenderTarget &target);
 
-    /// @brief Gets the max health.
-    virtual int GetMaxHealth() const
-    {
-        return m_maxHealth;
-    }
+    virtual int GetHealth() const;
+    virtual void SetHealth(const int maxHealth);
+    virtual int GetMaxHealth() const;
+    virtual void TakeDamage(const float amount);
 
-    /// @brief Apply damage and check for death.
-    virtual void TakeDamage(const float amount)
-    {
-        m_health -= amount;
+    virtual void CullIfOffscreen();
+    virtual void Kill();
 
-        if (m_health <= 0)
-        {
-            m_health = 0;
-            m_alive = false;
-            CT_LOG_DEBUG("Ship has taken catastrophic damage and died.");
-        }
-    }
+    virtual Allegiance GetAllegiance() const;
+    virtual void SetAllegiance(const Allegiance allegiance);
 
-    /// @brief Implements BaseCollidable::IsAlive().
-    bool IsAlive() const override
-    {
-        return m_alive;
-    }
+    virtual sf::Vector2f GetPosition() const;
+    virtual void SetPosition(const sf::Vector2f &pos);
+    virtual void Move(const sf::Vector2f &offset);
 
-    /// @brief Commandable kill for this Ship.
-    virtual void Kill()
-    {
-        m_alive = false;
-    }
+    virtual void SetScale(float scaleX, float scaleY);
 
-    /// @brief Return allegiance (player, enemy, etc.).
-    virtual Allegiance GetAllegiance() const
-    {
-        return m_allegiance;
-    }
+    virtual sf::Vector2f GetSpeed() const;
+    virtual void SetSpeed(const sf::Vector2f &speed);
 
-    /// @brief Set allegiance.
-    virtual void SetAllegiance(const Allegiance allegiance)
-    {
-        m_allegiance = allegiance;
-    }
-
-    /// @brief Return world position.
-    virtual sf::Vector2f GetPosition() const
-    {
-        return m_sprite.getPosition();
-    }
-
-    /// @brief Set world position.
-    virtual void SetPosition(const sf::Vector2f &pos)
-    {
-        m_sprite.setPosition(pos);
-    }
-
-    /// @brief Move the ship by an offset.
-    virtual void Move(const sf::Vector2f &offset)
-    {
-        m_sprite.move(offset);
-    }
-
-    /// @brief Implements BaseCollidable::GetBounds().
-    sf::FloatRect GetBounds() const override
-    {
-        return m_sprite.getGlobalBounds();
-    }
-
-    /// @brief Set render scale.
-    virtual void SetScale(float scaleX, float scaleY)
-    {
-        m_sprite.setScale(scaleX, scaleY);
-    }
-
-    /// @brief Return current speed vector.
-    virtual sf::Vector2f GetSpeed() const
-    {
-        return m_speed;
-    }
-
-    /// @brief Set speed vector.
-    virtual void SetSpeed(const sf::Vector2f &speed)
-    {
-        m_speed = speed;
-    }
-
-    /// @brief Get the current Gun for this Ship.
-    virtual BaseGun *GetGun()
-    {
-        return m_gun.get();
-    }
-
-    /// @brief Const version for Gun safety, get gun for readonly.
-    virtual const BaseGun *GetGun() const
-    {
-        return m_gun.get();
-    }
-
-    /// @brief Implements BaseCollidable::GetCollisionCategory().
-    virtual CollisionCategory GetCollisionCategory() const override
-    {
-        return (m_allegiance == Allegiance::Player) ? CollisionCategory::Player : CollisionCategory::Enemy;
-    }
+    virtual BaseGun *GetGun();
+    virtual const BaseGun *GetGun() const;
 
   protected:
     Allegiance m_allegiance = Allegiance::Neutral;

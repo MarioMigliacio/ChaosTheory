@@ -61,19 +61,8 @@ void BasicShip::Update(float dt)
         return;
     }
 
-    // Move downward
-    sf::Vector2f pos = m_sprite.getPosition();
-    pos.y += m_speed.y * dt;
-    m_sprite.setPosition(pos);
-
-    // Destroy when off-screen
-    float windowHeight = static_cast<float>(WindowManager::Instance().GetWindow().getSize().y);
-
-    if (pos.y - m_sprite.getGlobalBounds().height / 2.f > windowHeight)
-    {
-        m_alive = false;
-        CT_LOG_DEBUG("BasicShip: Ship exited screen and was destroyed.");
-    }
+    UpdateBehavior(*this, dt);
+    CullIfOffscreen();
 }
 
 /// @brief Initialize gun stats. Not used for a BasicShip.

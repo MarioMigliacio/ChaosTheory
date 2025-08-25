@@ -47,20 +47,8 @@ constexpr auto SKIP_CHAT_KEY = "Space";
 /// @brief Fixed name constant to be used with the ship stats group label box.
 constexpr auto SHIP_STATS_GROUPBOX_LABEL = "Ship Stats";
 
-/// @brief Quick enabling of method.
-constexpr bool TEST_ENABLED = true;
-
-/// @brief Quick disabling of method.
-constexpr bool TEST_DISABLED = false;
-
 /// @brief Quick disabling of HUD methods.
 constexpr bool HUD_MOCK_BOOL = true;
-
-/// @brief Quick disabling of UNITS test methods.
-constexpr bool UNITS_MOCK_BOOL = true;
-
-/// @brief Quick disabling of PLAYER test methods.
-constexpr bool PLAYER_MOCK_BOOL = true;
 } // namespace
 
 /// @brief Constructor for the SandBoxScene.
@@ -339,14 +327,14 @@ void SandBoxScene::StartNextDialog()
 void SandBoxScene::SetupSceneComponents()
 {
     PlayGameMusic();
-    MockTitleText(TEST_DISABLED);
+    MockTitleText(false);
+    MockPlayerUnit(true);
     MockHUDPanel(HUD_MOCK_BOOL);
-    MockIconComponents(TEST_ENABLED);
-    MockChatBox(TEST_DISABLED);
-    MockPlayerUnit(PLAYER_MOCK_BOOL);
-    MockSpawnTestShips(UNITS_MOCK_BOOL);
-
-    m_player = ShipManager::Instance().GetPlayer();
+    MockIconComponents(false);
+    MockChatBox(false);
+    MockBasicShipTest(true);
+    MockAlienShipTest(true);
+    MockBerserkerShipTest(true);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -561,9 +549,9 @@ void SandBoxScene::MockChatBox(const bool enabled)
     }
 }
 
-/// @brief Mock enemy units to spawn.
+/// @brief Mock enemy units to spawn. Specifically call for BasicShip.
 /// @param enabled is enabled or not
-void SandBoxScene::MockSpawnTestShips(const bool enabled)
+void SandBoxScene::MockBasicShipTest(const bool enabled)
 {
     if (!enabled)
     {
@@ -577,11 +565,40 @@ void SandBoxScene::MockSpawnTestShips(const bool enabled)
     {
         ShipManager::Instance().SpawnBasicEnemy({startPos.x + i * 50.f, startPos.y});
     }
+}
 
-    for (int i = 4; i < 7; ++i)
+/// @brief Mock enemy units to spawn. Specifically call for AlienShip.
+/// @param enabled is enabled or not
+void SandBoxScene::MockAlienShipTest(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+    const sf::Vector2f startPos = {winSize.x * 0.75f, 25.f};
+
+    for (int i = 0; i < 3; ++i)
     {
         ShipManager::Instance().SpawnAlienEnemy({startPos.x + i * 100.f, startPos.y});
     }
+}
+
+/// @brief Mock enemy units to spawn. Specifically call for BerserkerShip.
+/// @param enabled is enabled or not
+void SandBoxScene::MockBerserkerShipTest(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+
+    // TODO: make SpawnBerserkerEnemy and revisit.
+    ShipManager::Instance().SpawnBerserkerEnemy({winSize.x * .15f, 25.f});
+    ShipManager::Instance().SpawnBerserkerEnemy({winSize.x * .70f, 25.f});
 }
 
 /// @brief Mock player test
@@ -597,6 +614,8 @@ void SandBoxScene::MockPlayerUnit(const bool enabled)
 
     // Spawn player through ShipManager to ensure it is tracked and registered for collisions
     ShipManager::Instance().SpawnPlayer({winSize.x / 2.f, winSize.y - 100.f});
+
+    m_player = ShipManager::Instance().GetPlayer();
 }
 
 /// @brief Helper method to load and play the game music for this scene.

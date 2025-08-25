@@ -30,6 +30,7 @@ class ShipFactory
     std::shared_ptr<BaseShip> CreatePlayerShip(const sf::Vector2f &pos);
     std::shared_ptr<BaseShip> CreateBasicShip(const sf::Vector2f &pos, Allegiance allegiance);
     std::shared_ptr<BaseShip> CreateAlienShip(const sf::Vector2f &pos, Allegiance allegiance);
+    std::shared_ptr<BaseShip> CreateBerserkerShip(const sf::Vector2f &pos, Allegiance allegiance);
 
   private:
     ShipFactory() = default;

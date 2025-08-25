@@ -13,19 +13,20 @@
 
 #include "BaseShip.h"
 #include "ShipStatsScaling.h"
+#include "StrafeAndShootBehavior.h"
 #include <random>
 
 // ============================================================================
 //  Class       : AlienShip
 //  Purpose     : An unintelligent spaceship that moves randomly across X axis,
-//                and slowly down Y axis.
+//                and slowly down Y axis, shooting along the way.
 //
 //  Responsibilities:
 //      - Scale upon construction based on game difficulty and window size.
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class AlienShip : public BaseShip, public ShipStatsScaling
+class AlienShip : public BaseShip, public ShipStatsScaling, public StrafeAndShootBehavior
 {
   public:
     AlienShip(const sf::Vector2f &startPos, Allegiance allegiance);
@@ -42,8 +43,6 @@ class AlienShip : public BaseShip, public ShipStatsScaling
     void Update(float dt) override;
 
   private:
-    void UpdateMovementLogic(const float dt);
-    void UpdateGunLogic(const float dt);
     void InitializeGunStats() override;
 
   private:
