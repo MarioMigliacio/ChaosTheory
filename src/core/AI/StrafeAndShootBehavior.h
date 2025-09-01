@@ -29,6 +29,7 @@
 class StrafeAndShootBehavior : public IBehavior
 {
   public:
+    StrafeAndShootBehavior();
     ~StrafeAndShootBehavior() override = default;
 
   protected:
@@ -36,17 +37,10 @@ class StrafeAndShootBehavior : public IBehavior
     void UpdateMovementLogic(BaseShip &ship, float dt) override;
     void UpdateGunLogic(BaseShip &ship, float dt) override;
 
-  protected:
-    // Per-behavior constants (tweak here if needed; or make setters later)
-    static constexpr float sDirectionChangeInterval = 1.0f; // seconds
-    static constexpr float sInternalXDampener = 0.5f;       // slows horizontal strafe
-    static constexpr float sInternalYDampener = 4.0f;       // slows descent
-    static constexpr float sInitialHoldTime = 1.0f;         // delay before first shot
-
-    // Behavior-owned state (ships inherit this, so each instance gets its own copy)
-    float m_directionChangeCooldown = sDirectionChangeInterval;
-    float m_currentDirX = 1.f;
-    float m_initialHoldTime = sInitialHoldTime;
-
+  private:
     std::mt19937 m_rng{std::random_device{}()};
+
+    float m_directionChangeCooldown = 0.f;
+    float m_currentDirX = 0.f;
+    float m_initialHoldTime = 0.f;
 };
