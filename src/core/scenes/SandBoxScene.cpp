@@ -332,9 +332,10 @@ void SandBoxScene::SetupSceneComponents()
     MockHUDPanel(HUD_MOCK_BOOL);
     MockIconComponents(true);
     MockChatBox(false);
-    MockBasicShipTest(true);
-    MockAlienShipTest(true);
+    MockBasicShipTest(false);
+    MockAlienShipTest(false);
     MockBerserkerShipTest(false);
+    MockCrusaderShipTest(true);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -596,9 +597,22 @@ void SandBoxScene::MockBerserkerShipTest(const bool enabled)
 
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
-    // TODO: make SpawnBerserkerEnemy and revisit.
     ShipManager::Instance().SpawnBerserkerEnemy({winSize.x * .15f, 25.f});
     ShipManager::Instance().SpawnBerserkerEnemy({winSize.x * .70f, 25.f});
+}
+
+/// @brief Mock enemy units to spawn. Specifically call for CrusaderShip.
+/// @param enabled is enabled or not
+void SandBoxScene::MockCrusaderShipTest(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+
+    ShipManager::Instance().SpawnCrusaderEnemy({winSize.x * .30f, 25.f});
 }
 
 /// @brief Mock player test

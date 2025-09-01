@@ -15,6 +15,7 @@
 #include "Assets.h"
 #include "BasicShip.h"
 #include "BerserkerShip.h"
+#include "CrusaderShip.h"
 #include "Macros.h"
 #include "PlayerShip.h"
 #include "ResolutionScaleManager.h"
@@ -141,6 +142,37 @@ std::shared_ptr<BaseShip> ShipFactory::CreateBerserkerShip(const sf::Vector2f &p
     else
     {
         CT_LOG_ERROR("ShipFactory-BerserkerShip texture not found during creation!");
+    }
+
+    return ship;
+}
+
+/// @brief Creates a CrusaderShip, scaled appropriately with the window resolution.
+/// @param pos Starting position to emplace ship at.
+/// @param allegiance Allegiance to employ ship with.
+/// @return Safe pointer to a CrusaderShip, compatible with the BaseShip base class.
+std::shared_ptr<BaseShip> ShipFactory::CreateCrusaderShip(const sf::Vector2f &pos, Allegiance allegiance)
+{
+    auto ship = std::make_shared<CrusaderShip>(pos, allegiance);
+
+    // Setup resolution-based scaling
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::CrusaderShipSpriteKey);
+
+    if (tex)
+    {
+        // resolution for CrusaderShip DOES matter, because it is 32 x 64 pixel.
+        float textureWidth = static_cast<float>(tex->getSize().x);
+        float textureHeight = static_cast<float>(tex->getSize().y);
+        float scaledWidth = ResolutionScaleManager::Instance().ScaleX(textureWidth);
+        float scaledHeight = ResolutionScaleManager::Instance().ScaleY(textureHeight);
+        float scaleFactorX = scaledWidth / textureWidth;
+        float scaleFactorY = scaledHeight / textureHeight;
+        ship->SetScale(scaleFactorX, scaleFactorY);
+    }
+
+    else
+    {
+        CT_LOG_ERROR("ShipFactory-CrusaderShip texture not found during creation!");
     }
 
     return ship;

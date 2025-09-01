@@ -43,6 +43,13 @@ void BaseShip::Draw(sf::RenderTarget &target)
     }
 }
 
+/// @brief Exposes access to set the color for this BaseShip.
+/// @param color Color to set sprite with.
+void BaseShip::SetTint(const sf::Color &color)
+{
+    m_sprite.setColor(color);
+}
+
 /// @brief Return the health of the ship.
 /// @return m_health.
 int BaseShip::GetHealth() const

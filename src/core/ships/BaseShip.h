@@ -50,6 +50,7 @@ class BaseShip : public BaseCollidable
 
   public:
     virtual void Draw(sf::RenderTarget &target);
+    virtual void SetTint(const sf::Color &color);
 
     virtual int GetHealth() const;
     virtual void SetHealth(const int maxHealth);
