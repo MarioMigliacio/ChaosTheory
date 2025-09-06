@@ -49,7 +49,7 @@ CrusaderShip::CrusaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
 
     if (!tex)
     {
-        CT_LOG_ERROR("CrusaderShip texture not found: EnemyAssets::CrusaderShipSpriteKey");
+        CT_LOG_ERROR("CrusaderShip texture not found.");
 
         return;
     }

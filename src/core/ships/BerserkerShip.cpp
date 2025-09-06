@@ -44,7 +44,7 @@ BerserkerShip::BerserkerShip(const sf::Vector2f &startPos, Allegiance allegiance
 
     if (!tex)
     {
-        CT_LOG_ERROR("BerserkerShip texture not found: EnemyAssets::BerserkerShipSpriteKey");
+        CT_LOG_ERROR("BerserkerShip texture not found.");
 
         return;
     }
