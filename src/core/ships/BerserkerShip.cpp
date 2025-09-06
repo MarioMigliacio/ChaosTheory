@@ -12,6 +12,7 @@
 #include "Assets.h"
 #include "Macros.h"
 #include "ShipManager.h"
+#include "ShipStatsScaling.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout the BerserkerShip.
@@ -53,9 +54,9 @@ BerserkerShip::BerserkerShip(const sf::Vector2f &startPos, Allegiance allegiance
     m_sprite.setOrigin(tex->getSize().x / 2.f, tex->getSize().y / 2.f);
     m_allegiance = allegiance;
 
-    m_health = m_maxHealth = ScaleHealthToDifficulty(BERSERKER_BASE_HEALTH);
-    m_speed = ScaleSpeedToDifficulty(BERSERKER_BASE_SPEED);
-    SetSpriteColorFromDifficulty(m_sprite);
+    m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(BERSERKER_BASE_HEALTH);
+    m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(BERSERKER_BASE_SPEED);
+    ShipStatsScaling::SetSpriteColorFromDifficulty(m_sprite);
 
     InitializeGunStats();
 }

@@ -13,7 +13,6 @@
 
 #include "BaseShip.h"
 #include "DrifterBehavior.h"
-#include "ShipStatsScaling.h"
 
 // ============================================================================
 //  Class       : BasicShip
@@ -24,7 +23,7 @@
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class BasicShip : public BaseShip, public ShipStatsScaling, public DrifterBehavior
+class BasicShip : public BaseShip, public DrifterBehavior
 {
   public:
     BasicShip(const sf::Vector2f &startPos, Allegiance allegiance);

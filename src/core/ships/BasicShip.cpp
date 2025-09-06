@@ -15,6 +15,7 @@
 #include "Macros.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
+#include "ShipStatsScaling.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout the BasicShip.
@@ -41,9 +42,9 @@ BasicShip::BasicShip(const sf::Vector2f &startPos, Allegiance allegiance)
         m_sprite.setOrigin(tex->getSize().x / 2.f, tex->getSize().y / 2.f);
         m_allegiance = allegiance;
 
-        m_health = m_maxHealth = ScaleHealthToDifficulty(BASE_HEALTH);
-        m_speed = ScaleSpeedToDifficulty(BASE_SPEED);
-        SetSpriteColorFromDifficulty(m_sprite);
+        m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(BASE_HEALTH);
+        m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(BASE_SPEED);
+        ShipStatsScaling::SetSpriteColorFromDifficulty(m_sprite);
     }
 
     else

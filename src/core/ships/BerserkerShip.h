@@ -6,7 +6,6 @@
 //  Description : Fast kamikaze ship. Locks direction to player's position at
 //                spawn and flies straight along that vector (no homing).
 //
-//
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
@@ -15,7 +14,6 @@
 
 #include "BaseShip.h"
 #include "BerserkerBehavior.h"
-#include "ShipStatsScaling.h"
 
 // ============================================================================
 //  Class       : BerserkerShip
@@ -27,7 +25,7 @@
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class BerserkerShip : public BaseShip, public ShipStatsScaling, public BerserkerBehavior
+class BerserkerShip : public BaseShip, public BerserkerBehavior
 {
   public:
     BerserkerShip(const sf::Vector2f &startPos, Allegiance allegiance);
