@@ -30,17 +30,25 @@
 class BerserkerBehavior : public IBehavior
 {
   public:
+    BerserkerBehavior() = default;
     ~BerserkerBehavior() override = default;
 
-    void SetSpawnTargetSnapshot(const sf::Vector2f &playerPos);
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    BerserkerBehavior(const BerserkerBehavior &) = delete;
+    BerserkerBehavior &operator=(const BerserkerBehavior &) = delete;
 
-    bool HasSnapshot() const;
-    void ClearSnapshot();
+    BerserkerBehavior(BerserkerBehavior &&) = delete;
+    BerserkerBehavior &operator=(BerserkerBehavior &&) = delete;
 
   protected:
     // IBehavior hooks
     void UpdateMovementLogic(BaseShip &ship, float dt) override;
     void UpdateGunLogic(BaseShip &ship, float dt) override;
+
+  public:
+    void SetSpawnTargetSnapshot(const sf::Vector2f &playerPos);
+    bool HasSnapshot() const;
+    void ClearSnapshot();
 
   private:
     void EnsureDirectionInitialized(BaseShip &ship);

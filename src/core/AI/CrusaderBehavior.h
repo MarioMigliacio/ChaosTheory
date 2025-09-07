@@ -30,7 +30,15 @@
 class CrusaderBehavior : public IBehavior
 {
   public:
+    CrusaderBehavior() = default;
     ~CrusaderBehavior() override = default;
+
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    CrusaderBehavior(const CrusaderBehavior &) = delete;
+    CrusaderBehavior &operator=(const CrusaderBehavior &) = delete;
+
+    CrusaderBehavior(CrusaderBehavior &&) = delete;
+    CrusaderBehavior &operator=(CrusaderBehavior &&) = delete;
 
   protected:
     // IBehavior hooks

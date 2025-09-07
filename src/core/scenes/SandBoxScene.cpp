@@ -335,7 +335,8 @@ void SandBoxScene::SetupSceneComponents()
     MockBasicShipTest(false);
     MockAlienShipTest(false);
     MockBerserkerShipTest(false);
-    MockCrusaderShipTest(true);
+    MockCrusaderShipTest(false);
+    MockGruntShipTest(true);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -613,6 +614,21 @@ void SandBoxScene::MockCrusaderShipTest(const bool enabled)
     const auto winSize = WindowManager::Instance().GetWindow().getSize();
 
     ShipManager::Instance().SpawnCrusaderEnemy({winSize.x * .30f, 25.f});
+}
+
+/// @brief Mock enemy units to spawn. Specifically call for GruntShip.
+/// @param enabled is enabled or not
+void SandBoxScene::MockGruntShipTest(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    const auto winSize = WindowManager::Instance().GetWindow().getSize();
+
+    ShipManager::Instance().SpawnGruntEnemy({winSize.x * .15f, 25.f});
+    ShipManager::Instance().SpawnGruntEnemy({winSize.x * .70f, 25.f});
 }
 
 /// @brief Mock player test
