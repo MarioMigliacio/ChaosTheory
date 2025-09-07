@@ -32,6 +32,13 @@ class StrafeAndShootBehavior : public IBehavior
     StrafeAndShootBehavior();
     ~StrafeAndShootBehavior() override = default;
 
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    StrafeAndShootBehavior(const StrafeAndShootBehavior &) = delete;
+    StrafeAndShootBehavior &operator=(const StrafeAndShootBehavior &) = delete;
+
+    StrafeAndShootBehavior(StrafeAndShootBehavior &&) = delete;
+    StrafeAndShootBehavior &operator=(StrafeAndShootBehavior &&) = delete;
+
   protected:
     // IBehavior hooks
     void UpdateMovementLogic(BaseShip &ship, float dt) override;

@@ -17,6 +17,7 @@
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
+#include "ShipStatsScaling.h"
 #include "WindowManager.h"
 #include <random>
 
@@ -67,9 +68,9 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
 
         m_currentDirection = m_directionDist(m_rng) == 0 ? -1.f : 1.f;
 
-        m_health = m_maxHealth = ScaleHealthToDifficulty(ALIEN_BASE_HEALTH);
-        m_speed = ScaleSpeedToDifficulty(ALIEN_BASE_SPEED);
-        SetSpriteColorFromDifficulty(m_sprite);
+        m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(ALIEN_BASE_HEALTH);
+        m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(ALIEN_BASE_SPEED);
+        ShipStatsScaling::SetSpriteColorFromDifficulty(m_sprite);
         InitializeGunStats();
     }
 

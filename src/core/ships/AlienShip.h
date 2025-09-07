@@ -12,7 +12,6 @@
 #pragma once
 
 #include "BaseShip.h"
-#include "ShipStatsScaling.h"
 #include "StrafeAndShootBehavior.h"
 #include <random>
 
@@ -26,7 +25,7 @@
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class AlienShip : public BaseShip, public ShipStatsScaling, public StrafeAndShootBehavior
+class AlienShip : public BaseShip, public StrafeAndShootBehavior
 {
   public:
     AlienShip(const sf::Vector2f &startPos, Allegiance allegiance);

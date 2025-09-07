@@ -214,6 +214,7 @@ void CrusaderBehavior::DoTelegraph(BaseShip &ship, float dt)
     const float targetX = m_shakeAnchorX + std::sin(elapsed * shake) * SHAKE_AMPLITUDE_X;
     const float dx = targetX - currentX;
 
+    // move direction for random oscillations
     ship.Move({dx, 0.f});
 
     // tiny hover in y direction
@@ -239,9 +240,8 @@ void CrusaderBehavior::BeginFire(BaseShip &ship)
         return;
     }
 
+    // Crank up the stats so the stream feels instant and fatal.
     gun->SetPattern(GunPattern::LaserBeam);
-
-    // Crank up the stats so the stream feels "instant & fatal".
     gun->UpgradeFireRate(.05f);
     gun->UpgradeVelocity(1000.f);
 
@@ -259,6 +259,7 @@ void CrusaderBehavior::DoFire(BaseShip &ship, float dt)
     }
 
     auto *gun = ship.GetGun();
+
     if (gun)
     {
         gun->SetOwnerPosition(ship.GetPosition());
@@ -275,7 +276,6 @@ void CrusaderBehavior::DoFire(BaseShip &ship, float dt)
     if (m_phaseTimer <= 0.f)
     {
         ship.SetTint(NEUTRAL_COLOR);
-
         m_phase = Phase::Cooldown;
         m_phaseTimer = REARM_COOLDOWN;
         m_firingPrimed = false;

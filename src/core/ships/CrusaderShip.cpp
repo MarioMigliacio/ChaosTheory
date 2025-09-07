@@ -15,6 +15,7 @@
 #include "Assets.h"
 #include "EnemyGun.h"
 #include "Macros.h"
+#include "ShipStatsScaling.h"
 #include "WindowManager.h"
 
 /// @brief Constants that can be adjusted throughout the CrusaderShip.
@@ -48,7 +49,7 @@ CrusaderShip::CrusaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
 
     if (!tex)
     {
-        CT_LOG_ERROR("CrusaderShip texture not found: EnemyAssets::CrusaderShipSpriteKey");
+        CT_LOG_ERROR("CrusaderShip texture not found.");
 
         return;
     }
@@ -58,9 +59,9 @@ CrusaderShip::CrusaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
     m_sprite.setOrigin(tex->getSize().x * 0.5f, tex->getSize().y * 0.5f);
     m_allegiance = allegiance;
 
-    m_health = m_maxHealth = ScaleHealthToDifficulty(CRUSADER_BASE_HEALTH);
-    m_speed = ScaleSpeedToDifficulty(CRUSADER_BASE_SPEED);
-    SetSpriteColorFromDifficulty(m_sprite);
+    m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(CRUSADER_BASE_HEALTH);
+    m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(CRUSADER_BASE_SPEED);
+    ShipStatsScaling::SetSpriteColorFromDifficulty(m_sprite);
 
     InitializeGunStats();
 }

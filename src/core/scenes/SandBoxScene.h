@@ -72,6 +72,7 @@ class SandBoxScene final : public Scene
     void MockAlienShipTest(const bool enabled);
     void MockBerserkerShipTest(const bool enabled);
     void MockCrusaderShipTest(const bool enabled);
+    void MockGruntShipTest(const bool enabled);
 
     void MockPlayerUnit(const bool enabled);
 

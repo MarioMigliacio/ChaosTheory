@@ -90,7 +90,7 @@ PlayerShip::PlayerShip()
 
     else
     {
-        CT_LOG_ERROR("PlayerShip: ERROR - texture not found.");
+        CT_LOG_ERROR("PlayerShip texture not found.");
     }
 }
 

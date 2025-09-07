@@ -3,7 +3,7 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-07-31
-//  Description : Provides an easy interface for Enemy ships to inherit for scaling.
+//  Description : Provides an easy interface for Enemy ships to scale.
 
 //  License     : N/A Open source
 //                Copyright (c) 2025 Mario Migliacio
@@ -14,7 +14,7 @@
 #include "ResolutionScaleManager.h"
 #include "SettingsManager.h"
 
-/// @brief Constants that can be adjusted throughout the AlienShip.
+/// @brief Constants that can be adjusted throughout the Ship.
 namespace
 {
 /// @brief Health scaling factor for Easy game difficulty.
@@ -59,7 +59,7 @@ class ShipStatsScaling
     /// @brief Scales health accordingly based on GameDifficulty.
     /// @param value health to scale.
     /// @return new health after scaling applied.
-    int ScaleHealthToDifficulty(const int value)
+    static int ScaleHealthToDifficulty(const int value)
     {
         int health = 0;
         const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
@@ -88,7 +88,7 @@ class ShipStatsScaling
     /// @brief Scales speed accordingly based on WindowResolution, and GameDifficulty.
     /// @param value speed to scale.
     /// @return new speed after scaling applied.
-    sf::Vector2f ScaleSpeedToDifficulty(const sf::Vector2f &value)
+    static sf::Vector2f ScaleSpeedToDifficulty(const sf::Vector2f &value)
     {
         sf::Vector2f speed = {0.f, 0.f};
         const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
@@ -119,7 +119,7 @@ class ShipStatsScaling
 
     /// @brief Sets the appropriate tint to the Sprite based on GameDifficulty.
     /// @param sprite The sprite to alter the tint for.
-    void SetSpriteColorFromDifficulty(sf::Sprite &sprite)
+    static void SetSpriteColorFromDifficulty(sf::Sprite &sprite)
     {
         const auto difficulty = SettingsManager::Instance().GetSettings()->m_gameDifficulty;
 

@@ -13,7 +13,6 @@
 #pragma once
 #include "BaseShip.h"
 #include "CrusaderBehavior.h"
-#include "ShipStatsScaling.h"
 
 // ============================================================================
 //  Class       : CrusaderShip
@@ -26,7 +25,7 @@
 //      - Update position and aliveness for this spaceship.
 //
 // ============================================================================
-class CrusaderShip : public BaseShip, public ShipStatsScaling, public CrusaderBehavior
+class CrusaderShip : public BaseShip, public CrusaderBehavior
 {
   public:
     CrusaderShip(const sf::Vector2f &startPos, Allegiance allegiance);

@@ -29,7 +29,15 @@
 class DrifterBehavior : public IBehavior
 {
   public:
+    DrifterBehavior() = default;
     ~DrifterBehavior() override = default;
+
+    // Disallow copy and move semantics to avoid shallow copies or misuse
+    DrifterBehavior(const DrifterBehavior &) = delete;
+    DrifterBehavior &operator=(const DrifterBehavior &) = delete;
+
+    DrifterBehavior(DrifterBehavior &&) = delete;
+    DrifterBehavior &operator=(DrifterBehavior &&) = delete;
 
   protected:
     void UpdateMovementLogic(BaseShip &ship, float dt) override;
