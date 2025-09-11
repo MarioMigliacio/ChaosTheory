@@ -1,0 +1,82 @@
+// ============================================================================
+//  File        : InvaderShip.cpp
+//  Project     : ChaosTheory (CT)
+//  Author      : Mario Migliacio
+//  Created     : 2025-09-07
+//  Description : Implementation for InvaderShip.
+// ============================================================================
+
+#include "InvaderShip.h"
+#include "AssetManager.h"
+#include "Assets.h"
+#include "EnemyGun.h"
+#include "Macros.h"
+#include "MultishotBarrageBehavior.h"
+#include "ShipStatsScaling.h"
+#include "WindowManager.h"
+
+namespace
+{
+// Survivability tuned between Grunt and Crusader
+static constexpr int INVADER_BASE_HEALTH = 28;
+
+// Base drift speed is handled in the behavior; this is for difficulty scaling helpers
+static const sf::Vector2f INVADER_BASE_SPEED = {0.f, 110.f};
+
+// Seed gun stats (behavior handles cadence; this defines pellet feel)
+static constexpr float INVADER_BASE_FIRERATE = 1.0f; // not decisive; behavior paces volleys
+static constexpr float INVADER_PELLET_DAMAGE = 10.f;
+static constexpr float INVADER_PELLET_SPEED = 400.f;
+
+static const sf::Color INVADER_BULLET_COLOR = sf::Color(220, 245, 255);
+} // namespace
+
+InvaderShip::InvaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
+{
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::InvaderShipSpriteKey);
+
+    if (!tex)
+    {
+        CT_LOG_ERROR("InvaderShip texture not found.");
+
+        return;
+    }
+
+    m_sprite.setTexture(*tex);
+    m_sprite.setPosition(startPos);
+    m_sprite.setOrigin(tex->getSize().x * 0.5f, tex->getSize().y * 0.5f);
+    m_allegiance = allegiance;
+
+    m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(INVADER_BASE_HEALTH);
+    m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(INVADER_BASE_SPEED);
+    ShipStatsScaling::SetSpriteColorFromDifficulty(m_sprite);
+
+    InitializeGunStats();
+}
+
+void InvaderShip::Update(float dt)
+{
+    if (!m_alive)
+    {
+        return;
+    }
+
+    UpdateBehavior(*this, dt);
+    CullIfOffscreen();
+}
+
+void InvaderShip::InitializeGunStats()
+{
+    m_gunStats.fireRate = INVADER_BASE_FIRERATE;
+    m_gunStats.damage = INVADER_PELLET_DAMAGE;
+    m_gunStats.speed = INVADER_PELLET_SPEED;
+    m_gunStats.tint = INVADER_BULLET_COLOR;
+    m_gunStats.homing = false;
+
+    m_gun = std::make_unique<EnemyGun>(m_gunStats);
+
+    const sf::Vector2f spriteSize(static_cast<float>(m_sprite.getTexture()->getSize().x),
+                                  static_cast<float>(m_sprite.getTexture()->getSize().y));
+
+    m_gun->SetAllegiance(Allegiance::Enemy, spriteSize);
+}

@@ -82,14 +82,13 @@ void GruntShip::Update(float dt)
 /// @brief Initialize gun stats
 void GruntShip::InitializeGunStats()
 {
-    ProjectileStats s{};
     m_gunStats.fireRate = GRUNT_BASE_FIRERATE;
     m_gunStats.damage = GRUNT_BULLET_DAMAGE;
     m_gunStats.speed = GRUNT_BULLET_SPEED;
     m_gunStats.tint = GRUNT_BULLET_COLOR;
     m_gunStats.homing = false;
 
-    m_gun = std::make_unique<EnemyGun>(s);
+    m_gun = std::make_unique<EnemyGun>(m_gunStats);
 
     const sf::Vector2f spriteSize(static_cast<float>(m_sprite.getTexture()->getSize().x),
                                   static_cast<float>(m_sprite.getTexture()->getSize().y));

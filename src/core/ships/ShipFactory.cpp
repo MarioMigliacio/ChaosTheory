@@ -17,6 +17,7 @@
 #include "BerserkerShip.h"
 #include "CrusaderShip.h"
 #include "GruntShip.h"
+#include "InvaderShip.h"
 #include "Macros.h"
 #include "PlayerShip.h"
 #include "ResolutionScaleManager.h"
@@ -205,6 +206,37 @@ std::shared_ptr<BaseShip> ShipFactory::CreateGruntShip(const sf::Vector2f &pos, 
     else
     {
         CT_LOG_ERROR("ShipFactory-GruntShip texture not found during creation!");
+    }
+
+    return ship;
+}
+
+/// @brief Creates an InvaderShip, scaled appropriately with the window resolution.
+/// @param pos Starting position to emplace ship at.
+/// @param allegiance Allegiance to employ ship with.
+/// @return Safe pointer to a InvaderShip, compatible with the BaseShip base class.
+std::shared_ptr<BaseShip> ShipFactory::CreateInvaderShip(const sf::Vector2f &pos, Allegiance allegiance)
+{
+    auto ship = std::make_shared<InvaderShip>(pos, allegiance);
+
+    // Setup resolution-based scaling
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::InvaderShipSpriteKey);
+
+    if (tex)
+    {
+        // resolution for InvaderShip DOES matter, because it is 32 x 64 pixel.
+        float textureWidth = static_cast<float>(tex->getSize().x);
+        float textureHeight = static_cast<float>(tex->getSize().y);
+        float scaledWidth = ResolutionScaleManager::Instance().ScaleX(textureWidth);
+        float scaledHeight = ResolutionScaleManager::Instance().ScaleY(textureHeight);
+        float scaleFactorX = scaledWidth / textureWidth;
+        float scaleFactorY = scaledHeight / textureHeight;
+        ship->SetScale(scaleFactorX, scaleFactorY);
+    }
+
+    else
+    {
+        CT_LOG_ERROR("ShipFactory-InvaderShip texture not found during creation!");
     }
 
     return ship;
