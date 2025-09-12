@@ -17,7 +17,6 @@
 #include "ProjectileManager.h"
 #include "ShipManager.h"
 #include "WindowManager.h"
-
 #include <cmath>
 
 /// @brief Constants that can be adjusted throughout the CrusaderBehavior.

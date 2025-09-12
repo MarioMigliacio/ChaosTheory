@@ -40,6 +40,7 @@ class DrifterBehavior : public IBehavior
     DrifterBehavior &operator=(DrifterBehavior &&) = delete;
 
   protected:
+    // IBehavior hooks
     void UpdateMovementLogic(BaseShip &ship, float dt) override;
     void UpdateGunLogic(BaseShip &ship, float dt) override;
 

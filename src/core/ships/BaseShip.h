@@ -65,6 +65,7 @@ class BaseShip : public BaseCollidable
 
     virtual sf::Vector2f GetPosition() const;
     virtual void SetPosition(const sf::Vector2f &pos);
+    virtual void SetRotation(const float deg);
     virtual void Move(const sf::Vector2f &offset);
 
     virtual void SetScale(float scaleX, float scaleY);

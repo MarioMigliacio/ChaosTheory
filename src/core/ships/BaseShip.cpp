@@ -135,6 +135,13 @@ void BaseShip::SetPosition(const sf::Vector2f &pos)
     m_sprite.setPosition(pos);
 }
 
+/// @brief Set the rotation for the BaseShip's sprite.
+/// @param deg Float degree to turn.
+void BaseShip::SetRotation(const float deg)
+{
+    m_sprite.setRotation(deg);
+}
+
 /// @brief Move the ship by an offset.
 /// @param offset offset for which to move this ship.
 void BaseShip::Move(const sf::Vector2f &offset)

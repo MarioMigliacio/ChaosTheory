@@ -1,55 +1,52 @@
 // ============================================================================
-//  File        : GruntShip.h
+//  File        : InvaderShip.cpp
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
-//  Created     : 2025-09-05
-//  Description : A small unit that hops locally and fires aimed shots.
-//
-//  License     : N/A Open source
-//                Copyright (c) 2025 Mario Migliacio
+//  Created     : 2025-09-07
+//  Description : Implementation for InvaderShip.
 // ============================================================================
 
-#include "GruntShip.h"
+#include "InvaderShip.h"
 #include "AssetManager.h"
 #include "Assets.h"
-#include "DodgeAndAimBehavior.h"
 #include "EnemyGun.h"
 #include "Macros.h"
+#include "MultishotBarrageBehavior.h"
 #include "ShipStatsScaling.h"
 #include "WindowManager.h"
 
-/// @brief Constants that can be adjusted throughout the GruntShip.
+/// @brief Constants that can be adjusted throughout the InvaderShip.
 namespace
 {
 /// @brief Base Health before scaling.
-constexpr int GRUNT_BASE_HEALTH = 20;
+constexpr int INVADER_BASE_HEALTH = 28;
 
 /// @brief Base Speed before scaling.
-const sf::Vector2f GRUNT_BASE_SPEED = {0.f, 110.f};
+const sf::Vector2f INVADER_BASE_SPEED = {0.f, 110.f};
 
 /// @brief Configurable constant for Gun FireRate.
-constexpr float GRUNT_BASE_FIRERATE = 1.0f;
+constexpr float INVADER_BASE_FIRERATE = 1.0f;
 
 /// @brief Configurable constant for Gun Damage.
-constexpr float GRUNT_BULLET_DAMAGE = 9.f;
+constexpr float INVADER_PELLET_DAMAGE = 10.f;
 
-/// @brief Configurable constant for Gun Speed.
-constexpr float GRUNT_BULLET_SPEED = 350.f;
+/// @brief Configurable constant for Gun projectile velocity.
+constexpr float INVADER_PELLET_SPEED = 400.f;
 
-/// @brief Configurable constant for Gun Projectile color.
-const sf::Color GRUNT_BULLET_COLOR = sf::Color::Red;
+/// @brief Configurable constant for projectile color.
+const sf::Color INVADER_BULLET_COLOR = sf::Color(220, 245, 255);
 } // namespace
 
-/// @brief Constructor for a GruntShip type of ship.
+/// @brief Constructor for an InvaderShip type of ship.
 /// @param startPos Position to emplace at.
 /// @param allegiance Allegiance to employ with.
-GruntShip::GruntShip(const sf::Vector2f &startPos, Allegiance allegiance)
+InvaderShip::InvaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
-    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::GruntShipSpriteKey);
+    auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::InvaderShipSpriteKey);
 
     if (!tex)
     {
-        CT_LOG_ERROR("GruntShip texture not found.");
+        CT_LOG_ERROR("InvaderShip texture not found.");
 
         return;
     }
@@ -59,8 +56,8 @@ GruntShip::GruntShip(const sf::Vector2f &startPos, Allegiance allegiance)
     m_sprite.setOrigin(tex->getSize().x * 0.5f, tex->getSize().y * 0.5f);
     m_allegiance = allegiance;
 
-    m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(GRUNT_BASE_HEALTH);
-    m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(GRUNT_BASE_SPEED);
+    m_health = m_maxHealth = ShipStatsScaling::ScaleHealthToDifficulty(INVADER_BASE_HEALTH);
+    m_speed = ShipStatsScaling::ScaleSpeedToDifficulty(INVADER_BASE_SPEED);
     ShipStatsScaling::SetSpriteColorFromDifficulty(m_sprite);
 
     InitializeGunStats();
@@ -68,7 +65,7 @@ GruntShip::GruntShip(const sf::Vector2f &startPos, Allegiance allegiance)
 
 /// @brief Performs internal state management during a single frame.
 /// @param dt delta time since last update frame.
-void GruntShip::Update(float dt)
+void InvaderShip::Update(float dt)
 {
     if (!m_alive)
     {
@@ -80,12 +77,12 @@ void GruntShip::Update(float dt)
 }
 
 /// @brief Initialize gun stats
-void GruntShip::InitializeGunStats()
+void InvaderShip::InitializeGunStats()
 {
-    m_gunStats.fireRate = GRUNT_BASE_FIRERATE;
-    m_gunStats.damage = GRUNT_BULLET_DAMAGE;
-    m_gunStats.speed = GRUNT_BULLET_SPEED;
-    m_gunStats.tint = GRUNT_BULLET_COLOR;
+    m_gunStats.fireRate = INVADER_BASE_FIRERATE;
+    m_gunStats.damage = INVADER_PELLET_DAMAGE;
+    m_gunStats.speed = INVADER_PELLET_SPEED;
+    m_gunStats.tint = INVADER_BULLET_COLOR;
     m_gunStats.homing = false;
 
     m_gun = std::make_unique<EnemyGun>(m_gunStats);

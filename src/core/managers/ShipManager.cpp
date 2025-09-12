@@ -111,6 +111,14 @@ void ShipManager::SpawnGruntEnemy(const sf::Vector2f &pos)
     m_enemies.push_back(enemy);
 }
 
+/// @brief Creates an InvaderShip object to be managed by ShipManager.
+/// @param pos Coordinate position to spawn at.
+void ShipManager::SpawnInvaderEnemy(const sf::Vector2f &pos)
+{
+    auto enemy = ShipFactory::Instance().CreateInvaderShip(pos, Allegiance::Enemy);
+    m_enemies.push_back(enemy);
+}
+
 /// @brief Returns a reference to the PlayerShip.
 /// @return Safe pointer to m_player.
 std::shared_ptr<PlayerShip> ShipManager::GetPlayer() const

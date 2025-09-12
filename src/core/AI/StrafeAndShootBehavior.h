@@ -23,7 +23,7 @@
 //
 //  Responsibilities:
 //      - Update logic for movement.
-//      - Update logic for gun (not relevant in this behavior).
+//      - Update logic for gun.
 //
 // ============================================================================
 class StrafeAndShootBehavior : public IBehavior

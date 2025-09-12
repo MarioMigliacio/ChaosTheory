@@ -54,10 +54,10 @@ class ConfigurableGun : public BaseGun
     void SetLaserDampener(const float val);
 
     void Update(float dt) override;
+    void FireSpread(const sf::Vector2f &pos, const sf::Vector2f &baseDir, const std::vector<float> &angles);
 
   protected:
     std::shared_ptr<BaseProjectile> FireBasic(const sf::Vector2f &pos, const sf::Vector2f &dir);
-    void FireSpread(const sf::Vector2f &pos, const sf::Vector2f &baseDir, const std::vector<float> &angles);
     std::shared_ptr<BaseProjectile> FireHomingRocket(const sf::Vector2f &pos);
     std::shared_ptr<BaseProjectile> FireExpandingProjectile(const sf::Vector2f &pos);
     std::shared_ptr<BaseProjectile> FireLaserBeam(const sf::Vector2f &pos);

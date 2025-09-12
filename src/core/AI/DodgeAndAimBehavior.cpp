@@ -19,7 +19,6 @@
 #include "WindowManager.h"
 #include <algorithm>
 #include <cmath>
-#include <random>
 
 /// @brief Constants that can be adjusted throughout the DodgeAndAimBehavior.
 namespace
@@ -59,18 +58,6 @@ static constexpr float BULLET_SPEED = 420.f;
 
 /// @brief Bullet default damage.
 static constexpr float BULLET_DAMAGE = 8.f;
-
-/// @brief Random helper. Generates a range between lo and hi inclusive.
-/// @param low bottom end random.
-/// @param high top end random.
-/// @return random inbetween lo and hi
-inline float RandRange(float low, float high)
-{
-    static thread_local std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution<float> dist(low, high);
-
-    return dist(rng);
-}
 } // namespace
 
 /// @brief Performs routine updates during a frame.
@@ -175,8 +162,8 @@ void DodgeAndAimBehavior::PickNearbyTarget(const BaseShip &ship)
 
     const sf::Vector2f pos = ship.GetPosition();
 
-    const float dx = RandRange(HOP_MIN_X, HOP_MAX_X) * (RandRange(0.f, 1.f) < 0.5f ? -1.f : 1.f);
-    const float dy = RandRange(HOP_MIN_Y, HOP_MAX_Y) * (RandRange(0.f, 1.f) < 0.5f ? -1.f : 1.f);
+    const float dx = CT_MATH::RandRange(HOP_MIN_X, HOP_MAX_X) * (CT_MATH::RandRange(0.f, 1.f) < 0.5f ? -1.f : 1.f);
+    const float dy = CT_MATH::RandRange(HOP_MIN_Y, HOP_MAX_Y) * (CT_MATH::RandRange(0.f, 1.f) < 0.5f ? -1.f : 1.f);
 
     sf::Vector2f candidate = {pos.x + dx, pos.y + dy};
 

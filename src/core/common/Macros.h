@@ -24,6 +24,7 @@
 #include "UISlider.h"
 #include "UITextLabel.h"
 #include "UIToastMessage.h"
+#include <random>
 
 ///////////////////////////////////////////////////////////////////////////////
 //                          Logger related macros                            //
@@ -92,6 +93,14 @@ inline float DegToRad(float d)
     return d * PI / 180.f;
 }
 
+/// @brief Translates a radian value to degrees for computation.
+/// @param r Radian to translate
+/// @return Degrees from Radians.
+inline float RadToDeg(float r)
+{
+    return r * (180.f / PI);
+}
+
 /// @brief (Player normalization) Return v normalized to unit length (or zero vector if |v| == 0).
 /// @param v Vector to normalize.
 /// @return Normalized unit vector.
@@ -112,5 +121,17 @@ inline sf::Vector2f Normalize(const sf::Vector2f &v)
     float m = Length(v);
 
     return (m > 0.f) ? sf::Vector2f(v.x / m, v.y / m) : sf::Vector2f(0.f, 1.f);
+}
+
+/// @brief Random helper. Generates a range between lo and hi inclusive.
+/// @param low bottom end random.
+/// @param high top end random.
+/// @return random inbetween lo and hi
+inline float RandRange(float low, float high)
+{
+    static thread_local std::mt19937 rng{std::random_device{}()};
+    std::uniform_real_distribution<float> dist(low, high);
+
+    return dist(rng);
 }
 }; // namespace CT_MATH

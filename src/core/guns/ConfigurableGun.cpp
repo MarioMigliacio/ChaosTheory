@@ -241,18 +241,6 @@ void ConfigurableGun::Update(float dt)
     m_beamTimer += dt;
 }
 
-/// @brief Fires the most basic of projectile types, and adds the projectile to the ProjectileManagers collection.
-/// @param pos Position to spawn from.
-/// @param dir Vector direction projectile will update with.
-/// @return A safe pointer to the projectile, useful to indicate success to the caller.
-std::shared_ptr<BaseProjectile> ConfigurableGun::FireBasic(const sf::Vector2f &pos, const sf::Vector2f &dir)
-{
-    auto proj = ProjectileFactory::Instance().CreateBasicProjectile(pos, dir, m_stats, m_allegiance);
-    ProjectileManager::Instance().AddProjectile(proj);
-
-    return proj;
-}
-
 /// @brief Fires a multitude of projectiles, and adds the projectile to the ProjectileManagers collection.
 /// @note Will not return any projectiles, but will be added to the ProjectileManager.
 /// @param pos Position to spawn from.
@@ -269,6 +257,18 @@ void ConfigurableGun::FireSpread(const sf::Vector2f &pos, const sf::Vector2f &ba
         auto proj = ProjectileFactory::Instance().CreateBasicProjectile(pos, dir, m_stats, m_allegiance);
         ProjectileManager::Instance().AddProjectile(proj);
     }
+}
+
+/// @brief Fires the most basic of projectile types, and adds the projectile to the ProjectileManagers collection.
+/// @param pos Position to spawn from.
+/// @param dir Vector direction projectile will update with.
+/// @return A safe pointer to the projectile, useful to indicate success to the caller.
+std::shared_ptr<BaseProjectile> ConfigurableGun::FireBasic(const sf::Vector2f &pos, const sf::Vector2f &dir)
+{
+    auto proj = ProjectileFactory::Instance().CreateBasicProjectile(pos, dir, m_stats, m_allegiance);
+    ProjectileManager::Instance().AddProjectile(proj);
+
+    return proj;
 }
 
 /// @brief Fires a special projectile that will seek out its nearest target and explode.
