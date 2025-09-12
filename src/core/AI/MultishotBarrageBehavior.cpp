@@ -3,7 +3,11 @@
 //  Project     : ChaosTheory (CT)
 //  Author      : Mario Migliacio
 //  Created     : 2025-09-07
-//  Description : Implementation for Invader-style multishot barrage behavior.
+//  Description : Drifts with a lateral wobble, aims at player, fires a multishot
+//                volley, rotates slightly inbetween X volleys, then cools down.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #include "MultishotBarrageBehavior.h"
@@ -17,48 +21,50 @@
 #include "WindowManager.h"
 #include <algorithm>
 #include <cmath>
-#include <random>
 
 /// @brief Constants that can be adjusted throughout the MultishotBarrageBehavior.
 namespace
 {
-constexpr float DRIFT_SPEED_Y = 95.f;      // base downward drift
-constexpr float DRIFT_SPEED_X_BASE = 60.f; // base lateral speed
-constexpr float DRIFT_SPEED_X_JIT = 0.20f; // ±20% random jitter
+/// @brief Controls base downward drift.
+constexpr float DRIFT_SPEED_Y = 95.f;
 
+/// @brief Controls base x axis drift.
+constexpr float DRIFT_SPEED_X_BASE = 60.f;
+
+/// @brief Adds a little spice in the x direction at the start of a new drift.
+constexpr float DRIFT_SPEED_X_JIT = 0.20f;
+
+/// @brief Padding so the entity doesn't go off screen.
 constexpr float SCREEN_MARGIN_X = 12.f;
 
-constexpr float AIM_WINDUP_TIME = 0.20f;          // brief "lock-on"
-constexpr float ROTATE_SPEED_DEG_PER_SEC = 240.f; // sprite rotate speed
-constexpr float MAX_AIM_DURATION = 0.35f;         // failsafe
+/// @brief Adds appropriate delay before firing initial multi shot barrage.
+constexpr float AIM_WINDUP_TIME = 0.20f;
 
-constexpr int VOLLEYS_PER_BARRAGE = 2;         // exactly 2
-constexpr float BETWEEN_VOLLEYS_DELAY = 0.12f; // seconds between 1st and 2nd
-constexpr float TURN_STEP_ANGLE_DEG = 7.f;     // rotate a bit before 2nd volley
+/// @brief Controls the speed the entity rotates during lock on period.
+constexpr float ROTATE_SPEED_DEG_PER_SEC = 240.f;
 
-// Cooldown
-constexpr float COOLDOWN_TIME = 2.4f; // drift & wait
+/// @brief Controls the number of times the entity fires a barrage after locking on.
+constexpr int VOLLEYS_PER_BARRAGE = 2;
 
-// Math helpers
-inline float DegToRad(float d)
-{
-    return d * (PI / 180.f);
-}
-inline float RadToDeg(float r)
-{
-    return r * (180.f / PI);
-}
+/// @brief Controls time between volley fire.
+constexpr float BETWEEN_VOLLEYS_DELAY = 0.12f;
 
-// Random
-inline float RandRange(float lo, float hi)
-{
-    static thread_local std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution<float> dist(lo, hi);
+/// @brief Controls how many bullets are lobbed in a single volley.
+constexpr int PELLETS_PER_VOLLEY = 5;
 
-    return dist(rng);
-}
+/// @brief Controls the angle between bullets in a single volley [-half, +half].
+constexpr float SPREAD_HALF_ANGLE_DEG = 12.f;
+
+/// @brief The degree amount turn inbetween volleys to add difficulty in dodging fire.
+constexpr float TURN_STEP_ANGLE_DEG = 7.f;
+
+/// @brief Controls the cooldown period before allowed to attempt another volley.
+constexpr float COOLDOWN_TIME = 2.4f;
 } // namespace
 
+/// @brief Deterministic state management of movement for MultishotBarrageBehavior class.
+/// @param ship Pointer to the Ship which inherits this interface.
+/// @param dt Delta time since last update.
 void MultishotBarrageBehavior::UpdateMovementLogic(BaseShip &ship, float dt)
 {
     switch (m_phase)
@@ -67,7 +73,7 @@ void MultishotBarrageBehavior::UpdateMovementLogic(BaseShip &ship, float dt)
         {
             if (m_driftDirX == 0.f || m_driftSpeedX <= 0.f)
             {
-                BeginDrift(ship);
+                BeginDrift();
             }
 
             DoDrift(ship, dt);
@@ -89,7 +95,6 @@ void MultishotBarrageBehavior::UpdateMovementLogic(BaseShip &ship, float dt)
             DoAim(ship, dt);
             m_phaseTimer -= dt;
 
-            // Either windup done or timeout safety reached.
             if (m_phaseTimer <= 0.f)
             {
                 BeginBarrage();
@@ -101,7 +106,6 @@ void MultishotBarrageBehavior::UpdateMovementLogic(BaseShip &ship, float dt)
 
         case Phase::Barrage:
         {
-            // drift ever so slightly while firing
             ship.Move({0.f, DRIFT_SPEED_Y * 0.25f * dt});
             DoBarrage(ship, dt);
 
@@ -115,10 +119,9 @@ void MultishotBarrageBehavior::UpdateMovementLogic(BaseShip &ship, float dt)
 
             if (m_phaseTimer <= 0.f)
             {
-                // (Re)enter Drift: pick a fresh lateral direction/speed and a short pre-aim delay
                 m_phase = Phase::Drift;
-                BeginDrift(ship);
-                m_phaseTimer = RandRange(0.10f, 0.35f);
+                BeginDrift();
+                m_phaseTimer = CT_MATH::RandRange(0.10f, 0.35f);
             }
 
             break;
@@ -126,6 +129,9 @@ void MultishotBarrageBehavior::UpdateMovementLogic(BaseShip &ship, float dt)
     }
 }
 
+/// @brief Deterministic state management of gun action for MultishotBarrageBehavior class. Fires gun when available.
+/// @param ship Pointer to the Ship which inherits this interface.
+/// @param dt Delta time since last update.
 void MultishotBarrageBehavior::UpdateGunLogic(BaseShip &ship, float dt)
 {
     // Keep gun internals ticking so cooldowns are respected if we use it.
@@ -136,22 +142,26 @@ void MultishotBarrageBehavior::UpdateGunLogic(BaseShip &ship, float dt)
     }
 }
 
-void MultishotBarrageBehavior::BeginDrift(BaseShip &ship)
+/// @brief Helper method to prepping the ship for the Drifting behavior phase.
+void MultishotBarrageBehavior::BeginDrift()
 {
-    // Random left/right
-    m_driftDirX = (RandRange(0.f, 1.f) < 0.5f) ? -1.f : 1.f;
+    // drift towards random direction in x.
+    m_driftDirX = (CT_MATH::RandRange(0.f, 1.f) < 0.5f) ? -1.f : 1.f;
 
     // Speed with a small jitter
-    const float jitter = 1.f + RandRange(-DRIFT_SPEED_X_JIT, DRIFT_SPEED_X_JIT);
+    const float jitter = 1.f + CT_MATH::RandRange(-DRIFT_SPEED_X_JIT, DRIFT_SPEED_X_JIT);
     m_driftSpeedX = DRIFT_SPEED_X_BASE * std::max(0.1f, jitter);
 }
 
+/// @brief Helper method to make the ship perform drifting during the movement phase.
+/// @param ship The ship to enact upon.
+/// @param dt Delta time since last update.
 void MultishotBarrageBehavior::DoDrift(BaseShip &ship, float dt)
 {
     // Initialize drift on first use (covers initial spawn case)
     if (m_driftDirX == 0.f || m_driftSpeedX <= 0.f)
     {
-        BeginDrift(ship);
+        BeginDrift();
     }
 
     // Move with constant X and steady Y
@@ -175,34 +185,36 @@ void MultishotBarrageBehavior::DoDrift(BaseShip &ship, float dt)
     }
 }
 
+/// @brief Helper method to target the player ship in preparation for the upcoming barrage phase.
+/// @param ship Pointer to our ship.
 void MultishotBarrageBehavior::BeginAim(BaseShip &ship)
 {
     // Snapshot target angle toward player
     if (auto player = ShipManager::Instance().GetPlayer())
     {
         const sf::Vector2f d = player->GetPosition() - ship.GetPosition();
-        m_targetAngleRad = std::atan2(d.y, d.x); // y-down coords
+        m_targetAngleRad = std::atan2(d.y, d.x);
     }
 
     else
     {
-        m_targetAngleRad = PI * 0.5f; // downward
+        m_targetAngleRad = PI * 0.5f;
     }
 
-    // Pick a small turn direction (+/-) for the second volley
-    m_turnDir = (RandRange(0.f, 1.f) < 0.5f) ? -1.f : 1.f;
-
-    // Start from current aim
+    // turn angle inbetween volleys.
+    m_turnDir = (CT_MATH::RandRange(0.f, 1.f) < 0.5f) ? -1.f : 1.f;
     m_aimAngleRad = m_targetAngleRad;
     SetSpriteRotation(ship, m_aimAngleRad);
 }
 
+/// @brief Helper method to update frame by frame action of aiming and rotating for smooth behavior.
+/// @param ship Pointer to our ship
+/// @param dt Delta time since last updpate.
 void MultishotBarrageBehavior::DoAim(BaseShip &ship, float dt)
 {
-    // Smoothly rotate toward target (in case player moved during windup)
-    const float maxStepRad = DegToRad(ROTATE_SPEED_DEG_PER_SEC) * dt;
+    // Smoothly rotate toward target even if player moved during windup
+    const float maxStepRad = CT_MATH::DegToRad(ROTATE_SPEED_DEG_PER_SEC) * dt;
 
-    // Recompute target each frame (feels snappier), then approach
     if (auto player = ShipManager::Instance().GetPlayer())
     {
         const sf::Vector2f d = player->GetPosition() - ship.GetPosition();
@@ -213,12 +225,16 @@ void MultishotBarrageBehavior::DoAim(BaseShip &ship, float dt)
     SetSpriteRotation(ship, m_aimAngleRad);
 }
 
+/// @brief Helper method to setup the internals for an upcoming barrage phase.
 void MultishotBarrageBehavior::BeginBarrage()
 {
     m_volleysFired = 0;
-    m_betweenVolleyTimer = 0.f; // fire immediately
+    m_betweenVolleyTimer = 0.f;
 }
 
+/// @brief Helper method to update frame by frame action of firing a multi shot barrage.
+/// @param ship Pointer to the ship to enact upon.
+/// @param dt Delta time since last update.
 void MultishotBarrageBehavior::DoBarrage(BaseShip &ship, float dt)
 {
     m_betweenVolleyTimer -= dt;
@@ -229,10 +245,10 @@ void MultishotBarrageBehavior::DoBarrage(BaseShip &ship, float dt)
         FireVolley(ship, m_aimAngleRad);
         m_volleysFired++;
 
+        // Perform a strategical rotation so that barrages become harder to avoid.
         if (m_volleysFired < VOLLEYS_PER_BARRAGE)
         {
-            // Prep slight turn for next volley
-            m_aimAngleRad += DegToRad(TURN_STEP_ANGLE_DEG) * m_turnDir;
+            m_aimAngleRad += CT_MATH::DegToRad(TURN_STEP_ANGLE_DEG) * m_turnDir;
             m_betweenVolleyTimer = BETWEEN_VOLLEYS_DELAY;
             SetSpriteRotation(ship, m_aimAngleRad);
         }
@@ -245,16 +261,14 @@ void MultishotBarrageBehavior::DoBarrage(BaseShip &ship, float dt)
     }
 }
 
+/// @brief Helper method to acquire the ships gun, and request a multi shot fire.
+/// @param ship Pointer to our ship.
+/// @param baseAngleRad Aim direction for volley.
 void MultishotBarrageBehavior::FireVolley(BaseShip &ship, float baseAngleRad)
 {
     if (auto *cfg = dynamic_cast<ConfigurableGun *>(ship.GetGun()))
     {
-        // Keep owner in sync for muzzle computations.
         cfg->SetOwnerPosition(ship.GetPosition());
-
-        // Build evenly distributed degrees in [-half, +half]
-        static constexpr int PELLETS_PER_VOLLEY = 5; // or use your tunable
-        static constexpr float SPREAD_HALF_ANGLE_DEG = 12.f;
 
         const int n = std::max(1, PELLETS_PER_VOLLEY);
         std::vector<float> anglesDeg;
@@ -264,13 +278,14 @@ void MultishotBarrageBehavior::FireVolley(BaseShip &ship, float baseAngleRad)
         {
             anglesDeg.push_back(0.f);
         }
+
         else
         {
             const float span = 2.f * SPREAD_HALF_ANGLE_DEG;
             for (int i = 0; i < n; ++i)
             {
-                const float t = static_cast<float>(i) / static_cast<float>(n - 1); // 0..1
-                const float deg = -SPREAD_HALF_ANGLE_DEG + t * span;               // -half..+half
+                const float t = static_cast<float>(i) / static_cast<float>(n - 1);
+                const float deg = -SPREAD_HALF_ANGLE_DEG + t * span;
                 anglesDeg.push_back(deg);
             }
         }
@@ -279,21 +294,30 @@ void MultishotBarrageBehavior::FireVolley(BaseShip &ship, float baseAngleRad)
         const sf::Vector2f baseDir{std::cos(baseAngleRad), std::sin(baseAngleRad)};
         const sf::Vector2f pos = ship.GetPosition();
 
-        // Fire immediately; behavior handles cadence (cooldown is behavior-level here)
+        // Fire immediately; behavior handles cadence cooldown is behavior-level here.
         cfg->FireSpread(pos, baseDir, anglesDeg);
 
         return;
     }
 }
 
+/// @brief Helper method for the rotation of the ship during aiming and inbetween volleys.
+/// @param ship Pointer to the ship to change.
+/// @param angleRad Angle in radians for the rotation.
 void MultishotBarrageBehavior::SetSpriteRotation(BaseShip &ship, float angleRad)
 {
-    const float deg = RadToDeg(angleRad) + 90.f;
+    const float deg = CT_MATH::RadToDeg(angleRad) + 90.f;
     ship.SetRotation(deg);
 }
 
+/// @brief Helper method that keeps any angle (in radians) inside a canonical range of [-PI, +PI]
+/// @param a Angle for consideration.
+/// @return The shortest angle towards target.
 float MultishotBarrageBehavior::WrapAngleRad(float a)
 {
+    // NOTE: Rotates the short way toward the player and never does a weird 350° spin when crossing the wrap boundary.
+    // Shamelessly stolen from smarter folks than myself.
+
     while (a < -PI)
     {
         a += 2.f * PI;
@@ -307,8 +331,14 @@ float MultishotBarrageBehavior::WrapAngleRad(float a)
     return a;
 }
 
+/// @brief Helper method to step toward target along the shortest arc
+/// @param current Current angle (radians).
+/// @param target Desired angle (radians).
+/// @param maxStepRad Maximum change to apply this call (radians, ≥ 0).
+/// @return New angle in [-PI, +PI].
 float MultishotBarrageBehavior::ApproachAngle(float current, float target, float maxStepRad)
 {
+    // Now diff is guaranteed to be the shortest signed angular difference.
     current = WrapAngleRad(current);
     target = WrapAngleRad(target);
     float diff = WrapAngleRad(target - current);

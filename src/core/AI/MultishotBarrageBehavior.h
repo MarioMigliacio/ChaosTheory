@@ -4,7 +4,10 @@
 //  Author      : Mario Migliacio
 //  Created     : 2025-09-07
 //  Description : Drifts with a lateral wobble, aims at player, fires a multishot
-//                volley, rotates slightly, fires a second volley, then cools down.
+//                volley, rotates slightly inbetween X volleys, then cools down.
+//
+//  License     : N/A Open source
+//                Copyright (c) 2025 Mario Migliacio
 // ============================================================================
 
 #pragma once
@@ -12,6 +15,19 @@
 #include "IBehavior.h"
 #include <SFML/Graphics.hpp>
 
+// ============================================================================
+//  Class       : MultishotBarrageBehavior
+//  Purpose     : Implements IBehavior interface for a Combat ready,
+//                Drift and Multi Shoot barrage behavior:
+//                Moves in a random x direction down stream,
+//                then locks onto player and fires a multi shot barrage
+//                multiple times. Cools down by drifting again.
+//
+//  Responsibilities:
+//      - Update logic for movement.
+//      - Update logic for gun.
+//
+// ============================================================================
 class MultishotBarrageBehavior : public IBehavior
 {
   public:
@@ -40,7 +56,7 @@ class MultishotBarrageBehavior : public IBehavior
     };
 
   private:
-    void BeginDrift(BaseShip &ship);
+    void BeginDrift();
     void DoDrift(BaseShip &ship, float dt);
     void BeginAim(BaseShip &ship);
     void DoAim(BaseShip &ship, float dt);

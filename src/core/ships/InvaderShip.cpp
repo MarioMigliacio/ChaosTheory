@@ -15,22 +15,31 @@
 #include "ShipStatsScaling.h"
 #include "WindowManager.h"
 
+/// @brief Constants that can be adjusted throughout the InvaderShip.
 namespace
 {
-// Survivability tuned between Grunt and Crusader
-static constexpr int INVADER_BASE_HEALTH = 28;
+/// @brief Base Health before scaling.
+constexpr int INVADER_BASE_HEALTH = 28;
 
-// Base drift speed is handled in the behavior; this is for difficulty scaling helpers
-static const sf::Vector2f INVADER_BASE_SPEED = {0.f, 110.f};
+/// @brief Base Speed before scaling.
+const sf::Vector2f INVADER_BASE_SPEED = {0.f, 110.f};
 
-// Seed gun stats (behavior handles cadence; this defines pellet feel)
-static constexpr float INVADER_BASE_FIRERATE = 1.0f; // not decisive; behavior paces volleys
-static constexpr float INVADER_PELLET_DAMAGE = 10.f;
-static constexpr float INVADER_PELLET_SPEED = 400.f;
+/// @brief Configurable constant for Gun FireRate.
+constexpr float INVADER_BASE_FIRERATE = 1.0f;
 
-static const sf::Color INVADER_BULLET_COLOR = sf::Color(220, 245, 255);
+/// @brief Configurable constant for Gun Damage.
+constexpr float INVADER_PELLET_DAMAGE = 10.f;
+
+/// @brief Configurable constant for Gun projectile velocity.
+constexpr float INVADER_PELLET_SPEED = 400.f;
+
+/// @brief Configurable constant for projectile color.
+const sf::Color INVADER_BULLET_COLOR = sf::Color(220, 245, 255);
 } // namespace
 
+/// @brief Constructor for an InvaderShip type of ship.
+/// @param startPos Position to emplace at.
+/// @param allegiance Allegiance to employ with.
 InvaderShip::InvaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::InvaderShipSpriteKey);
@@ -54,6 +63,8 @@ InvaderShip::InvaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
     InitializeGunStats();
 }
 
+/// @brief Performs internal state management during a single frame.
+/// @param dt delta time since last update frame.
 void InvaderShip::Update(float dt)
 {
     if (!m_alive)
@@ -65,6 +76,7 @@ void InvaderShip::Update(float dt)
     CullIfOffscreen();
 }
 
+/// @brief Initialize gun stats
 void InvaderShip::InitializeGunStats()
 {
     m_gunStats.fireRate = INVADER_BASE_FIRERATE;
