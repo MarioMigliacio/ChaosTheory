@@ -47,6 +47,9 @@ GruntShip::GruntShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::GruntShipSpriteKey);
 
+    m_type = ShipType::Grunt;
+    m_scoreValue = GRUNT_SCORE_VALUE;
+
     if (!tex)
     {
         CT_LOG_ERROR("GruntShip texture not found.");

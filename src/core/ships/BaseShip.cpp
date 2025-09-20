@@ -86,6 +86,44 @@ void BaseShip::TakeDamage(const float amount)
     }
 }
 
+/// @brief Returns the ShipType that this ship represents.
+/// @return m_type.
+ShipType BaseShip::GetShipType() const
+{
+    return m_type;
+}
+
+/// @brief Sets the internal ShipType for this ship to type.
+/// @param type new m_type.
+void BaseShip::SetShipType(ShipType type)
+{
+    m_type = type;
+}
+
+/// @brief Gets the string representation for this ships ShipType type.
+/// @return stringified m_type.
+std::string BaseShip::GetTypeString() const
+{
+    return std::string(ShipTypeToString(m_type));
+}
+
+/// @brief Get the current score value for this ship if killed.
+/// @return m_scoreValue.
+const int BaseShip::GetScoreValue() const
+{
+    return m_scoreValue;
+}
+
+/// @brief Adjusts the current score value for this ship.
+/// @param val new m_scoreValue.
+void BaseShip::SetScoreValue(const int val)
+{
+    if (val > 0)
+    {
+        m_scoreValue = val;
+    }
+}
+
 /// @brief If the bounds of this Ship are outside the screen window, mark it for cleanup.
 void BaseShip::CullIfOffscreen()
 {
