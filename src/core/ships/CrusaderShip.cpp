@@ -47,6 +47,9 @@ CrusaderShip::CrusaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::CrusaderShipSpriteKey);
 
+    m_type = ShipType::Crusader;
+    m_scoreValue = CRUSADER_SCORE_VALUE;
+
     if (!tex)
     {
         CT_LOG_ERROR("CrusaderShip texture not found.");

@@ -17,7 +17,10 @@
 #include "BaseCollidable.h"
 #include "BaseProjectile.h"
 #include "BaseShip.h"
+#include "KillRewardManager.h"
 #include "Macros.h"
+#include "UIFactory.h"
+#include "UIManager.h"
 #include <algorithm>
 
 /// @brief Get the current Instance for this CollisionManager singleton.
@@ -211,11 +214,18 @@ void CollisionManager::ApplyAreaDamage(const sf::Vector2f &center, float radius,
         {
             if (auto ship = dynamic_cast<BaseShip *>(obj.get()))
             {
+                const int before = ship->GetHealth();
                 ship->TakeDamage(static_cast<int>(std::round(damage)));
 
                 CT_LOG_DEBUG("CollisionManager: AoE hit {} for {} damage. Health: ({} / {}).",
                              (ship->GetAllegiance() == Allegiance::Player ? "Player" : "Enemy"),
                              static_cast<int>(std::round(damage)), ship->GetHealth(), ship->GetMaxHealth());
+
+                // if this AoE tick killed an enemy, notify reward service.
+                if (before > 0 && ship->GetHealth() <= 0)
+                {
+                    KillRewardManager::Instance().OnEnemyKilled(*ship, sourceAllegiance);
+                }
             }
         }
     }
@@ -223,8 +233,8 @@ void CollisionManager::ApplyAreaDamage(const sf::Vector2f &center, float radius,
 
 /// @brief For homing directed shots, acquire the nearest target through the Collidable boundaries.
 /// @param from Target source object.
-/// @param sourceAllegiance Alle
-/// @return
+/// @param allegiance Allegiance source.
+/// @return BaseCollidable pointer.
 std::shared_ptr<BaseCollidable> CollisionManager::GetNearestTarget(const sf::Vector2f &from,
                                                                    Allegiance allegiance) const
 {
@@ -388,10 +398,17 @@ bool CollisionManager::HandleCollisionEnemyVsProjectile(CollisionCategory catA, 
 
             else
             {
+                const int hpBefore = enemy->GetHealth();
                 enemy->TakeDamage(projectile->GetDamage());
 
                 CT_LOG_DEBUG("CollisionManager: Enemy hit by player projectile; received {} damage. Health: ({} / {}).",
                              projectile->GetDamage(), enemy->GetHealth(), enemy->GetMaxHealth());
+
+                // if death happened on this hit, notify reward service.
+                if (hpBefore > 0 && enemy->GetHealth() <= 0)
+                {
+                    KillRewardManager::Instance().OnEnemyKilled(*enemy, projectile->GetAllegiance());
+                }
 
                 projectile->Kill();
             }
@@ -534,6 +551,29 @@ bool CollisionManager::HandleCollisionPlayerVsIcon(CollisionCategory catA, Colli
             CT_LOG_DEBUG("CollisionManager: Player picked up icon {}.", ToString(icon->GetIconType()));
 
             player->ApplyIconEffect(icon);
+
+            std::string msg;
+
+            if (icon->GetEffectType() != IconEffectType::None)
+            {
+                msg = IconToastFromEffect(icon->GetEffectType());
+            }
+
+            if (!msg.empty())
+            {
+                const auto playerPos = player->GetPosition();
+                const sf::Vector2f toastPos{playerPos.x, playerPos.y - 32.f};
+
+                auto toast = UIFactory::Instance().CreateToastMessage(
+                    ToastMessageConfig{.text = msg,
+                                       .position = toastPos,
+                                       .duration = TOAST_DEFAULT_DURATION,
+                                       .baseFontSize = TOAST_DEFAULT_FONT_SIZE,
+                                       .centerOrigin = true,
+                                       .scheme = UITextLabelScheme::DefaultScheme});
+
+                UIManager::Instance().AddElement(toast);
+            }
         }
     }
 

@@ -35,6 +35,9 @@ BasicShip::BasicShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::BasicShipSpriteKey);
 
+    m_type = ShipType::Basic;
+    m_scoreValue = BASIC_SHIP_SCORE_VALUE;
+
     if (tex)
     {
         m_sprite.setTexture(*tex);

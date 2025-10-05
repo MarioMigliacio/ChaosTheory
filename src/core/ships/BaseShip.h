@@ -16,6 +16,7 @@
 #include "BaseGun.h"
 #include "Macros.h"
 #include "ProjectileStats.h"
+#include "ShipType.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -57,6 +58,12 @@ class BaseShip : public BaseCollidable
     virtual int GetMaxHealth() const;
     virtual void TakeDamage(const float amount);
 
+    virtual ShipType GetShipType() const;
+    virtual void SetShipType(ShipType type);
+    virtual std::string GetTypeString() const;
+    virtual const int GetScoreValue() const;
+    virtual void SetScoreValue(const int val);
+
     virtual void CullIfOffscreen();
     virtual void Kill();
 
@@ -78,6 +85,8 @@ class BaseShip : public BaseCollidable
 
   protected:
     Allegiance m_allegiance = Allegiance::Neutral;
+    ShipType m_type = ShipType::Unknown;
+
     ProjectileStats m_gunStats;
     std::unique_ptr<BaseGun> m_gun;
     sf::Sprite m_sprite;
@@ -85,6 +94,7 @@ class BaseShip : public BaseCollidable
 
     float m_health = 0;
     float m_maxHealth = 0;
+    int m_scoreValue = 0;
 
     bool m_alive = true;
 };

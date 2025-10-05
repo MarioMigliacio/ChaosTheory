@@ -32,6 +32,9 @@ BerserkerShip::BerserkerShip(const sf::Vector2f &startPos, Allegiance allegiance
 {
     auto player = ShipManager::Instance().GetPlayer();
 
+    m_type = ShipType::Berserker;
+    m_scoreValue = BERSERKER_SCORE_VALUE;
+
     if (player)
     {
         SetSpawnTargetSnapshot(player->GetPosition());

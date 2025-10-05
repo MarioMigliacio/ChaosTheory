@@ -59,6 +59,9 @@ AlienShip::AlienShip(const sf::Vector2f &startPos, Allegiance allegiance) : m_rn
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::AlienShipSpriteKey);
 
+    m_type = ShipType::Alien;
+    m_scoreValue = ALIEN_SCORE_VALUE;
+
     if (tex)
     {
         m_sprite.setTexture(*tex);

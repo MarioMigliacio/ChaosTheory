@@ -44,6 +44,9 @@ InvaderShip::InvaderShip(const sf::Vector2f &startPos, Allegiance allegiance)
 {
     auto tex = AssetManager::Instance().GetTexture(SpriteAssets::EnemyAssets::InvaderShipSpriteKey);
 
+    m_type = ShipType::Invader;
+    m_scoreValue = INVADER_SCORE_VALUE;
+
     if (!tex)
     {
         CT_LOG_ERROR("InvaderShip texture not found.");
