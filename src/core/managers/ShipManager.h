@@ -47,6 +47,7 @@ class ShipManager
 
     std::shared_ptr<PlayerShip> GetPlayer() const;
     const std::vector<std::shared_ptr<BaseShip>> &GetEnemies() const;
+    const int GetEnemyCount() const;
 
     void Update(float dt);
     void Draw(sf::RenderTarget &target);

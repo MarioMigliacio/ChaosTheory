@@ -133,6 +133,13 @@ const std::vector<std::shared_ptr<BaseShip>> &ShipManager::GetEnemies() const
     return m_enemies;
 }
 
+/// @brief Returns the count of enemy ships contained in the collection.
+/// @return m_enemies.size().
+const int ShipManager::GetEnemyCount() const
+{
+    return m_enemies.size();
+}
+
 /// @brief Updates the collection of managed ships, removes if dead.
 /// @param dt delta time since last update frame.
 void ShipManager::Update(float dt)

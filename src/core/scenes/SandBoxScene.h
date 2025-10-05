@@ -16,6 +16,7 @@
 #include "DialogConstants.h"
 #include "DialogLine.h"
 #include "DialogQueue.h"
+#include "EnemyWaveSpawnUtil.h"
 #include "Macros.h"
 #include "PlayerShip.h"
 #include "Scene.h"
@@ -74,6 +75,8 @@ class SandBoxScene final : public Scene
     void MockCrusaderShipTest(const bool enabled);
     void MockGruntShipTest(const bool enabled);
     void MockInvaderShipTest(const bool enabled);
+    void MockWaveSpawnsTest(const bool enabled);
+    void SetupKillService();
 
     void MockPlayerUnit(const bool enabled);
 
@@ -97,11 +100,10 @@ class SandBoxScene final : public Scene
     std::shared_ptr<PlayerShip> m_player;
 
     DialogQueue m_dialogQueue;
+    EnemyWaveSpawnUtil m_waves;
 
     float m_elapsedTime = 0.f;
     int m_secondsPassed = 0;
-    int m_currentHealth = HUD_HEALTH_LABEL_START_VALUE; // remove if no longer used
-    int m_currentScore = HUD_SCORE_LABEL_START_VALUE;   // remove if no longer used
 
     SceneID m_requestedScene;
 };

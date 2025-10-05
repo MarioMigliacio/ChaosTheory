@@ -28,6 +28,12 @@ It provides a clean foundation for building interactive and audio-enabled games 
 
 ---
 
+## Gameplay
+
+![ChaosTheory sandbox demo](demo/ct_demo.gif)
+
+---
+
 ### First-Time Setup
 
 ```bash

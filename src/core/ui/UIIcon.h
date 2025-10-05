@@ -177,6 +177,45 @@ enum class IconEffectType
     Teleport,
 };
 
+/// @brief Provides a gentle icon description to be used as a toast effect when Icon is acquired.
+/// @param e IconEffectType found.
+/// @return String representation of the IconEffectType.
+inline std::string IconToastFromEffect(IconEffectType e)
+{
+    switch (e)
+    {
+        case IconEffectType::GunDamageBoost:
+            return "Damage +";
+        case IconEffectType::GunVelocityBoost:
+            return "Bullet Speed +";
+        case IconEffectType::GunFireRateBoost:
+            return "Fire Rate +";
+        case IconEffectType::GunUpgradeBoost:
+            return "Weapon Upgrade";
+
+        case IconEffectType::LifeIncrease:
+            return "Extra Life";
+        case IconEffectType::BombQuantityBoost:
+            return "Extra Bomb";
+
+        case IconEffectType::HealthRestore:
+            return "Health Restored";
+        case IconEffectType::HealthBoost:
+            return "Max Health +";
+
+        case IconEffectType::GasRestore:
+            return "Gas Restored";
+        case IconEffectType::GasBoost:
+            return "Max Gas +";
+
+        case IconEffectType::Teleport:
+            return "Warp Activated";
+
+        default:
+            return {};
+    }
+}
+
 /// @brief Data structure holding internal configurations useful for IconConfig construction.
 /// @param position Vector2f position for Icon Config.
 /// @param size Vector2f size for Icon Config.

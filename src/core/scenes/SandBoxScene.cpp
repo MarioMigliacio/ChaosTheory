@@ -17,12 +17,14 @@
 #include "CollectableIconManager.h"
 #include "CollisionManager.h"
 #include "InputManager.h"
+#include "KillRewardManager.h"
 #include "MainMenuScene.h"
 #include "PauseScene.h"
 #include "ProjectileManager.h"
 #include "ResolutionScaleManager.h"
 #include "SceneFactory.h"
 #include "SceneTransitionManager.h"
+#include "ScoreManager.h"
 #include "ShipFactory.h"
 #include "ShipManager.h"
 #include "UIFactory.h"
@@ -84,6 +86,11 @@ void SandBoxScene::Init()
         CollectableIconManager::Instance().Init();
     }
 
+    if (!ScoreManager::Instance().IsInitialized())
+    {
+        ScoreManager::Instance().Init();
+    }
+
     LoadRequiredAssets();
     BindInputKeys();
     LoadBackground();
@@ -141,6 +148,7 @@ void SandBoxScene::Shutdown()
     ShipManager::Instance().Shutdown();
     ProjectileManager::Instance().Shutdown();
     CollectableIconManager::Instance().Shutdown();
+    ScoreManager::Instance().Shutdown();
 
     m_settings.reset();
     m_testChatBox.reset();
@@ -211,6 +219,8 @@ void SandBoxScene::Update(float dt)
             SceneManager::Instance().PushScene(std::make_unique<PauseScene>(m_settings));
         }
     }
+
+    m_waves.Update(dt);
 }
 
 /// @brief Handle any relevent events at this scene level if needed.
@@ -330,14 +340,18 @@ void SandBoxScene::SetupSceneComponents()
     MockTitleText(false);
     MockPlayerUnit(true);
     MockHUDPanel(HUD_MOCK_BOOL);
-    MockIconComponents(true);
+    MockIconComponents(false);
     MockChatBox(false);
+
+    SetupKillService();
+
     MockBasicShipTest(false);
     MockAlienShipTest(false);
     MockBerserkerShipTest(false);
     MockCrusaderShipTest(false);
     MockGruntShipTest(false);
-    MockInvaderShipTest(true);
+    MockInvaderShipTest(false);
+    MockWaveSpawnsTest(true);
 }
 
 /// @brief Helper method to create the Title string entity for this scene.
@@ -506,8 +520,7 @@ void SandBoxScene::MockIconComponents(const bool enabled)
     {
         sf::Vector2f pos{startX + (i * spacing), startY};
 
-        IconConfig cfg{pos, iconSize, iconTypes[i].second, iconTypes[i].first};
-        cfg.effectType = GetEffectForIcon(iconTypes[i].first);
+        IconConfig cfg{pos, iconSize, iconTypes[i].second, iconTypes[i].first, GetEffectForIcon(iconTypes[i].first)};
 
         CollectableIconManager::Instance().SpawnIcon(cfg);
     }
@@ -646,6 +659,146 @@ void SandBoxScene::MockInvaderShipTest(const bool enabled)
     ShipManager::Instance().SpawnInvaderEnemy({winSize.x * .5f, 25.f});
 }
 
+/// @brief Helper function to spawn waves of enemies.
+/// @param enabled is enabled or not
+void SandBoxScene::MockWaveSpawnsTest(const bool enabled)
+{
+    if (!enabled)
+    {
+        return;
+    }
+
+    m_waves.Clear();
+    m_waves.Reset(0.f);
+
+    const auto win = WindowManager::Instance().GetWindow().getSize();
+
+    m_waves.SetDefeatPredicate([] { return ShipManager::Instance().GetEnemyCount() == 0; });
+    m_waves.SetAutoAdvance(true);
+
+    m_waves.AddWave({1.0f,
+                     [=]
+                     {
+                         for (int i = 0; i < 5; ++i)
+                         {
+                             ShipManager::Instance().SpawnBasicEnemy({win.x * 0.15f + i * 60.f, 25.f});
+                         }
+                     },
+                     true});
+    m_waves.AddWave({2.0f,
+                     [=]
+                     {
+                         for (int i = 0; i < 5; ++i)
+                         {
+                             ShipManager::Instance().SpawnBasicEnemy({win.x * 0.60f + i * 60.f, 25.f});
+                         }
+                     },
+                     true});
+    m_waves.AddWave({5.0f,
+                     [=]
+                     {
+                         for (int i = 0; i < 4; ++i)
+                         {
+                             ShipManager::Instance().SpawnAlienEnemy({win.x * 0.20f + i * 150.f, 25.f});
+                         }
+                     },
+                     true});
+    m_waves.AddWave({7.0f, [=] { ShipManager::Instance().SpawnBerserkerEnemy({win.x * 0.20f, 25.f}); }, true});
+    m_waves.AddWave({7.5f, [=] { ShipManager::Instance().SpawnBerserkerEnemy({win.x * 0.85f, 25.f}); }, true});
+    m_waves.AddWave({8.0f, [=] { ShipManager::Instance().SpawnBerserkerEnemy({win.x * 0.5f, 25.f}); }, true});
+    m_waves.AddWave({8.5f, [=] { ShipManager::Instance().SpawnBerserkerEnemy({win.x * 0.15f, win.y * 50.f}); }, true});
+    m_waves.AddWave({9.0f, [=] { ShipManager::Instance().SpawnBerserkerEnemy({win.x * 0.75f, win.y * 50.f}); }, true});
+    m_waves.AddWave({9.5f, [=] { ShipManager::Instance().SpawnBerserkerEnemy({win.x * 0.30f, 25.f}); }, true});
+    m_waves.AddWave({10.0f, [=] { ShipManager::Instance().SpawnCrusaderEnemy({win.x * 0.25f, 25.f}); }, true});
+    m_waves.AddWave({10.5f, [=] { ShipManager::Instance().SpawnCrusaderEnemy({win.x * 0.75f, 25.f}); }, true});
+    m_waves.AddWave({11.0f,
+                     [=]
+                     {
+                         ShipManager::Instance().SpawnGruntEnemy({win.x * 0.25f, 25.f});
+                         ShipManager::Instance().SpawnGruntEnemy({win.x * 0.50f, 25.f});
+                         ShipManager::Instance().SpawnGruntEnemy({win.x * 0.75f, 25.f});
+                     },
+                     true});
+    m_waves.AddWave({12.0f, [=] { ShipManager::Instance().SpawnInvaderEnemy({win.x * 0.25f, 25.f}); }, true});
+    m_waves.AddWave({14.0f, [=] { ShipManager::Instance().SpawnInvaderEnemy({win.x * 0.750f, 25.f}); }, true});
+}
+
+/// @brief Configure the KillRewardManager service to have some demonstrable drop and score granting.
+void SandBoxScene::SetupKillService()
+{
+    auto &krm = KillRewardManager::Instance();
+
+    KillRewardConfig cfg;
+    cfg.enabled = true;
+    cfg.guaranteeDrop = false;
+    cfg.showToast = true;
+    cfg.toastLifetime = 1.0f;
+    cfg.toastFontSize = 22;
+    cfg.toastOffset = {0.f, -32.f};
+    cfg.scatterRadius = 12.f;
+
+    krm.Configure(cfg);
+
+    // alien ship rules:
+    KillRewardDropRule alien;
+    alien.regularDropChance = 0.25f;
+    alien.rareDropChance = 0.15f;
+    alien.regularDrops = {{IconType::GasRestoreIcon, IconEffectType::GasRestore}};
+    alien.rareDrops = {{IconType::GasBoostIcon, IconEffectType::GasBoost}};
+    alien.toast = ShipScoreFromType(ShipType::Alien);
+    krm.SetDropRule(ShipTypeToString(ShipType::Alien), alien);
+
+    // basic ship rules:
+    KillRewardDropRule basic;
+    basic.regularDropChance = 0.4f;
+    basic.rareDropChance = 0.25f;
+    basic.regularDrops = {{IconType::UpgradeIcon, IconEffectType::GunUpgradeBoost}};
+    basic.rareDrops = {{IconType::AtomicIcon, IconEffectType::BombQuantityBoost}};
+
+    basic.toast = ShipScoreFromType(ShipType::Basic);
+    krm.SetDropRule(ShipTypeToString(ShipType::Basic), basic);
+
+    // berserker ship rules:
+    KillRewardDropRule berserker;
+    berserker.regularDropChance = 0.5f;
+    berserker.rareDropChance = 0.25f;
+    berserker.regularDrops = {{IconType::HealthRestoreIcon, IconEffectType::HealthRestore}};
+    berserker.rareDrops = {{IconType::HealthBoostIcon, IconEffectType::HealthBoost}};
+    berserker.toast = ShipScoreFromType(ShipType::Berserker);
+    krm.SetDropRule(ShipTypeToString(ShipType::Berserker), berserker);
+
+    // crusader ship rules:
+    KillRewardDropRule crusader;
+    crusader.regularDropChance = 0.2f;
+    crusader.rareDropChance = 0.1f;
+    crusader.regularDrops = {{IconType::PowerIcon, IconEffectType::GunDamageBoost}};
+    crusader.rareDrops = {{IconType::FireRateIcon, IconEffectType::GunFireRateBoost}};
+    crusader.toast = ShipScoreFromType(ShipType::Crusader);
+    krm.SetDropRule(ShipTypeToString(ShipType::Crusader), crusader);
+
+    // grunt ship rules:
+    KillRewardDropRule grunt;
+    grunt.regularDropChance = 0.25f;
+    grunt.rareDropChance = 0.08f;
+    grunt.regularDrops = {{IconType::UpgradeIcon, IconEffectType::GunUpgradeBoost},
+                          {IconType::VelocityIcon, IconEffectType::GunVelocityBoost},
+                          {IconType::PowerIcon, IconEffectType::GunDamageBoost}};
+    grunt.rareDrops = {{IconType::LifeIcon, IconEffectType::LifeIncrease}};
+    grunt.toast = ShipScoreFromType(ShipType::Grunt);
+    krm.SetDropRule(ShipTypeToString(ShipType::Grunt), grunt);
+
+    // invader ship rules:
+    KillRewardDropRule invader;
+    invader.regularDropChance = 0.35f;
+    invader.rareDropChance = 0.15f;
+    invader.regularDrops = {{IconType::VelocityIcon, IconEffectType::GunVelocityBoost},
+                            {IconType::FireRateIcon, IconEffectType::GunFireRateBoost}};
+    invader.rareDrops = {{IconType::PowerIcon, IconEffectType::GunDamageBoost},
+                         {IconType::LifeIcon, IconEffectType::LifeIncrease}};
+    invader.toast = ShipScoreFromType(ShipType::Invader);
+    krm.SetDropRule(ShipTypeToString(ShipType::Invader), invader);
+}
+
 /// @brief Mock player test
 /// @param enabled is enabled or not.
 void SandBoxScene::MockPlayerUnit(const bool enabled)
@@ -718,6 +871,5 @@ void SandBoxScene::UpdateHUD(float dt, const bool enabled)
                 << std::setfill('0') << seconds;
     m_timerLabel->SetText(timerStream.str());
 
-    // Score (TODO: apply score from ship dying by player damage)
-    m_scoreLabel->SetText("Score: " + std::to_string(m_currentScore));
+    m_scoreLabel->SetText("Score: " + std::to_string(ScoreManager::Instance().Get()));
 }
